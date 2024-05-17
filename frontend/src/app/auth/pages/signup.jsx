@@ -1,5 +1,5 @@
 "use client";
-import {useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 
 function Signup() {
@@ -104,13 +104,15 @@ function Signup() {
 			.then((res) => {
 				//if the request is successful
 				console.log("data==> ", res.data);
+				setErrors({ success: "Account Created Successfully" });
 				//redirect to the login page
 			})
 			.catch((error) => {
 				//if the request is not successful
 				console.log("error ==> ", error);
-
+				console.log("error.message ==> ", error.response.data);
 				setErrors({
+					message: error.response.data + " " + error.response.status,
 					first_name: error.response.data.first_name,
 					last_name: error.response.data.last_name,
 					username: error.response.data.username,
@@ -170,12 +172,21 @@ function Signup() {
 				<br />
 				{errors && (
 					<div>
+						{errors.success && <p>{errors.success}</p>}
 						{errors.first_name && <p>{errors.first_name}</p>}
 						{errors.last_name && <p>{errors.last_name}</p>}
 						{errors.username && <p>{errors.username}</p>}
 						{errors.email && <p>{errors.email}</p>}
 						{errors.password && <p>{errors.password}</p>}
 						{errors.confirmPassword && <p>{errors.confirmPassword}</p>}
+						{/* display message only if all errors not  */}
+						{!errors.first_name &&
+							!errors.last_name &&
+							!errors.username &&
+							!errors.email &&
+							!errors.password &&
+							!errors.confirmPassword &&
+							errors.message && <p>{errors.message}</p>}
 					</div>
 				)}
 			</form>
