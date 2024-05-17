@@ -1,12 +1,11 @@
 "use client";
-
-import { useState } from "react";
+import {useState } from "react";
 import axios from "axios";
 
 function Signup() {
 	const [formData, setFormData] = useState({
-		firstName: "",
-		lastName: "",
+		first_name: "",
+		last_name: "",
 		username: "",
 		email: "",
 		password: "",
@@ -19,6 +18,23 @@ function Signup() {
 		const errors = {};
 		setErrors(errors);
 
+		//validate first name
+		if (!formData.first_name) {
+			errors.first_name = "First name is required";
+		} else if (formData.first_name.length < 3) {
+			errors.first_name = "First name must be at least 3 characters";
+		} else if (!/^[a-zA-Z]+$/.test(formData.first_name)) {
+			errors.first_name = "First name must contain only letters";
+		}
+
+		//validate last name
+		if (!formData.last_name) {
+			errors.last_name = "Last name is required";
+		} else if (formData.last_name.length < 3) {
+			errors.last_name = "Last name must be at least 3 characters";
+		} else if (!/^[a-zA-Z]+$/.test(formData.last_name)) {
+			errors.last_name = "Last name must contain only letters";
+		}
 		//validate username
 		if (!formData.username) {
 			errors.username = "Username is required";
@@ -64,41 +80,39 @@ function Signup() {
 			errors.confirmPassword = "Passwords do not match";
 		}
 
-		setErrors(errors);
+		return errors;
+	};
+
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
 	const PostData = async (e) => {
 		e.preventDefault();
-		validateFrom();
-		const errors = {};
-		setErrors(errors);
-		if (Object.keys(errors).length > 0) {
+		const forms_errors = validateFrom();
+		if (Object.keys(forms_errors).length > 0) {
+			setErrors(forms_errors);
 			return;
 		}
 
 		const { confirmPassword, ...dataToSend } = formData;
 		//make a post request to the server
 		await axios
-			.post(
-				"/api/signup/",
-				dataToSend,
-				(headers = {
-					"Content-Type": "application/json",
-				})
-			)
+			.post("/api/signup/", dataToSend, {
+				"Content-Type": "application/json",
+			})
 			.then((res) => {
 				//if the request is successful
 				console.log("data==> ", res.data);
+				//redirect to the login page
 			})
 			.catch((error) => {
 				//if the request is not successful
 				console.log("error ==> ", error);
-				console.log("username: ", error.response.data.username);
-				error.response.data.username;
-				error.response.data.email;
-				error.response.data.password;
 
 				setErrors({
+					first_name: error.response.data.first_name,
+					last_name: error.response.data.last_name,
 					username: error.response.data.username,
 					email: error.response.data.email,
 					password: error.response.data.password,
@@ -112,36 +126,52 @@ function Signup() {
 			<form onSubmit={PostData} method="POST">
 				<input
 					type="text"
+					placeholder="first name"
+					name="first_name"
+					required
+					onChange={handleChange}
+				/>
+				<input
+					type="text"
+					placeholder="last name"
+					name="last_name"
+					required
+					onChange={handleChange}
+				/>
+				<input
+					type="text"
 					placeholder="username"
 					name="username"
 					required
-					onChange={(e) => setUsername(e.target.value)}
+					onChange={handleChange}
 				/>
 				<input
 					type="email"
 					placeholder="email"
 					name="email"
 					required
-					onChange={(e) => setEmail(e.target.value)}
+					onChange={handleChange}
 				/>
 				<input
 					type="password"
 					placeholder="password"
 					name="password"
 					required
-					onChange={(e) => setPassword(e.target.value)}
+					onChange={handleChange}
 				/>
 				<input
 					type="password"
 					placeholder="confirm password"
 					name="confirmPassword"
 					required
-					onChange={(e) => setConfirmPassword(e.target.value)}
+					onChange={handleChange}
 				/>
 				<button type="submit">submit</button>
 				<br />
 				{errors && (
 					<div>
+						{errors.first_name && <p>{errors.first_name}</p>}
+						{errors.last_name && <p>{errors.last_name}</p>}
 						{errors.username && <p>{errors.username}</p>}
 						{errors.email && <p>{errors.email}</p>}
 						{errors.password && <p>{errors.password}</p>}

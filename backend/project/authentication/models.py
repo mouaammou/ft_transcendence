@@ -6,20 +6,20 @@ from django.contrib.auth.hashers import make_password
 # Create your models here.
 
 class CustomUser(AbstractUser):
-	username = models.CharField(max_length=255, unique=True)
-	email = models.EmailField(unique=True)
+	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
+	email = models.EmailField(unique=True, blank=False, null=False)
 	first_name = models.CharField(max_length=255, blank=False)
-	last_name = models.CharField(max_length=255, blank=False)
-	password = models.CharField(max_length=255, blank=False)
+	last_name = models.CharField(max_length=255, blank=False, unique=True)
+	password = models.CharField(max_length=255, blank=False, null=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+	avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default='avatars/default.png')
 
-	# def save(self, *args, **kwargs):
-	# 	# Hash the password before saving
-	# 	if self.password:
-	# 		self.password = make_password(self.password)
-	# 	super().save(*args, **kwargs)
+	def save(self, *args, **kwargs):
+		# Hash the password before saving
+		if self.password:
+			self.password = make_password(self.password)
+		super().save(*args, **kwargs)
 
 	def __str__(self):
 		return self.username
