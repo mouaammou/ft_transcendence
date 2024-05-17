@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
 
 function Signup() {
    const [username, setUsername] = useState("");
@@ -10,6 +11,12 @@ function Signup() {
 
    const [invalidPass, setInvalidPass] = useState(false);
 
+   const postData = {
+      username: username,
+      email: email,
+      password: password,
+   };
+
    const handleSubmit = (e) => {
       e.preventDefault();
       if (password !== confirmPassword) {
@@ -18,26 +25,13 @@ function Signup() {
       }
       setInvalidPass(false);
 
-	  // Send the data to the server: localhost:8000/sigup
-	  //solve cors error by adding "Access-Control-Allow-Origin": "*" in the backend
-	   fetch("http://127.0.0.1:8000/signup/", {
-         method: "POST",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-            // Send the data in JSON format
-            username,
-            email,
-            password,
-         }),
-      })
-         .then((res) => res.json())//CONVER JSON TO JS OBJECT
-         .then((data) => {
-            console.log("DATA: ", data);
+      //make a post request to the server
+      axios.post("http://localhost:8000/signup/", postData)
+         .then((res) => {
+            console.log("data==> ", res.data);
          })
-         .catch((err) => {
-            console.log("ERRORS: ", err);
+         .catch((error) => {
+            console.log("error---> ", error.data);
          });
    };
 
@@ -53,7 +47,7 @@ function Signup() {
                onChange={(e) => setUsername(e.target.value)}
             />
             <input
-               type="text"
+               type="email"
                placeholder="email"
                name="email"
                required
