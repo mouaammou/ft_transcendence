@@ -9,7 +9,8 @@ function Signup() {
    const [password, setPassword] = useState("");
    const [confirmPassword, setConfirmPassword] = useState("");
 
-   const [invalidPass, setInvalidPass] = useState(false);
+   const [invalidInput, setInvalidInput] = useState(false);
+   const [errorMessage, setErrorMessage] = useState("");
 
    const postData = {
       username: username,
@@ -20,31 +21,48 @@ function Signup() {
    const handleSubmit = (e) => {
       e.preventDefault();
       if (password !== confirmPassword) {
-         setInvalidPass(true);
+         setInvalidInput(true);
          return;
       }
-      setInvalidPass(false);
+      setInvalidInput(false);
+      setErrorMessage("");
 
       //make a post request to the server
-      axios.post("http://localhost:8000/signup/", postData)
+      axios
+         .post("http://localhost:8000/signup/", postData)
          .then((res) => {
             console.log("data==> ", res.data);
          })
          .catch((error) => {
-            console.log("error---> ", error.data);
+            console.log("error ==> ", error);
+            console.log("username: ", error.response.data.username);
+            error.response.data.username;
+            error.response.data.email;
+            error.response.data.password;
+
+            setErrorMessage(
+               <>
+                  <p>{error.response.data.username}</p>
+                  <p>{error.response.data.email}</p>
+                  <p>{error.response.data.password}</p>
+               </>
+            );
          });
    };
 
    return (
       <div className="signup">
          <h1>sign up</h1>
-         <form>
+         <form onSubmit={handleSubmit} method="POST">
             <input
                type="text"
                placeholder="username"
                name="username"
                required
-               onChange={(e) => setUsername(e.target.value)}
+               onChange={(e) => {
+                  setUsername(e.target.value);
+                  setErrorMessage("");
+               }}
             />
             <input
                type="email"
@@ -67,9 +85,10 @@ function Signup() {
                required
                onChange={(e) => setConfirmPassword(e.target.value)}
             />
-            <button onClick={handleSubmit}>submit</button>
+            <button type="submit">submit</button>
             <br />
-            {invalidPass && <p>Passwords do not match</p>}
+            {invalidInput && <p>Passwords do not match</p>}
+            {errorMessage}
          </form>
       </div>
    );

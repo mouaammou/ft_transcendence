@@ -20,7 +20,7 @@ def SignUp(request):
 		if seriaze_user.is_valid():
 			seriaze_user.save()
 			return Response(seriaze_user.data,  status=status.HTTP_201_CREATED)
-	return Response(seriaze_user.errors)
+	return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def default(request):
