@@ -4,23 +4,47 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer
 from django.http import HttpResponse
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 
 
 @api_view(["POST", "GET"])
 def SignUp(request):
-	form_data = request.data
+    form_data = request.data
 
-	if request.method == "GET":
-		users = CustomUser.objects.all()
-		seriaze_user = UserSerializer(users, many=True)
-		return Response(seriaze_user.data, status=status.HTTP_200_OK)
+    if request.method == "GET":
+        users = CustomUser.objects.all()
+        seriaze_user = UserSerializer(users, many=True)
+        return Response(seriaze_user.data, status=status.HTTP_200_OK)
 
-	if request.method == "POST":
-		seriaze_user = UserSerializer(data=form_data)
-		if seriaze_user.is_valid():
-			seriaze_user.save()
-			return Response(seriaze_user.data,  status=status.HTTP_201_CREATED)
-	return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "POST":
+        seriaze_user = UserSerializer(data=form_data)
+        if seriaze_user.is_valid():
+            seriaze_user.save()
+            return Response(seriaze_user.data, status=status.HTTP_201_CREATED)
+    return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def Login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if username is "" or password is "" or username is None or password is None:
+        return Response(
+            {"error": "Please provide both username and password"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        return Response(
+            {"user": user.username, "user id": user.id, "email": user.email},
+            status=status.HTTP_200_OK,
+        )
+    return Response(
+        {"error": "Invalid username or password"}, status=status.HTTP_404_NOT_FOUND
+    )
 
 
 def default(request):

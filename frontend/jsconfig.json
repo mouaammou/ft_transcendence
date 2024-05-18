@@ -4,6 +4,7 @@
          "@*": ["src/*"],
 		 //src/app/auth/pages/* -> @auth/pages/*
 		 "@auth/*": ["src/app/auth/*"],
+		 //components/* -> @components/*
       }
    }
 }

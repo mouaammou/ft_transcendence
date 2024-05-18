@@ -13,13 +13,15 @@ function Signup() {
 	});
 
 	const [errors, setErrors] = useState({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const validateFrom = () => {
 		const errors = {};
 		setErrors(errors);
 
 		//validate first name
-		if (!formData.first_name) {
+		if (!formData.first_name.trim()) {
+			//trim() removes whitespace from both ends of a string
 			errors.first_name = "First name is required";
 		} else if (formData.first_name.length < 3) {
 			errors.first_name = "First name must be at least 3 characters";
@@ -28,7 +30,7 @@ function Signup() {
 		}
 
 		//validate last name
-		if (!formData.last_name) {
+		if (!formData.last_name.trim()) {
 			errors.last_name = "Last name is required";
 		} else if (formData.last_name.length < 3) {
 			errors.last_name = "Last name must be at least 3 characters";
@@ -36,7 +38,7 @@ function Signup() {
 			errors.last_name = "Last name must contain only letters";
 		}
 		//validate username
-		if (!formData.username) {
+		if (!formData.username.trim()) {
 			errors.username = "Username is required";
 		} else if (
 			formData.username.length < 5 ||
@@ -49,7 +51,7 @@ function Signup() {
 		}
 
 		//validate email
-		if (!formData.email) {
+		if (!formData.email.trim()) {
 			errors.email = "Email is required";
 		} else if (
 			!/\S+@\S+\.\S+/.test(formData.email) ||
@@ -60,7 +62,7 @@ function Signup() {
 		}
 
 		//validate password
-		if (!formData.password) {
+		if (!formData.password.trim()) {
 			errors.password = "Password is required";
 		} else if (formData.password.length < 8) {
 			errors.password = "Password must be at least 8 characters";
@@ -74,7 +76,7 @@ function Signup() {
 		}
 
 		//validate confirmPassword
-		if (!formData.confirmPassword) {
+		if (!formData.confirmPassword.trim()) {
 			errors.confirmPassword = "Confirm password is required";
 		} else if (formData.password !== formData.confirmPassword) {
 			errors.confirmPassword = "Passwords do not match";
@@ -91,6 +93,7 @@ function Signup() {
 		e.preventDefault();
 		const forms_errors = validateFrom();
 		if (Object.keys(forms_errors).length > 0) {
+			setIsSubmitting(false);
 			setErrors(forms_errors);
 			return;
 		}
@@ -105,6 +108,7 @@ function Signup() {
 				//if the request is successful
 				console.log("data==> ", res.data);
 				setErrors({ success: "Account Created Successfully" });
+				setIsSubmitting(true);
 				//redirect to the login page
 			})
 			.catch((error) => {
@@ -119,6 +123,7 @@ function Signup() {
 					email: error.response.data.email,
 					password: error.response.data.password,
 				});
+				setIsSubmitting(false);
 			});
 	};
 
@@ -168,17 +173,19 @@ function Signup() {
 					required
 					onChange={handleChange}
 				/>
-				<button type="submit">submit</button>
+				<button type="submit">
+					{isSubmitting ? "Submitting..." : "Sign up"}
+				</button>
 				<br />
-				{errors && (
+				{
 					<div>
-						{errors.success && <p>{errors.success}</p>}
-						{errors.first_name && <p>{errors.first_name}</p>}
-						{errors.last_name && <p>{errors.last_name}</p>}
-						{errors.username && <p>{errors.username}</p>}
-						{errors.email && <p>{errors.email}</p>}
-						{errors.password && <p>{errors.password}</p>}
-						{errors.confirmPassword && <p>{errors.confirmPassword}</p>}
+						{<p>{errors.success}</p>}
+						{<p>{errors.first_name}</p>}
+						{<p>{errors.last_name}</p>}
+						{<p>{errors.username}</p>}
+						{<p>{errors.email}</p>}
+						{<p>{errors.password}</p>}
+						{<p>{errors.confirmPassword}</p>}
 						{/* display message only if all errors not  */}
 						{!errors.first_name &&
 							!errors.last_name &&
@@ -188,7 +195,7 @@ function Signup() {
 							!errors.confirmPassword &&
 							errors.message && <p>{errors.message}</p>}
 					</div>
-				)}
+				}
 			</form>
 		</div>
 	);
