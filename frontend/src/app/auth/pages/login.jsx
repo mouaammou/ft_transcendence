@@ -27,8 +27,10 @@ const Login = () => {
 			setIsSubmitting(true);
 		} catch (error) {
 			console.log(error.response.data.error);
+			console.log(error.response.data + " " + error.response.status);
 			setErrors({
 				error: error.response.data.error,
+				sever_error: error.response.data + " " + error.response.status,
 			});
 			setIsSubmitting(false);
 		}
@@ -61,7 +63,7 @@ const Login = () => {
 				<br />
 				{
 					<p className="text-danger">
-						{errors.success ? errors.success : errors.error	}
+						{!(errors.success ? errors.success : errors.error) ? errors.sever_error : errors.success ? errors.success : errors.error}
 					</p>
 				}
 			</form>
