@@ -17,14 +17,16 @@ const Login = () => {
 	const checkData = async (e) => {
 		e.preventDefault();
 
+		setIsSubmitting(true);
 		try {
-			const response = await axios.post("/api/login/", formData);
+			const response = await axios.post("/api/token/verify/", formData, {
+				withCredentials: true,
+			});
 			const data = response.data;
 			console.log(data);
 			setErrors({
 				success: "Login Successful",
 			});
-			setIsSubmitting(true);
 		} catch (error) {
 			console.log(error.response.data.error);
 			console.log(error.response.data + " " + error.response.status);
@@ -32,8 +34,8 @@ const Login = () => {
 				error: error.response.data.error,
 				sever_error: error.response.data + " " + error.response.status,
 			});
-			setIsSubmitting(false);
 		}
+		setIsSubmitting(false);
 	};
 
 	return (
@@ -63,7 +65,11 @@ const Login = () => {
 				<br />
 				{
 					<p className="text-danger">
-						{!(errors.success ? errors.success : errors.error) ? errors.sever_error : errors.success ? errors.success : errors.error}
+						{!(errors.success ? errors.success : errors.error)
+							? errors.sever_error
+							: errors.success
+							? errors.success
+							: errors.error}
 					</p>
 				}
 			</form>

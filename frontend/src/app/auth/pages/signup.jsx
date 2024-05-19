@@ -66,13 +66,6 @@ function Signup() {
 			errors.password = "Password is required";
 		} else if (formData.password.length < 8) {
 			errors.password = "Password must be at least 8 characters";
-		} else if (
-			!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(
-				formData.password
-			)
-		) {
-			errors.password =
-				"Password must contain at least one uppercase letter, one lowercase letter and one number";
 		}
 
 		//validate confirmPassword
@@ -93,11 +86,11 @@ function Signup() {
 		e.preventDefault();
 		const forms_errors = validateFrom();
 		if (Object.keys(forms_errors).length > 0) {
-			setIsSubmitting(false);
 			setErrors(forms_errors);
 			return;
 		}
 
+		setIsSubmitting(true);
 		const { confirmPassword, ...dataToSend } = formData;
 		//make a post request to the server
 		await axios
@@ -108,7 +101,6 @@ function Signup() {
 				//if the request is successful
 				console.log("data==> ", res.data);
 				setErrors({ success: "Account Created Successfully" });
-				setIsSubmitting(true);
 				//redirect to the login page
 			})
 			.catch((error) => {
@@ -123,8 +115,8 @@ function Signup() {
 					email: error.response.data.email,
 					password: error.response.data.password,
 				});
-				setIsSubmitting(false);
 			});
+		setIsSubmitting(false);
 	};
 
 	return (
