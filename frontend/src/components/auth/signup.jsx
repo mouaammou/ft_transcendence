@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 function Signup() {
 	const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function Signup() {
 
 	const [errors, setErrors] = useState({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const router = useRouter();
 
 	const validateFrom = () => {
 		const errors = {};
@@ -102,6 +104,7 @@ function Signup() {
 				console.log("data==> ", res.data);
 				setErrors({ success: "Account Created Successfully" });
 				//redirect to the login page
+				router.push("/dashboard");
 			})
 			.catch((error) => {
 				//if the request is not successful
