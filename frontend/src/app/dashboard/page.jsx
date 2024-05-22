@@ -1,13 +1,21 @@
 "use client";
-import Auth from './route';
+import { useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { LoginContext } from "@/components/auth/loginContext";
 
-const Dashboard = () => {
-  return (
-    <div>
-      <h1>Welcome to the Dashboard</h1>
-      <Auth />
-    </div>
-  );
-};
+export default function Dash() {
+	const router = useRouter();
+	const { errors } = useContext(LoginContext);
 
-export default Dashboard;
+	if (!errors.success) {
+		router.push("/auth/login");
+		return null;
+	}
+
+	return (
+		<div>
+			<h1>Welcome to Dashboard</h1>
+			<h2>Protected Route</h2>
+		</div>
+	);
+}

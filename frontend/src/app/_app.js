@@ -1,5 +1,4 @@
-
-import { LoginProvider } from "../components/auth/authContext";
+import { LoginProvider } from "../components/auth/loginContext";
 
 function MyApp({ Component, pageProps }) {
 	return (

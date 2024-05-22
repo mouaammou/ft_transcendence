@@ -1,16 +1,13 @@
 "use client";
-import { useState, createContext } from "react";
-import axios from "axios";
+import { LoginContext } from "@/components/auth/loginContext";
+import { useContext, useState } from "react";
 
-export const LoginContext = createContext(null);
-
-export const LoginProvider = ({children}) => {
+export default function LoginPage() {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-
-	const [errors, setErrors] = useState({});
+	const { errors, login } = useContext(LoginContext);
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,29 +15,44 @@ export const LoginProvider = ({children}) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		try {
-			const response = await axios.post("/api/login/", formData, {
-				"Content-Type": "application/json",
-			});
-			const data = response.data;
-			console.log(data);
-			setErrors({
-				success: "Login Successful",
-			});
-		} catch (error) {
-			console.log(error.response.data.error);
-			console.log(error.response.data + " " + error.response.status);
-			setErrors({
-				error: error.response.data.error,
-				sever_error: error.response.data + " " + error.response.status,
-			});
-		}
+		await login(formData);
 	};
 
 	return (
-		<LoginContext.Provider
-			value={{ formData, errors, handleChange, handleSubmit }}>
-			{children}
-		</LoginContext.Provider>
+		<div className="login">
+			<form onSubmit={handleSubmit}>
+				<div className="form-group">
+					<label htmlFor="username">Username</label>
+					<input
+						type="text"
+						className="form-control"
+						name="username"
+						onChange={handleChange}
+					/>
+				</div>
+				<div className="form-group">
+					<label htmlFor="password">Password</label>
+					<input
+						type="password"
+						className="form-control"
+						name="password"
+						onChange={handleChange}
+					/>
+				</div>
+				<button type="submit" className="btn btn-primary">
+					Login
+				</button>
+				<br />
+				{
+					<p className="text-danger">
+						{!(errors.success ? errors.success : errors.error)
+							? errors.sever_error
+							: errors.success
+							? errors.success
+							: errors.error}
+					</p>
+				}
+			</form>
+		</div>
 	);
-};
+}
