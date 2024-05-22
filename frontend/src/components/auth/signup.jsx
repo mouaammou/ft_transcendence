@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useState, useContext } from "react";
+import { LoginContext } from "./loginContext";
 
 function Signup() {
 	const [formData, setFormData] = useState({
@@ -13,9 +12,7 @@ function Signup() {
 		confirmPassword: "",
 	});
 
-	const [errors, setErrors] = useState({});
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const router = useRouter();
+	const { errors, login, setErrors, isSubmitting } = useContext(LoginContext);
 
 	const validateFrom = () => {
 		const errors = {};
@@ -91,35 +88,7 @@ function Signup() {
 			setErrors(forms_errors);
 			return;
 		}
-
-		setIsSubmitting(true);
-		const { confirmPassword, ...dataToSend } = formData;
-		//make a post request to the server
-		await axios
-			.post("/api/signup/", dataToSend, {
-				"Content-Type": "application/json",
-			})
-			.then((res) => {
-				//if the request is successful
-				console.log("data==> ", res.data);
-				setErrors({ success: "Account Created Successfully" });
-				//redirect to the login page
-				router.push("/dashboard");
-			})
-			.catch((error) => {
-				//if the request is not successful
-				console.log("error ==> ", error);
-				console.log("error.message ==> ", error.response.data);
-				setErrors({
-					message: error.response.data + " " + error.response.status,
-					first_name: error.response.data.first_name,
-					last_name: error.response.data.last_name,
-					username: error.response.data.username,
-					email: error.response.data.email,
-					password: error.response.data.password,
-				});
-			});
-		setIsSubmitting(false);
+		await login("/api/signup/", formData);
 	};
 
 	return (
@@ -169,7 +138,7 @@ function Signup() {
 					onChange={handleChange}
 				/>
 				<button type="submit">
-					{isSubmitting ? "Submitting..." : "Sign up"}
+					{isSubmitting ? "submitting..." : "submit"}
 				</button>
 				<br />
 				{
@@ -188,7 +157,7 @@ function Signup() {
 							!errors.email &&
 							!errors.password &&
 							!errors.confirmPassword &&
-							errors.message && <p>{errors.message}</p>}
+							errors.server_error && <p>{errors.server_error}</p>}
 					</div>
 				}
 			</form>

@@ -7,7 +7,7 @@ export default function LoginPage() {
 		username: "",
 		password: "",
 	});
-	const { errors, login } = useContext(LoginContext);
+	const { errors, login, isSubmitting } = useContext(LoginContext);
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,7 +15,7 @@ export default function LoginPage() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await login(formData);
+		await login("/api/login/", formData);
 	};
 
 	return (
@@ -40,13 +40,13 @@ export default function LoginPage() {
 					/>
 				</div>
 				<button type="submit" className="btn btn-primary">
-					Login
+					{isSubmitting ? "Loading..." : "Login"}
 				</button>
 				<br />
 				{
 					<p className="text-danger">
 						{!(errors.success ? errors.success : errors.error)
-							? errors.sever_error
+							? errors.server_error
 							: errors.success
 							? errors.success
 							: errors.error}
