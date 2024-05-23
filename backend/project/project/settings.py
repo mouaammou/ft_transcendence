@@ -48,9 +48,12 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    # "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
+    "USE_ID_FIELD": 'username',
+    "USE_ID_CLAIM": 'username',
+    "ALGORITHM": "HS256",
 }
 
 

@@ -12,11 +12,8 @@ export const LoginProvider = ({ children }) => {
 		setIsSubmitting(true);
 		try {
 			const response = await axios.post(url, formData, {
-				"Content-Type": "application/json",
+				withCredentials: true,
 			});
-
-			console.log("data==> ", response);
-
 			setErrors({
 				success: "Login Successful",
 			});
@@ -31,7 +28,6 @@ export const LoginProvider = ({ children }) => {
 				server_error: error.response.data + " " + error.response.status,
 				error: error.response.data.error,
 			});
-			console.log("error ==> ", error.response.data);
 		}
 		setIsSubmitting(false);
 	};
