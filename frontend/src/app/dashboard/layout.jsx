@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { postData, verifyToken } from "@/services/apiCalls";
+import { verifyToken } from "@/services/apiCalls";
+import Logout from "@/components/auth/logout";
 
 const Layout = ({ children }) => {
 	const router = useRouter();
@@ -20,22 +20,10 @@ const Layout = ({ children }) => {
 		});
 	}, []);
 
-	const logout = async () => {
-		const response = await postData("logout/");
-		if (response.status === 205) {
-			router.push("/auth/login/");
-			Cookies.remove("access_token");
-			Cookies.remove("refresh_token");
-			Cookies.remove("username");
-		}
-	};
-
 	return (
 		<>
 			{isAuthenticated ? children : null}
-			<button type="button" onClick={logout}>
-				Logout
-			</button>
+			<Logout />
 		</>
 	);
 };
