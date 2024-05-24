@@ -1,6 +1,6 @@
 "use client";
 import { useState, createContext } from "react";
-import axios from "axios";
+import { postData } from "@/services/apiCalls";
 
 export const LoginContext = createContext(null);
 
@@ -8,32 +8,37 @@ export const LoginProvider = ({ children }) => {
 	const [errors, setErrors] = useState({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const login = async (url, formData) => {
+	const login = (endPoint, formData) => {
 		setIsSubmitting(true);
-		try {
-			const response = await axios.post(url, formData, {
-				withCredentials: true,
+		const res = postData(endPoint, formData)
+			.then((res) => {
+				if (res.status == 200 || res.status == 201) {
+					setErrors({
+						success: "Login Successful",
+					});
+				} else  {
+					setErrors({
+						first_name: res.response.data.first_name,
+						last_name: res.response.data.last_name,
+						username: res.response.data.username,
+						email: res.response.data.email,
+						password: res.response.data.password,
+						status: res.response.status,
+						server_error:
+							res.response.data + " " + res.response.status,
+						error: res.response.data.error,
+					});
+				}
+			})
+			.catch((error) => {
+				console.log("error happens==> ", error);
 			});
-			setErrors({
-				success: "Login Successful",
-			});
-		} catch (error) {
-			setErrors({
-				first_name: error.response.data.first_name,
-				last_name: error.response.data.last_name,
-				username: error.response.data.username,
-				email: error.response.data.email,
-				password: error.response.data.password,
-				status: error.response.status,
-				server_error: error.response.data + " " + error.response.status,
-				error: error.response.data.error,
-			});
-		}
 		setIsSubmitting(false);
 	};
-
 	return (
-		<LoginContext.Provider value={{ errors, setErrors, login, isSubmitting }}>
+		<LoginContext.Provider
+			value={{ errors, setErrors, login, isSubmitting, setErrors}}
+		>
 			{children}
 		</LoginContext.Provider>
 	);

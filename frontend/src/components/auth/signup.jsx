@@ -1,6 +1,7 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { LoginContext } from "./loginContext";
+import { useRouter } from "next/navigation";
 
 function Signup() {
 	const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-
+	const router = useRouter();
 	const { errors, login, setErrors, isSubmitting } = useContext(LoginContext);
 
 	const validateFrom = () => {
@@ -63,7 +64,7 @@ function Signup() {
 		//validate password
 		if (!formData.password.trim()) {
 			errors.password = "Password is required";
-		} else if (formData.password.length < 8) {
+		} else if (formData.password.length < 4) {
 			errors.password = "Password must be at least 8 characters";
 		}
 
@@ -88,8 +89,15 @@ function Signup() {
 			setErrors(forms_errors);
 			return;
 		}
-		await login("/api/signup/", formData);
+		await login("signup/", formData);
 	};
+
+	useEffect(() => {
+		if (errors.success) {
+			router.push("/dashboard/");
+		}
+		setErrors({});
+	}, [errors.success]);
 
 	return (
 		<div className="signup">

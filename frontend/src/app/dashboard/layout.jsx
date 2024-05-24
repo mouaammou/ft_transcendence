@@ -1,66 +1,39 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { postData, verifyToken } from "@/services/apiCalls";
 
 const Layout = ({ children }) => {
 	const router = useRouter();
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-	const verifyAuth = useCallback(async () => {
-		try {
-			const response = await axios.post("/api/token/verify/", {
-				withCredentials: true,
-			});
-			console.log(response);
-			if (response.status === 200) {
-				setIsAuthenticated(true);
-			}
-		} catch (error) {
-			console.error(error);
-			setIsAuthenticated(false);
-			router.push("/auth/login/");
-			return null;
-		}
-	}, [router]);
-
 	useEffect(() => {
-		//run this just one time
-		if (!isAuthenticated) {
-			verifyAuth();
-		}
+		verifyToken("/token/verify/").then((res) => {
+			if (res.status === 200) {
+				setIsAuthenticated(true);
+			} else {
+				setIsAuthenticated(false);
 
-		const interval = setInterval(verifyAuth, 3000); // 5 seconds
-
-		return () => {
-			clearInterval(interval);
-			setIsAuthenticated(false);
-		};
-	}, [verifyAuth]);
+				router.push("/auth/login/");
+			}
+		});
+	}, []);
 
 	const logout = async () => {
-		try {
-			const res = await axios.post("/api/logout/", {
-				withCredentials: true,
-			});
-			if (res.status === 200) {
-				Cookies.remove("refresh_token");
-				Cookies.remove("access_token");
-				Cookies.remove("username");
-				setIsAuthenticated(false);
-				router.push("/auth/login/");
-				return null;
-			}
-		} catch (error) {
-			console.error(error);
+		const response = await postData("logout/");
+		if (response.status === 205) {
+			router.push("/auth/login/");
+			Cookies.remove("access_token");
+			Cookies.remove("refresh_token");
+			Cookies.remove("username");
 		}
 	};
 
 	return (
 		<>
 			{isAuthenticated ? children : null}
-			<button type="submit" onClick={logout}>
+			<button type="button" onClick={logout}>
 				Logout
 			</button>
 		</>

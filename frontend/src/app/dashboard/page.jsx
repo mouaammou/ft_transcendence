@@ -1,7 +1,3 @@
-"use client";
-import { useRouter } from "next/navigation";
-import useAuth from "@/components/auth/useAuth";
-
 export default function Dash() {
 	
 	return (

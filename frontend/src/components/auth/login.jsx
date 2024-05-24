@@ -1,13 +1,16 @@
 "use client";
 import { LoginContext } from "@/components/auth/loginContext";
-import { useContext, useState } from "react";
+import { useEffect, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+	const router = useRouter();
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const { errors, login, isSubmitting } = useContext(LoginContext);
+	const { errors, login, isSubmitting, setErrors } = useContext(LoginContext);
+	
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,8 +18,15 @@ export default function LoginPage() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await login("/api/login/", formData);
+		await login("login/", formData);
 	};
+
+	useEffect(() => {
+		if (errors.success) {
+			router.push("/dashboard/");
+		}
+		setErrors({});
+	}, [errors.success]);
 
 	return (
 		<div className="login">
