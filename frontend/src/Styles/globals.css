@@ -1,33 +1,292 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+html{
+	/* height: 100vh; */
+	/* background: radial-gradient(#1A2980, black); */
+	/* background-image: linear-gradient(to right, red , yellow); */
+	margin: 0;
+	/* width: 1400px; */
+	margin-left: auto;
+	margin-right: auto;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+	padding: 0;
+	background: black;
+	/* background-image: url("/back.png"); */
+	/* background: rgb(33,70,188);
+background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%, rgba(0,0,0,1) 100%); */
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	color: white;
+	/* width: 100%; */
+	/* height: 100%; */
+	/* background-color: rgb(3, 17, 73); */
+
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.navbar {
+	display: flex;
+	align-items: center;
+	margin-top: 50px;
+	margin-left: 50px;
+	height: 70px;
+	background-color: transparent;
+	color: white;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.logo {
+	font-size: 1.5rem;
+	margin-left: 40px;
+	width: 100px;
+}
+
+.logo img {
+	width: 120px;
+	height: 120px;
+}
+
+.navbar-links {
+	margin-left: 100px;
+}
+
+.sign-in {
+	display: flex;
+	align-items: center;
+	column-gap: 10px;
+	margin-left: auto;
+	margin-right: 50px;
+}
+
+.sign-in .union {
+	margin-right: 5px;
+}
+
+.sign-in .logout-text {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 1.2rem;
+}
+
+.navbar-links a {
+	text-decoration: none;
+	color: white;
+	font-family: 'manrope', sans-serif;
+	font-size: 1.2rem;
+	margin: 0 20px;
+}
+
+.sign-in .login {
+	background-color: white;
+	font-family: 'Montserrat', sans-serif;
+	color: rgb(0, 0, 0);
+	border: none;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.sign-in .sign-up {
+	background-color: transparent;
+	font-family: 'Montserrat', sans-serif;
+	color: white;
+	border: 1px solid white;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.game {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 80vh;
+	width: 100%;
+}
+
+.game .up-section {
+	width: 100%;
+	height: 150px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	column-gap: 40px;
+	margin-bottom: 20px;
+}
+
+.game .up-section .left-score,
+.game .up-section .right-score {
+	font-family: 'IBM Plex Sans', sans-serif;
+	color: white;
+	font-size: 3rem;
+	font-weight: bold;
+	margin: 0 30px;
+}
+
+.game .up-section .vs-section {
+	display: flex;
+	flex-direction: column;
+	row-gap: 20px;
+}
+
+.game .up-section .vs-section .vs-time {
+	font-family: 'IBM Plex Sans', sans-serif;
+	color: #E76F51;
+	font-size: 1.3rem;
+	margin-left: 10px;
+}
+
+.game .down-section {
+	width: 80%;
+	height: 60%;
+	display: flex;
+	/* align-items: center; */
+	justify-content: center;
+	column-gap: 10px;
+}
+
+.game .down-section .left-user {
+	width: fit-content;
+	margin: auto 5px;
+}
+
+.left-user .left-user-img, .right-user .right-user-img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50px;
+}
+
+.left-user .left-user-name,
+.right-user .right-user-name {
+	text-align: center;
+	font-family: 'IBM Plex Sans', Courier, monospace;
+	font-size: 19px;
+	padding-top: 10px;
+}
+
+.game .down-section .self-game {
+
+	min-width: 100px;
+	padding-right: auto;
+	padding-left: auto;
+}
+
+.game .down-section .right-user {
+	margin: auto 5px;
+	width: fit-content;
+
+}
+
+.game .down-section .play-ground {
+	background-color: #264653;
+	position: relative;
+	border-radius: 5px;
+	border: 1px solid white;
+	width: 100%;
+	height: 100%;
+}
+
+/* CSS for the profile page: */
+
+.profile {
+	display: flex;
+	flex-direction: row;
+	margin-top: 130px;
+	margin-left: 80px;
+}
+
+.profile-section {
+	margin-right: 500px;
+	width: 500px;
+}
+
+.profile-pic-name {
+	display: flex;
+	flex-direction: row;
+}
+
+.profile-name-btn {
+	margin-left: 50px;
+}
+
+.profile-name-btn .profile-name {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 2rem;
+	color: white;
+	margin-bottom: 15px;
+}
+
+.profile-name-btn .edit-btn {
+	background-color: #797979;
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 1.2rem;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 10px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.profile-name-btn .edit-pen {
+	margin-left: 25px;
+}
+
+.profile-pic-name .profile-pic {
+	width: 150px;
+	height: 150px;
+	border-radius: 50%;
+}
+
+.profile-level {
+	margin-top: 20px;
+}
+
+.profile-level p {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 1.2rem;
+	margin-bottom: 5px;
+	color: white;
+}
+
+.br {
+	margin-top: 25px;
+	width: 108%;
+}
+
+.info p {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 26px;
+	margin-top: 25px;
+	margin-left: 20px;
+	color: white;
+
+}
+
+.info .info-section {
+	display: flex;
+	flex-direction: row;
+	margin-top: 30px;
+	margin-left: 50px;
+}
+
+.info .info-section .sps-info {
+	font-size: 21px;
+	font-family: 'IBM Plex Sans', sans-serif;
+	margin-left: 15px;
 }
