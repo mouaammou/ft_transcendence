@@ -7,10 +7,10 @@ export default function Logout() {
 	const logout = async () => {
 		const response = await postData("logout/");
 		if (response.status === 205) {
-			router.push("/auth/login/");
 			Cookies.remove("access_token");
 			Cookies.remove("refresh_token");
 			Cookies.remove("username");
+			router.push("/auth/login/");
 		}
 	};
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import { LoginContext } from "./loginContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "./loginContext";
 
 function Signup() {
 	const [formData, setFormData] = useState({
@@ -13,7 +13,8 @@ function Signup() {
 		confirmPassword: "",
 	});
 	const router = useRouter();
-	const { errors, login, setErrors, isSubmitting } = useContext(LoginContext);
+	const { errors, login, setErrors } = useAuth();
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const validateFrom = () => {
 		const errors = {};
@@ -82,7 +83,8 @@ function Signup() {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const PostData = async (e) => {
+	const singUp = async (e) => {
+		setIsSubmitting(true);
 		e.preventDefault();
 		const forms_errors = validateFrom();
 		if (Object.keys(forms_errors).length > 0) {
@@ -90,6 +92,7 @@ function Signup() {
 			return;
 		}
 		await login("signup/", formData);
+		setIsSubmitting(false);
 	};
 
 	useEffect(() => {
@@ -102,7 +105,7 @@ function Signup() {
 	return (
 		<div className="signup">
 			<h1>sign up</h1>
-			<form onSubmit={PostData} method="POST">
+			<form onSubmit={singUp} method="POST">
 				<input
 					type="text"
 					placeholder="first name"

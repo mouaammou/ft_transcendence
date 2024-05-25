@@ -1,6 +1,6 @@
 "use client";
-import { LoginContext } from "@/components/auth/loginContext";
-import { useEffect, useContext, useState } from "react";
+import { useAuth } from "@/components/auth/loginContext";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -9,16 +9,18 @@ export default function LoginPage() {
 		username: "",
 		password: "",
 	});
-	const { errors, login, isSubmitting, setErrors } = useContext(LoginContext);
-	
+	const { errors, login, setErrors } = useAuth();
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const handleSubmit = async (e) => {
+	const signIn = async (e) => {
+		setIsSubmitting(true);
 		e.preventDefault();
 		await login("login/", formData);
+		setIsSubmitting(false);
 	};
 
 	useEffect(() => {
@@ -30,7 +32,7 @@ export default function LoginPage() {
 
 	return (
 		<div className="login">
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={signIn}>
 				<div className="form-group">
 					<label htmlFor="username">Username</label>
 					<input
