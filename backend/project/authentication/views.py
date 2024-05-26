@@ -7,12 +7,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
 
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
 
 @api_view(["POST"])
 def SignUp(request):
@@ -33,6 +28,7 @@ def SignUp(request):
 			key="access_token",
 			value=str(refresh.access_token),
 			samesite="Lax",
+			httponly=True,
 			max_age=60 * 60 * 24, # 24 hours
 		)
 		response.status_code = status.HTTP_201_CREATED
@@ -55,7 +51,6 @@ def Login(request):
 	user = authenticate(username=username, password=password)
 
 	if user is not None:
-		
 		refresh = RefreshToken.for_user(user)
 		response = Response()
 		response.set_cookie(
@@ -63,12 +58,13 @@ def Login(request):
 			value=str(refresh),
 			httponly=True,
 			samesite="Lax",#??
-			max_age= 10,  # 7 days
+			max_age= 60 * 60 * 24 * 7,  # 7 days
 		)
 		response.set_cookie(
 			key="access_token",
 			value=str(refresh.access_token),
 			samesite="Lax",#??
+			httponly=True,
 			max_age=60 * 60 * 24,  # 24 hours
 		)
 		response.status_code = status.HTTP_200_OK
@@ -89,7 +85,6 @@ def Verify_Token(request):
 		RefreshToken(refresh_token)
 		try:
 			AccessToken(access_token)
-			print(f"\n\naccess token still valid\n\n")
 		except TokenError:
 			new_access_token = RefreshToken(refresh_token).access_token
 			response = Response()
@@ -97,6 +92,7 @@ def Verify_Token(request):
 				key="access_token",
 				value=str(new_access_token),
 				samesite="Lax",
+				httponly=True,
 				max_age=60 * 60 * 24,  # 5 hours
 			)
 			response.status_code = status.HTTP_200_OK

@@ -1,34 +1,22 @@
 "use client";
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
-	const router = useRouter();
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const { errors, login, setErrors } = useAuth();
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { errors, login } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
 	const signIn = async (e) => {
-		setIsSubmitting(true);
 		e.preventDefault();
-		await login("login/", formData);
-		setIsSubmitting(false);
+		await login("/login/", formData);
 	};
-
-	useEffect(() => {
-		if (errors.success) {
-			router.push("/dashboard/");
-		}
-		setErrors({});
-	}, [errors.success]);
 
 	return (
 		<div className="login">
@@ -52,16 +40,12 @@ export default function LoginPage() {
 					/>
 				</div>
 				<button type="submit" className="btn btn-primary">
-					{isSubmitting ? "Loading..." : "Login"}
+					Login
 				</button>
 				<br />
 				{
 					<p className="text-danger">
-						{!(errors.success ? errors.success : errors.error)
-							? errors.server_error
-							: errors.success
-							? errors.success
-							: errors.error}
+						{errors.error ? errors.error : errors.server_error}
 					</p>
 				}
 			</form>

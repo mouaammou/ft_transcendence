@@ -1,6 +1,5 @@
 "use client";
-import { useState, useContext, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "./loginContext";
 
 function Signup() {
@@ -12,17 +11,13 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-	const router = useRouter();
 	const { errors, login, setErrors } = useAuth();
-	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const validateFrom = () => {
 		const errors = {};
 		setErrors(errors);
 
-		//validate first name
 		if (!formData.first_name.trim()) {
-			//trim() removes whitespace from both ends of a string
 			errors.first_name = "First name is required";
 		} else if (formData.first_name.length < 3) {
 			errors.first_name = "First name must be at least 3 characters";
@@ -30,7 +25,6 @@ function Signup() {
 			errors.first_name = "First name must contain only letters";
 		}
 
-		//validate last name
 		if (!formData.last_name.trim()) {
 			errors.last_name = "Last name is required";
 		} else if (formData.last_name.length < 3) {
@@ -38,7 +32,7 @@ function Signup() {
 		} else if (!/^[a-zA-Z]+$/.test(formData.last_name)) {
 			errors.last_name = "Last name must contain only letters";
 		}
-		//validate username
+
 		if (!formData.username.trim()) {
 			errors.username = "Username is required";
 		} else if (
@@ -84,23 +78,14 @@ function Signup() {
 	};
 
 	const singUp = async (e) => {
-		setIsSubmitting(true);
 		e.preventDefault();
 		const forms_errors = validateFrom();
 		if (Object.keys(forms_errors).length > 0) {
 			setErrors(forms_errors);
 			return;
 		}
-		await login("signup/", formData);
-		setIsSubmitting(false);
+		await login("/signup/", formData);
 	};
-
-	useEffect(() => {
-		if (errors.success) {
-			router.push("/dashboard/");
-		}
-		setErrors({});
-	}, [errors.success]);
 
 	return (
 		<div className="signup">
@@ -149,12 +134,11 @@ function Signup() {
 					onChange={handleChange}
 				/>
 				<button type="submit">
-					{isSubmitting ? "submitting..." : "submit"}
+					Sign up
 				</button>
 				<br />
 				{
 					<div>
-						{<p>{errors.success}</p>}
 						{<p>{errors.first_name}</p>}
 						{<p>{errors.last_name}</p>}
 						{<p>{errors.username}</p>}

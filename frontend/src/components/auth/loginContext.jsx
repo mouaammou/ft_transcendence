@@ -1,7 +1,6 @@
 "use client";
 import { useState, createContext, useContext } from "react";
 import { postData } from "@/services/apiCalls";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { verifyToken } from "@/services/apiCalls";
 
@@ -33,6 +32,9 @@ export const LoginProvider = ({ children }) => {
 						error: res.response.data.error,
 					});
 				}
+				if (res.response.status === 500) {
+					router.push("/500/");
+				}
 			})
 			.catch((error) => {
 				console.log("error happens==> ", error);
@@ -45,18 +47,14 @@ export const LoginProvider = ({ children }) => {
 				setIsAuthenticated(false);
 				router.push("/auth/login/");
 			} else {
-				setIsAuthenticated(true);
-				console.log("logout error==> ", res);
+				if (res.response.status === 500) {
+					router.push("/500/");
+				} else {
+					setIsAuthenticated(true);
+					console.log("logout error==> ", res);
+				}
 			}
 		});
-	};
-
-	const isLogged = () => {
-		console.log("Cookies.get(access_token)==> ", Cookies.get("access_token"));
-		if (Cookies.get("access_token")) {
-			return true;
-		}
-		return false;
 	};
 
 	const checkAuth = () => {
@@ -65,8 +63,12 @@ export const LoginProvider = ({ children }) => {
 				setIsAuthenticated(true);
 				router.push("/dashboard/");
 			} else {
-				setIsAuthenticated(false);
-				router.push("/auth/login/");
+				if (res.response.status === 500) {
+					router.push("/500/");
+				} else {
+					setIsAuthenticated(false);
+					router.push("/auth/login/");
+				}
 			}
 		});
 	};
@@ -80,7 +82,6 @@ export const LoginProvider = ({ children }) => {
 				logout,
 				isAuthenticated,
 				setIsAuthenticated,
-				isLogged,
 				checkAuth,
 			}}
 		>
