@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useAuth } from "@/components/auth/loginContext";
+import Login42 from "@/components/auth/Oauth/login42";
 
 const Layout = ({ children }) => {
 	const { checkAuth } = useAuth();
@@ -9,7 +10,13 @@ const Layout = ({ children }) => {
 		checkAuth();
 	}, []);
 
-	return <>{children}</>;
+	return (
+		<>
+			{children}
+			<br />
+			<Login42 />
+		</>
+	);
 };
 
 export default Layout;

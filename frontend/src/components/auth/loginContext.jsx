@@ -20,6 +20,9 @@ export const LoginProvider = ({ children }) => {
 					});
 					setIsAuthenticated(true);
 				} else {
+					if (res.response.status === 500) {
+						router.push("/500/");
+					}
 					setErrors({
 						first_name: res.response.data.first_name,
 						last_name: res.response.data.last_name,
@@ -31,9 +34,6 @@ export const LoginProvider = ({ children }) => {
 							res.response.data + " " + res.response.status,
 						error: res.response.data.error,
 					});
-				}
-				if (res.response.status === 500) {
-					router.push("/500/");
 				}
 			})
 			.catch((error) => {
