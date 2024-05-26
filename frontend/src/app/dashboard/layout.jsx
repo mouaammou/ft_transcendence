@@ -1,30 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Logout from "@/components/auth/logout";
-import { verifyToken } from "@/services/apiCalls";
+import { useEffect } from "react";
+import { useAuth } from "@/components/auth/loginContext";
 
 const Layout = ({ children }) => {
-	const router = useRouter();
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const { checkAuth } = useAuth();
 
 	useEffect(() => {
-		verifyToken("/token/verify/").then((res) => {
-			if (res.status === 200) {
-				setIsAuthenticated(true);
-			} else {
-				setIsAuthenticated(false);
-				router.push("/auth/login/");
-			}
-		});
+		checkAuth();
 	}, []);
 
-	return (
-		<>
-			{isAuthenticated ? children : null}
-			<Logout />
-		</>
-	);
+	return <>{children}</>;
 };
 
 export default Layout;

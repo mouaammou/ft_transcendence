@@ -30,14 +30,12 @@ def SignUp(request):
             response.set_cookie(
                 key="refresh_token",
                 value=str(refresh),
-                # httponly=True,
                 samesite="Lax",
                 max_age=60 * 60 * 24 * 7,  # 7 days
             )
             response.set_cookie(
                 key="access_token",
                 value=str(refresh.access_token),
-                # httponly=True,
                 samesite="Lax",
                 # expiration date
                 max_age=30 ,  # 30 seconds
@@ -45,7 +43,6 @@ def SignUp(request):
             response.set_cookie(
                 key="username",
                 value=user.username,
-                # httponly=True,
                 samesite="Lax",
                 max_age=60 * 60 * 24 * 7,  # 7 days
             )
@@ -74,21 +71,18 @@ def Login(request):
 		response.set_cookie(
 			key="refresh_token",
 			value=str(refresh),
-			# httponly=True,
 			samesite="Lax",#??
 			max_age= 60 * 60 * 24 * 7,  # 7 days
 		)
 		response.set_cookie(
 			key="access_token",
 			value=str(refresh.access_token),
-			# httponly=True,
 			samesite="Lax",#??
 			max_age=30  # 30 seconds
 		)
 		response.set_cookie(
 				key="username",
 				value=user.username,
-				# httponly=True,
 				samesite="Lax",
 				max_age=60 * 60 * 24 * 7,  # 7 days
 			)
@@ -126,7 +120,6 @@ def Verify_Token(request):
 		response.set_cookie(
 			key="access_token",
 			value=str(new_access_token),
-			# httponly=True,
 			samesite="Lax",
 			max_age=60 * 5,  # 5 minutes
 		)

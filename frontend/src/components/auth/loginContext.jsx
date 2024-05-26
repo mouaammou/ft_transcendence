@@ -2,11 +2,15 @@
 import { useState, createContext, useContext } from "react";
 import { postData } from "@/services/apiCalls";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { verifyToken } from "@/services/apiCalls";
 
 export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
+	const router = useRouter();
 	const [errors, setErrors] = useState({});
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	const login = (endPoint, formData) => {
 		postData(endPoint, formData)
@@ -15,6 +19,7 @@ export const LoginProvider = ({ children }) => {
 					setErrors({
 						success: "Login Successful",
 					});
+					setIsAuthenticated(true);
 				} else {
 					setErrors({
 						first_name: res.response.data.first_name,
@@ -33,8 +38,46 @@ export const LoginProvider = ({ children }) => {
 				console.log("error happens==> ", error);
 			});
 	};
+
+	// const logout = () => {
+	// 	setIsAuthenticated(false);
+	// 	Cookies.remove("access_token");
+	// 	Cookies.remove("refresh_token");
+	// 	Cookies.remove("username");
+	// 	router.push("/auth/login/");
+	// };
+
+	const isLogged = () => {
+		if (Cookies.get("access_token")) {
+			return true;
+		}
+		return false;
+	};
+
+	const checkAuth = () => {
+		verifyToken("/token/verify/").then((res) => {
+			if (res != null && res.status === 200) {
+				setIsAuthenticated(true);
+			} else {
+				setIsAuthenticated(false);
+				router.push("/auth/login/");
+			}
+		});
+	};
+
 	return (
-		<LoginContext.Provider value={{ errors, setErrors, login }}>
+		<LoginContext.Provider
+			value={{
+				errors,
+				setErrors,
+				login,
+				// logout,
+				isAuthenticated,
+				setIsAuthenticated,
+				isLogged,
+				checkAuth,
+			}}
+		>
 			{children}
 		</LoginContext.Provider>
 	);

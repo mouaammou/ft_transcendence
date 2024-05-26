@@ -1,17 +1,14 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { verifyToken } from "@/services/apiCalls";
 import { useEffect } from "react";
+import { useAuth } from "@/components/auth/loginContext";
 
 const Layout = ({ children }) => {
-	const router = useRouter();
-	useEffect(() => {
-		verifyToken("/token/verify/").then((res) => {
-			if (res.status === 200) {
-				router.push("/dashboard/");
-			}
-		});
-	}, []);
+	const { checkAuth, isAuthenticated } = useAuth();
+
+	 console.log("isAuthenticated: ", isAuthenticated);
+	 useEffect(() => {
+		checkAuth();
+	}, [isAuthenticated]);
 
 	return <>{children}</>;
 };
