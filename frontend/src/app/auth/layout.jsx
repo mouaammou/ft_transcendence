@@ -3,12 +3,11 @@ import { useEffect } from "react";
 import { useAuth } from "@/components/auth/loginContext";
 
 const Layout = ({ children }) => {
-	const { checkAuth, isAuthenticated } = useAuth();
+	const { checkAuth } = useAuth();
 
-	 console.log("isAuthenticated: ", isAuthenticated);
-	 useEffect(() => {
+	useEffect(() => {
 		checkAuth();
-	}, [isAuthenticated]);
+	}, []);
 
 	return <>{children}</>;
 };

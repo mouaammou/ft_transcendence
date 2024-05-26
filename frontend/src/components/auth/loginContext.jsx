@@ -39,15 +39,20 @@ export const LoginProvider = ({ children }) => {
 			});
 	};
 
-	// const logout = () => {
-	// 	setIsAuthenticated(false);
-	// 	Cookies.remove("access_token");
-	// 	Cookies.remove("refresh_token");
-	// 	Cookies.remove("username");
-	// 	router.push("/auth/login/");
-	// };
+	const logout = () => {
+		postData("/logout/").then((res) => {
+			if (res && res.status === 205) {
+				setIsAuthenticated(false);
+				router.push("/auth/login/");
+			} else {
+				setIsAuthenticated(true);
+				console.log("logout error==> ", res);
+			}
+		});
+	};
 
 	const isLogged = () => {
+		console.log("Cookies.get(access_token)==> ", Cookies.get("access_token"));
 		if (Cookies.get("access_token")) {
 			return true;
 		}
@@ -58,6 +63,7 @@ export const LoginProvider = ({ children }) => {
 		verifyToken("/token/verify/").then((res) => {
 			if (res != null && res.status === 200) {
 				setIsAuthenticated(true);
+				router.push("/dashboard/");
 			} else {
 				setIsAuthenticated(false);
 				router.push("/auth/login/");
@@ -71,7 +77,7 @@ export const LoginProvider = ({ children }) => {
 				errors,
 				setErrors,
 				login,
-				// logout,
+				logout,
 				isAuthenticated,
 				setIsAuthenticated,
 				isLogged,

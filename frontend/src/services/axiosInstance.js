@@ -1,5 +1,4 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
 // function axiosInstance() {
 // 	return axios.create({
@@ -22,19 +21,5 @@ const axiosInstance = axios.create({
 		"Content-Type": "application/json",
 	},
 });
-
-// axiosInstance.interceptors.request.use(
-// 	(config) => {
-// 		const accessToken = Cookies.get("access_token");
-// 		if (!accessToken) {
-// 			return Promise.resolve(null);
-// 		}
-// 		return config;
-// 	},
-// 	(error) => {
-// 		return Promise.reject(error);
-// 	}
-// );
-
 
 export default axiosInstance;

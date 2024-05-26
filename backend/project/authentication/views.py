@@ -30,6 +30,7 @@ def SignUp(request):
             response.set_cookie(
                 key="refresh_token",
                 value=str(refresh),
+				httpOnly=True,
                 samesite="Lax",
                 max_age=60 * 60 * 24 * 7,  # 7 days
             )
@@ -37,12 +38,12 @@ def SignUp(request):
                 key="access_token",
                 value=str(refresh.access_token),
                 samesite="Lax",
-                # expiration date
                 max_age=30 ,  # 30 seconds
             )
             response.set_cookie(
                 key="username",
                 value=user.username,
+				httpOnly=True,
                 samesite="Lax",
                 max_age=60 * 60 * 24 * 7,  # 7 days
             )
@@ -71,6 +72,7 @@ def Login(request):
 		response.set_cookie(
 			key="refresh_token",
 			value=str(refresh),
+			httpOnly=True,
 			samesite="Lax",#??
 			max_age= 60 * 60 * 24 * 7,  # 7 days
 		)
@@ -84,6 +86,7 @@ def Login(request):
 				key="username",
 				value=user.username,
 				samesite="Lax",
+				httpOnly=True,
 				max_age=60 * 60 * 24 * 7,  # 7 days
 			)
 		response.status_code = status.HTTP_200_OK
