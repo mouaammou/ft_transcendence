@@ -24,7 +24,7 @@ html{
 body {
 	padding: 0;
 	background: black;
-	/* background-image: url("/back.png"); */
+	background-image: url("/image.jpeg");
 	/* background: rgb(33,70,188);
 background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%, rgba(0,0,0,1) 100%); */
 	background-size: cover;
@@ -34,7 +34,9 @@ background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%,
 	/* width: 100%; */
 	/* height: 100%; */
 	/* background-color: rgb(3, 17, 73); */
-
+	width: 1400px;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 .navbar {
@@ -202,91 +204,3 @@ background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%,
 }
 
 /* CSS for the profile page: */
-
-.profile {
-	display: flex;
-	flex-direction: row;
-	margin-top: 130px;
-	margin-left: 80px;
-}
-
-.profile-section {
-	margin-right: 500px;
-	width: 500px;
-}
-
-.profile-pic-name {
-	display: flex;
-	flex-direction: row;
-}
-
-.profile-name-btn {
-	margin-left: 50px;
-}
-
-.profile-name-btn .profile-name {
-	font-family: 'IBM Plex Sans', sans-serif;
-	font-size: 2rem;
-	color: white;
-	margin-bottom: 15px;
-}
-
-.profile-name-btn .edit-btn {
-	background-color: #797979;
-	font-family: 'IBM Plex Sans', sans-serif;
-	font-size: 1.2rem;
-	color: white;
-	border: none;
-	padding: 10px 20px;
-	border-radius: 10px;
-	cursor: pointer;
-	margin-left: 5px;
-}
-
-.profile-name-btn .edit-pen {
-	margin-left: 25px;
-}
-
-.profile-pic-name .profile-pic {
-	width: 150px;
-	height: 150px;
-	border-radius: 50%;
-}
-
-.profile-level {
-	margin-top: 20px;
-}
-
-.profile-level p {
-	font-family: 'IBM Plex Sans', sans-serif;
-	font-size: 1.2rem;
-	margin-bottom: 5px;
-	color: white;
-}
-
-.br {
-	margin-top: 25px;
-	width: 108%;
-}
-
-.info p {
-	font-family: 'IBM Plex Sans', sans-serif;
-	font-size: 26px;
-	margin-top: 25px;
-	margin-left: 20px;
-	color: white;
-
-}
-
-.info .info-section {
-	display: flex;
-	flex-direction: row;
-	margin-top: 30px;
-	margin-left: 50px;
-}
-
-.info .info-section .sps-info {
-	font-size: 21px;
-	font-family: 'IBM Plex Sans', sans-serif;
-	margin-left: 15px;
-}

@@ -24,17 +24,24 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		const user = {
 			x: 0,
 			y: canvas.height / 2 - 100 / 2,
-			width: 50,
-			height: 200,
-			color: 'red',
+			width: 10,
+			height: 100,
+			color: 'white',
 			score: 0
 		}
-
+		const rectBall = {
+			x: 0,
+			y: 0,
+			width: 0,
+			height: 0,
+			color: 'white',
+			score: 0
+		}
 		// paddle object
 		const computer = {
-			x: canvas.width - 60,
+			x: canvas.width - 10,
 			y: canvas.height / 2 - 100 / 2,
-			width: 60,
+			width: 10,
 			height: 100,
 			color: '#E9C46A',
 			score: 0
@@ -47,6 +54,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			height: 30,
 			color: 'gray'
 		}
+
 		let num = 0;
 		let number = 1;
 		const drawNet = () => {
@@ -55,6 +63,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			}
 		}
 
+		// const drawEllipse = () => {
+		// }
 		const drawRect = (x, y, width, height, color) => {
 			context.fillStyle = color;
 			context.fillRect(x, y, width, height);
@@ -76,42 +86,68 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.fill();
 		}
 
-		const checkCollision1 = (ball, player) => {
-			ball.top = ball.y - ball.radius;
-			ball.bottom = ball.y + ball.radius;
-			ball.left = ball.x - ball.radius;
-			ball.right = ball.x + ball.radius;
-
-			player.top = player.y;
-			player.bottom = player.y + player.height;
-			player.left = player.x;
-			player.right = player.x + player.width;
-
-			return ball.bottom > player.top && ball.top < player.bottom && ball.right >= player.left - 8 && ball.right <= player.left;
-		}
-
-		const checkCollision2 = (ball, player) => {
-			ball.top = ball.y - ball.radius;
-			ball.bottom = ball.y + ball.radius;
-			ball.left = ball.x - ball.radius;
-			ball.right = ball.x + ball.radius;
-
-			player.top = player.y;
-			player.bottom = player.y + player.height;
-			player.left = player.x;
-			player.right = player.x + player.width;
-
-			return ball.bottom > player.top && ball.top < player.bottom && ball.left >= player.right && ball.left <= player.right + 8;
-		}
 		// Constants
 		// create new websocket client
-		// const socket = new WebSocket('ws://'+ '10.12.8.9:5000' + '/ws/pong/new_game/');
+		const socket = new WebSocket('ws://' + '10.12.7.5:5000' + '/ws/pong/game/');
 		// // Connection opened
-		// socket.addEventListener('open', (event) => {
-		// console.log(socketState);
-		// console.log('Connected to WS Server');
-		// });
+		socket.addEventListener('open', (event) => {
+			// console.log(socketState);
+			console.log('Connected to WS Server');
+		});
 
+		let gameConfig = {};
+
+		socket.onmessage = function (message) {
+			const data = JSON.parse(message.data);
+			if (data.update)
+			{
+				if (data.update.left_paddle_pos)
+				{
+					user.x = data.update.left_paddle_pos[0];
+					user.y = data.update.left_paddle_pos[1];
+				}
+				if (data.update.right_paddle_pos)
+				{
+					computer.x = data.update.right_paddle_pos[0];
+					computer.y = data.update.right_paddle_pos[1];
+				}
+				ball.x = data.update.ball_pos[0] + ball.radius;
+				ball.y = data.update.ball_pos[1] - ball.radius;
+				// rectBall.x = data.update.ball_pos[0];
+				// rectBall.y = data.update.ball_pos[1];
+				// console.log(rectBall.x);
+				// console.log(rectBall.y);
+				if (data.update.left_player_score)
+				{
+					user.score++;
+					setScore2(score2 => score2 + 1);
+				}
+				if (data.update.right_player_score)
+				{
+					computer.score++;
+					setScore1(score1 => score1 + 1);
+				}
+				drawGame();
+			}
+			else if (data.config)
+			{
+				gameConfig = data.config;
+				canvas.width = gameConfig.window_size[0];
+				canvas.height = gameConfig.window_size[1];
+				user.x = gameConfig.left_paddle_pos[0];
+				user.y = gameConfig.left_paddle_pos[1];
+				computer.x = gameConfig.right_paddle_pos[0];
+				computer.y = gameConfig.right_paddle_pos[1];
+				// rectBall.x = gameConfig.ball_pos[0];
+				// rectBall.y = gameConfig.ball_pos[1];
+				ball.x = gameConfig.ball_pos[0];
+				ball.y = gameConfig.ball_pos[1];
+				ball.radius = gameConfig.ball_size[0] / 2;
+				// rectBall.width = gameConfig.ball_size[0];
+				// rectBall.height = gameConfig.ball_size[1];
+				drawGame();
+			}
+		}
 		// Game state
 		// Keyboard state
 		const keys = {};
@@ -120,22 +156,22 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// socket.onmessage
 		const updateGame = () => {
 			// Move paddles
-			if (keys.ArrowUp && computer.y > 0) {
-				computer.y -= 10;
-			}
-			if (keys.ArrowDown && computer.y + computer.height < canvas.height) {
-				computer.y += 10;
-			}
-			if (keys.q && user.y > 0) {
-				user.y -= 10;
-			}
-			if (keys.s && user.y + user.height < canvas.height) {
-				user.y += 10;
-			}
+			// if (keys.ArrowUp && computer.y > 0) {
+			// 	computer.y -= 10;
+			// }
+			// if (keys.ArrowDown && computer.y + computer.height < canvas.height) {
+			// 	computer.y += 10;
+			// }
+			// if (keys.q && user.y > 0) {
+			// 	user.y -= 10;
+			// }
+			// if (keys.s && user.y + user.height < canvas.height) {
+			// 	user.y += 10;
+			// }
 
 			// Move the ball
-			ball.x += ball.velocityX;
-			ball.y += ball.velocityY;
+			// ball.x += ball.velocityX;
+			// ball.y += ball.velocityY;
 
 			// simple AI movement
 			// num++;
@@ -143,53 +179,21 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			// 	number = Math.random() * 10 + 1;
 			// 	console.log(number);
 			// }
-			computer.y = ball.y - computer.height / 2;
-			user.y = ball.y - (user.height / 2);
-			let player;
-			let collisoin = false;
-			if (ball.x > canvas.width / 2)
-				collisoin = checkCollision1(ball, computer);
-			else
-				collisoin = checkCollision2(ball, user);
-			if (computer.y <= 0)
-				computer.y = 0
-			else if (computer.y + computer.height >= canvas.height)
-				computer.y = canvas.height - computer.height;
-			if (user.y <= 0)
-				user.y = 0
-			else if (user.y + user.height >= canvas.height)
-				user.y = canvas.height - user.height;
+			// computer.y = ball.y - computer.height / 2;
+			// user.y = ball.y - (user.height / 2);
+			// let player;
+			// if (computer.y <= 0)
+			// 	computer.y = 0
+			// else if (computer.y + computer.height >= canvas.height)
+			// 	computer.y = canvas.height - computer.height;
+			// if (user.y <= 0)
+			// 	user.y = 0
+			// else if (user.y + user.height >= canvas.height)
+			// 	user.y = canvas.height - user.height;
 
-			if (collisoin) {
-				console.log('Collision -----');
-				let direction = (ball.x < canvas.width / 2) ? 1 : -1;
-				if (direction === 1)
-					player = computer;
-				else
-					player = user;
-				// console.log(ball.radius / 2 * direction);
-				// ball.x = player.x +((ball.radius / 2) * direction);
-				let collidPoint = ball.y - (player.y + (player.height / 2));
-				collidPoint = collidPoint / (player.height / 2);
-				let angle = collidPoint * (Math.PI / 4);
-				ball.speed += 0.1;
-				ball.velocityX = Math.cos(angle) * ball.speed * (direction);
-				ball.velocityY = Math.sin(angle) * ball.speed ;
-			}
-			// Check for collisions with walls
-			if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height)
-				ball.velocityY = - ball.velocityY;
+
+
 			// Reset ball position if it goes beyond the paddles
-			if (ball.x - ball.radius < 0) {
-				computer.score++;
-				setScore1(score1 => score1 + 1);
-				resetBall();
-			}
-			if (ball.x > canvas.width) {
-				user.score++;
-				setScore2(score2 => score2 + 1);
-				resetBall();
-			}
 		}
 
 
@@ -202,6 +206,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			// Draw paddles
 			drawRect(user.x, user.y, user.width, user.height, user.color);
 			drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
+			// drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
 
 			// Draw the ball
 			drawCircle(ball.x, ball.y, ball.radius, ball.color);
@@ -211,51 +216,55 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
+			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
+			console.log(event.key.trim());
 			keys[event.key] = true;
 		};
 
 		// set the key to false when the key is released
 		const handleKeyUp = (event) => {
+			socket.send(JSON.stringify({"onRelease" : event.key.trim()}));
+			console.log(event.key);
 			keys[event.key] = false;
 		};
 
 		// Mouse event handlers
-		const handleMouseMove = (event) => {
-			const rect = canvas.getBoundingClientRect();
-			// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
-			// how to get the window width and height
-			if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
-				user.y = event.clientY - rect.top - user.height / 2;
-				if (user.y <= 0)
-					user.y = 0
-				else if (user.y + user.height >= canvas.height)
-					user.y = canvas.height - user.height;
-			}
-			else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
-				computer.y = event.clientY - rect.top - computer.height / 2;
-				if (computer.y <= 0)
-					computer.y = 0
-				else if (computer.y + computer.height >= canvas.height)
-					computer.y = canvas.height - computer.height;
-			}
-			// handle the paddle going out of the canvas
-		}
+		// const handleMouseMove = (event) => {
+		// 	const rect = canvas.getBoundingClientRect();
+		// 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
+		// 	// how to get the window width and height
+		// 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
+		// 		user.y = event.clientY - rect.top - user.height / 2;
+		// 		if (user.y <= 0)
+		// 			user.y = 0
+		// 		else if (user.y + user.height >= canvas.height)
+		// 			user.y = canvas.height - user.height;
+		// 	}
+		// 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
+		// 		computer.y = event.clientY - rect.top - computer.height / 2;
+		// 		if (computer.y <= 0)
+		// 			computer.y = 0
+		// 		else if (computer.y + computer.height >= canvas.height)
+		// 			computer.y = canvas.height - computer.height;
+		// 	}
+		// 	// handle the paddle going out of the canvas
+		// }
 
 		// Move the paddle2 with the mouse too
 		// Attach event listeners
-		document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
+		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
 		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
 		document.addEventListener('keyup', handleKeyUp);
 
 		// Animation loop
-		const animate = () => {
-			updateGame();
-			drawGame();
+		// const animate = () => {
+		// 	updateGame();
+		// 	drawGame();
 
-			requestAnimationFrame(animate);
-		};
+		// 	requestAnimationFrame(animate);
+		// };
 
-		animate();
+		// animate();
 		// setInterval(animate, 1000 / 60);
 
 		// Cleanup event listeners
@@ -265,7 +274,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef} height={400} width={900}>
+		<canvas className="play-ground" ref={canvasRef}>
 			{/* height={400} width={900} */}
 		</canvas>
 	);
