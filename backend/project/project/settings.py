@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-(go)rv-d#8(ndgm)blvuwg%ur@3j^n=5s^!!!t@!ti8d4otkrb"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,12 +55,12 @@ SIMPLE_JWT = {
 }
 
 # Set your 42 OAuth credentials
-OAUTH42_CLIENT_ID = 'u-s4t2ud-d2097cac52113358735b3dd84bf339a3f526c688893b03e67e783397fd8e5a16'
-OAUTH42_CLIENT_SECRET = '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'
-OAUTH42_REDIRECT_URI = 'http://localhost:8000/auth/callback/42/'
-OAUTH42_AUTH_URL = 'https://api.intra.42.fr/oauth/authorize'
-OAUTH42_TOKEN_URL = 'https://api.intra.42.fr/oauth/token'
-OAUTH42_USER_URL = 'https://api.intra.42.fr/v2/me'
+OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
+OAUTH42_CLIENT_SECRET = os.getenv("OAUTH42_CLIENT_SECRET")
+OAUTH42_REDIRECT_URI = os.getenv("OAUTH42_REDIRECT_URI")
+OAUTH42_AUTH_URL = os.getenv("OAUTH42_AUTH_URL")
+OAUTH42_TOKEN_URL = os.getenv("OAUTH42_TOKEN_URL")
+OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 
 # Application definition
 INSTALLED_APPS = [

@@ -15,5 +15,5 @@ urlpatterns = [
 	path("token/verify/", views.Verify_Token, name="token_verify"),
 
 	path('auth/login/42/', OAuth42Login.as_view(), name='42_login'),
-    path('auth/callback/42/', OAuth42Callback.as_view(), name='42_callback'),
+    path('auth/callback/42/', OAuth42Callback.as_view(), name='42_callback')
 ]
