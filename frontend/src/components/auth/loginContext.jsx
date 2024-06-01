@@ -21,7 +21,7 @@ export const LoginProvider = ({ children }) => {
 					setIsAuthenticated(true);
 				} else {
 					if (res.response.status === 500) {
-						router.push("/500/");
+						router.push("/500");
 					}
 					setErrors({
 						first_name: res.response.data.first_name,
@@ -42,13 +42,13 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const logout = () => {
-		postData("/logout/").then((res) => {
+		postData("/logout").then((res) => {
 			if (res && res.status === 205) {
 				setIsAuthenticated(false);
-				router.push("/auth/login/");
+				router.push("/auth/login");
 			} else {
 				if (res.response.status === 500) {
-					router.push("/500/");
+					router.push("/500");
 				} else {
 					setIsAuthenticated(true);
 					console.log("logout error==> ", res);
@@ -58,16 +58,16 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const checkAuth = () => {
-		verifyToken("/token/verify/").then((res) => {
+		verifyToken("/token/verify").then((res) => {
 			if (res != null && res.status === 200) {
 				setIsAuthenticated(true);
-				router.push("/dashboard/");
+				router.push("/dashboard");
 			} else {
 				if (res.response.status === 500) {
-					router.push("/500/");
+					router.push("/500");
 				} else {
 					setIsAuthenticated(false);
-					router.push("/auth/login/");
+					router.push("/auth/login");
 				}
 			}
 		});

@@ -11,7 +11,7 @@ const AuthCallback = () => {
 
 	useEffect(() => {
 		const fetchTokens = async () => {
-			await getData(`auth/callback/42/?code=${code}`)
+			await getData(`auth/callback/42?code=${code}`)
 				.then((response) => {
 					if (response.status === 200 || response.status === 201) {
 						console.log("Response status:", response.status);
@@ -26,8 +26,8 @@ const AuthCallback = () => {
 					console.log("Error:", error);
 				});
 		};
-		fetchTokens();
-	}, []);
+		if (code) fetchTokens();
+	}, [code]);
 
 	return <div>Loading...</div>;
 };

@@ -2,7 +2,6 @@ import string
 import random
 import requests
 from django.conf import settings
-from django.shortcuts import redirect
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -126,6 +125,10 @@ def Logout(request):
 	response = Response()
 	response.delete_cookie("refresh_token")
 	response.delete_cookie("access_token")
+	#blacklist the refresh token
+	refresh_token = request.COOKIES.get("refresh_token")
+	blacklist = RefreshToken(refresh_token)
+	blacklist.blacklist()
 	response.status_code = status.HTTP_205_RESET_CONTENT
 	response.data = {"message": "Logout successfully"}
 	return response
@@ -139,8 +142,8 @@ class OAuth42Login(APIView):
 		redirect_uri = settings.OAUTH42_REDIRECT_URI
 		client_id = settings.OAUTH42_CLIENT_ID
 		auth_url = f"{settings.OAUTH42_AUTH_URL}?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-		
-		return redirect(auth_url)
+		response = Response(data={"auth_url": auth_url} ,status=status.HTTP_200_OK)
+		return response
 
 class OAuth42Callback(APIView):	
 	def get(self, request):
@@ -161,35 +164,36 @@ class OAuth42Callback(APIView):
 
 		if 'access_token' not in token_response_data:
 			return Response({"error": "Failed to obtain access token"}, status=status.HTTP_400_BAD_REQUEST)
-		
-		print(f"access_token: {token_response_data['access_token']}")
 
 		access_token = token_response_data['access_token']
 		user_response = requests.get(settings.OAUTH42_USER_URL, headers={'Authorization': f'Bearer {access_token}'})
 		user_data = user_response.json()
-		
-		# Use the user data to create or get a user
-		username = user_data['login']
-		email = user_data['email']
 
-		print(f"username: {username}, email: {email}")
-		# Create or get the user
-		user, created = CustomUser.objects.get_or_create(
-			username=username,
-			defaults={'email': email}
-		)
+		user_data_set = {
+			"username":user_data['login'],
+			"first_name":user_data['first_name'],
+			"last_name":user_data['last_name'],
+			"email":user_data['email'],
+		}
 
-		# If user is created, set password
-		if created:
-			# Generate a secure random password
-			random_password = CustomUser.objects.make_random_password()
-			user.email = email
-			user.set_password(random_password)
-			user.save()
-
-		# Issue JWT tokens
-		refresh = RefreshToken.for_user(user)
 		response = Response()
+		# user = None
+		try:
+			# Check if a user with the given email already exists
+			user = CustomUser.objects.get(email=user_data['email'])
+			response.status_code = status.HTTP_200_OK
+		except CustomUser.DoesNotExist:
+			# Create a new user if one does not already exist
+			user = CustomUser.objects.create(**user_data_set)
+			#serialise
+			seriaze_user = UserSerializer(data=user_data_set)
+			if seriaze_user.is_valid():
+				user = seriaze_user.save()
+			else:
+				return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
+			response.status_code = status.HTTP_201_CREATED
+
+		refresh = RefreshToken.for_user(user)
 		response.set_cookie(
 			key="refresh_token",
 			value=str(refresh),
@@ -204,10 +208,6 @@ class OAuth42Callback(APIView):
 			samesite="Lax",
 			max_age=60 * 30,  # 30 minutes
 		)
-		response.data = {"user": user_data}
-		if created:# 
-			response.status_code = status.HTTP_201_CREATED
-		else:
-			response.status_code = status.HTTP_200_OK
+		response.data = {"message": "User logged in successfully"}
 		return response
 

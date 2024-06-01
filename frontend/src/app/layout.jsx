@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
 	title: "Transcendence",
-	description: "Transcendence is a web application that allows users to create and manage their own personal blogs.",
+	description:
+		"Transcendence is a web application that allows users to create and manage their own personal blogs.",
 };
 
 export default function RootLayout({ children }) {
@@ -16,7 +17,7 @@ export default function RootLayout({ children }) {
 				<body className={inter.className}>
 					<Navbar />
 					{children}
-					</body>
+				</body>
 			</LoginProvider>
 		</html>
 	);
