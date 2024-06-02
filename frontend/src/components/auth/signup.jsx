@@ -11,67 +11,7 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-	const { errors, login, setErrors } = useAuth();
-
-	const validateFrom = () => {
-		const errors = {};
-		setErrors(errors);
-
-		if (!formData.first_name.trim()) {
-			errors.first_name = "First name is required";
-		} else if (formData.first_name.length < 3) {
-			errors.first_name = "First name must be at least 3 characters";
-		} else if (!/^[a-zA-Z]+$/.test(formData.first_name)) {
-			errors.first_name = "First name must contain only letters";
-		}
-
-		if (!formData.last_name.trim()) {
-			errors.last_name = "Last name is required";
-		} else if (formData.last_name.length < 3) {
-			errors.last_name = "Last name must be at least 3 characters";
-		} else if (!/^[a-zA-Z]+$/.test(formData.last_name)) {
-			errors.last_name = "Last name must contain only letters";
-		}
-
-		if (!formData.username.trim()) {
-			errors.username = "Username is required";
-		} else if (
-			formData.username.length < 5 ||
-			formData.username.length > 20
-		) {
-			errors.username = "Username must be between 5 and 20 characters";
-		} else if (!/^[a-zA-Z]+$/.test(formData.username)) {
-			//must username contain only letters;
-			errors.username = "Username must contain only letters";
-		}
-
-		//validate email
-		if (!formData.email.trim()) {
-			errors.email = "Email is required";
-		} else if (
-			!/\S+@\S+\.\S+/.test(formData.email) ||
-			formData.email.length < 10
-		) {
-			//this regex means that email must contain @ and .
-			errors.email = "Email is invalid";
-		}
-
-		//validate password
-		if (!formData.password.trim()) {
-			errors.password = "Password is required";
-		} else if (formData.password.length < 4) {
-			errors.password = "Password must be at least 8 characters";
-		}
-
-		//validate confirmPassword
-		if (!formData.confirmPassword.trim()) {
-			errors.confirmPassword = "Confirm password is required";
-		} else if (formData.password !== formData.confirmPassword) {
-			errors.confirmPassword = "Passwords do not match";
-		}
-
-		return errors;
-	};
+	const { errors, login } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -79,11 +19,6 @@ function Signup() {
 
 	const singUp = async (e) => {
 		e.preventDefault();
-		const forms_errors = validateFrom();
-		if (Object.keys(forms_errors).length > 0) {
-			setErrors(forms_errors);
-			return;
-		}
 		await login("/signup", formData);
 	};
 

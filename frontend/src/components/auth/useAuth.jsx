@@ -1,20 +1,16 @@
 "use client";
 
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 const ClientAuth = () => {
-	const { checkAuth } = useAuth();
-	// const hasRun = useRef(false);
+	const { checkAuth, errors } = useAuth();
 
 	useEffect(() => {
-		// if (!hasRun.current) {
-			checkAuth();
-			// hasRun.current = true;
-		// }
-	}, [checkAuth]);
+		checkAuth();
+	}, [errors]);
 
-	return null; // This component doesn't render anything visible
+	return null;
 };
 
 export default ClientAuth;

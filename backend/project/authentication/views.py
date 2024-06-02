@@ -13,6 +13,8 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth.hashers import make_password
+from django.db import models, IntegrityError
 
 #import jsonResponse
 
@@ -176,23 +178,15 @@ class OAuth42Callback(APIView):
 			"email":user_data['email'],
 		}
 
+		user, created = CustomUser.objects.get_or_create(username=user_data['login'], defaults=user_data_set)
 		response = Response()
-		# user = None
-		try:
-			# Check if a user with the given email already exists
-			user = CustomUser.objects.get(email=user_data['email'])
-			response.status_code = status.HTTP_200_OK
-		except CustomUser.DoesNotExist:
-			# Create a new user if one does not already exist
-			user = CustomUser.objects.create(**user_data_set)
-			#serialise
-			seriaze_user = UserSerializer(data=user_data_set)
-			if seriaze_user.is_valid():
-				user = seriaze_user.save()
-			else:
-				return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
-			response.status_code = status.HTTP_201_CREATED
-
+		if created:
+			random = CustomUser.objects.make_random_password()
+			user.set_password(make_password(random))
+			response.status = status.HTTP_201_CREATED
+			user.save()
+		else:
+			response.status = status.HTTP_200_OK
 		refresh = RefreshToken.for_user(user)
 		response.set_cookie(
 			key="refresh_token",

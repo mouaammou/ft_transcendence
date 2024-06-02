@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
 	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
 	email = models.EmailField(unique=True, blank=False, null=False)
 	first_name = models.CharField(max_length=255, blank=False)
-	last_name = models.CharField(max_length=255, blank=False, unique=True)
+	last_name = models.CharField(max_length=255, blank=False)
 	password = models.CharField(max_length=255, blank=False, null=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
@@ -15,7 +15,4 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return self.username
-	
-	# Add related_name attributes to avoid clashes with the built-in User model
-	groups = None
-	user_permissions = None
+

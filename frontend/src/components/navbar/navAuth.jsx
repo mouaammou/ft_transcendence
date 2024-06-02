@@ -6,11 +6,6 @@ import { useAuth } from "@/components/auth/loginContext";
 const Navbar = () => {
 	const { isAuthenticated, logout } = useAuth();
 
-	// useEffect(() => {
-	// 	if (!isAuthenticated)
-	// 		checkAuth();
-	// }, []);
-
 	return (
 		<div>
 			<nav>

@@ -1,5 +1,5 @@
 "use client";
-import { useState, createContext, useContext, useEffect } from "react";
+import { useState, createContext, useContext, useEffect, use } from "react";
 import { postData } from "@/services/apiCalls";
 import { useRouter } from "next/navigation";
 import { verifyToken } from "@/services/apiCalls";
@@ -15,10 +15,10 @@ export const LoginProvider = ({ children }) => {
 		postData(endPoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
+					setIsAuthenticated(true);
 					setErrors({
 						success: "Login Successful",
 					});
-					setIsAuthenticated(true);
 				} else {
 					if (res.response.status === 500) {
 						router.push("/500");
@@ -58,6 +58,7 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const checkAuth = () => {
+		setIsAuthenticated(false);
 		verifyToken("/token/verify").then((res) => {
 			if (res != null && res.status === 200) {
 				setIsAuthenticated(true);
@@ -66,12 +67,15 @@ export const LoginProvider = ({ children }) => {
 				if (res.response.status === 500) {
 					router.push("/500");
 				} else {
-					setIsAuthenticated(false);
 					router.push("/auth/login");
 				}
 			}
 		});
 	};
+
+	useEffect(() => {
+		checkAuth();
+	}, [errors]);
 
 	return (
 		<LoginContext.Provider

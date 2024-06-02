@@ -17,7 +17,7 @@ export const postData = async (endPoint, data) => {
 		console.log("postData ==> ", response)
 		return response;
 	} catch (error) {
-		error.response && console.log("error error data ==> ", error.response.status)
+		// error.response && console.log("error error data ==> ", error.response.status)
 		return error;
 	}
 };
