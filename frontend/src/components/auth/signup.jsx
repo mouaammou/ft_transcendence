@@ -84,7 +84,7 @@ function Signup() {
 			setErrors(forms_errors);
 			return;
 		}
-		await login("/signup/", formData);
+		await login("/signup", formData);
 	};
 
 	return (

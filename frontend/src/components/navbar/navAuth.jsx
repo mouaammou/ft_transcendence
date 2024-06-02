@@ -7,15 +7,16 @@ const Navbar = () => {
 	const { isAuthenticated, checkAuth, logout } = useAuth();
 
 	useEffect(() => {
-		checkAuth();
-	}, [isAuthenticated]);
+		if (!isAuthenticated)
+			checkAuth();
+	}, []);
 
 	return (
 		<div>
 			<nav>
 				{isAuthenticated ? (
 					<>
-						<Link href="/dashboard/">Dashboard</Link>
+						<Link href="/dashboard">Dashboard</Link>
 						&nbsp;|&nbsp;
 						<Link href="/">HOME</Link>
 						&nbsp;|&nbsp;
@@ -23,9 +24,9 @@ const Navbar = () => {
 					</>
 				) : (
 					<>
-						<Link href="/auth/login/">Login</Link>
+						<Link href="/auth/login">Login</Link>
 						&nbsp;|&nbsp;
-						<Link href="/auth/signup/">Signup</Link>
+						<Link href="/auth/signup">Signup</Link>
 					</>
 				)}
 			</nav>

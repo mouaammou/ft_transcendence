@@ -15,7 +15,7 @@ export default function LoginPage() {
 
 	const signIn = async (e) => {
 		e.preventDefault();
-		await login("/login/", formData);
+		await login("/login", formData);
 	};
 
 	return (
