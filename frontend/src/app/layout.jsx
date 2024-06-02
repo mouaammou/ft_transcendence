@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import { LoginProvider } from "@components/auth/loginContext";
 import Navbar from "@/components/navbar/navAuth";
 const inter = Inter({ subsets: ["latin"] });
+import ClientAuth from "@/components/auth/useAuth";
 
 export const metadata = {
 	title: "Transcendence",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
 			<LoginProvider>
 				<body className={inter.className}>
 					<Navbar />
+					<ClientAuth />
 					{children}
 				</body>
 			</LoginProvider>

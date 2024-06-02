@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { useAuth } from "@/components/auth/loginContext";
 
 const Navbar = () => {
-	const { isAuthenticated, checkAuth, logout } = useAuth();
+	const { isAuthenticated, logout } = useAuth();
 
-	useEffect(() => {
-		if (!isAuthenticated)
-			checkAuth();
-	}, []);
+	// useEffect(() => {
+	// 	if (!isAuthenticated)
+	// 		checkAuth();
+	// }, []);
 
 	return (
 		<div>

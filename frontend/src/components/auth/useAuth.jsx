@@ -5,13 +5,13 @@ import { useEffect, useRef } from "react";
 
 const ClientAuth = () => {
 	const { checkAuth } = useAuth();
-	const hasRun = useRef(false);
+	// const hasRun = useRef(false);
 
 	useEffect(() => {
-		if (!hasRun.current) {
+		// if (!hasRun.current) {
 			checkAuth();
-			hasRun.current = true;
-		}
+			// hasRun.current = true;
+		// }
 	}, [checkAuth]);
 
 	return null; // This component doesn't render anything visible
