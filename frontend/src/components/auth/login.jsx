@@ -13,17 +13,17 @@ export default function LoginPage() {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
+	const signIn = async (e) => {
+		e.preventDefault();
+		await login("/login", formData);
+	};
+
 	useEffect(() => {
 		if (endPoint === "/signup") {
 			setEndPoint("/login");
 			setErrors({});
 		}
-		console.log("endooint", endPoint);
 	}, []);
-	const signIn = async (e) => {
-		e.preventDefault();
-		await login("/login", formData);
-	};
 
 	return (
 		<div className="login">

@@ -1,8 +1,10 @@
+"use client";
 import { getData } from "@/services/apiCalls";
+import axios from "axios";
 
 const Login42 = () => {
 	const handleLogin = async () => {
-		await getData("/auth/login/42").then((res) => {
+		getData("/auth/login/42").then((res) => {
 			if (res.status === 200) {
 				console.log(res);
 				window.location.href = res.data.auth_url;

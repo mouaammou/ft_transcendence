@@ -1,14 +1,14 @@
+"use client";
 import { Inter } from "next/font/google";
 import { LoginProvider } from "@components/auth/loginContext";
 import Navbar from "@/components/navbar/navAuth";
 const inter = Inter({ subsets: ["latin"] });
-import ClientAuth from "@/components/auth/useAuth";
 
-export const metadata = {
-	title: "Transcendence",
-	description:
-		"Transcendence is a web application that allows users to create and manage their own personal blogs.",
-};
+// export const metadata = {
+// 	title: "Transcendence",
+// 	description:
+// 		"Transcendence is a web application that allows users to create and manage their own personal blogs.",
+// };
 
 export default function RootLayout({ children }) {
 
@@ -17,7 +17,6 @@ export default function RootLayout({ children }) {
 			<LoginProvider>
 				<body className={inter.className}>
 					<Navbar />
-					{/* <ClientAuth /> */}
 					{children}
 				</body>
 			</LoginProvider>

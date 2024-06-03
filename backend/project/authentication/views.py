@@ -1,5 +1,3 @@
-import string
-import random
 import requests
 from django.conf import settings
 from rest_framework.views import APIView
@@ -14,11 +12,8 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.hashers import make_password
-from django.db import models, IntegrityError
 
 #import jsonResponse
-
-
 
 @api_view(["POST", "GET"])
 def SignUp(request):
@@ -204,4 +199,3 @@ class OAuth42Callback(APIView):
 		)
 		response.data = {"message": "User logged in successfully"}
 		return response
-

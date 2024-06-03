@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "./loginContext";
 
 function Signup() {
@@ -11,7 +11,7 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-	const { errors, login } = useAuth();
+	const { errors, login, setErrors, endPoint, setEndPoint } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,6 +21,13 @@ function Signup() {
 		e.preventDefault();
 		await login("/signup", formData);
 	};
+
+	useEffect(() => {
+		if (endPoint === "/login") {
+			setEndPoint("/signup");
+			setErrors({});
+		}
+	}, []);
 
 	return (
 		<div className="signup">
@@ -68,9 +75,7 @@ function Signup() {
 					required
 					onChange={handleChange}
 				/>
-				<button type="submit">
-					Sign up
-				</button>
+				<button type="submit">Sign up</button>
 				<br />
 				{
 					<div>
