@@ -17,11 +17,13 @@ from django.contrib.auth.hashers import make_password
 
 @api_view(["POST", "GET"])
 def SignUp(request):
-
 	if request.method == "GET":
-		all_users = CustomUser.objects.all()
-		seriaze_user = UserSerializer(all_users, many=True)
-		return Response(seriaze_user.data)
+		try:
+			all_users = CustomUser.objects.all()
+			seriaze_user = UserSerializer(all_users, many=True)
+			return Response(seriaze_user.data)
+		except Exception as e:
+			return Response({"error": str(e)})
 
 	seriaze_user = UserSerializer(data=request.data)
 	if seriaze_user.is_valid():

@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +30,36 @@ SECRET_KEY = 'django-insecure-#3s3hx09&^k$5i$unb&nc47h)9a#e#^shvmgwxb0zgry=(3716
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL = "authentication.CustomUser"
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
 
+# rest framework: simple jwt
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "AUTH_COOKIE": "jwt",
+    "AUTH_COOKIE_SECURE": False,  # Change to True in production
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
+    "ROTATE_REFRESH_TOKENS": True,
+    "ALGORITHM": "HS256",
+}
+
+# Set your 42 OAuth credentials
+OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
+OAUTH42_CLIENT_SECRET = os.getenv("OAUTH42_CLIENT_SECRET")
+OAUTH42_REDIRECT_URI = os.getenv("OAUTH42_REDIRECT_URI")
+OAUTH42_AUTH_URL = os.getenv("OAUTH42_AUTH_URL")
+OAUTH42_TOKEN_URL = os.getenv("OAUTH42_TOKEN_URL")
+OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +73,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'game.apps.GameConfig',
+     "rest_framework",
+    "rest_framework_simplejwt",
+    "authentication",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -89,7 +127,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Add your frontend URL here
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -115,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Africa/Casablanca"
 
 USE_I18N = True
 
