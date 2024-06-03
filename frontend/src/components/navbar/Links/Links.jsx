@@ -3,16 +3,16 @@ import Link from "next/link";
 const Links = () => {
 	const links =  [
 		{
-			title: "Homepage",
+			title: "Home",
 			path: "/",
 		},
 		{
-			title: "Aboutus",
+			title: "About Us",
 			path: "/aboutus",
 		},
 		{
-			title: "Project",
-			path: "/project",
+			title: "Game",
+			path: "/game",
 		},
 		{
 			title: "Features",
@@ -24,7 +24,7 @@ const Links = () => {
 		},
 	];
 	return (
-		<div>
+		<div className="navbar-links">
 			{
 				links.map(link => (
 					<Link href={link.path} key={link.title}>

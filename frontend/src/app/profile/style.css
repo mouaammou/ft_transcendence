@@ -1,0 +1,133 @@
+
+.profile {
+	display: flex;
+	flex-direction: row;
+	margin-top: 130px;
+	margin-left: 80px;
+}
+
+.profile-section {
+	margin-right: 260px;
+	width: 400px;
+}
+
+.profile-pic-name {
+	display: flex;
+	flex-direction: row;
+}
+
+.profile-name-btn {
+	margin-left: 50px;
+}
+
+.profile-name-btn .profile-name {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 2rem;
+	color: white;
+	margin-bottom: 15px;
+}
+
+.profile-name-btn .edit-btn {
+	background-color: #797979;
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 1.2rem;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 10px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.profile-name-btn .edit-pen {
+	margin-left: 25px;
+}
+
+.profile-pic-name .profile-pic {
+	width: 150px;
+	height: 150px;
+	border-radius: 50%;
+}
+
+.profile-level {
+	margin-top: 20px;
+	margin-bottom: 26px;
+}
+
+.profile-level p {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 1.2rem;
+	margin-bottom: 5px;
+	color: white;
+}
+
+.info {
+	margin-bottom: 25px;
+	margin-top: 50px;
+
+}
+
+.info p {
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 26px;
+	margin-top: 25px;
+	margin-left: 20px;
+	color: white;
+
+}
+
+.info .info-section {
+	display: flex;
+	flex-direction: row;
+	margin-top: 30px;
+	margin-left: 50px;
+}
+
+.info .info-section .sps-info {
+	font-size: 21px;
+	font-family: 'IBM Plex Sans', sans-serif;
+	margin-left: 15px;
+}
+
+.badges-collected{
+	font-family: 'IBM Plex Sans', sans-serif;
+	font-size: 22px;
+	margin-top: 44px;
+}
+
+.badges-collected .badges img{
+	margin-top: 22px;
+	margin-right: 24px;
+}
+
+.badges-collected .badges .ramen {
+	border-radius: 40px;
+}
+
+
+.friends-section .title {
+	font-family: 'IBM Plex Sans', sans-serif;
+	margin-left: 310px;
+	margin-bottom: 20px;
+	font-size: 22px;
+}
+
+.friends-section .title p {
+	margin-left: 85px;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+.friends-section .statistics{
+	margin-top: 500px;
+}
+
+
+.buttons {
+	margin-left: 300px;
+	display: flex;
+	flex-direction: row;
+}
+.buttons div{
+	margin-right: 10px;
+}
