@@ -1,18 +1,25 @@
 "use client";
 import { useAuth } from "@/components/auth/loginContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const { errors, login } = useAuth();
+	const { errors, login, endPoint, setErrors, setEndPoint } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
+	useEffect(() => {
+		if (endPoint === "/signup") {
+			setEndPoint("/login");
+			setErrors({});
+		}
+		console.log("endooint", endPoint);
+	}, []);
 	const signIn = async (e) => {
 		e.preventDefault();
 		await login("/login", formData);

@@ -10,9 +10,10 @@ export const LoginProvider = ({ children }) => {
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [endPoint, setEndPoint] = useState("/login");
 
-	const login = (endPoint, formData) => {
-		postData(endPoint, formData)
+	const login = (endpoint, formData) => {
+		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
 					setIsAuthenticated(true);
@@ -23,6 +24,9 @@ export const LoginProvider = ({ children }) => {
 					if (res.response.status === 500) {
 						router.push("/500");
 					}
+					if (endpoint === "/signup") {
+						setEndPoint("/signup");
+					} else setEndPoint("/login");
 					setErrors({
 						first_name: res.response.data.first_name,
 						last_name: res.response.data.last_name,
@@ -67,7 +71,7 @@ export const LoginProvider = ({ children }) => {
 				if (res.response.status === 500) {
 					router.push("/500");
 				} else {
-					router.push("/auth/login");
+					router.push(`/auth${endPoint}`);
 				}
 			}
 		});
@@ -87,6 +91,8 @@ export const LoginProvider = ({ children }) => {
 				isAuthenticated,
 				setIsAuthenticated,
 				checkAuth,
+				endPoint,
+				setEndPoint
 			}}
 		>
 			{children}

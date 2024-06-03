@@ -1,7 +1,6 @@
 "use client";
 import Login42 from "@/components/auth/Oauth/login42";
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect } from "react";
 
 const Layout = ({ children }) => {
 	const { isAuthenticated } = useAuth();
