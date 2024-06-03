@@ -73,9 +73,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'game.apps.GameConfig',
-     "rest_framework",
+    "authentication.apps.AuthenticationConfig",
+    "rest_framework",
     "rest_framework_simplejwt",
-    "authentication",
     "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
 ]
