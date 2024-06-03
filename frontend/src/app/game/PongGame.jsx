@@ -88,7 +88,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 
 		// Constants
 		// create new websocket client
-		const socket = new WebSocket('ws://' + '10.12.7.5:5000' + '/ws/pong/game/');
+		const socket = new WebSocket('ws://' + '10.13.10.4:5000' + '/ws/pong/game/');
 		// // Connection opened
 		socket.addEventListener('open', (event) => {
 			// console.log(socketState);
@@ -111,40 +111,48 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					computer.x = data.update.right_paddle_pos[0];
 					computer.y = data.update.right_paddle_pos[1];
 				}
+				ball.radius = gameConfig.ball_size[0] / 2;
 				ball.x = data.update.ball_pos[0] + ball.radius;
-				ball.y = data.update.ball_pos[1] - ball.radius;
+				ball.y = data.update.ball_pos[1] + ball.radius;
 				// rectBall.x = data.update.ball_pos[0];
 				// rectBall.y = data.update.ball_pos[1];
 				// console.log(rectBall.x);
 				// console.log(rectBall.y);
 				if (data.update.left_player_score)
 				{
-					user.score++;
-					setScore2(score2 => score2 + 1);
+					user.score = data.update.left_player_score;
+					setScore2(score2 => data.update.left_player_score);
 				}
 				if (data.update.right_player_score)
 				{
-					computer.score++;
-					setScore1(score1 => score1 + 1);
+					computer.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
 				}
 				drawGame();
 			}
 			else if (data.config)
 			{
+				// console.log(data.config);
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
+				// console.log(canvas.height);
+				net.x = canvas.width / 2 - 2;
+				computer.width = gameConfig.paddles_size[0];
+				computer.height = gameConfig.paddles_size[1];
+				user.width = gameConfig.paddles_size[0];
+				user.height = gameConfig.paddles_size[1];
 				user.x = gameConfig.left_paddle_pos[0];
 				user.y = gameConfig.left_paddle_pos[1];
 				computer.x = gameConfig.right_paddle_pos[0];
 				computer.y = gameConfig.right_paddle_pos[1];
-				// rectBall.x = gameConfig.ball_pos[0];
-				// rectBall.y = gameConfig.ball_pos[1];
 				ball.x = gameConfig.ball_pos[0];
 				ball.y = gameConfig.ball_pos[1];
 				ball.radius = gameConfig.ball_size[0] / 2;
-				// rectBall.width = gameConfig.ball_size[0];
-				// rectBall.height = gameConfig.ball_size[1];
+				rectBall.x = gameConfig.ball_pos[0];
+				rectBall.y = gameConfig.ball_pos[1];
+				rectBall.width = gameConfig.ball_size[0];
+				rectBall.height = gameConfig.ball_size[1];
 				drawGame();
 			}
 		}
@@ -203,6 +211,9 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			// draw net
 			drawNet();
+			// console.log(canvas.width);
+			// console.log(net);
+
 			// Draw paddles
 			drawRect(user.x, user.y, user.width, user.height, user.color);
 			drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);

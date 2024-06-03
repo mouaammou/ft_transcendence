@@ -11,6 +11,10 @@
 	box-sizing: border-box;
 }
 
+img{
+	/* pointer-events: none; */
+}
+
 html{
 	/* height: 100vh; */
 	/* background: radial-gradient(#1A2980, black); */
@@ -183,9 +187,8 @@ background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%,
 
 .game .down-section .self-game {
 
-	min-width: 100px;
-	padding-right: auto;
-	padding-left: auto;
+	/* padding-right: auto;
+	padding-left: auto; */
 }
 
 .game .down-section .right-user {
@@ -196,11 +199,11 @@ background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%,
 
 .game .down-section .play-ground {
 	background-color: #264653;
-	position: relative;
+	/* position: relative; */
 	border-radius: 5px;
 	border: 1px solid white;
-	width: 100%;
-	height: 100%;
+	/* width: 100%; */
+	/* height: 100%; */
 }
 
 /* CSS for the profile page: */
