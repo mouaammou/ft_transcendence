@@ -7,9 +7,7 @@ import { useAuth } from "@/components/auth/loginContext";
 const AuthCallback = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-
 	const code = searchParams.get("code");
-
 	const { setIsAuthenticated, isAuthenticated } = useAuth();
 
 	useEffect(() => {
@@ -18,10 +16,6 @@ const AuthCallback = () => {
 				.then((response) => {
 					setIsAuthenticated(false);
 					if (response.status === 200 || response.status === 201) {
-						console.log("Response status:", response.status);
-						console.log("Response data:", response);
-						console.log("Login successful");
-						console.log("code code :: ", code);
 						// Tokens are set in cookies by the backend
 						setIsAuthenticated(true);
 						router.push("/dashboard");

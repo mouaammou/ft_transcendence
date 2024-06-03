@@ -14,7 +14,7 @@ export const postData = async (endPoint, data) => {
 		const response = await axiosInstance.post(endPoint, data, {
 			withCredentials: true,
 		});
-		console.log("postData ==> ", response)
+		// console.log("postData ==> ", response)
 		return response;
 	} catch (error) {
 		// error.response && console.log("error error data ==> ", error.response.status)

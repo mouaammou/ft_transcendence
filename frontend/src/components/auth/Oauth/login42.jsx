@@ -1,6 +1,5 @@
 "use client";
 import { getData } from "@/services/apiCalls";
-import axios from "axios";
 
 const Login42 = () => {
 	const handleLogin = async () => {
