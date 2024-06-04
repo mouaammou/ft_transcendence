@@ -3,6 +3,8 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
+			//for "@/styles
+			"@styles/*": ["./src/styles/*"]
 		}
 	}
 }

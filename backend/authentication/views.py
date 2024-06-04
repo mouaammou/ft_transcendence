@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.hashers import make_password
+from .utils import set_jwt_cookies
 
 #import jsonResponse
 
@@ -28,21 +29,7 @@ def SignUp(request):
 	if seriaze_user.is_valid():
 		user = seriaze_user.save()
 		refresh = RefreshToken.for_user(user)  # Create a refresh token for the user
-		response = Response()
-		response.set_cookie(
-			key="refresh_token",
-			value=str(refresh),
-			httponly=True,
-			samesite="Lax",
-			max_age=60 * 60 * 24 * 7,  # 7 days
-		)
-		response.set_cookie(
-			key="access_token",
-			value=str(refresh.access_token),
-			samesite="Lax",
-			httponly=True,
-			max_age=60 * 60 * 24, # 24 hours
-		)
+		response = set_jwt_cookies(Response(), refresh)
 		response.status_code = status.HTTP_201_CREATED
 		return response
 	else:
@@ -64,59 +51,37 @@ def Login(request):
 
 	if user is not None:
 		refresh = RefreshToken.for_user(user)
-		response = Response()
-		response.set_cookie(
-			key="refresh_token",
-			value=str(refresh),
-			httponly=True,
-			samesite="Lax",#??
-			max_age= 60 * 60 * 24 * 7,  # 7 days
-		)
-		response.set_cookie(
-			key="access_token",
-			value=str(refresh.access_token),
-			samesite="Lax",#??
-			httponly=True,
-			max_age=60 * 60 * 24,  # 24 hours
-		)
+		response = set_jwt_cookies(Response(), refresh)
 		response.status_code = status.HTTP_200_OK
 		return response
 	return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])
-def Verify_Token(request):
-	refresh_token = request.COOKIES.get("refresh_token")
-	access_token = request.COOKIES.get("access_token")
-	if not refresh_token:
-		return Response(
-			{"error": "refresh token not found or access token not found"},
-			status=status.HTTP_401_UNAUTHORIZED,
-		)
-	try:
-		RefreshToken(refresh_token)
-		try:
-			AccessToken(access_token)
-		except TokenError:
-			new_access_token = RefreshToken(refresh_token).access_token
-			response = Response()
-			response.set_cookie(
-				key="access_token",
-				value=str(new_access_token),
-				samesite="Lax",
-				httponly=True,
-				max_age=60 * 60 * 24,  # 5 hours
-			)
-			response.status_code = status.HTTP_200_OK
-			response.data = {"message": "Access token refreshed"}
-			return response
-	except TokenError:
-		return Response({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+# @api_view(["POST"])
+# def Verify_Token(request):
+# 	refresh_token = request.COOKIES.get("refresh_token")
+# 	access_token = request.COOKIES.get("access_token")
+# 	if not refresh_token or not access_token:
+# 		return Response(
+# 			{"error": "refresh token not found or access token not found"},
+# 			status=status.HTTP_401_UNAUTHORIZED,
+# 		)
+# 	try:
+# 		RefreshToken(refresh_token)
+# 		try:
+# 			AccessToken(access_token)
+# 		except TokenError:
+# 			response = set_jwt_cookies(Response(), refresh_token)
+# 			response.status_code = status.HTTP_200_OK
+# 			response.data = {"message": "Access token refreshed"}
+# 			return response
+# 	except TokenError:
+# 		return Response({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
 
-	return Response(
-		{"message": "Tokens Still valid"},
-		status=status.HTTP_200_OK,
-	)
+# 	return Response(
+# 		{"message": "Tokens Still valid"},
+# 		status=status.HTTP_200_OK,
+# 	)
 
 @api_view(["POST"])
 def Logout(request):
@@ -184,19 +149,6 @@ class OAuth42Callback(APIView):
 		else:
 			response.status = status.HTTP_200_OK
 		refresh = RefreshToken.for_user(user)
-		response.set_cookie(
-			key="refresh_token",
-			value=str(refresh),
-			httponly=True,
-			samesite="Lax",
-			max_age=60 * 60 * 24 * 7,  # 7 days
-		)
-		response.set_cookie(
-			key="access_token",
-			value=str(refresh.access_token),
-			httponly=True,
-			samesite="Lax",
-			max_age=60 * 30,  # 30 minutes
-		)
+		response = set_jwt_cookies(response, refresh)
 		response.data = {"message": "User logged in successfully"}
 		return response
