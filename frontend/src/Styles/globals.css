@@ -30,7 +30,7 @@ body {
 	background: black;
 	background-image: url("/image.jpeg");
 	/* background: rgb(33,70,188);
-background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%, rgba(0,0,0,1) 100%); */
+	background: linear-gradient(189deg, rgba(33,70,188,1) 0%, rgba(64,92,192,1) 49%, rgba(0,0,0,1) 100%); */
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
