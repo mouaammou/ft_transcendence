@@ -14,9 +14,13 @@ const Navbar = () => {
 			{isAuthenticated ? (
 				<>
 					<Links />
-					<button onClick={logout}>
-						Logout
-					</button>
+					<div className="union">
+						<img src="/Union.svg" alt="union" />
+					</div>
+					<div>
+						<img src="/logout.svg" alt="logout" onClick={logout} />
+					</div>
+					<div className="logout-text">LOGOUT</div>
 				</>
 			) : (
 				<>
