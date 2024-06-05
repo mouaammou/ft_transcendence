@@ -4,25 +4,30 @@
 
 .main-container {
     display: flex;
-    /* height: 80vh; */
+    align-items: center;
+    justify-content: center;
 	width: 100%;
     margin-top: 200px;
-    margin-left: 200px;
 }
 
 .main-login{
     display: flex;
     margin-right: 150px;
     flex-direction: column;
+    justify-content: center;
+    background-color: white;
+    padding: 20px 50px;
+    border-radius: 10.84px;
 }
 
 .main-login p {
     font-family: Montserrat, Arial, Helvetica, sans-serif;
-    font-size: 20px;
+    font-size: 35px;
     font-weight: bold;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 20px;
+    color: #250939;
 }
 
 .main-login input {
@@ -33,15 +38,10 @@
     width: 100%;
     margin-bottom: 12px;
     padding: 12px 0 12px 15px;
-    border: 1.45px solid white;
+    border: 1.45px solid gray;
     border-radius: 8px;
 }
 
-.first-last-names {
-    display: flex;
-    width: 100%;
-    gap: 4%;
-}
 .main-login input:not(:placeholder-shown) {
     font-family: 'IBM Plex Sans', sans-serif;
     color: white;
@@ -63,7 +63,7 @@
 
 .main-login button {
     font-family: Montserrat, Arial, Helvetica, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     background-color: var(--principaleColor);
     border-radius: 10px;
@@ -76,22 +76,10 @@
     margin-bottom: 30px;
 }
 
-.sign-with {
-    pointer-events: none;
+.main-login {
+    background-color: white;
 }
 
-.logos {
-    margin-left: 150px;
-    margin-top: 40px;
-}
-
-.google-logo {
-    width: 40px;
-}
-
-._42-logo {
-    margin-right: 30px;
-}
 
 @media (max-width: 767px) {
     .main-container {

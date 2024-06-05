@@ -4,16 +4,25 @@
 
 .main-container {
     display: flex;
+    align-items: center;
+    justify-content: center;
     /* height: 80vh; */
-	width: 100%;
+	/* width: 100%; */
     margin-top: 200px;
-    margin-left: 200px;
 }
 
 .main-login{
     display: flex;
     margin-right: 150px;
     flex-direction: column;
+    width: 500px;
+}
+
+.main-login .description {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    margin-bottom: 30px;
+    color: gray;
 }
 
 .main-login p {
@@ -31,7 +40,7 @@
     font-size: 18px;
     margin-top: 12px;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 28px;
     padding: 12px 0 12px 15px;
     border: 1.45px solid white;
     border-radius: 8px;
@@ -73,25 +82,12 @@
     color: white;
     margin-top: 20px;
     cursor: pointer;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
 }
-
-.sign-with {
-    pointer-events: none;
-}
-
-.logos {
-    margin-left: 150px;
-    margin-top: 40px;
-}
-
-.google-logo {
-    width: 40px;
-}
-
-._42-logo {
-    margin-right: 30px;
-}
+ .main-login .second-button {
+    color: black;
+    background-color: white;
+ }
 
 @media (max-width: 767px) {
     .main-container {
