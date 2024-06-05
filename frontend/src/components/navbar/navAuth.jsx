@@ -1,31 +1,37 @@
 "use client";
 import Link from "next/link";
-import { useEffect } from "react";
 import { useAuth } from "@/components/auth/loginContext";
+import Links from "./Links/Links";
 
 const Navbar = () => {
 	const { isAuthenticated, logout } = useAuth();
 
 	return (
-		<div>
-			<nav>
-				{isAuthenticated ? (
-					<>
-						<Link href="/dashboard">Dashboard</Link>
+		<nav className="navbar">
+			<div className="logo">
+				<img src="/logo.svg" alt="logo" />
+			</div>
+			{isAuthenticated ? (
+				<>
+					<Links />
+					<button onClick={logout}>
+						Logout
+					</button>
+				</>
+			) : (
+				<>
+					<div className="sign-in">
+						<Link href="/auth/login" className="login">
+							Login
+						</Link>
 						&nbsp;|&nbsp;
-						<Link href="/">HOME</Link>
-						&nbsp;|&nbsp;
-						<button onClick={logout}>Logout</button>
-					</>
-				) : (
-					<>
-						<Link href="/auth/login">Login</Link>
-						&nbsp;|&nbsp;
-						<Link href="/auth/signup">Signup</Link>
-					</>
-				)}
-			</nav>
-		</div>
+						<Link href="/auth/signup" className="sign-up">
+							Signup
+						</Link>
+					</div>
+				</>
+			)}
+		</nav>
 	);
 };
 
