@@ -12,10 +12,7 @@ const Login42 = () => {
 	};
 
 	return (
-		<div>
-			<h1>Login - Signup with 42</h1>
-			<button onClick={handleLogin}>Login</button>
-		</div>
+		<img src="/g3.svg" alt="" className="_42-logo" onClick={handleLogin} />
 	);
 };
 

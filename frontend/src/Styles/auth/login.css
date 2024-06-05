@@ -37,11 +37,6 @@
     border-radius: 8px;
 }
 
-.first-last-names {
-    display: flex;
-    width: 100%;
-    gap: 4%;
-}
 .main-login input:not(:placeholder-shown) {
     font-family: 'IBM Plex Sans', sans-serif;
     color: white;
@@ -91,7 +86,28 @@
 
 ._42-logo {
     margin-right: 30px;
+    cursor: pointer;
 }
+
+
+.forgot-password {
+    display: flex;
+    margin-top: 60px;
+}
+
+.forgot-password a, .have-no-account {
+    color: white;
+    font-family: 'IBM Plex Sans', sans-serif;;
+    font-size: 15.5px;
+    margin-right: 40px;
+}
+
+.have-no-account  a {
+    font-family: 'IBM Plex Sans', sans-serif;;
+    font-size: 18px;
+    margin-left: 6px;
+}
+
 
 @media (max-width: 767px) {
     .main-container {

@@ -2,6 +2,10 @@
 import { useAuth } from "@/components/auth/loginContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Login42 from "@/components/auth/Oauth/login42";
+
+import "@styles/auth/login.css";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
@@ -31,29 +35,48 @@ export default function LoginPage() {
 	}, [isAuthenticated]);
 
 	return (
-		<div className="login">
-			<form onSubmit={signIn}>
-				<div className="form-group">
-					<label htmlFor="username">Username</label>
-					<input
-						type="text"
-						className="form-control"
-						name="username"
-						onChange={handleChange}
-					/>
-				</div>
-				<div className="form-group">
-					<label htmlFor="password">Password</label>
-					<input
-						type="password"
-						className="form-control"
-						name="password"
-						onChange={handleChange}
-					/>
-				</div>
+		<div className="main-container">
+			<form onSubmit={signIn} className="main-login">
+				<p>Join</p>
+				<input
+					type="text"
+					className="form-control"
+					name="username"
+					placeholder="Enter Your Username"
+					onChange={handleChange}
+				/>
+				<input
+					type="password"
+					className="form-control"
+					name="password"
+					placeholder="Enter Your Password"
+					onChange={handleChange}
+				/>
 				<button type="submit" className="btn btn-primary">
 					Login
 				</button>
+				<img
+					src="/login-with.svg"
+					alt="login-with"
+					className="sign-with"
+				/>
+				<div className="logos">
+					<Login42 />
+					<img
+						src="/google-icon.png"
+						alt=""
+						className="google-logo"
+					/>
+				</div>
+				<div className="forgot-password">
+					<a href="">Forgot your password?</a>
+					<div className="have-no-account">
+						Don't have an account?
+						<Link rel="stylesheet" href="/auth/signup">
+							Sign up
+						</Link>
+					</div>
+				</div>
 				<br />
 				{
 					<p className="text-danger">
@@ -61,6 +84,9 @@ export default function LoginPage() {
 					</p>
 				}
 			</form>
+			<div className="side-image">
+				<img className="sign-with" src="/join.svg" alt="welcome" />
+			</div>
 		</div>
 	);
 }
