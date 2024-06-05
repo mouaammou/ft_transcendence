@@ -9,17 +9,19 @@ const Navbar = () => {
 			</div>
 			<Links/>
 			<div className="sign-in">
+
 				<div className="union">
 					<img src="/Union.svg" alt="union" />
 				</div>
 				<div>
-					<img src="/logout.svg" alt="logout" />
+					<img src="/logout.svg" alt="logout" className="img-logout"/>
 				</div>
 				<div className="logout-text">
 					LOGOUT
 				</div>
 				<button className="sign-up">Sign up</button>
 				<button className="login">login</button>
+
 			</div>
 		</div>
 	 );

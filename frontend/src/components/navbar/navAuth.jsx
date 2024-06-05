@@ -9,32 +9,35 @@ const Navbar = () => {
 	return (
 		<nav className="navbar">
 			<div className="logo">
-				<img src="/logo.svg" alt="logo" />
+				<img src="/new-logo.svg" alt="logo" />
 			</div>
-			{isAuthenticated ? (
-				<>
-					<Links />
-					<div className="union">
-						<img src="/Union.svg" alt="union" />
-					</div>
-					<div>
-						<img src="/logout.svg" alt="logout" onClick={logout} />
-					</div>
-					<div className="logout-text">LOGOUT</div>
-				</>
-			) : (
-				<>
-					<div className="sign-in">
+			<div className="sign-in">
+				{isAuthenticated ? (
+					<>
+						<Links />
+						<div>
+							<img
+								src="/logout.svg"
+								alt="logout"
+								onClick={logout}
+								className="img-logout"
+							/>
+						</div>
+						<div className="logout-text">
+							Logout
+						</div>
+					</>
+				) : (
+					<>
 						<Link href="/auth/login" className="login">
 							Login
 						</Link>
-						&nbsp;|&nbsp;
 						<Link href="/auth/signup" className="sign-up">
 							Signup
 						</Link>
-					</div>
-				</>
-			)}
+					</>
+				)}
+			</div>
 		</nav>
 	);
 };
