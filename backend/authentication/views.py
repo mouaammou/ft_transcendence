@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.hashers import make_password
 from .utils import set_jwt_cookies
+from .utils import has_valid_token
 
 #import jsonResponse
 
@@ -58,6 +59,7 @@ def Login(request):
 
 
 @api_view(["POST"])
+@has_valid_token
 def Verify_Token(request):
 	return Response(
 		{"message": "Tokens Still valid"},
@@ -77,6 +79,7 @@ def Logout(request):
 	response.data = {"message": "Logout successfully"}
 	return response
 
+@has_valid_token
 def default(request):
     h1 = "<h1>Welcome to the default page</h1>"
     return HttpResponse(h1)
