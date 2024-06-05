@@ -9,6 +9,7 @@ __pycache__
 .DS_Store
 # testing
 /coverage
+db.sqlite3
 
 # next.js
 /.next/
