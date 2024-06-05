@@ -4,6 +4,10 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from authentication.utils import set_jwt_cookies
 from django.utils.deprecation import MiddlewareMixin
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+
+User = get_user_model()
  
 # class TokenVerificationMiddleWare(MiddlewareMixin):
 # 	def process_request(self, request):
@@ -39,11 +43,13 @@ class TokenVerificationMiddleWare:
 		request_path = request.path
 		if request_path == "/auth/login/42" or request_path == "/auth/callback/42" or \
 			request_path == "/signup" or request_path == "/login" or request_path == "/logout" \
-			or request_path == "/token" or request_path == "/token/refresh" or request_path == "/admin/":
+			or request_path == "/token" or request_path == "/token/refresh":
+			return self.get_response(request)
+		#if the request starts with admin
+		if request_path.startswith("/admin"):
 			return self.get_response(request)
 		refresh_token = request.COOKIES.get("refresh_token")
 		access_token = request.COOKIES.get("access_token")
-		
 		if not refresh_token or not access_token:
 			return JsonResponse(
 				{"error": "refresh token not found or access token not 999 found"},
@@ -51,6 +57,12 @@ class TokenVerificationMiddleWare:
 			)
 		try:
 			RefreshToken(refresh_token)
+			# try:
+			# 	user = User.objects.get(id=RefreshToken(refresh_token).payload.get("user_id"))
+			# 	# request.customuser = user
+			# except User.DoesNotExist:
+			# 	request.customuser = AnonymousUser()
+			# 	print(f"user -- : {request.customuser}")
 			try:
 				AccessToken(access_token)
 			except TokenError:

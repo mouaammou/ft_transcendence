@@ -1,14 +1,16 @@
 "use client";
 import { useAuth } from "@/components/auth/loginContext";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const { errors, login, endPoint, setErrors, setEndPoint } = useAuth();
-
+	const router = useRouter();
+	const { errors, login, endPoint, setErrors, setEndPoint, isAuthenticated } =
+		useAuth();
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
@@ -23,7 +25,10 @@ export default function LoginPage() {
 			setEndPoint("/login");
 			setErrors({});
 		}
-	}, []);
+		if (isAuthenticated) {
+			router.push("/dashboard");
+		}
+	}, [isAuthenticated]);
 
 	return (
 		<div className="login">

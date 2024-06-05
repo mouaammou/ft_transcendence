@@ -2,10 +2,10 @@
 import Login42 from "@/components/auth/Oauth/login42";
 import { useAuth } from "@/components/auth/loginContext";
 
-const Layout = ({ children }) => {
+const LoginLayout = ({ children }) => {
 	const { isAuthenticated } = useAuth();
 
-	if (!isAuthenticated)
+	if (!isAuthenticated) {
 		return (
 			<>
 				{children}
@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
 				<Login42 />
 			</>
 		);
-	else return null;
+	} else return null;
 };
 
-export default Layout;
+export default LoginLayout;

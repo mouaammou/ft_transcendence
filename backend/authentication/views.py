@@ -57,31 +57,12 @@ def Login(request):
 	return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(["POST"])
-# def Verify_Token(request):
-# 	refresh_token = request.COOKIES.get("refresh_token")
-# 	access_token = request.COOKIES.get("access_token")
-# 	if not refresh_token or not access_token:
-# 		return Response(
-# 			{"error": "refresh token not found or access token not found"},
-# 			status=status.HTTP_401_UNAUTHORIZED,
-# 		)
-# 	try:
-# 		RefreshToken(refresh_token)
-# 		try:
-# 			AccessToken(access_token)
-# 		except TokenError:
-# 			response = set_jwt_cookies(Response(), refresh_token)
-# 			response.status_code = status.HTTP_200_OK
-# 			response.data = {"message": "Access token refreshed"}
-# 			return response
-# 	except TokenError:
-# 		return Response({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
-
-# 	return Response(
-# 		{"message": "Tokens Still valid"},
-# 		status=status.HTTP_200_OK,
-# 	)
+@api_view(["POST"])
+def Verify_Token(request):
+	return Response(
+		{"message": "Tokens Still valid"},
+		status=status.HTTP_200_OK,
+	)
 
 @api_view(["POST"])
 def Logout(request):
@@ -108,7 +89,8 @@ class OAuth42Login(APIView):
 		response = Response(data={"auth_url": auth_url} ,status=status.HTTP_200_OK)
 		return response
 
-class OAuth42Callback(APIView):	
+class OAuth42Callback(APIView):
+
 	def get(self, request):
 		code = request.GET.get('code')
 		if not code:

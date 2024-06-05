@@ -3,6 +3,7 @@ import { useState, createContext, useContext, useEffect, use } from "react";
 import { postData } from "@/services/apiCalls";
 import { useRouter } from "next/navigation";
 import { verifyToken } from "@/services/apiCalls";
+import axiosInstance from "@/services/axiosInstance";
 
 export const LoginContext = createContext(null);
 
@@ -21,7 +22,7 @@ export const LoginProvider = ({ children }) => {
 						success: "Login Successful",
 					});
 				} else {
-					if (res.response.status === 500) {
+					if (res.response && res.response.status === 500) {
 						router.push("/500");
 					}
 					if (endpoint === "/signup") {
@@ -35,7 +36,7 @@ export const LoginProvider = ({ children }) => {
 						password: res.response.data.password,
 						status: res.response.status,
 						server_error:
-							res.response.data + " " + res.response.status,
+						res.response.data + " " + res.response.status,
 						error: res.response.data.error,
 					});
 				}
@@ -54,32 +55,31 @@ export const LoginProvider = ({ children }) => {
 				if (res.response.status === 500) {
 					router.push("/500");
 				} else {
-					setIsAuthenticated(true);
 					console.log("logout error==> ", res);
 				}
 			}
 		});
 	};
 
-	// const checkAuth = () => {
-	// 	setIsAuthenticated(false);
-	// 	verifyToken("/token/verify").then((res) => {
-	// 		if (res != null && res.status === 200) {
-	// 			setIsAuthenticated(true);
-	// 			router.push("/dashboard");
-	// 		} else {
-	// 			if (res.response.status === 500) {
-	// 				router.push("/500");
-	// 			} else {
-	// 				router.push(`/auth${endPoint}`);
-	// 			}
-	// 		}
-	// 	});
-	// };
+	const checkAuth = () => {
+		setIsAuthenticated(false);
+		verifyToken("/token/verify").then((res) => {
+			if (res != null && res.status === 200) {
+				setIsAuthenticated(true);
+				router.push("/dashboard");
+			} else {
+				if (res.response.status === 500) {
+					router.push("/500");
+				} else {
+					router.push(`/auth${endPoint}`);
+				}
+			}
+		});
+	};
 
-	// useEffect(() => {
-	// 	checkAuth();
-	// }, [errors]);
+	useEffect(() => {
+		checkAuth();
+	}, [errors]);
 
 	return (
 		<LoginContext.Provider
@@ -90,9 +90,8 @@ export const LoginProvider = ({ children }) => {
 				logout,
 				isAuthenticated,
 				setIsAuthenticated,
-				// checkAuth,
 				endPoint,
-				setEndPoint
+				setEndPoint,
 			}}
 		>
 			{children}

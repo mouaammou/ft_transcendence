@@ -26,7 +26,7 @@ const AuthCallback = () => {
 				});
 		};
 		fetchTokens();
-	}, [isAuthenticated]);
+	}, []);
 
 	return <div>Loading...</div>;
 };
