@@ -1,36 +1,98 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# C extensions
+*.so
+.next
 
-# testing
-/coverage
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+node_modules/
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
 
-# next.js
-/.next/
-/out/
+# Django migrations
+*/migrations/
+*/migrations/*.py
+!*/migrations/__init__.py
 
-# production
-/build
+# Static files
+staticfiles/
+static/
 
-# misc
+# Media files
+media/
+
+# Django collectstatic
+staticfiles/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pytest
+.cache
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# VS Code
+.vscode/
+.history/
+
+# PyCharm
+.idea/
+
+# MacOS
 .DS_Store
-*.pem
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# local env files
-.env*.local
+# JetBrains
+.idea/
 
-# vercel
-.vercel
+# System files
+*.swp
+*.swo
+*~
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# pipenv
+Pipfile.lock

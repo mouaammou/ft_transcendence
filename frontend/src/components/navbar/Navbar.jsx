@@ -7,7 +7,7 @@ const Navbar = () => {
 			<div className="logo">
 				<img src="new-logo.svg" alt="logo" />
 			</div>
-				<Links/>
+			<Links/>
 			<div className="sign-in">
 				<div className="union">
 					<img src="/Union.svg" alt="union" />
@@ -18,8 +18,8 @@ const Navbar = () => {
 				<div className="logout-text">
 					LOGOUT
 				</div>
-				{/* <button className="sign-up">Sign up</button>
-				<button className="login">login</button> */}
+				<button className="sign-up">Sign up</button>
+				<button className="login">login</button>
 			</div>
 		</div>
 	 );
