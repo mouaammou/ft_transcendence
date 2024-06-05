@@ -1,9 +1,8 @@
 "use client";
-import { useState, createContext, useContext, useEffect, use } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { verifyToken } from "@/services/apiCalls";
-import axiosInstance from "@/services/axiosInstance";
 
 export const LoginContext = createContext(null);
 
@@ -12,6 +11,8 @@ export const LoginProvider = ({ children }) => {
 	const [errors, setErrors] = useState({});
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [endPoint, setEndPoint] = useState("/login");
+
+	const pathname = usePathname();
 
 	const login = (endpoint, formData) => {
 		postData(endpoint, formData)
@@ -36,7 +37,7 @@ export const LoginProvider = ({ children }) => {
 						password: res.response.data.password,
 						status: res.response.status,
 						server_error:
-						res.response.data + " " + res.response.status,
+							res.response.data + " " + res.response.status,
 						error: res.response.data.error,
 					});
 				}
@@ -63,10 +64,11 @@ export const LoginProvider = ({ children }) => {
 
 	const checkAuth = () => {
 		setIsAuthenticated(false);
+		console.log("pathname==>", pathname);
 		verifyToken("/token/verify").then((res) => {
 			if (res != null && res.status === 200) {
 				setIsAuthenticated(true);
-				router.push("/dashboard");
+				router.push(pathname);
 			} else {
 				if (res.response.status === 500) {
 					router.push("/500");
