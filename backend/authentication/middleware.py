@@ -30,7 +30,7 @@ class TokenVerificationMiddleWare:
 				AccessToken(access_token)
 			except TokenError:
 				response = JsonResponse({"message": "Access token refreshed"}, status=status.HTTP_200_OK)
-				response = set_jwt_cookies(response, refresh_token)
+				response = set_jwt_cookies(response, RefreshToken(refresh_token))
 				return response
 		except TokenError:
 			return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
