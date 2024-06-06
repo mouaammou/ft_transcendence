@@ -1,6 +1,7 @@
 import HorizontalLine from "./HorizontalLine.jsx"
 import CustomButton from "./CustomButton.jsx";
 import "./style.css"
+import Cart from "./Cart.jsx";
 
 const Profile = () => {
 	return (
@@ -68,7 +69,30 @@ const Profile = () => {
 					<p>Friends</p>
 					<HorizontalLine lWidth='258px'  />
 				</div>
-				<div></div>
+				<div className="cards">
+					<div className="recent-activity">
+						<div className="title-div">
+							<div>Recent activity</div>
+							<div className="see-all">See all</div>
+						</div>
+						<Cart cartColor='#797979' imgg='samjaabo.jpeg' name='Said amjaabou'/>
+						<Cart cartColor='#797979' imgg='mouad.jpeg' name='Mouad Tsetta'/>
+						<Cart cartColor='#797979' imgg='user2.svg' name='Mouad lem9awd'/>
+						<Cart cartColor='#797979' imgg='med.jpeg' name='ching chong' />
+					</div>
+					<div className="new-members">
+						<div  className="title-div">
+							<div>New members</div>
+							<div className="see-all">See all</div>
+						</div>
+						<Cart cartColor='rgba(255, 255, 255, 0.05)' imgg='avatar.webp'   name='Lina Gartitoz'  />
+						<Cart cartColor='rgba(255, 255, 255, 0.05)' imgg='avatar3.jpeg'  name='Bsisi 3akh3oukh '  />
+						<Cart cartColor='rgba(255, 255, 255, 0.05)' imgg='avatar4.jpeg'  name='Hmida lamba'  />
+						<Cart cartColor='rgba(255, 255, 255, 0.05)' imgg='oredoine.webp' name='Oussama Lapay'   />
+						
+					</div>
+				
+				</div>
 				<div className="statistics">
 					<div className="title">
 						<p>Statistics</p>

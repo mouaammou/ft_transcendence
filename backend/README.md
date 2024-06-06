@@ -18,3 +18,12 @@ INSTALLED_APPS = [
 ]
 
 ....
+
+
+# how to delete all the users from Database
+
+py manage.py shell
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.all().delete()

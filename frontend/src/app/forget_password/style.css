@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* height: 80vh; */
+	/* width: 100%; */
+    margin-top: 200px;
+}
+
+.main-login{
+    display: flex;
+    margin-right: 150px;
+    flex-direction: column;
+    width: 500px;
+}
+
+.main-login .description {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    margin-bottom: 30px;
+    color: gray;
+}
+
+.main-login p {
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+.main-login input {
+    background-color: transparent;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    margin-top: 12px;
+    width: 100%;
+    margin-bottom: 28px;
+    padding: 12px 0 12px 15px;
+    border: 1.45px solid white;
+    border-radius: 8px;
+}
+
+.first-last-names {
+    display: flex;
+    width: 100%;
+    gap: 4%;
+}
+.main-login input:not(:placeholder-shown) {
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: white;
+    background-color: transparent;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 12px 0 12px 15px;
+    border: 1.45px solid white;
+    border-radius: 8px;
+    outline: none;
+}
+
+.main-login input:focus {
+    outline: 1.2px solid white;
+}
+
+
+.main-login button {
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: var(--principaleColor);
+    border-radius: 10px;
+    border: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+ .main-login .second-button {
+    color: black;
+    background-color: white;
+ }
+
+@media (max-width: 767px) {
+    .main-container {
+    width: 400px;
+      flex-direction: column;
+    }
+  }

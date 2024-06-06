@@ -25,11 +25,11 @@ class Base:
         
         self.paddle_width = 25
         self.paddle_height = self.window_height/3.5
-        self.paddle_speed = 10
+        self.paddle_speed = 5
         
         self.ball_width = 30
         self.ball_height = self.ball_width
-        self.ball_speed = 8
+        self.ball_speed = 1
         
         self.window_center_x = self.window_width / 2
         self.window_center_y = self.window_height / 2

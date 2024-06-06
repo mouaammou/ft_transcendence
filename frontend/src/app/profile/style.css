@@ -1,4 +1,7 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+
 .profile {
 	display: flex;
 	flex-direction: row;
@@ -104,10 +107,13 @@
 	border-radius: 40px;
 }
 
+.friends-section {
+	margin-left: 310px;
+}
+
 
 .friends-section .title {
 	font-family: 'IBM Plex Sans', sans-serif;
-	margin-left: 310px;
 	margin-bottom: 20px;
 	font-size: 22px;
 }
@@ -119,15 +125,40 @@
 }
 
 .friends-section .statistics{
-	margin-top: 500px;
+	margin-top: 50px;
 }
 
 
 .buttons {
-	margin-left: 300px;
 	display: flex;
 	flex-direction: row;
 }
 .buttons div{
 	margin-right: 10px;
 }
+
+/* cart section */
+
+.friends-section .cards {
+	margin-top: 70px;
+	display: flex;
+	gap: 30px;
+	margin-left: -100px;
+	margin-bottom: 100px;
+}
+
+.friends-section .cards .title-div{
+	display: flex;
+	justify-content: space-between;
+	font-family: Lato;
+	font-size: 15px;
+	margin-bottom: 15px;
+	color: rgba(235,235,245, 0.5);
+}
+
+.friends-section .cards .title-div .see-all {
+	color: rgba(235,235,245, 0.25);
+}
+
+/* cart component: */
+

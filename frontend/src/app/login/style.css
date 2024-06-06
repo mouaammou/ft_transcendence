@@ -30,16 +30,13 @@
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 18px;
     margin-top: 12px;
+    width: 100%;
     margin-bottom: 12px;
     padding: 12px 0 12px 15px;
     border: 1.45px solid white;
     border-radius: 8px;
 }
 
-.first-last-names {
-    display: flex;
-    gap: 10px;
-}
 .main-login input:not(:placeholder-shown) {
     font-family: 'IBM Plex Sans', sans-serif;
     color: white;
@@ -55,7 +52,7 @@
 }
 
 .main-login input:focus {
-    outline: 1.5px solid white;
+    outline: 1.2px solid white;
 }
 
 
@@ -63,7 +60,7 @@
     font-family: Montserrat, Arial, Helvetica, sans-serif;
     font-size: 20px;
     font-weight: bold;
-    background-color: #46CCDA;
+    background-color: var(--principaleColor);
     border-radius: 10px;
     border: none;
     padding-top: 15px;
@@ -71,4 +68,49 @@
     color: white;
     margin-top: 20px;
     cursor: pointer;
+    margin-bottom: 30px;
 }
+
+.sign-with {
+    pointer-events: none;
+}
+
+.logos {
+    margin-left: 150px;
+    margin-top: 40px;
+}
+
+.google-logo {
+    width: 40px;
+}
+
+._42-logo {
+    margin-right: 30px;
+}
+
+
+.forgot-password {
+    display: flex;
+    margin-top: 60px;
+}
+
+.forgot-password a, .have-no-account {
+    color: white;
+    font-family: 'IBM Plex Sans', sans-serif;;
+    font-size: 15.5px;
+    margin-right: 40px;
+}
+
+.have-no-account  a {
+    font-family: 'IBM Plex Sans', sans-serif;;
+    font-size: 18px;
+    margin-left: 6px;
+}
+
+
+@media (max-width: 767px) {
+    .main-container {
+    width: 400px;
+      flex-direction: column;
+    }
+  }

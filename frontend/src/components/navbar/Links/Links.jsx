@@ -7,16 +7,16 @@ const Links = () => {
 			path: "/",
 		},
 		{
-			title: "About Us",
-			path: "/aboutus",
+			title: "profile",
+			path: "/profile",
 		},
 		{
 			title: "Game",
 			path: "/game",
 		},
 		{
-			title: "Features",
-			path: "/features",
+			title: "Dashboard",
+			path: "/Dashboard",
 		},
 		{
 			title: "Contact",

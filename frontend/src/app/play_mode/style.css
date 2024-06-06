@@ -57,7 +57,7 @@
     font-weight: 600;
     font-size: 30px;
     color: white;
-    background-color: #46CCDA;
+    background-color: var(--principaleColor);
     width: 282px;
     height: 92px;
     border-radius: 14px;
