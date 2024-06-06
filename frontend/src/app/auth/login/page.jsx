@@ -84,7 +84,7 @@ export default function LoginPage() {
 				}
 			</form>
 			<div className="side-image">
-				<img className="sign-with" src="/join.svg" alt="welcome" />
+				<img className="sign-with" src="/login.svg" alt="welcome" width="150%"/>
 			</div>
 		</div>
 	);

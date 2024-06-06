@@ -5,12 +5,8 @@ const LoginLayout = ({ children }) => {
 	const { isAuthenticated } = useAuth();
 
 	if (!isAuthenticated) {
-		return (
-			<>
-				{children}
-			</>
-		);
-	} else return null;
+		return <>{children}</>;
+	}
 };
 
 export default LoginLayout;

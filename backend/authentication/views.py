@@ -8,13 +8,11 @@ from rest_framework import status
 from .serializers import UserSerializer
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 from .utils import set_jwt_cookies
 from .utils import has_valid_token
 
-#import jsonResponse
 
 @api_view(["POST", "GET"])
 def SignUp(request):
@@ -92,8 +90,8 @@ class OAuth42Login(APIView):
 		response = Response(data={"auth_url": auth_url} ,status=status.HTTP_200_OK)
 		return response
 
-class OAuth42Callback(APIView):
 
+class OAuth42Callback(APIView):
 	def get(self, request):
 		code = request.GET.get('code')
 		if not code:
