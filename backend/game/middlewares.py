@@ -27,10 +27,11 @@ class CookiesJWTAuthMiddleware:
             refresh_token_obj = RefreshToken(refresh_token)
             user_id = refresh_token_obj.payload['user_id']
             scope['user'] = await self.get_user(user_id)
-        except TokenError:
-            print("Middleware: TokenError")
+        except (TokenError, KeyError) as e:
+            print("Middleware Error: ", e)
             scope['user'] = AnonymousUser()
 
+        print("*** Middleware User: ", scope['user'], '***')
         # Call the inner application
         scope = dict(scope)
         return await self.inner(scope, receive, send)
