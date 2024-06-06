@@ -8,7 +8,7 @@ const AuthCallback = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const code = searchParams.get("code");
-	const { setIsAuthenticated, isAuthenticated } = useAuth();
+	const { setIsAuthenticated } = useAuth();
 
 	useEffect(() => {
 		const fetchTokens = async () => {
@@ -18,7 +18,7 @@ const AuthCallback = () => {
 					if (response.status === 200 || response.status === 201) {
 						// Tokens are set in cookies by the backend
 						setIsAuthenticated(true);
-						router.push("/dashboard");
+						router.push("/profile");
 					}
 				})
 				.catch((error) => {

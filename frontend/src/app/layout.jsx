@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar/navAuth";
 const inter = Inter({ subsets: ["latin"] });
 import "@/styles/globals.css";
 
+
 // export const metadata = {
 // 	title: "Transcendence",
 // 	description:
@@ -13,6 +14,7 @@ import "@/styles/globals.css";
 // };
 
 export default function RootLayout({ children }) {
+
 	return (
 		<html lang="en">
 			<LoginProvider>

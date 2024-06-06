@@ -68,7 +68,9 @@ export const LoginProvider = ({ children }) => {
 		verifyToken("/token/verify").then((res) => {
 			if (res != null && res.status === 200) {
 				setIsAuthenticated(true);
-				router.push(pathname);
+				if (pathname === "/auth/login" || pathname === "/auth/signup")
+					router.push("/profile");
+				else router.push(pathname);
 			} else {
 				if (res.response.status === 500) {
 					router.push("/500");

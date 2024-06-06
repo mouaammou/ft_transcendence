@@ -16,7 +16,7 @@ const Links = () => {
 		},
 		{
 			title: "Dashboard",
-			path: "/Dashboard",
+			path: "/dashboard",
 		},
 		{
 			title: "Contact",
