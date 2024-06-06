@@ -10,7 +10,6 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 import os
 
 
-from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from channels.routing import URLRouter
 
@@ -23,28 +22,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django_asgi_app = get_asgi_application()
 
 from game.routing import websocket_urlpatterns
-
-async def app(scope, receive, send):
-    print('Enterrrrrrrr***************************')
-    if scope['type'] == 'lifespan':
-        while True:
-            message = await receive()
-            if message['type'] == 'lifespan.startup':
-                ... # Do some startup here!
-                await send({'type': 'lifespan.startup.complete'})
-            elif message['type'] == 'lifespan.shutdown':
-                ... # Do some shutdown here!
-                await send({'type': 'lifespan.shutdown.complete'})
-                return
-    else:
-        pass # Handle other types
+from game.middlewares import CookiesJWTAuthMiddleware
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
     'websocket': AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
+        CookiesJWTAuthMiddleware(
             URLRouter(websocket_urlpatterns),
         ),
     ),
-    'lifespan': app,
 })
