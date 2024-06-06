@@ -1,11 +1,11 @@
 import Link from "next/link";
-import "./style.css"
+import "@/Styles/auth/forget_password.css";
 
 const SignUp = () => {
 	
 	return (
-		<div className="main-container">
-            <div className="main-login">
+		<div className="main-container-forget">
+            <div className="forget-main-login">
                 <p>Forgot your password?</p>
                 <div className="description">
                     Enter the email address associated with your account,
@@ -16,7 +16,7 @@ const SignUp = () => {
                 <button className="second-button">Go back</button>
             </div>
             <div className="side-image">
-                <img className="sign-with" src="forget-pass.svg" alt="welcome"/>
+                <img className="sign-with" src="/forget-pass.svg" alt="welcome"/>
             </div>
         </div>
 	)

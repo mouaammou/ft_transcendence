@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const Cart = ({cartColor, imgg, name}) => {
     return (
         <div className="my-cart" 
@@ -10,13 +12,13 @@ const Cart = ({cartColor, imgg, name}) => {
                 backgroundColor: `${cartColor}`,
                 margin: '4px 0px'
             }}>
-            <img src={imgg} alt="avatar"
+            <Image src={imgg} alt="avatar"
+                width={44}
+                height={44}
                 style={{
-                    width: '44px',
-                    height: '44px',
                     borderRadius: '22px',
                     margin: '0 12px'
-                }}/>
+                }}></Image>
             <p style={{
                 	fontFamily: 'Lato',
                     fontSize: '14px'

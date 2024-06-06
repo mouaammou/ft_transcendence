@@ -19,8 +19,8 @@ const Links = () => {
 			path: "/Dashboard",
 		},
 		{
-			title: "Contact",
-			path: "/contact",
+			title: "Chat",
+			path: "/chat",
 		},
 	];
 	return (

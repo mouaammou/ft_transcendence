@@ -1,7 +1,7 @@
 const Contact = () => {
 	return (
 		<div>
-			send email.
+			welcome to the chat page
 		</div>
 	 );
 }

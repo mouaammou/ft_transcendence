@@ -22,7 +22,7 @@
 }
 
 .main-page .transparent .title {
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: var(--principaleFont);
     font-size: 64px;
     font-weight: 700;
     /* padding-top: 120px; */

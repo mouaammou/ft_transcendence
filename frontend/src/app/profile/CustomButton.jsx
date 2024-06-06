@@ -7,7 +7,7 @@ const CustomButton = ({myLabel, count, color}) => {
 				alignItems: 'center'
 					}}>
 			<p style={{
-					fontFamily: 'IBM Plex Sans, sans-serif',
+					fontFamily: 'var(--principaleFont)',
 					fontSize: '16px',
 					fontWeight:'500',
 					marginBottom: '10px'

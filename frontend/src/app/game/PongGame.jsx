@@ -88,8 +88,15 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 
 		// Constants
 		// create new websocket client
-		const socket = new WebSocket('ws://' + '10.13.10.4:5000' + '/ws/pong/game/');
-		// // Connection opened
+		const socket = new WebSocket('ws://127.0.0.0:8000/ws/pong/game/');
+		let conectionOn;
+		if (socket.readyState === WebSocket.OPEN) {
+			console.log('WebSocket connection is open');
+			conectionOn = true;
+		} else {
+			console.log('WebSocket connection is not open');
+			conectionOn = false;
+		  }
 		socket.addEventListener('open', (event) => {
 			// console.log(socketState);
 			console.log('Connected to WS Server');
@@ -163,47 +170,9 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		let setconfig = false;
 		// socket.onmessage
 		const updateGame = () => {
-			// Move paddles
-			// if (keys.ArrowUp && computer.y > 0) {
-			// 	computer.y -= 10;
-			// }
-			// if (keys.ArrowDown && computer.y + computer.height < canvas.height) {
-			// 	computer.y += 10;
-			// }
-			// if (keys.q && user.y > 0) {
-			// 	user.y -= 10;
-			// }
-			// if (keys.s && user.y + user.height < canvas.height) {
-			// 	user.y += 10;
-			// }
-
-			// Move the ball
-			// ball.x += ball.velocityX;
-			// ball.y += ball.velocityY;
-
-			// simple AI movement
-			// num++;
-			// if (num % 50 == 0) {
-			// 	number = Math.random() * 10 + 1;
-			// 	console.log(number);
-			// }
-			// computer.y = ball.y - computer.height / 2;
-			// user.y = ball.y - (user.height / 2);
-			// let player;
-			// if (computer.y <= 0)
-			// 	computer.y = 0
-			// else if (computer.y + computer.height >= canvas.height)
-			// 	computer.y = canvas.height - computer.height;
-			// if (user.y <= 0)
-			// 	user.y = 0
-			// else if (user.y + user.height >= canvas.height)
-			// 	user.y = canvas.height - user.height;
-
-
-
-			// Reset ball position if it goes beyond the paddles
 		}
 
+		
 
 		// Draw game elements
 		const drawGame = () => {
@@ -211,8 +180,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			// draw net
 			drawNet();
-			// console.log(canvas.width);
-			// console.log(net);
 
 			// Draw paddles
 			drawRect(user.x, user.y, user.width, user.height, user.color);
@@ -223,7 +190,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			drawCircle(ball.x, ball.y, ball.radius, ball.color);
 			context.closePath();
 		};
-
+		
+		if (!conectionOn)
+		{
+			drawGame()
+		}
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
@@ -285,8 +256,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef}>
-			{/* height={400} width={900} */}
+		<canvas className="play-ground" ref={canvasRef} height={400} width={900}>
+			
 		</canvas>
 	);
 }

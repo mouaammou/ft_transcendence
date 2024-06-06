@@ -1,6 +1,7 @@
 "use client";
 import PongGame from "./PongGame";
 import { useState, useEffect } from "react";
+import '@styles/game/game.css';
 
 const GamePage = () => {
 	const [score1, setScore1] = useState(0);

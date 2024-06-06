@@ -23,7 +23,7 @@ const Navbar = () => {
 								className="img-logout"
 							/>
 						</div>
-						<div className="logout-text">
+						<div className="logout-text" onClick={logout}>
 							Logout
 						</div>
 					</>

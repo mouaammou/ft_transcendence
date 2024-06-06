@@ -24,7 +24,7 @@
 }
 
 .profile-name-btn .profile-name {
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	font-size: 2rem;
 	color: white;
 	margin-bottom: 15px;
@@ -32,7 +32,7 @@
 
 .profile-name-btn .edit-btn {
 	background-color: #797979;
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	font-size: 1.2rem;
 	color: white;
 	border: none;
@@ -58,7 +58,7 @@
 }
 
 .profile-level p {
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	font-size: 1.2rem;
 	margin-bottom: 5px;
 	color: white;
@@ -71,7 +71,7 @@
 }
 
 .info p {
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	font-size: 26px;
 	margin-top: 25px;
 	margin-left: 20px;
@@ -88,12 +88,12 @@
 
 .info .info-section .sps-info {
 	font-size: 21px;
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	margin-left: 15px;
 }
 
 .badges-collected{
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	font-size: 22px;
 	margin-top: 44px;
 }
@@ -113,7 +113,7 @@
 
 
 .friends-section .title {
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--principaleFont);
 	margin-bottom: 20px;
 	font-size: 22px;
 }

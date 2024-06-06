@@ -34,7 +34,7 @@ export default function LoginPage() {
 	}, [isAuthenticated]);
 
 	return (
-		<div className="main-container">
+		<div className="login-main-container">
 			<form onSubmit={signIn} className="main-login">
 				<p>Join</p>
 				<input
