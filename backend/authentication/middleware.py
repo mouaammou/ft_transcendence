@@ -12,7 +12,8 @@ class TokenVerificationMiddleWare:
 		unrestricted_paths = [
 			"/auth/login/42", "/auth/callback/42",
 			"/signup", "/login", "/logout",
-			"/token", "/token/refresh"
+			"/token", "/token/refresh",
+			
 		]
 
 		if request.path.startswith("/admin") or request.path in unrestricted_paths:
