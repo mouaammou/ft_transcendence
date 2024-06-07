@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.models import AnonymousUser
+from authentication.serializers import UserSerializer
 
 User = get_user_model()
 
@@ -35,13 +36,13 @@ def has_valid_token(func):
 				AccessToken(access_token)
 				try:
 					myuser = User.objects.get(id=AccessToken(access_token).get("user_id"))
-					request.customuser = myuser
+					serialize_user = UserSerializer(myuser, many=False).data
+					request.customuser = serialize_user
 				except User.DoesNotExist:
 					request.customuser = AnonymousUser()
 			except TokenError:
 				request.customuser = AnonymousUser()
 		except TokenError:
 			request.customuser = AnonymousUser()
-		# print(f"\nUser: {request.customuser}\n")
 		return func(request,*args, **kwargs)
 	return wrapper
