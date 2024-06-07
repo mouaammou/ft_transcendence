@@ -3,8 +3,14 @@ import Image from 'next/image';
 const InternalServerError = () => {
 	return (
 		<div>
-			<h1>500 - Internal Server Error</h1>
-			<p>Sorry, something went wrong.</p>
+			<Image src="/500.svg" 
+				width={1000}
+				height={1000}
+				alt="" 
+				style={{
+					marginLeft: '150px',
+					marginTop: '-90px'
+					}}/>
 		</div>
 	);
 };
