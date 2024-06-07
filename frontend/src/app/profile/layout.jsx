@@ -2,9 +2,10 @@
 import { useAuth } from "@/components/auth/loginContext";
 
 const Layout = ({ children }) => {
-	const { isAuthenticated } = useAuth();
+	// const { isAuthenticated } = useAuth();
 
-	if (isAuthenticated) return <>{children}</>;
+	// if (isAuthenticated) 
+		return <>{children}</>;
 };
 
 export default Layout;
