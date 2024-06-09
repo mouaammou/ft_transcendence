@@ -4,6 +4,7 @@ import CustomButton from "./CustomButton.jsx";
 import "@styles/profile/profile.css";
 import Cart from "./Cart.jsx";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import { getData } from "@/services/apiCalls.js";
 
@@ -31,12 +32,14 @@ const Profile = () => {
 						<div className="profile-name-btn">
 							<div className="profile-name">{data?.username}</div>
 							<button className="edit-btn">
-								Edit Profile
-								{/* <img
-									className="edit-pen"
-									src="EditPen.svg"
-									alt=""
-								/> */}
+								<Link href="/edit_profile">
+									Edit Profile
+									<img
+										className="edit-pen"
+										src="EditPen.svg"
+										alt=""
+									/>
+								</Link>
 							</button>
 						</div>
 					</div>
