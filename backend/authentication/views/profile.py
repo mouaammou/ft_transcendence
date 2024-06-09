@@ -27,7 +27,8 @@ def UpdateProfile(request):
 	user_serializer = UserSerializer(user, data=request.data, partial=True)
 	if user_serializer.is_valid():
 		user_updated = user_serializer.update(user, user_serializer.validated_data)
-		user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
+		if user_updated.avatar:
+			user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
 		user_updated.save()
 		return Response(user_serializer.data, status=status.HTTP_200_OK)
 

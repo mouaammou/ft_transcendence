@@ -1,18 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getData, postData } from "@/services/apiCalls.js";
-import axios from "axios";
 
 const EditProfile = () => {
 	const [data, setData] = useState({
-		username: "",
+		nickname: "",
 		email: "",
 		first_name: "",
 		last_name: "",
 		avatar: "",
 	});
 	const [userData, setUserData] = useState({
-		username: "",
+		nickname: "",
 		email: "",
 		first_name: "",
 		last_name: "",
@@ -43,9 +42,9 @@ const EditProfile = () => {
 			postData(
 				"profile/update",
 				{
-					username: userData.username
-						? userData.username
-						: data.username,
+					nickname: userData.nickname
+						? userData.nickname
+						: data.nickname,
 					email: userData.email ? userData.email : data.email,
 					first_name: userData.first_name
 						? userData.first_name
@@ -92,11 +91,11 @@ const EditProfile = () => {
 						/>
 					</div>
 					<div className="input_field">
-						<label>Username</label>
+						<label>nickname</label>
 						<input
 							type="text"
-							placeholder="Username"
-							name="username"
+							placeholder="nickname"
+							name="nickname"
 							onChange={handleChange}
 						/>
 					</div>

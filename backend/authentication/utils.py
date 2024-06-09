@@ -1,9 +1,11 @@
 #import get_user_model
+import requests
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth.models import AnonymousUser
-from authentication.serializers import UserSerializer
+from django.core.files.base import ContentFile
+from .models import CustomUser
 
 User = get_user_model()
 
@@ -46,3 +48,11 @@ def has_valid_token(func):
 			request.customuser = AnonymousUser()
 		return func(request,*args, **kwargs)
 	return wrapper
+
+def save_image_from_url(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        content = ContentFile(response.content)
+        file_name = "downloaded_image.jpg"
+        my_model_instance = CustomUser(image_file=content, image_name=file_name)
+        my_model_instance.save()
