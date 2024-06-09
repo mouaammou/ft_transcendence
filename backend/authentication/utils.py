@@ -36,8 +36,8 @@ def has_valid_token(func):
 				AccessToken(access_token)
 				try:
 					myuser = User.objects.get(id=AccessToken(access_token).get("user_id"))
-					serialize_user = UserSerializer(myuser, many=False).data
-					request.customuser = serialize_user
+					# serialize_user = UserSerializer(myuser, many=False).data
+					request.customuser = myuser
 				except User.DoesNotExist:
 					request.customuser = AnonymousUser()
 			except TokenError:

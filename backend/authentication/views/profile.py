@@ -2,39 +2,40 @@ from rest_framework.decorators import api_view
 from authentication.models import CustomUser
 from rest_framework.response import Response
 from rest_framework import status
-from authentication.serializers import UserSerializer
+from authentication.serializers import UserSerializer, ImageSerializer
 from authentication.utils import has_valid_token
 from django.conf import settings
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.views import APIView
 
 @api_view(["POST", "GET"])
 @has_valid_token
 def UserProfile(request):
-	print(f"\nUser: {request.customuser}\n")
-	return Response({"user": request.customuser}, status=status.HTTP_200_OK)
+	user = UserSerializer(request.customuser, many=False).data
+	return Response({"user": user}, status=status.HTTP_200_OK)	
 
 @api_view(["POST"])
 @has_valid_token
 def UpdateProfile(request):
-	print(f"Media Root Path: {settings.MEDIA_ROOT}")
-	#get the id of the user
-	serializer = UserSerializer(request.customuser)
-	id = serializer.data['id']
-	#update the user
+	user = request.customuser
 	try:
-		user = CustomUser.objects.get(id=id)
-		if request.data.get("first_name"):
-			user.first_name = request.data.get("first_name")
-		if request.data.get("last_name"):
-			user.last_name = request.data.get("last_name")
-		if request.data.get("username"):
-			user.username = request.data.get("username")
-		if request.data.get("email"):
-			user.email = request.data.get("email")
-		if request.data.get("avatar"):
-			user.avatar = request.data.get("avatar")
-		user.save()
-		print(f"\nUser: {user.avatar}\n")
+		user = CustomUser.objects.get(username=user.username)
 	except CustomUser.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+	
+	print(f"request data {request.data}")
+	user_serializer = UserSerializer(user, data=request.data, partial=True)
+	if user_serializer.is_valid():
+		user_updated = user_serializer.update(user, user_serializer.validated_data)
+		user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
+		user_updated.save()
+		return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-	return Response({"user": "user is updated"}, status=status.HTTP_200_OK)
+	# avatar_serializer = ImageSerializer(data=request.data)
+	# if avatar_serializer.is_valid():
+	# 	user_updated = avatar_serializer.update(user, avatar_serializer.validated_data)
+	# 	user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
+	# 	user_updated.save()
+	# 	return Response(status=status.HTTP_200_OK)
+
+	return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -18,9 +18,6 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
 	baseURL: "/api/", // Replace with your Django backend URL
-	headers: {
-		"Content-Type": "application/json",
-	},
 });
 
 //chck if the response is a 401 then redirect to the login page

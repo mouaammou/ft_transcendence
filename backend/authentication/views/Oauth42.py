@@ -47,7 +47,7 @@ class OAuth42Callback(APIView):
 			"first_name":user_data['first_name'],
 			"last_name":user_data['last_name'],
 			"email":user_data['email'],
-			"avatar":user_data['image']['versions']['medium']
+			"avatar_url":user_data['image']['versions']['medium']
 		}
 
 		response = Response()

@@ -1,9 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getData, postData } from "@/services/apiCalls.js";
+import axios from "axios";
 
 const EditProfile = () => {
-	const [data, setData] = useState({});
+	const [data, setData] = useState({
+		username: "",
+		email: "",
+		first_name: "",
+		last_name: "",
+		avatar: "",
+	});
 	const [userData, setUserData] = useState({
 		username: "",
 		email: "",
@@ -14,7 +21,10 @@ const EditProfile = () => {
 
 	useEffect(() => {
 		getData("profile/data").then((res) => {
-			setData(res.data.user);
+			if (res?.status === 200) {
+				setData(res.data.user);
+				console.log("USER DATA: ", res.data.user);
+			}
 		});
 	}, []);
 
@@ -22,26 +32,57 @@ const EditProfile = () => {
 		setUserData({ ...userData, [e.target.name]: e.target.value });
 	};
 
+	const handle_avatar = (e) => {
+		setUserData({ ...userData, avatar: e.target.files[0] });
+	};
+
 	const UpdateProfile = async (e) => {
 		e.preventDefault();
+
 		try {
-			res = await postData("profile/update", userData);
+			postData(
+				"profile/update",
+				{
+					username: userData.username
+						? userData.username
+						: data.username,
+					email: userData.email ? userData.email : data.email,
+					first_name: userData.first_name
+						? userData.first_name
+						: data.first_name,
+					last_name: userData.last_name
+						? userData.last_name
+						: data.last_name,
+					avatar: userData.avatar ? userData.avatar : "",
+					password: userData.password,
+				},
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}
+			);
 			console.log(res);
 		} catch (err) {
 			console.log(err);
 		}
 	};
+
 	return (
 		<div>
 			<h1>Edit Profile</h1>
 			<div className="edit-profile">
-				<form onSubmit={UpdateProfile} method="POST">
+				<form
+					onSubmit={UpdateProfile}
+					method="POST"
+					enctype="multipart/form-data"
+				>
 					<div className="avatar_field">
 						<label>Change Avatar</label>
 						<input
 							type="file"
 							name="avatar"
-							onChange={handleChange}
+							onChange={handle_avatar}
 						/>
 						<img
 							src={data?.avatar}
@@ -56,7 +97,6 @@ const EditProfile = () => {
 							type="text"
 							placeholder="Username"
 							name="username"
-							value={data?.username}
 							onChange={handleChange}
 						/>
 					</div>

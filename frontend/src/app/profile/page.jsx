@@ -10,10 +10,9 @@ import { getData } from "@/services/apiCalls.js";
 
 const Profile = () => {
 	const [data, setData] = useState({});
-
 	useEffect(() => {
 		getData("profile/data").then((res) => {
-			setData(res.data.user);
+			setData(res?.data?.user);
 		});
 	}, []);
 
@@ -25,7 +24,7 @@ const Profile = () => {
 						<div className="">
 							<img
 								className="profile-pic"
-								src={data?.avatar}
+								src={data?.avatar_url}
 								alt="profile_pic"
 							/>
 						</div>

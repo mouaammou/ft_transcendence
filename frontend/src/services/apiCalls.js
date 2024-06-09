@@ -9,9 +9,13 @@ export const getData = async (endPoint) => {
 	}
 };
 
-export const postData = async (endPoint, data) => {
+export const postData = async (
+	endPoint,
+	data,
+	headers
+) => {
 	try {
-		const response = await axiosInstance.post(endPoint, data, {
+		const response = await axiosInstance.post(endPoint, data, headers, {
 			withCredentials: true,
 		});
 		// console.log("postData ==> ", response)
