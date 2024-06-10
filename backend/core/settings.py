@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import timedelta
 
 load_dotenv()
 
@@ -51,6 +52,8 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
     "ROTATE_REFRESH_TOKENS": True,
     "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),  # 1 hour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
 }
 
 # Set your 42 OAuth credentials

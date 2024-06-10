@@ -13,7 +13,6 @@ class TokenVerificationMiddleWare:
 			"/auth/login/42", "/auth/callback/42",
 			"/signup", "/login", "/logout",
 			"/token", "/token/refresh",
-			
 		]
 
 		if request.path.startswith("/admin") or request.path in unrestricted_paths:
@@ -30,9 +29,10 @@ class TokenVerificationMiddleWare:
 			try:
 				AccessToken(access_token)
 			except TokenError:
-				response = JsonResponse({"message": "Access token refreshed"}, status=status.HTTP_200_OK)
-				response = set_jwt_cookies(response, RefreshToken(refresh_token))
-				return response
+				# response = JsonResponse({"message": "Access token refreshed"}, status=status.HTTP_200_OK)
+				# response = set_jwt_cookies(response, RefreshToken(refresh_token))
+				# return response
+				request.COOKIE["access_token"] = str(RefreshToken(refresh_token).access_token)
 		except TokenError:
 			return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
 		return self.get_response(request)
