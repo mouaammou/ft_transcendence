@@ -33,7 +33,7 @@ export default function Sidebar() {
                             
                             onClick={()=>router.push(item.route)}
                             >
-                                <img  src={item.icon} alt= {item.label} />
+                                <img  className="icone_side" src={item.icon} alt= {item.label} />
                                 {/* <Image src={item.icon} alt= {item.label}  width={24} height={24} /> */}
                                 {/* <Image src={item.icon} alt= {item.label}  width={24} height={24} /> */}
                                 {/* <span>{item.label}</span> */}
