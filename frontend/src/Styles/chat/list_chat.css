@@ -3,20 +3,41 @@
 
     background-color: rgba(163, 218, 232, 0.2);
     border-radius: 10px;
-    margin: 55px 10px 55px 10px;
-    width: 400px; /* Fixed width */
+    margin: 55px 10px 55px 0px;
+    width: 500px;
     flex-shrink: 0; /* Prevent shrinking below 400px */
 }
 h2{
     margin: 20px;
 }
 
-@media (max-width: 990px){
+@media (max-width: 1300px){
     .list_chat{
         
         /* background-color: rgba(233, 114, 131, 0.2); */
+        width: 400px;
+        flex-shrink: 0; /* Prevent shrinking below 400px */
+        /* width: 100%; */
+    }
+}
+
+@media (max-width: 990px){
+    .list_chat{
         flex-grow: 1;
         margin-right: 40px;
-        /* width: 100%; */
+        width: 500px;
+    }
+}
+@media (max-width: 800px){
+    .list_chat{
+        margin-left:  10px;
+    }
+}
+
+@media (max-width: 700px){
+    .list_chat{
+        flex-grow: 1;
+        margin: 0px 10px;
+        margin: 10px 10px 90px 10px;
     }
 }
