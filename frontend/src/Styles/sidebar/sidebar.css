@@ -95,49 +95,11 @@ ul li:hover{
 }
 
 @media (max-width: 800px){
-    .container .sidebar{
-        padding: 0px;
-        width: 50px;
-    }
-    .sidebar .logo{
-        margin: 80px -22px;
-    }
-    .sidebar .logo img{
-        width: 50px;
-        
-    }
-    .icone_side{
-        width: 20px;
-    }
-}
-
-
-/* try display sidebare row in the botton */
-/* @media (max-width: 600px){
-    .container .sidebar{
-        padding: 0px;
-        top: unset;
-        width: 100%;
-        bottom: 0;
-        display: flex;
-        flex-direction: row;
-        height: 64px;
-    }
-    ul {
-        display: flex;
-        flex-direction: row;
-    }
-    .sidebar .logo{
-        display: none;
-    }
-    
-} */
-
-@media (max-width: 700px){
     .container .sidebar {
         flex-direction: row;
         align-items: center;
-        justify-content: space-evenly;
+        /* justify-content: space-evenly; */
+        justify-content: center;
         height: auto;
         width: 100%;
         position: fixed;
@@ -151,19 +113,24 @@ ul li:hover{
     .container .sidebar .logo {
         display: none;
     }
-    ul li img{
-        /* width: 20px; */
+    li {
+        margin: 0px 15px;
+        /* margin: auto; */
+    }
+    .icone_side{
+        width: 20px;
     }
     .container .sidebar .icon_items ul {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
         width: 100%;
+        /* add */
+        padding: 0; /* Remove padding for better alignment */
     }
 
     .container .sidebar .icon_items ul li {
         padding: 20px;
-        /* padding: 10px; */
     }
 
     .container .sidebar .Logout {
@@ -178,5 +145,17 @@ ul li:hover{
 
     .container .sidebar .Logout ul li {
         padding: 10px;
+    }
+}
+
+@media (max-width: 600px){
+    li {
+        margin: 0px 5px;
+    }
+}
+
+@media (max-width: 400px){
+    li {
+        margin: 0px;
     }
 }

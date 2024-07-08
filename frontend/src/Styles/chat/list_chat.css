@@ -11,6 +11,31 @@ h2{
     margin: 20px;
 }
 
+.user-chat{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 30%;
+    margin: 14px;
+    padding: 20px;
+}
+
+.info-user{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.HiBell{
+    font-size: 35px;
+    color: white;
+}
+
+.user-chat p{
+    font-size: 20px;
+    /* margin-left: 10px; */
+}
+
 @media (max-width: 1300px){
     .list_chat{
         
@@ -30,14 +55,15 @@ h2{
 }
 @media (max-width: 800px){
     .list_chat{
-        margin-left:  10px;
+        /* margin-left:  10px; */
+        margin: 10px 10px 90px 10px;
     }
 }
 
-@media (max-width: 700px){
+/* @media (max-width: 700px){
     .list_chat{
         flex-grow: 1;
         margin: 0px 10px;
         margin: 10px 10px 90px 10px;
     }
-}
+} */
