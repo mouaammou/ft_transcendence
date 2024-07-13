@@ -11,13 +11,13 @@ import UserList from '@/components/chat/list/UserList/UserList'
 
 
 const users = [
-    { name: 'User 1', email: 'user1@example.com', active: true , img: '/Profil.svg'},
+    { name: 'User 1', email: 'user1@example.com', active: true , img: '/mouad.jpeg'},
     { name: 'User 2', email: 'user2@example.com', active: false , img: '/Profil.svg'},
-    { name: 'User 3', email: 'user3@example.com', active: true , img: '/Profil.svg'},
-    { name: 'User 4', email: 'user4@example.com', active: false , img: '/Profil.svg'},
-    { name: 'User 5', email: 'user5@example.com', active: true , img: '/Profil.svg'},
-    { name: 'User 6', email: 'user6@example.com', active: false , img: '/Profil.svg'},
-    { name: 'User 7', email: 'user7@example.com', active: true , img: '/Profil.svg'},
+    { name: 'User 3', email: 'user3@example.com', active: true , img: '/samjaabo.jpeg'},
+    { name: 'User 4', email: 'user4@example.com', active: false , img: '/user2.svg'},
+    { name: 'User 5', email: 'user5@example.com', active: true , img: '/avatar3.jpeg'},
+    { name: 'User 6', email: 'user6@example.com', active: false , img: '/avatar4.jpeg'},
+    { name: 'User 7', email: 'user7@example.com', active: true , img: '/oredoine.webp'},
     { name: 'User 8', email: 'user8@example.com', active: false , img: '/Profil.svg'},
     { name: 'User 9', email: 'user9@example.com', active: true , img: '/Profil.svg'},
     { name: 'User 10', email: 'user10@example.com', active: false , img: '/Profil.svg'},

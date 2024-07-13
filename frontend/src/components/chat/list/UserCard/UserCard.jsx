@@ -2,6 +2,7 @@
 import Image from "next/image";
 
 const UserCard = ({user}) => {
+    const borderColor = user.active ? 'green' : 'red';
     return (
         <div 
             // style={{ 
@@ -14,10 +15,20 @@ const UserCard = ({user}) => {
             // justifyContent: 'center' 
             // }}
         >
-            {/* <p>{user.img}</p> */}
-            <Image src={user.img} alt={user.name} width={50} height={50} style={{ borderRadius: '25px'}} />
+            {/* <img src="{user.img}" alt="" /> */}
+            {/* <Image src={user.img} alt={user.name} width={50} height={50} style={{ borderRadius: '25px'}} /> */}
+            <Image 
+                src={user.img} 
+                alt={user.name} 
+                width={40}
+                height={40} 
+                style={{ 
+                    borderRadius: '25px', 
+                    border: `2px solid ${borderColor}`
+                }}
+            />
             <p>{user.name}</p>
-            <p>{user.email}</p>
+            {/* <p>{user.email}</p> */}
             <p>Active: {user.active ? 'Yes' : 'No'}</p>
         </div>
     );
