@@ -49,7 +49,7 @@ const list_chat = () =>{
         <div className="list_chat">
             <div className='user-chat'>
                 <div className='info-user'>
-                    <Image src="/med.jpeg" alt='user' width={65} height={65} style={{borderRadius: '30px'}}/>
+                    <Image src="/med.jpeg" alt='user' width={65} height={65} style={{borderRadius: '36px', border: '3px solid #F1FAEE'}}/>
                     <p> mohammed </p>
                 </div>
                 <div>
@@ -67,14 +67,13 @@ const list_chat = () =>{
             <div className= "initial-active-users">
                 <h2>Online Now</h2>
                 <div className="user-grid">
-                    <UserList users={onlineUser} />
+                    <UserList users={onlineUser} listType="online" />
                 </div>
             </div>
             <div>
                 <h2> all user</h2>
-                <div>
-                    {/* <UserList  users={users}/> */}
-                    <UserList  users={allUsers}/>
+                <div className="all-user">
+                    <UserList  users={allUsers} listType="all" />
                 </div>
             </div>
         </div>

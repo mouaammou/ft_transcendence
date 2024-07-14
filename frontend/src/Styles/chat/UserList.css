@@ -1,0 +1,15 @@
+/* .user-grid{
+    display: flex;
+    flex-direction: row;
+} */
+
+.user-list-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.user-list-column{
+    display: flex;
+    flex-direction: column;
+}

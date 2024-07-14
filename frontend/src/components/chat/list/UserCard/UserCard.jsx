@@ -1,7 +1,9 @@
 // import React from 'react';
 import Image from "next/image";
 
-const UserCard = ({user}) => {
+// we can do a style in div
+// {`user-card ${user.active ? 'active' : 'inactive'}`}
+const UserCard = ({user, listType}) => {
     const borderColor = user.active ? 'green' : 'red';
     return (
         <div 
@@ -22,14 +24,17 @@ const UserCard = ({user}) => {
                 alt={user.name} 
                 width={40}
                 height={40} 
-                style={{ 
+                style={{
                     borderRadius: '25px', 
                     border: `2px solid ${borderColor}`
                 }}
             />
-            <p>{user.name}</p>
-            {/* <p>{user.email}</p> */}
-            <p>Active: {user.active ? 'Yes' : 'No'}</p>
+            {listType === 'all' && (
+                <>
+                    <p>{user.name}</p>
+                    <p>Active: {user.active ? 'Yes' : 'No'}</p>
+                </>
+            )}
         </div>
     );
 }
