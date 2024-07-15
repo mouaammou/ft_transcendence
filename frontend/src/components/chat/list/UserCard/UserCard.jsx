@@ -1,38 +1,27 @@
 // import React from 'react';
+import React, { useState } from 'react';
 import Image from "next/image";
+import '@/Styles/chat/UserCard.css'
 
-// we can do a style in div
-// {`user-card ${user.active ? 'active' : 'inactive'}`}
 const UserCard = ({user, listType}) => {
     const borderColor = user.active ? 'green' : 'red';
+    const imageSize = listType === 'online' ? '65' : '45';
     return (
-        <div 
-            // style={{ 
-            // width: '50px', 
-            // height: '50px', 
-            // borderRadius: '25px', 
-            // backgroundColor: 'black', 
-            // display: 'flex', 
-            // alignItems: 'center', 
-            // justifyContent: 'center' 
-            // }}
-        >
-            {/* <img src="{user.img}" alt="" /> */}
-            {/* <Image src={user.img} alt={user.name} width={50} height={50} style={{ borderRadius: '25px'}} /> */}
+        <div className= {`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}>
             <Image 
                 src={user.img} 
                 alt={user.name} 
-                width={40}
-                height={40} 
+                width={imageSize}
+                height={imageSize}
                 style={{
-                    borderRadius: '25px', 
+                    borderRadius: '50%',
                     border: `2px solid ${borderColor}`
                 }}
             />
             {listType === 'all' && (
                 <>
                     <p>{user.name}</p>
-                    <p>Active: {user.active ? 'Yes' : 'No'}</p>
+                    {/* <p>Active: {user.active ? 'Yes' : 'No'}</p> */}
                 </>
             )}
         </div>
@@ -41,16 +30,105 @@ const UserCard = ({user, listType}) => {
 
 export default UserCard;
 
-// import React from 'react';
+//------------------------------------
 
-// const UserCard = ({user}) => {
-//   return (
-    // <div className={`user-card ${user.active ? 'active' : 'inactive'}`}>
-    //   <h3>{user.name}</h3>
-    //   <p>{user.email}</p>
-    //   <p>Status: {user.active ? 'Active' : 'Inactive'}</p>
-    // </div>
-//   );
+// import Image from 'next/image'; // Assuming you're using next/image
+
+// const UserCardList = ({ users, listType }) => {
+//     const [clickedCardIndex, setClickedCardIndex] = useState(null);
+
+//     return (
+//         <div className="usercard-list">
+//             {users?.map((user, index) => {
+//                 const borderColor = user.active ? 'green' : 'red';
+//                 const imageSize = listType === 'online' ? 65 : 45;
+//                 const isActive = clickedCardIndex === index;
+
+//                 return (
+//                     <div
+//                         key={index}
+//                         className={`usercard ${isActive ? 'clicked' : ''} ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}
+//                         onClick={() => setClickedCardIndex(index)}
+//                         style={{
+//                             border: isActive ? `1px solid #333` : '1px solid transparent',
+//                             borderRadius: isActive ? '5px' : '10px',
+//                         }}
+//                     >
+//                         <Image 
+//                             src={user.img} 
+//                             alt={user.name} 
+//                             width={imageSize}
+//                             height={imageSize}
+//                             style={{
+//                                 borderRadius: '50%', 
+//                                 border: `2px solid ${borderColor}`,
+//                             }}
+//                         />
+//                         {listType === 'all' && <p>{user.name}</p>}
+//                     </div>
+//                 );
+//             })}
+//         </div>
+//     );
 // };
 
-// export default UserCard;
+// export default UserCardList;
+
+//---------------------------------------
+
+// import React, { useState } from 'react';
+// import Image from 'next/image'; // Assuming you're using next/image
+
+
+
+// export default UserCardList;
+
+
+// ----------------------------------------
+
+// import React, { useState } from 'react';
+// import Image from 'next/image';
+
+// const UserCardList = ({ users = [], listType }) => {
+//     const [clickedIndex, setClickedIndex] = useState(null);
+
+//     return (
+//         <div className="usercard-list">
+//             {users?.length === 0 ? (
+//                 <p>No users available</p>
+//             ) : (
+//                 users.map((user, index) => {
+//                     const borderColor = user.active ? 'green' : 'red';
+//                     const imageSize = listType === 'online' ? 65 : 45;
+//                     const isClicked = clickedIndex === index;
+
+//                     return (
+//                         <div
+//                             key={index}
+//                             className={`usercard ${isClicked ? 'clicked' : ''}`}
+//                             onClick={() => setClickedIndex(index)}
+//                             style={{
+//                                 border: isClicked ? `1px solid #333` : '1px solid transparent',
+//                                 borderRadius: isClicked ? '5px' : '10px',
+//                             }}
+//                         >
+//                             <Image 
+//                                 src={user.img} 
+//                                 alt={user.name} 
+//                                 width={imageSize}
+//                                 height={imageSize}
+//                                 style={{
+//                                     borderRadius: '50%', 
+//                                     border: `2px solid ${borderColor}`
+//                                 }}
+//                             />
+//                             {listType === 'all' && <p>{user.name}</p>}
+//                         </div>
+//                     );
+//                 })
+//             )}
+//         </div>
+//     );
+// };
+
+// export default UserCardList;

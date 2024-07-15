@@ -10,7 +10,7 @@ const UserList = ({users, listType}) =>{
         // };
         {/* <div style={style}> */}
     return(
-        <div className={`user-list ${listType === 'online' ? 'user-list-row' : 'user-list-column'}`}
+        <div className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
         >
             {
                 users.map((user, index) => (

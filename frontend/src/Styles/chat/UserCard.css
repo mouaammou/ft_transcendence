@@ -1,0 +1,28 @@
+.UserCardAll{
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-around; */
+    align-items: center;
+    gap: 30px;
+    margin: 10px 30px 10px 50px;
+    cursor: pointer;
+    transition: border 0.3s, border-radius 0.3s;
+    padding: 3px;
+}
+
+/* Styling for UserCardAll */
+.UserCardAll {
+    border: 1px solid transparent; /* Default border */
+    border-radius: 10px; /* Default border radius */
+}
+
+/* Styling for UserCardAll on hover */
+.UserCardAll:hover {
+    border: 1px solid #aaa; /* Border on hover */
+}
+
+/* Styling for clicked card */
+.usercard.clicked {
+    border: 1px solid #333; /* Solid border when clicked */
+    border-radius: 5px; /* Reduced border radius when clicked */
+}
