@@ -4,12 +4,14 @@ const InternalServerError = () => {
 	return (
 		<div>
 			<Image src="/500.svg" 
-				width={1000}
-				height={1000}
+				width={800}
+				height={800}
 				alt="" 
 				style={{
-					marginLeft: '150px',
-					marginTop: '-90px'
+					display: 'flex',
+					margin: 'auto',
+					maxWidth: '100%',
+					height: 'auto'
 					}}/>
 		</div>
 	);

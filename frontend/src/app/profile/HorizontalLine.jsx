@@ -7,6 +7,7 @@ const HorizontalLine = ({lWidth, lTop, lLeft}) => {
 							border: '0.5px solid gray',
 							width: `${lWidth}`,
 							height: '0px',
+							marginTop: `${lTop}`,
 							}}/>
 				</div>
 	 );

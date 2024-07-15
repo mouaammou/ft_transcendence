@@ -56,7 +56,7 @@
     font-family: 'fredoka';
     font-weight: 600;
     font-size: 30px;
-    color: white;
+    color: var(--wt);
     background-color: var(--principaleColor);
     width: 282px;
     height: 92px;

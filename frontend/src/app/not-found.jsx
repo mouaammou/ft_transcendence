@@ -6,12 +6,14 @@ const NotFound = () => {
 			{/* 404 not found
 			<p> sorry this page is not available for now</p> */}
 			<Image src="/404.svg" 
-				width={1000}
-				height={1000}
+				width={800}
+				height={800}
 				alt="" 
 				style={{
-					marginLeft: '250px',
-					marginTop: '-90px'
+					display: 'flex',
+					margin: 'auto',
+					maxWidth: '100%',
+					height: 'auto'
 					}}/>
 		</div>
 	 );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Login42 from "@/components/auth/Oauth/login42";
 import "@styles/auth/login.css";
+import Image from "next/image";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
@@ -51,13 +52,13 @@ export default function LoginPage() {
 					placeholder="Enter Your Password"
 					onChange={handleChange}
 				/>
-				<button type="submit" className="btn btn-primary">
+				<button type="submit" className="">
 					Login
 				</button>
 				<img
 					src="/login-with.svg"
 					alt="login-with"
-					className="sign-with"
+					className="sign-wit"
 				/>
 				<div className="logos">
 					<Login42 />
@@ -68,7 +69,7 @@ export default function LoginPage() {
 					/>
 				</div>
 				<div className="forgot-password">
-					<a href="">Forgot your password?</a>
+					<Link className="pforgot" href="/forget_password">Forgot your password?</Link>
 					<div className="have-no-account">
 						Don't have an account?
 						<Link rel="stylesheet" href="/auth/signup">
@@ -84,7 +85,7 @@ export default function LoginPage() {
 				}
 			</form>
 			<div className="side-image">
-				<img className="sign-with" src="/login.svg" alt="welcome" width="150%"/>
+				<Image className="sign-with" width={400} height={400} src="/login.svg" alt="welcome"/>
 			</div>
 		</div>
 	);

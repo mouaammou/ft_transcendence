@@ -3,83 +3,78 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 80vh;
-	width: 100%;
+	height: 100%;
+	padding-top: 70px;
+	gap: 70px;
 }
 
 .game .up-section {
-	width: 100%;
-	height: 150px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	column-gap: 40px;
-	margin-bottom: 20px;
+	column-gap: 50%;
 }
 
 .game .up-section .left-score,
 .game .up-section .right-score {
 	font-family: "IBM Plex Sans", sans-serif;
-	color: white;
+	color: var(--wt);
 	font-size: 3rem;
 	font-weight: bold;
-	margin: 0 30px;
+	/* margin: 0 30px; */
 }
 
 .game .up-section .vs-section {
 	display: flex;
 	flex-direction: column;
-	row-gap: 20px;
+	align-items: center;
+	gap: 20px;
 }
 
 .game .up-section .vs-section .vs-time {
 	font-family: "IBM Plex Sans", sans-serif;
 	color: #e76f51;
 	font-size: 1.3rem;
-	margin-left: 10px;
 }
 
 .game .down-section {
-	width: 80%;
-	height: 60%;
 	display: flex;
-	/* align-items: center; */
 	justify-content: center;
-	column-gap: 10px;
+	column-gap: 3%;
 }
 
-.game .down-section .left-user {
-	width: fit-content;
-	margin: auto 5px;
+.game .down-section .left-user, .game .down-section .right-user {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 10%;
 }
 
 .left-user .left-user-img,
 .right-user .right-user-img {
-	width: 100px;
-	height: 100px;
-	border-radius: 50px;
+	/* width: 100px; */
+	/* width: 25%; */
+	/* height: 100%; */
+	border-radius: 50%;
 }
 
 .left-user .left-user-name,
 .right-user .right-user-name {
 	text-align: center;
 	font-family: "IBM Plex Sans", Courier, monospace;
-	font-size: 19px;
+	font-size: 1.7rem;
 	padding-top: 10px;
 }
 
 .game .down-section .self-game {
-	/* padding-right: auto;
-	padding-left: auto; */
+	width: 80%;
 }
 
-.game .down-section .right-user {
-	margin: auto 5px;
-	width: fit-content;
-}
 
 .game .down-section .play-ground {
 	background-color: #264653;
+	/* flex: 1; */
 	/* position: relative; */
 	border-radius: 5px;
 	border: 1px solid white;
@@ -87,3 +82,119 @@
 	/* height: 100%; */
 }
 
+
+
+
+@media (max-width: 1188px) {
+	.game .up-section .left-score,
+	.game .up-section .right-score {
+		font-size: 2rem;
+	}
+
+	/*
+	make the game display orizontally in the mobile view
+	*/
+	.game .up-section .vs-section .vs-time {
+		font-size: 1rem;
+	}
+	.game .down-section .left-user,
+	.game .down-section .right-user {
+		width: 30%;
+	}
+	.game .down-section .left-user img,
+	.game .down-section .right-user img {
+		width: fit-content;
+	}
+	
+	.game .down-section .self-game {
+		width: 80%;
+	}
+
+	.game .down-section .play-ground {
+		width: 100%;
+	}
+
+	.left-user .left-user-name,
+	.right-user .right-user-name {
+	font-size: 1.5rem;
+}
+}
+
+
+
+@media (max-width: 668px) {
+	.game {
+		justify-content: space-around;
+		padding-top: 10px;
+		gap: 10px;
+	}
+	.game .up-section .left-score,
+	.game .up-section .right-score {
+		font-size: 1rem;
+	}
+	.game .down-section {
+		/* flex-direction: column; */
+		flex-wrap: wrap;
+	}
+	.game .down-section .left-user, .game .down-section .right-user
+	{
+		order: 1;
+		flex-basis: 48%;
+		margin-bottom: 20px;
+		margin-top: 0px;
+		gap: 10px;
+	}
+	.game .down-section .self-game 
+	{
+		order: 2;
+		flex-basis: 100%;
+	}
+	
+	/*
+	make the game display orizontally in the mobile view
+	*/
+	.game .up-section .vs-section .vs-time {
+		font-size: 1rem;
+	}
+
+	.game .up-section .vs-section img {
+		width: 40px;
+		height: 40px;
+	}
+
+
+	 .game .down-section .left-user {
+		margin-bottom: 20px;
+	}
+	
+	.game .down-section .self-game {
+		width: 100%;
+	}
+
+
+	.game .down-section .left-user img,
+	.game .down-section .right-user img {
+		width: 40%;
+		height: auto;
+	}
+
+	.game .down-section .play-ground {
+		width: 100%;
+	}
+
+	.game .up-section .vs-section {
+		gap: 2px;
+	}
+
+	.game .up-section .vs-section .vs-time {
+		font-family: "IBM Plex Sans", sans-serif;
+		color: #e76f51;
+		font-size: 0.7rem;
+	}
+
+	.left-user .left-user-name,
+	.right-user .right-user-name {
+	font-size: 0.7rem;
+}
+
+}

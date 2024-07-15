@@ -83,7 +83,7 @@ function Signup() {
 				<img
 					src="/login-with.svg"
 					alt="login-with"
-					className="sign-with"
+					className="sign-wit"
 				/>
 				<div className="logos">
 					<Login42 />

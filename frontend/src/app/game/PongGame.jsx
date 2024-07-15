@@ -70,14 +70,15 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.fillRect(x, y, width, height);
 		}
 
-		const resetBall = () => {
-			ball.x = canvas.width / 2;
-			ball.y = canvas.height / 2;
-			ball.speed = 8;
-			ball.velocityX = 5;
-			ball.velocityY = 5;
-			ball.velocityX = -ball.velocityX;
-		}
+		// const resetBall = () => {
+		// 	ball.x = canvas.width / 2;
+		// 	ball.y = canvas.height / 2;
+		// 	ball.speed = 8;
+		// 	ball.velocityX = 5;
+		// 	ball.velocityY = 5;
+		// 	ball.velocityX = -ball.velocityX;
+		// }
+		
 		const drawCircle = (x, y, radius, color) => {
 			context.fillStyle = color;
 			context.beginPath();
@@ -88,7 +89,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 
 		// Constants
 		// create new websocket client
-		const socket = new WebSocket('ws://127.0.0.0:8000/ws/pong/game/');
+		let token = '';
+		const socket = new WebSocket('ws://' + '127.0.0.1:8000' + '/ws/pong/game/?access_token=' + token);
 		let conectionOn;
 		if (socket.readyState === WebSocket.OPEN) {
 			console.log('WebSocket connection is open');
@@ -101,7 +103,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			// console.log(socketState);
 			console.log('Connected to WS Server');
 		});
-
+		// function resizeCanvas() {
+		// 	canvas.width = window.innerWidth/2;
+		// 	canvas.height = window.innerHeight/3;
+		//   }
+		  
+		//   window.addEventListener('resize', resizeCanvas);
+		//   resizeCanvas();
 		let gameConfig = {};
 
 		socket.onmessage = function (message) {
@@ -131,14 +139,16 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					setScore2(score2 => data.update.left_player_score);
 				}
 				if (data.update.right_player_score)
-				{
-					computer.score = data.update.right_player_score;
-					setScore1(score1 => data.update.right_player_score);
+					{
+						computer.score = data.update.right_player_score;
+						setScore1(score1 => data.update.right_player_score);
+					}
+					drawGame();
 				}
-				drawGame();
-			}
-			else if (data.config)
+				else if (data.config)
 			{
+				// setScore1(score1 => data.config.right_player_score);
+				// setScore2(score2 => data.config.left_player_score);
 				// console.log(data.config);
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
@@ -156,10 +166,10 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				ball.x = gameConfig.ball_pos[0];
 				ball.y = gameConfig.ball_pos[1];
 				ball.radius = gameConfig.ball_size[0] / 2;
-				rectBall.x = gameConfig.ball_pos[0];
-				rectBall.y = gameConfig.ball_pos[1];
-				rectBall.width = gameConfig.ball_size[0];
-				rectBall.height = gameConfig.ball_size[1];
+				// rectBall.x = gameConfig.ball_pos[0];
+				// rectBall.y = gameConfig.ball_pos[1];
+				// rectBall.width = gameConfig.ball_size[0];
+				// rectBall.height = gameConfig.ball_size[1];
 				drawGame();
 			}
 		}
@@ -198,8 +208,9 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
+			console.log('hi');
+			console.log(event.key);
 			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
-			console.log(event.key.trim());
 			keys[event.key] = true;
 		};
 
@@ -256,14 +267,14 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef} height={400} width={900}>
+		<canvas className="play-ground" ref={canvasRef} >
 			
 		</canvas>
 	);
 }
 
 
-
+ 
 
 
 
