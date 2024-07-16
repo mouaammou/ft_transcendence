@@ -6,6 +6,7 @@
     margin: 55px 10px 55px 0px;
     width: 500px;
     flex-shrink: 0; /* Prevent shrinking below 400px */
+    overflow-y: auto;
 }
 h2{
     margin: 20px;
@@ -65,24 +66,24 @@ input[type="text"]:focus::placeholder {
     /* margin-left: 10px; */
 }
 
-.all-user{
-    height: 100%;
-    /* overflow-y: auto; */
-}
+/* Custom scrollbar styling */
 
-/* .all-user::-webkit-scrollbar {
+.list_chat::-webkit-scrollbar {
     width: 5px;
 }
 
-.all-user::-webkit-scrollbar-track {
+.list_chat::-webkit-scrollbar-track {
     background: #f1f1f1;
+    border-radius: 10px;
 }
 
-.all-user::-webkit-scrollbar-thumb {
+.list_chat::-webkit-scrollbar-thumb {
+    border-radius: 10px;
     background: linear-gradient(#642bff, #22fffb);
-} */
+}
 
-
+.list_chat::-webkit-scrollbar-thumb:hover {
+}
 
 @media (max-width: 1300px){
     .list_chat{

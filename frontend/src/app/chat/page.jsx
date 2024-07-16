@@ -3,8 +3,6 @@ import '@/Styles/chat/chat.css'
 
 import Msgchat from  '@/components/chat/msg/msg_chat'
 import Listchat from '@/components/chat/list/list_chat'
-// import msgchat from  '@/components/chat/Msg_chat'
-// import listchat from '@/components/chat/list_chat'
 
 const Chat = () => {
 	return (
