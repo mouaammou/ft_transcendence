@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 // import Image from "next/image";
 // import '../../styles/sidebar/sidebar.css';
 import '@styles/sidebar/sidebar.css';
+import '@/Styles/sidebar/sidebarMobil.css'
 
 export default function Sidebar() {
 
@@ -23,15 +24,13 @@ export default function Sidebar() {
         <div className ="container">
             <div className ="sidebar">
                 <div className ="logo">
-                    <img src="new-logo.svg" alt="" />
-                    {/* <h2> ping pong</h2> */}
+                    <img src="new-logo.svg" alt="logo" />
                 </div>
                 <div className ="icon_items">
                     <ul>
                         {sidebarItems.map((item, index) =>
                             <li key={index} className={router.pathname === item.route ? 'active' : ''}
-                            
-                            onClick={()=>router.push(item.route)}
+                                onClick={()=>router.push(item.route)}
                             >
                                 <img  className="icone_side" src={item.icon} alt= {item.label} />
                             </li>
@@ -50,11 +49,3 @@ export default function Sidebar() {
         </div>
     ); 
 }
-
-// const Sidebar = () => {
-//     return (
-//         <div>Sidebar</div>
-//     );
-// }
-
-// export default Sidebar;

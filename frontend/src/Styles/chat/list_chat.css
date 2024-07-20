@@ -7,6 +7,7 @@
     width: 500px;
     flex-shrink: 0; /* Prevent shrinking below 400px */
     overflow-y: auto;
+    overflow-x: hidden;
 }
 h2{
     margin: 20px;
@@ -27,6 +28,11 @@ h2{
     gap: 20px;
 }
 
+.info-user p{
+    font-weight: bold;
+    font-size: 30px;
+}
+
 .HiBell{
     font-size: 35px;
     color: white;
@@ -44,7 +50,12 @@ h2{
     padding: 15px;
     border-radius: 8px;
     justify-content: center;
-    font-size: 20px
+    font-size: 20px;
+    background-color: rgba(17, 25, 40, 0.5);
+    border: none;
+    outline: none;
+    color: white;
+    /* color: white; */
 }
 
 input[type="text"]:focus {
@@ -59,11 +70,6 @@ input[type="text"]::placeholder {
 
 input[type="text"]:focus::placeholder {
     color: #666;
-}
-
-.user-chat p{
-    font-size: 20px;
-    /* margin-left: 10px; */
 }
 
 /* Custom scrollbar styling */

@@ -9,7 +9,7 @@ const UserCard = ({user, listType}) => {
     return (
         <div className= {`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}>
             <Image 
-                src={user.img} 
+                src={user.img}
                 alt={user.name} 
                 width={imageSize}
                 height={imageSize}

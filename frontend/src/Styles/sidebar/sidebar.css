@@ -42,17 +42,9 @@
 }
 ul{
     list-style: none;
-    /* margin: 30px 0px; */
-    /* padding: 0px 10px; */
 }
 
-/* .sidebar .icon_items ul li{
-    cursor: pointer;
-    border-radius: 8px;
-    padding: 40px 0px;
-    
-} */
-ul li{
+.icon_items ul li, .Logout ul li{
     cursor: pointer;
     border-radius: 8px;
     display: flex;
@@ -64,32 +56,15 @@ ul li{
 }
 
 .Logout{
-    /* position: fixed; */
     margin-top: 150px;
     bottom: 100px;
-    /* display: flex; */
     left: 50px;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-    /* text-align: center; */
 }
 
-ul li:hover{
+.icon_items ul li:hover, .Logout ul liul li:hover{
     background: var(--blue);
 }
 
-
-
-/* .container{
-    overflow-y: scroll;
-    scroll-behavior: smooth; */
-    /* overflow-y: auto; */
-    /* background: linear-gradient(#642bff, #ff22e6) */
-    /* border: solid red; */
-/* }  */
-
-/* .icone_side{
-    width: 24px;
-    background-color: brown;
-} */
 
 @media (max-width: 1300px){
     .container .sidebar{
@@ -101,18 +76,16 @@ ul li:hover{
     }
     .icone_side{
         width: 24px;
-        /* background-color: brown; */
     }
     ul li{
-        /* padding: 40px 0px; */
     }
 }
 
 @media (max-width: 800px){
     .container .sidebar {
+        /* display: none; */
         flex-direction: row;
         align-items: center;
-        /* justify-content: space-evenly; */
         justify-content: center;
         height: auto;
         width: 100%;
@@ -120,7 +93,6 @@ ul li:hover{
         bottom: 0;
         padding: 10px 0;
         box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1);
-        /* background-color: #fff; */
         background-color: rgba(163, 218, 232, 0.2);
     }
 
@@ -129,7 +101,6 @@ ul li:hover{
     }
     li {
         margin: 0px 15px;
-        /* margin: auto; */
     }
     .icone_side{
         width: 20px;
@@ -139,8 +110,7 @@ ul li:hover{
         flex-direction: row;
         justify-content: space-around;
         width: 100%;
-        /* add */
-        padding: 0; /* Remove padding for better alignment */
+        padding: 0;
     }
 
     .container .sidebar .icon_items ul li {

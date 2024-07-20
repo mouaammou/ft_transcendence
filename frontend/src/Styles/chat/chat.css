@@ -1,9 +1,24 @@
 .main-chat{
     display: flex;
     flex-grow: 1;
-
 }
 
 h2{
     font-size: 30px;
+}
+
+.chat-mini-sidebare
+{
+    display: none;
+}
+.he{
+    display: flex;
+}
+
+
+@media (max-width: 800px){
+    .chat-mini-sidebare
+    {
+        display: block;
+    }
 }

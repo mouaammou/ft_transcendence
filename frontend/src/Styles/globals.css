@@ -26,26 +26,47 @@ img {
 	/* pointer-events: none; */
 }
 
+/*  add   */
+
 html {
-	/* height: 100vh; */
-	/* background: radial-gradient(#1A2980, black); */
-	/* background-image: linear-gradient(to right, red , yellow); */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    /* background-color:  rgb(62, 104, 188); */
+	background: radial-gradient(
+			circle at center,
+			rgba(38, 143, 208, 0.546),
+			rgba(26, 41, 128, 0.25) 80%
+		),#000000;
+    background-repeat: no-repeat;
+	background-size: cover;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100vh;
+    /* background: url("../../public/mouad.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; */
+    color: white;
+}
+/*  end  */
+
+
+
+/* html {
 	margin: 0;
-	/* width: 1400px; */
 	margin-left: auto;
 	margin-right: auto;
 }
 
 body {
-	/* padding: 0; */
-	/* background: black; */
-	/* background-image: url("/image.jpeg"); */
-	/* background: rgb(33,70,188); */
-	/* background: linear-gradient(to right, #1A2980, #26D0CE);	 */
-	/* background-color: #020202; */
-	/* background : linear-gradient(to left, rgba(26, 41, 128, 0.5), rgba(38, 208, 206, 0.5)), #000000; */
 
-	/* background-color: #000000; */
 	background: radial-gradient(
 			circle at center,
 			rgba(38, 143, 208, 0.546),
@@ -57,13 +78,11 @@ body {
 	background-position: center;
 	color: white;
 	width: 100%;
-	overflow: hidden;
 	height: 100vh;
-	/* background-color: rgb(3, 17, 73); */
 	width: 1400px;
 	margin-right: auto;
 	margin-left: auto;
-}
+} */
 
 .navbar {
 	display: flex;
