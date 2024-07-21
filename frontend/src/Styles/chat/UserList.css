@@ -12,6 +12,13 @@
 .UserListAll{
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 95%;
     /* height: 100%; */
 }
+
+
+@media (max-width: 990px){
+    .UserListAll{
+        width: 85%;
+    }
+}   

@@ -7,18 +7,27 @@ h2{
     font-size: 30px;
 }
 
-.chat-mini-sidebare
+/* .chat-mini-sidebare
+{
+    display: none;
+} */
+
+.main-chat .container .sidebar
 {
     display: none;
 }
-.he{
+/* .he{
     display: flex;
-}
+} */
 
-
+/* 
 @media (max-width: 800px){
-    .chat-mini-sidebare
+    .main-chat .container .sidebar
     {
         display: block;
     }
-}
+    .main-chat{
+        display: flex;
+        flex-direction: column;
+    }
+} */

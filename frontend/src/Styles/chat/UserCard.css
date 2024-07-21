@@ -3,7 +3,7 @@
     flex-direction: row;
     /* justify-content: space-around; */
     align-items: center;
-    gap: 70px;
+    gap: 20%;    ;
     margin: 10px 30px 10px 50px;
     cursor: pointer;
     transition: border 0.3s, border-radius 0.3s;
@@ -29,3 +29,9 @@
     border: 1px solid #333; /* Solid border when clicked */
     border-radius: 5px; /* Reduced border radius when clicked */
 }
+
+@media (max-width: 700px){
+    /* .UserCardAll{
+        gap: 40px;
+    } */
+}   

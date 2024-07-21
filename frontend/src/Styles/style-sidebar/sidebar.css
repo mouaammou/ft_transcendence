@@ -10,19 +10,13 @@
     --blue: rgb(27, 152, 194);
 }
 .container{
-    /* width: 15%; */
 }
 .container .sidebar{
     height: 100vh;
     padding: 0px 20px;
     display: flex;
     flex-direction: column;
-    /* add  to help in display sidebare row in the botton */
-    /* position: absolute;
-    left: 0;
-    top: 0; */
-    /*  end */
-    height: 100vh; /* Full height */
+    height: 100vh;
     overflow-y: auto;
 }
 
@@ -50,7 +44,6 @@ ul{
     display: flex;
     align-items: center;
     justify-content: center;
-    /* margin: 5px; */
     padding: 40px 0px;
     
 }
@@ -83,8 +76,8 @@ ul{
 
 @media (max-width: 800px){
     .container .sidebar {
-        /* display: none; */
-        flex-direction: row;
+        display: none;
+        /* flex-direction: row;
         align-items: center;
         justify-content: center;
         height: auto;
@@ -93,10 +86,10 @@ ul{
         bottom: 0;
         padding: 10px 0;
         box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1);
-        background-color: rgba(163, 218, 232, 0.2);
+        background-color: rgba(163, 218, 232, 0.2); */
     }
 
-    .container .sidebar .logo {
+    /* .container .sidebar .logo {
         display: none;
     }
     li {
@@ -129,10 +122,10 @@ ul{
 
     .container .sidebar .Logout ul li {
         padding: 10px;
-    }
+    } */
 }
 
-@media (max-width: 600px){
+/* @media (max-width: 600px){
     li {
         margin: 0px 5px;
     }
@@ -142,4 +135,4 @@ ul{
     li {
         margin: 0px;
     }
-}
+} */
