@@ -1,13 +1,15 @@
 .main-chat{
     display: flex;
     flex-grow: 1;
+    /* width: auto; */
+    /* width: 100%; */
 }
 
 h2{
     font-size: 30px;
 }
 
-.chat-mini-sidebare
+/* .chat-mini-sidebare
 {
     display: none;
 }
@@ -21,4 +23,22 @@ h2{
     {
         display: block;
     }
+} */
+
+/* add */
+
+.main-chat .container
+{
+    display: none;
 }
+/* .he{
+    display: flex;
+} */
+
+
+/* @media (max-width: 800px){
+    .chat-mini-sidebare
+    {
+        display: block;
+    }
+} */

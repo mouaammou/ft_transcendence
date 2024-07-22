@@ -11,9 +11,9 @@ const Chat = () => {
 				<div className="main-chat">
 					<Listchat/>
 					<Msgchat/>
-					{/* <div className='chat-mini-sidebare'>
+					{/* <div className='chat-mini-sidebare'> */}
 						<Sidebar/>
-					</div> */}
+					{/* </div> */}
 				</div>
 	 );
 }

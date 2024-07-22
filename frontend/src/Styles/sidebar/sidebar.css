@@ -83,8 +83,8 @@ ul{
 
 @media (max-width: 800px){
     .container .sidebar {
-        /* display: none; */
-        flex-direction: row;
+        display: none;
+        /* flex-direction: row;
         align-items: center;
         justify-content: center;
         height: auto;
@@ -93,10 +93,10 @@ ul{
         bottom: 0;
         padding: 10px 0;
         box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1);
-        background-color: rgba(163, 218, 232, 0.2);
+        background-color: rgba(163, 218, 232, 0.2); */
     }
 
-    .container .sidebar .logo {
+    /* .container .sidebar .logo {
         display: none;
     }
     li {
@@ -129,9 +129,9 @@ ul{
 
     .container .sidebar .Logout ul li {
         padding: 10px;
-    }
+    } */
 }
-
+/* 
 @media (max-width: 600px){
     li {
         margin: 0px 5px;
@@ -142,4 +142,4 @@ ul{
     li {
         margin: 0px;
     }
-}
+} */

@@ -99,6 +99,9 @@ input[type="text"]:focus::placeholder {
         flex-shrink: 0; /* Prevent shrinking below 400px */
         /* width: 100%; */
     }
+    .user-chat{
+        gap: 10px;
+    }
 }
 
 @media (max-width: 990px){
@@ -111,6 +114,10 @@ input[type="text"]:focus::placeholder {
 @media (max-width: 800px){
     .list_chat{
         margin: 10px 10px 90px 10px;
+        width: auto;
+    }
+    .user-chat{
+        gap: 10px;
     }
 }
 
