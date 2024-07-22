@@ -12,14 +12,19 @@ h2{
 /* .chat-mini-sidebare
 {
     display: none;
+} */
+
+.main-chat .container .sidebar
+{
+    display: none;
 }
-.he{
+/* .he{
     display: flex;
-}
+} */
 
-
+/* 
 @media (max-width: 800px){
-    .chat-mini-sidebare
+    .main-chat .container .sidebar
     {
         display: block;
     }
@@ -40,5 +45,8 @@ h2{
     .chat-mini-sidebare
     {
         display: block;
+    .main-chat{
+        display: flex;
+        flex-direction: column;
     }
 } */

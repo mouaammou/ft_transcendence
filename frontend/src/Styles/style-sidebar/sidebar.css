@@ -10,19 +10,13 @@
     --blue: rgb(27, 152, 194);
 }
 .container{
-    /* width: 15%; */
 }
 .container .sidebar{
     height: 100vh;
     padding: 0px 20px;
     display: flex;
     flex-direction: column;
-    /* add  to help in display sidebare row in the botton */
-    /* position: absolute;
-    left: 0;
-    top: 0; */
-    /*  end */
-    height: 100vh; /* Full height */
+    height: 100vh;
     overflow-y: auto;
 }
 
@@ -50,7 +44,6 @@ ul{
     display: flex;
     align-items: center;
     justify-content: center;
-    /* margin: 5px; */
     padding: 40px 0px;
     
 }
@@ -133,6 +126,8 @@ ul{
 }
 /* 
 @media (max-width: 600px){
+
+/* @media (max-width: 600px){
     li {
         margin: 0px 5px;
     }

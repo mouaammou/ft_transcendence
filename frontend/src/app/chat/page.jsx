@@ -1,6 +1,6 @@
 "use client";
 import '@/Styles/chat/chat.css'
-import '@/Styles/sidebar/sidebarMobil.css'
+import '@/Styles/style-sidebar/sidebarMobil.css'
 
 import Msgchat from  '@/components/chat/msg/msg_chat'
 import Listchat from '@/components/chat/list/list_chat'

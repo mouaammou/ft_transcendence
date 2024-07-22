@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 // import Image from "next/image";
 // import '../../styles/sidebar/sidebar.css';
-import '@styles/sidebar/sidebar.css';
-import '@/Styles/sidebar/sidebarMobil.css'
+import '@styles/style-sidebar/sidebar.css';
+import '@/Styles/style-sidebar/sidebarMobil.css'
 
 export default function Sidebar() {
 

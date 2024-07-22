@@ -11,6 +11,7 @@
 }
 h2{
     margin: 20px;
+    margin-left: 65px;
 }
 
 .user-chat{
@@ -72,6 +73,12 @@ input[type="text"]:focus::placeholder {
     color: #666;
 }
 
+.all-user{
+    display: flex;
+    justify-content: center;
+}
+
+
 /* Custom scrollbar styling */
 
 .list_chat::-webkit-scrollbar {
@@ -102,22 +109,43 @@ input[type="text"]:focus::placeholder {
     .user-chat{
         gap: 10px;
     }
+    h2{
+        text-align: center;
+        margin-left: 0;
+    }
+    .user-chat{
+        gap: 17%;
+        margin: 10px;
+    }
+    
 }
 
 @media (max-width: 990px){
     .list_chat{
         flex-grow: 1;
-        margin-right: 40px;
-        width: 500px;
+        margin: 40px 40px 40px 0px;
+        /* margin-right: 40px; */
+        /* width: 500px; */
+        /* width: 97%; */
+        /* margin-right: 24px; */
     }
 }
 @media (max-width: 800px){
     .list_chat{
+        /* margin: 0px 0px 0px 0px; */
         margin: 10px 10px 90px 10px;
         width: auto;
     }
     .user-chat{
         gap: 10px;
+        /* margin: 10px 10px 90px 10px; */
     }
 }
 
+@media (max-width: 800px){
+    .user-chat{
+        gap: 10%;
+        margin: 10px;
+    }
+    
+}
