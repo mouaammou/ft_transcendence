@@ -7,7 +7,6 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 from authentication.utils import set_jwt_cookies
-from authentication.serializers import UserSerializer
 
 class OAuth42Login(APIView):
 	def get(self, request):
@@ -22,7 +21,7 @@ class OAuth42Callback(APIView):
 	def get(self, request):
 		code = request.GET.get('code')
 		if not code:
-			return Response({"error": "Code not provided"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({"Error": "Code not provided"}, status=status.HTTP_400_BAD_REQUEST)
 		
 		token_data = {
 			'grant_type': 'authorization_code',
@@ -31,12 +30,11 @@ class OAuth42Callback(APIView):
 			'code': code,
 			'redirect_uri': settings.OAUTH42_REDIRECT_URI,
 		}
-		
 		token_response = requests.post(settings.OAUTH42_TOKEN_URL, data=token_data)
 		token_response_data = token_response.json()
 
 		if 'access_token' not in token_response_data:
-			return Response({"error": "Failed to obtain access token"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({"Error": "Failed to obtain access token"}, status=status.HTTP_400_BAD_REQUEST)
 
 		access_token = token_response_data['access_token']
 		user_response = requests.get(settings.OAUTH42_USER_URL, headers={'Authorization': f'Bearer {access_token}'})
@@ -63,6 +61,6 @@ class OAuth42Callback(APIView):
 				user.save()
 				response.status = status.HTTP_201_CREATED
 			except Exception as e:
-				return Response({"error": f"Failed to create user: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"Error": f"Failed to create user: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 		response = set_jwt_cookies(response, RefreshToken.for_user(user))
 		return response

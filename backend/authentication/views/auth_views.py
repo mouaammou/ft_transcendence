@@ -16,7 +16,7 @@ def SignUp(request):
 			seriaze_user = UserSerializer(all_users, many=True)
 			return Response(seriaze_user.data)
 		except Exception as e:
-			return Response({"error": str(e)})
+			return Response({"Error": str(e)})
 
 	seriaze_user = UserSerializer(data=request.data)
 	if seriaze_user.is_valid():
