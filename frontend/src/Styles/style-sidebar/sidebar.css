@@ -12,11 +12,11 @@
 .container{
 }
 .container .sidebar{
-    height: 100vh;
+    /* height: 100vh; */
     padding: 0px 20px;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    /* height: 100vh; */
     overflow-y: auto;
 }
 
@@ -59,7 +59,7 @@ ul{
 }
 
 
-@media (max-width: 1300px){
+@media (max-width: 1600px){
     .container .sidebar{
         padding: 0px;
     }

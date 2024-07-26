@@ -1,25 +1,23 @@
 @media (max-width: 800px){
     .main-chat{
-        display: flex;
-        flex-direction: column;
+        /* display: flex;
+        flex-direction: column; */
         position: relative;
         border: solid red;
     }
     .main-chat .container{
+        display: block;
         position: absolute;
         width: 100%;
         bottom: 0px;
     }
     .main-chat .container .sidebar {
-        display: block;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
         height: auto;
         width: 100%;
-        /* position: fixed; */
-        /* bottom: 0; */
         padding: 10px 0;
         box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1);
         background-color: rgba(163, 218, 232, 0.2);
@@ -29,7 +27,6 @@
         display: none;
     }
     .main-chat  li {
-        /* margin: 0px 15px; */
     }
     .main-chat .icone_side{
         width: 20px;
@@ -39,16 +36,13 @@
         flex-direction: row;
         justify-content: space-around;
         width: 100%;
-        /* padding: 0; */
     }
 
     .main-chat .container .sidebar .icon_items ul li {
-        /* padding: 20px; */
     }
 
     .main-chat .container .sidebar .Logout {
         margin-top: 0;
-        /* position: static; */
     }
 
     .main-chat .container .sidebar .Logout ul {
@@ -57,7 +51,6 @@
     }
 
     .main-chat .container .sidebar .Logout ul li {
-        /* padding: 10px; */
     }
     ul{
         display: flex;
@@ -65,13 +58,8 @@
 
     .main-chat .icon_items ul li, 
     .main-chat .Logout ul li{
-        /* cursor: pointer;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center; */
+
         padding: 10px 0px;
-        /* margin: 0px 30px; */
         margin: 0px 30px;
 
         
@@ -86,7 +74,6 @@
 
 @media (max-width: 600px){
     li {
-        /* margin: 0px 5px; */
     }
     .main-chat .icon_items ul li, 
     .main-chat .Logout ul li{
@@ -97,10 +84,15 @@
 
 @media (max-width: 400px){
     li {
-        /* margin: 0px; */
     }
     .main-chat .icon_items ul li, 
     .main-chat .Logout ul li{
         margin: 0px 8px;
+    }
+    .main-chat .icone_side{
+        width: 20px;
+    }
+    .main-chat .Logout img{
+        width: 27px;
     }
 }

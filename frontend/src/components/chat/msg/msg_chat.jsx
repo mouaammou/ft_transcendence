@@ -20,7 +20,7 @@ const Msg_chat = () =>{
         <div className="msg_chat">
             <div className="freind-profile">
                 <div className="section-profile">
-                    <Image src="/mouad.jpeg"  alt="mouad" width={65} height={65} style={{borderRadius: '50%', border: '3px solid #F1FAEE'}} />
+                    <Image src="/mouad.jpeg"  alt="mouad" className='img-section-profile'  width={65} height={65} style={{borderRadius: '50%', border: '3px solid #F1FAEE'}} />
                     <p> mouad </p>
                 </div>
                 <div className="section_action">

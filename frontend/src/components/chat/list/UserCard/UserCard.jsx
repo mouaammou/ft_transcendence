@@ -13,6 +13,7 @@ const UserCard = ({user, listType}) => {
                 alt={user.name} 
                 width={imageSize}
                 height={imageSize}
+                className="img-usercard"
                 style={{
                     borderRadius: '50%',
                     border: `2px solid ${borderColor}`

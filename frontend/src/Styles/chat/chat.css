@@ -1,8 +1,10 @@
 .main-chat{
     display: flex;
-    flex-grow: 1;
+    /* flex-grow: 1; */
+    border: solid rgb(0, 125, 10);
     /* width: auto; */
     /* width: 100%; */
+    width: 100%;
 }
 
 h2{

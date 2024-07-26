@@ -19,7 +19,6 @@
     background: #060B16;
 }
 
-/* Styling for UserCardAll on hover */
 .UserCardAll:hover {
     border: 1px solid #aaa; /* Border on hover */
 }
@@ -30,8 +29,27 @@
     border-radius: 5px; /* Reduced border radius when clicked */
 }
 
-@media (max-width: 700px){
+@media (max-width: 1600px){
+    .UserCardOnline .img-usercard{
+        width: 55px;
+        height: 55px;
+    }
+    /* .UserCardAll .img-usercard{
+        width: 45px;
+        height: 45px;
+    } */
+}
+
+@media (max-width: 990px){
     /* .UserCardAll{
         gap: 40px;
+    } */
+    .UserCardOnline .img-usercard{
+        width: 65px;
+        height: 65px;
+    }
+    /* .UserCardAll .img-usercard{
+        width: 45px;
+        height: 45px;
     } */
 }   

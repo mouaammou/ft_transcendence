@@ -55,7 +55,7 @@ const list_chat = () =>{
         <div className="list_chat">
             <div className='user-chat'>
                 <div className='info-user'>
-                    <Image src="/med.jpeg" alt='mohammed' width={65} height={65} style={{borderRadius: '50%', border: '3px solid #F1FAEE'}}/>
+                    <Image src="/med.jpeg" alt='mohammed' className='img-info-user'  width={65} height={65} style={{borderRadius: '50%', border: '3px solid #F1FAEE'}}/>
                     <p> mohammed </p>
                 </div>
                 <div>
