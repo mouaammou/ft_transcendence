@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#3s3hx09&^k$5i$unb&nc47h)9a#e#^shvmgwxb0zgry=(3716'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,6 +51,8 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
     "ROTATE_REFRESH_TOKENS": True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'SIGNING_KEY': SECRET_KEY,
     "ALGORITHM": "HS256",
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),  # 1 hour
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
@@ -67,7 +69,6 @@ OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 
 INSTALLED_APPS = [
     'daphne',
-    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,7 +119,8 @@ ASGI_APPLICATION = 'core.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'}
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
 }
 
 #images settings

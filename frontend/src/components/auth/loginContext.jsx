@@ -62,28 +62,28 @@ export const LoginProvider = ({ children }) => {
 		});
 	};
 
-	const checkAuth = () => {
-		setIsAuthenticated(false);
-		console.log("pathname==>", pathname);
-		verifyToken("/token/verify").then((res) => {
-			if (res != null && res.status === 200) {
-				setIsAuthenticated(true);
-				if (pathname === "/auth/login" || pathname === "/auth/signup")
-					router.push("/profile");
-				else router.push(pathname);
-			} else {
-				if (res.response.status === 500) {
-					router.push("/500");
-				} else {
-					router.push(`/auth${endPoint}`);
-				}
-			}
-		});
-	};
+	// const checkAuth = () => {
+	// 	setIsAuthenticated(false);
+	// 	console.log("pathname==>", pathname);
+	// 	verifyToken("/token/verify").then((res) => {
+	// 		if (res != null && res.status === 200) {
+	// 			setIsAuthenticated(true);
+	// 			if (pathname === "/auth/login" || pathname === "/auth/signup")
+	// 				router.push("/profile");
+	// 			else router.push(pathname);
+	// 		} else {
+	// 			if (res.response.status === 500) {
+	// 				router.push("/500");
+	// 			} else {
+	// 				router.push(`/auth${endPoint}`);
+	// 			}
+	// 		}
+	// 	});
+	// };
 
-	useEffect(() => {
-		checkAuth();
-	}, [errors]);
+	// useEffect(() => {
+	// 	checkAuth();
+	// }, [errors]);
 
 	return (
 		<LoginContext.Provider

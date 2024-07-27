@@ -21,7 +21,7 @@ def SignUp(request):
 	seriaze_user = UserSerializer(data=request.data)
 	if seriaze_user.is_valid():
 		user = seriaze_user.save()
-		refresh = RefreshToken.for_user(user)  # Create a refresh token for the user
+		refresh = RefreshToken.for_user(user)  # Create a new refresh token for the user
 		response = set_jwt_cookies(Response(), refresh)
 		response.status_code = status.HTTP_201_CREATED
 		return response
@@ -51,11 +51,11 @@ def Login(request):
 @api_view(["POST"])
 def Logout(request):
 	response = Response()
-	response.delete_cookie("refresh_token")
-	response.delete_cookie("access_token")
 	#blacklist the refresh token
 	refresh_token = request.COOKIES.get("refresh_token")
 	blacklist = RefreshToken(refresh_token)
+	response.delete_cookie("refresh_token")
+	response.delete_cookie("access_token")
 	blacklist.blacklist()
 	response.status_code = status.HTTP_205_RESET_CONTENT
 	response.data = {"message": "Logout successfully"}

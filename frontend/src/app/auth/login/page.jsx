@@ -23,15 +23,15 @@ export default function LoginPage() {
 		await login("/login", formData);
 	};
 
-	useEffect(() => {
-		if (endPoint === "/signup") {
-			setEndPoint("/login");
-			setErrors({});
-		}
-		if (isAuthenticated) {
-			router.push("/dashboard");
-		}
-	}, [isAuthenticated]);
+	// useEffect(() => {
+	// 	if (endPoint === "/signup") {
+	// 		setEndPoint("/login");
+	// 		setErrors({});
+	// 	}
+	// 	if (isAuthenticated) {
+	// 		router.push("/dashboard");
+	// 	}
+	// }, [isAuthenticated]);
 
 	return (
 		<div className="login-main-container">

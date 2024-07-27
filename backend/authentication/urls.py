@@ -1,5 +1,5 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView, TokenVerifyView
 from .views import OAuth42Login, OAuth42Callback
 from . import views
 from django.conf import settings
@@ -10,7 +10,7 @@ urlpatterns = [
 	path("signup",views.SignUp, name="singup"),
 	path("login",views.Login, name="login"),
 	path("logout",views.Logout, name="logout"),
-	path("",views.default, name="default"),
+	path("", views.default, name="default"),
 	#for admin
 
 	path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),

@@ -24,12 +24,12 @@ function Signup() {
 		await login("/signup", formData);
 	};
 
-	useEffect(() => {
-		if (endPoint === "/login") {
-			setEndPoint("/signup");
-			setErrors({});
-		}
-	}, []);
+	// useEffect(() => {
+	// 	if (endPoint === "/login") {
+	// 		setEndPoint("/signup");
+	// 		setErrors({});
+	// 	}
+	// }, []);
 
 	return (
 		<div className="main-container">
