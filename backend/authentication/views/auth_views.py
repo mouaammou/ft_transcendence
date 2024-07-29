@@ -62,7 +62,7 @@ def Logout(request):
 	return response
 
 @api_view(["POST"])
-@has_valid_token
+# @has_valid_token
 def Verify_Token(request):
 	return Response(
 		{"message": "Tokens Still valid"},

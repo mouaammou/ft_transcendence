@@ -16,7 +16,6 @@ const AuthCallback = () => {
 				.then((response) => {
 					setIsAuthenticated(false);
 					if (response.status === 200 || response.status === 201) {
-						// Tokens are set in cookies by the backend
 						setIsAuthenticated(true);
 						router.push("/profile");
 					}
@@ -28,7 +27,7 @@ const AuthCallback = () => {
 		fetchTokens();
 	}, []);
 
-	return <div>Loading...</div>;
+	return <div>Loading...callback 42</div>;
 };
 
 export default AuthCallback;

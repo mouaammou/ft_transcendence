@@ -13,7 +13,8 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-	const { errors, login, setErrors, endPoint, setEndPoint } = useAuth();
+
+	const { errors, login} = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,13 +24,6 @@ function Signup() {
 		e.preventDefault();
 		await login("/signup", formData);
 	};
-
-	// useEffect(() => {
-	// 	if (endPoint === "/login") {
-	// 		setEndPoint("/signup");
-	// 		setErrors({});
-	// 	}
-	// }, []);
 
 	return (
 		<div className="main-container">

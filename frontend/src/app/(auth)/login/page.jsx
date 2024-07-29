@@ -1,7 +1,7 @@
 "use client";
+
 import { useAuth } from "@/components/auth/loginContext";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Login42 from "@/components/auth/Oauth/login42";
 import "@styles/auth/login.css";
@@ -11,9 +11,9 @@ export default function LoginPage() {
 		username: "",
 		password: "",
 	});
-	const router = useRouter();
-	const { errors, login, endPoint, setErrors, setEndPoint, isAuthenticated } =
-		useAuth();
+
+	const { errors, login } = useAuth();
+
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
@@ -22,16 +22,6 @@ export default function LoginPage() {
 		e.preventDefault();
 		await login("/login", formData);
 	};
-
-	// useEffect(() => {
-	// 	if (endPoint === "/signup") {
-	// 		setEndPoint("/login");
-	// 		setErrors({});
-	// 	}
-	// 	if (isAuthenticated) {
-	// 		router.push("/dashboard");
-	// 	}
-	// }, [isAuthenticated]);
 
 	return (
 		<div className="login-main-container">
@@ -84,7 +74,12 @@ export default function LoginPage() {
 				}
 			</form>
 			<div className="side-image">
-				<img className="sign-with" src="/login.svg" alt="welcome" width="150%"/>
+				<img
+					className="sign-with"
+					src="/login.svg"
+					alt="welcome"
+					width="150%"
+				/>
 			</div>
 		</div>
 	);
