@@ -1,7 +1,7 @@
 import UserCard from '../UserCard/UserCard'
 import '@/Styles/chat/UserList.css'
 
-const UserList = ({users, listType}) =>{
+const UserList = ({users, listType, onUserSelect}) =>{
 
         // const style = {
         //   display: 'flex',
@@ -13,8 +13,8 @@ const UserList = ({users, listType}) =>{
         <div className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
         >
             {
-                users.map((user, index) => (
-                    <UserCard key={index} user={user} listType={listType} />
+                users.map((user) => (
+                    <UserCard key={user.id} user={user} listType={listType} onUserSelect={onUserSelect}/>
                 ))
             }
         </div>

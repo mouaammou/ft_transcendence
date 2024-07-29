@@ -145,8 +145,8 @@
     .img-section-profile{
         width: 45;
         height: 45;
-        background-color: brown;
-        margin-left: 120px;
+        /* margin-left: 0px; */
+        /* margin-left: 120px; */
     }
 }
 

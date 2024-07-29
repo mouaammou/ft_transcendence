@@ -85,7 +85,7 @@ input[type="text"]:focus::placeholder {
 /* Custom scrollbar styling */
 
 .list_chat::-webkit-scrollbar {
-    width: 5px;
+    width: 3px;
 }
 
 .list_chat::-webkit-scrollbar-track {
@@ -98,8 +98,8 @@ input[type="text"]:focus::placeholder {
     background: linear-gradient(#642bff, #22fffb);
 }
 
-.list_chat::-webkit-scrollbar-thumb:hover {
-}
+/* .list_chat::-webkit-scrollbar-thumb:hover {
+} */
 
 /* @media (max-width: 1300px){
 
@@ -179,13 +179,45 @@ input[type="text"]:focus::placeholder {
     }
     .user-chat{
         gap: 10px;
+        margin: 10px;
         /* margin: 10px 10px 90px 10px; */
     }
 }
 
-@media (max-width: 800px){
-    .user-chat{
+@media (max-width: 400px){
+    /* .user-chat{
         gap: 10%;
         margin: 10px;
+    } */
+    .info-user{
+        gap: 5%;
+    }
+    .img-info-user{
+        width: 50px;
+        height: 50px;
+    }
+    .info-user p{
+        /* font-weight: bold; */
+        font-size: 15px;
+    }
+    .HiBell{
+        font-size: 22px;
+    }
+    .user-chat{
+        gap: 15%;
+        margin: 20px 0px;
+        padding: 10px;
+    }
+    .div-Search input{
+        padding: 5px;
+    }
+    input[type="text"]::placeholder {
+        font-size: 15px;
+    }
+    .list_chat::-webkit-scrollbar {
+        width: 2px;
+    }
+    h2{
+        font-size: 20px;
     }
 }

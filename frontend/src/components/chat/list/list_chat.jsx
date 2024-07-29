@@ -11,19 +11,19 @@ import UserList from '@/components/chat/list/UserList/UserList'
 
 
 const users = [
-    { name: 'User 1', email: 'user2@example.com', active: false , img: '/Profil.svg'},
-    { name: 'mouad', email: 'user1@example.com', active: true , img: '/mouad.jpeg'},
-    { name: 'Said', email: 'user3@example.com', active: true , img: '/samjaabo.jpeg'},
-    { name: 'User 4', email: 'user4@example.com', active: false , img: '/user2.svg'},
-    { name: 'khalid', email: 'user5@example.com', active: true , img: '/avatar3.jpeg'},
-    { name: 'User 6', email: 'user6@example.com', active: false , img: '/avatar4.jpeg'},
-    { name: 'Oussama', email: 'user7@example.com', active: true , img: '/oredoine.webp'},
-    { name: 'User 8', email: 'user8@example.com', active: false , img: '/Profil.svg'},
-    { name: 'User 9', email: 'user4@example.com', active: false , img: '/user2.svg'},
-    { name: 'User 10', email: 'user10@example.com', active: false , img: '/Profil.svg'},
+    { id: 1, name: 'User 1', email: 'user2@example.com', active: false , img: '/Profil.svg'},
+    { id: 2,name: 'mouad', email: 'user1@example.com', active: true , img: '/mouad.jpeg'},
+    { id: 3,name: 'Said', email: 'user3@example.com', active: true , img: '/samjaabo.jpeg'},
+    { id: 4,name: 'User 4', email: 'user4@example.com', active: false , img: '/user2.svg'},
+    { id: 5,name: 'khalid', email: 'user5@example.com', active: true , img: '/avatar3.jpeg'},
+    { id: 6,name: 'User 6', email: 'user6@example.com', active: false , img: '/avatar4.jpeg'},
+    { id: 7,name: 'Oussama', email: 'user7@example.com', active: true , img: '/oredoine.webp'},
+    { id: 8,name: 'User 8', email: 'user8@example.com', active: false , img: '/Profil.svg'},
+    { id: 9,name: 'User 9', email: 'user4@example.com', active: false , img: '/user2.svg'},
+    { id: 10,name: 'User 10', email: 'user10@example.com', active: false , img: '/Profil.svg'},
 ];
 
-const list_chat = () =>{
+const list_chat = ( {onUserSelect} ) =>{
 
     const [onlineUser, setOnlineUser] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -69,17 +69,16 @@ const list_chat = () =>{
                     onChange={handleSearch}
                 />
             </div>
-
             <div className= "initial-active-users">
                 <h2>Online Now</h2>
                 <div className="user-grid">
-                    <UserList users={onlineUser} listType="online" />
+                    <UserList users={onlineUser} listType="online" onUserSelect={onUserSelect} />
                 </div>
             </div>
             <div>
                 <h2> all user</h2>
                 <div className="all-user">
-                    <UserList  users={allUsers} listType="all" />
+                    <UserList  users={allUsers} listType="all" onUserSelect={onUserSelect} />
                 </div>
             </div>
         </div>

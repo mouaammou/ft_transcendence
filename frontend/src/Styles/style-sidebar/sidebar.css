@@ -1,6 +1,3 @@
-/* .container{
-    background-color: rgb(9, 85, 85);
-} */
 *{
     padding: 0;
     margin: 0;
@@ -10,13 +7,13 @@
     --blue: rgb(27, 152, 194);
 }
 .container{
+    /* height: 100vh; */
 }
 .container .sidebar{
-    /* height: 100vh; */
+    height: 99vh;
     padding: 0px 20px;
     display: flex;
     flex-direction: column;
-    /* height: 100vh; */
     overflow-y: auto;
 }
 

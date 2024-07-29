@@ -3,6 +3,11 @@
     flex-direction: row;
 } */
 
+/* .all-user{
+    overflow-y: auto;
+    overflow-x: hidden;
+} */
+
 .UserListOnline{
     display: flex;
     flex-direction: row;
@@ -13,12 +18,37 @@
     display: flex;
     flex-direction: column;
     width: 95%;
+    /* overflow-y: auto;
+    overflow-x: hidden; */
     /* height: 100%; */
 }
+
+/* Custom scrollbar styling */
+
+/* .all-user::-webkit-scrollbar {
+    width: 5px;
+}
+
+.all-user::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.all-user::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: linear-gradient(#642bff, #22fffb);
+} */
 
 
 @media (max-width: 990px){
     .UserListAll{
         width: 85%;
+        margin-bottom: 100px;
     }
-}   
+}
+@media (max-width: 400px){
+    .UserListAll {
+        width: 85%;
+        margin-bottom: 60px;
+    }
+}
