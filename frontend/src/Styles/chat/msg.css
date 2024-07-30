@@ -23,7 +23,7 @@
 .body-message-chat{
     background-color: rgba(163, 218, 232, 0.2);
     border-radius: 10px;
-    flex-grow: 2;
+    /* flex-grow: 2; */
     flex-grow: 18;
     display: flex;
     flex-direction: column;
@@ -133,6 +133,19 @@
 .img-section-profile{
     /* width: 45;
     height: 45; */
+}
+
+.user-not-select{
+    background-color: rgba(163, 218, 232, 0.2);
+    border-radius: 10px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-not-select h2{
+    /* text-align: center; */
 }
 
 @media (max-width: 1600px){
