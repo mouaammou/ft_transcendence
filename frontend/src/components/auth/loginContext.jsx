@@ -2,16 +2,19 @@
 import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
+
 	const [isAuth, setIsAuth] = useState(false)
 
 	useEffect(() => {
-		const isAuthValue = localStorage.getItem("isAuth");
+		const isAuthValue = Cookies.get("isAuth")
+		console.log("cookies from middleware :: ", isAuthValue);
 		if (isAuthValue)
 			setIsAuth(JSON.parse(isAuthValue));
 	}, [])
@@ -19,7 +22,6 @@ export const LoginProvider = ({ children }) => {
 	const AuthenticateTo = (endpoint, formData) => {
 
 		setIsAuth(true)
-		localStorage.setItem("isAuth", JSON.stringify(true));
 
 		postData(endpoint, formData)
 			.then((res) => {
@@ -52,7 +54,6 @@ export const LoginProvider = ({ children }) => {
 
 	const Logout = () => {
 		setIsAuth(false);
-		localStorage.setItem("isAuth", JSON.stringify(false));
 
 		postData("/logout").then((res) => {
 			if (res && res.status === 205) {

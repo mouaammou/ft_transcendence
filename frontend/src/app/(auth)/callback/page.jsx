@@ -13,9 +13,7 @@ const AuthCallback = () => {
 	useEffect(() => {
 		const fetchTokens = async () => {
 
-
 			setIsAuth(true);
-			localStorage.setItem("isAuth", JSON.stringify(true));
 
 			await getData(`auth/callback/42?code=${code}`)
 				.then((response) => {
