@@ -1,24 +1,30 @@
 "use client";
 import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
-import { useRouter, usePathname } from "next/navigation";
-import { verifyToken } from "@/services/apiCalls";
+import { useRouter } from "next/navigation";
 
 export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [endPoint, setEndPoint] = useState("/login");
+	const [isAuth, setIsAuth] = useState(false)
 
-	const pathname = usePathname();
+	useEffect(() => {
+		const isAuthValue = localStorage.getItem("isAuth");
+		if (isAuthValue)
+			setIsAuth(JSON.parse(isAuthValue));
+	}, [])
 
-	const login = (endpoint, formData) => {
+	const AuthenticateTo = (endpoint, formData) => {
+
+		setIsAuth(true)
+		localStorage.setItem("isAuth", JSON.stringify(true));
+
 		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
-					setIsAuthenticated(true);
+					console.log("Login successfully");
 					setErrors({
 						success: "Login Successful",
 					});
@@ -26,9 +32,6 @@ export const LoginProvider = ({ children }) => {
 					if (res.response && res.response.status === 500) {
 						router.push("/500");
 					}
-					if (endpoint === "/signup") {
-						setEndPoint("/signup");
-					} else setEndPoint("/login");
 					setErrors({
 						first_name: res.response.data.first_name,
 						last_name: res.response.data.last_name,
@@ -47,44 +50,26 @@ export const LoginProvider = ({ children }) => {
 			});
 	};
 
-	const logout = () => {
+	const Logout = () => {
+		setIsAuth(false);
+		localStorage.setItem("isAuth", JSON.stringify(false));
+
 		postData("/logout").then((res) => {
 			if (res && res.status === 205) {
-				setIsAuthenticated(false);
 				router.push("/login");
-			} else {
-				if (res.response.status === 500) {
-					router.push("/500");
-				} else {
-					console.log("logout error==> ", res);
-				}
 			}
 		});
 	};
-
-	// const checkAuth = () => {
-	// 	setIsAuthenticated(false);
-	// 	verifyToken("/token/verify").then((res) => {
-	// 		if (res != null && res.status === 200)
-	// 			setIsAuthenticated(true);
-	// 	});
-	// };
-
-	// useEffect(() => {
-	// 	checkAuth();
-	// }, [errors]);
 
 	return (
 		<LoginContext.Provider
 			value={{
 				errors,
 				setErrors,
-				login,
-				logout,
-				isAuthenticated,
-				setIsAuthenticated,
-				endPoint,
-				setEndPoint,
+				AuthenticateTo,
+				Logout,
+				isAuth,
+				setIsAuth
 			}}
 		>
 			{children}

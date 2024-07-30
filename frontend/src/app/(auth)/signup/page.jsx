@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@loginContext/loginContext";
-import Login42 from "@components/auth/Oauth/login42";
+import Login42 from "@components/auth/login42";
 import "@styles/auth/signup.css";
 
 function Signup() {
@@ -14,7 +14,7 @@ function Signup() {
 		confirmPassword: "",
 	});
 
-	const { errors, login} = useAuth();
+	const { errors, AuthenticateTo } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,7 +22,7 @@ function Signup() {
 
 	const singUp = async (e) => {
 		e.preventDefault();
-		await login("/signup", formData);
+		await AuthenticateTo("/signup", formData);
 	};
 
 	return (

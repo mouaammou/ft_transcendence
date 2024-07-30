@@ -8,15 +8,18 @@ const AuthCallback = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const code = searchParams.get("code");
-	const { setIsAuthenticated } = useAuth();
+	const { setIsAuth } = useAuth();
 
 	useEffect(() => {
 		const fetchTokens = async () => {
+
+
+			setIsAuth(true);
+			localStorage.setItem("isAuth", JSON.stringify(true));
+
 			await getData(`auth/callback/42?code=${code}`)
 				.then((response) => {
-					setIsAuthenticated(false);
-					if (response.status === 200 || response.status === 201) {
-						setIsAuthenticated(true);
+					if (response.status == 200 || response.status == 201) {
 						router.push("/profile");
 					}
 				})

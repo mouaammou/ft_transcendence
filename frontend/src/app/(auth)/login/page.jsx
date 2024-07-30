@@ -3,7 +3,7 @@
 import { useAuth } from "@/components/auth/loginContext";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Login42 from "@/components/auth/Oauth/login42";
+import Login42 from "@/components/auth/login42";
 import "@styles/auth/login.css";
 
 export default function LoginPage() {
@@ -12,20 +12,20 @@ export default function LoginPage() {
 		password: "",
 	});
 
-	const { errors, login } = useAuth();
+	const { errors, AuthenticateTo } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const signIn = async (e) => {
+	const LoginTo = async (e) => {
 		e.preventDefault();
-		await login("/login", formData);
+		await AuthenticateTo("/login", formData);
 	};
 
 	return (
 		<div className="login-main-container">
-			<form onSubmit={signIn} className="main-login">
+			<form onSubmit={LoginTo} className="main-login">
 				<p>Join</p>
 				<input
 					type="text"
