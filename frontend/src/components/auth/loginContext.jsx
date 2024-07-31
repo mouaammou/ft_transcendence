@@ -9,19 +9,21 @@ export const LoginContext = createContext(null);
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-
-	const [isAuth, setIsAuth] = useState(false)
+	const [isAuth, setIsAuth] = useState(false);
+	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		const isAuthValue = Cookies.get("isAuth")
+		setMounted(true)
+		const isAuthValue = Cookies.get("isAuth");
 		console.log("cookies from middleware :: ", isAuthValue);
-		if (isAuthValue)
-			setIsAuth(JSON.parse(isAuthValue));
-	}, [])
+		setIsAuth(JSON.parse(isAuthValue));
+	}, []);
+
+	if (!mounted)
+		return null;
 
 	const AuthenticateTo = (endpoint, formData) => {
-
-		setIsAuth(true)
+		setIsAuth(true);
 
 		postData(endpoint, formData)
 			.then((res) => {
@@ -70,7 +72,7 @@ export const LoginProvider = ({ children }) => {
 				AuthenticateTo,
 				Logout,
 				isAuth,
-				setIsAuth
+				setIsAuth,
 			}}
 		>
 			{children}

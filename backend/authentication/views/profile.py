@@ -11,8 +11,9 @@ from rest_framework.views import APIView
 @api_view(["POST", "GET"])
 @has_valid_token
 def UserProfile(request):
+	print(f"request cookies:: ", request.COOKIES.get("refresh_token"))
 	user = UserSerializer(request.customuser, many=False).data
-	return Response({"user": user}, status=status.HTTP_200_OK)	
+	return Response({"user": user}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 @has_valid_token

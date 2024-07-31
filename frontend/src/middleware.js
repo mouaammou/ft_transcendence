@@ -9,16 +9,16 @@ export function middleware(request) {
 	const isAuthPage =
 		request.url.includes("/login") || request.url.includes("/signup");
 
-	const hasToken = access_token && refresh_token
-	if (hasToken)
-		response.cookies.set('isAuth', 'true', {path: '/'});
-	else
-		response.cookies.set("isAuth", "false", { path: "/" });
+	const hasToken = access_token && refresh_token;
+	if (hasToken) response.cookies.set("isAuth", "true", { path: "/" });
+	else response.cookies.set("isAuth", "false", { path: "/" });
 
+	if (request.url == "http://localhost:3000/")
+		return response
 	if (access_token && refresh_token && isAuthPage)
 		return NextResponse.redirect(new URL("/profile", request.url));
 	else if ((!access_token || !refresh_token) && isAuthPage)
-		response;
+		NextResponse.next();
 	else if ((!access_token || !refresh_token) && !isAuthPage)
 		return NextResponse.redirect(new URL("/login", request.url));
 

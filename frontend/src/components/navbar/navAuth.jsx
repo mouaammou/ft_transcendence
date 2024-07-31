@@ -2,8 +2,6 @@
 import Link from "next/link";
 import { useAuth } from "@/components/auth/loginContext";
 import Links from "./Links/Links";
-import { useState } from "react";
-import { useEffect } from "react";
 
 const Navbar = () => {
 	const { Logout, isAuth } = useAuth();
