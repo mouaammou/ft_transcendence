@@ -1,7 +1,7 @@
 "use client";
 import HorizontalLine from "./HorizontalLine.jsx";
 import CustomButton from "./CustomButton.jsx";
-import "@styles/profile/profile.css";
+import "../../Styles/profile/profile.css";
 import Cart from "./Cart.jsx";
 import { useEffect, useState } from "react";
 import Link from "next/link";

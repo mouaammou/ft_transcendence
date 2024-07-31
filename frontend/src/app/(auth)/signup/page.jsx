@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "@loginContext/loginContext";
 import Login42 from "@components/auth/login42";
-import "@styles/auth/signup.css";
+import "../../../Styles/auth/signup.css";
 
 function Signup() {
 	const [formData, setFormData] = useState({

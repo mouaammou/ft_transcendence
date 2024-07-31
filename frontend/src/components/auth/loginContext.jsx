@@ -16,22 +16,29 @@ export const LoginProvider = ({ children }) => {
 		setMounted(true)
 		const isAuthValue = Cookies.get("isAuth");
 		console.log("cookies from middleware :: ", isAuthValue);
+		console.log("value of :: ", JSON.parse(isAuthValue));
 		setIsAuth(JSON.parse(isAuthValue));
 	}, []);
 
 	if (!mounted)
-		return null;
+		return <>
+			<body>
+				
+			</body>
+		</>;
 
 	const AuthenticateTo = (endpoint, formData) => {
-		setIsAuth(true);
+		
 
 		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
+					setIsAuth(true);
 					console.log("Login successfully");
 					setErrors({
 						success: "Login Successful",
 					});
+					router.push("/profile")
 				} else {
 					if (res.response && res.response.status === 500) {
 						router.push("/500");

@@ -4,7 +4,7 @@ import { useAuth } from "@/components/auth/loginContext";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Login42 from "@/components/auth/login42";
-import "@styles/auth/login.css";
+import "../../../Styles/auth/login.css";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({

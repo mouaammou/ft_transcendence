@@ -4,7 +4,7 @@
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
 			//for "@/styles
-			"@styles/*": ["./src/styles/*"],
+			"@styles/*": ["/home/mouad/ft_transcendence/frontend/src/Styles/*"],
 			//loginContext
 			"@loginContext/*": ["./src/components/auth/*"],
 			// for src/app
