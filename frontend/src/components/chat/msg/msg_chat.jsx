@@ -6,10 +6,11 @@ import { ImBlocked } from "react-icons/im";
 import { BsSendFill } from "react-icons/bs";
 import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from "react-icons/bs";
+import { TiArrowBack } from "react-icons/ti";
 
 // import Picker from 'emoji-picker-react';
 
-const Msg_chat = ( {selectedUser} ) =>{
+const Msg_chat = ( {selectedUser , onBackClick, isChatVisible} ) =>{
     const   [open, setOpen] = useState(false);
     const   [text, setText] = useState("");
     
@@ -36,11 +37,14 @@ const Msg_chat = ( {selectedUser} ) =>{
     // const userName = selectedUser?.name || 'No user selected';
 
     return(
-        <div className="msg_chat">
+        // <div className="msg_chat" >
+        // <div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
+        <div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
             {selectedUser ? (
                 <>
                     <div className="freind-profile">
                         <div className="section-profile">
+                            <TiArrowBack onClick={onBackClick} className='TiArrowBack'/>
                             <Image src={selectedUser.img} alt={selectedUser.name} width={65} height={65} style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }} className='img-section-profile' />
                             <p>{selectedUser.name}</p>
                         </div>
@@ -76,7 +80,7 @@ const Msg_chat = ( {selectedUser} ) =>{
                 </>
             ) : (
                 <div className='user-not-select'>
-                    <h2>Select a user to start chatting</h2>
+                    <h2>Select a user to start chating</h2>
                 </div>
             )}
         </div>

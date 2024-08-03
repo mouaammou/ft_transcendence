@@ -1,3 +1,25 @@
+/* addd just to test */
+
+
+/* .visible {
+    display: block;
+} */
+
+/* 
+@media (max-width: 990px) {
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.visible {
+        display: block;
+    }
+} */
+
+
+/* addd just to test */
+
+
 @media (max-width: 800px){
     .main-chat{
         /* display: flex;
@@ -19,7 +41,7 @@
         height: auto;
         width: 100%;
         padding: 10px 0;
-        box-shadow: 0 -6px 29px rgba(2, 0, 0, 0.8);        ;
+        box-shadow: 0 -6px 29px rgba(2, 0, 0, 0.8);
         /* box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1); */
         /* background-color: rgba(163, 218, 232, 0.2); */
         background-color: rgb(23 58 84);;

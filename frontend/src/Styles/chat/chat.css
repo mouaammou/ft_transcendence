@@ -7,9 +7,51 @@
     width: 100%;
 }
 
+/* .hidden{
+    display: none;
+} */
+
 h2{
     font-size: 30px;
 }
+
+/* -------------- */
+/* .div_list{
+    width: 25%;
+}
+.div_msg{
+    width: 75%;
+} */
+
+
+/*  ---------- test ------------ */
+/* .list-chat {
+    display: block;
+}
+
+.msg-chat {
+    display: none;
+}
+
+.list-chat.hidden {
+    display: none;
+}
+
+.msg-chat.hidden {
+    display: block;
+}
+
+@media (min-width: 990px) {
+    .list-chat,
+    .msg-chat {
+        display: block;
+    }
+
+    .list-chat.hidden,
+    .msg-chat.hidden {
+        display: block;
+    }
+} */
 
 /* .chat-mini-sidebare
 {
@@ -23,7 +65,100 @@ h2{
 
 /* add */
 
-.main-chat .container
+/* .main-chat .container
 {
     display: none;
+}
+
+
+@media (min-width: 990px) {
+    .hidden{
+        display: block;
+    }
+} */
+
+
+/* .hidden{
+    display: block;
+}
+@media (max-width: 990px) {
+    .main-chat .container
+    {
+        display: none;
+    }
+} */
+
+
+/* .hidden {
+    display: none;
+}
+
+@media (max-width: 990px) {
+    .list_chat {
+        display: block;
+    }
+
+    .list_chat.hidden {
+        display: none;
+    }
+
+    .msg_chat {
+        display: none;
+    }
+
+    .msg_chat.hidden {
+        display: block;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.visible {
+        display: block;
+    }
+} */
+
+
+
+
+
+
+/* -------------- ---------------- */
+
+.hidden {
+    display: none ;
+}
+
+.visible {
+    display: block ;
+}
+
+.main-chat .container{
+    display: none;
+}
+
+@media (max-width: 990px) {
+    .list_chat.hidden {
+        display: none;
+    }
+    .msg_chat.hidden {
+        display: none;
+    }
+    
+}
+
+@media (max-width: 800px){
+    .main-chat .container.hidden {
+        display: none;
+    }
+    .main-chat .container.visible {
+        display: block;
+    }
+}
+
+@media (min-width: 990px) {
+    .hidden {
+        display: block ;
+    }
 }

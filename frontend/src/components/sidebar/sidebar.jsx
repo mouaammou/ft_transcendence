@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import '@styles/style-sidebar/sidebar.css';
 import '@/Styles/style-sidebar/sidebarMobil.css'
 
-export default function Sidebar() {
+export default function Sidebar( { isChatVisible } ) {
 
     const router = useRouter();
     const sidebarItems = [
@@ -21,7 +21,9 @@ export default function Sidebar() {
     ];
 
     return(
-        <div className ="container">
+        // <div className ="container">
+        // <div className ={`sidebar ${isChatVisible ? '' : 'visible'}`}>
+        <div className ={`container ${isChatVisible ? 'hidden' : 'visible'}`}>
             <div className ="sidebar">
                 <div className ="logo">
                     <img src="new-logo.svg" alt="logo" />
@@ -29,12 +31,12 @@ export default function Sidebar() {
                 <div className ="icon_items">
                     <ul>
                         {sidebarItems.map((item, index) =>
-                            <li key={index} className={router.pathname === item.route ? 'active' : ''}
-                                onClick={()=>router.push(item.route)}
-                            >
-                                <img  className="icone_side" src={item.icon} alt= {item.label} />
-                            </li>
-                        )
+                                <li key={index} className={router.pathname === item.route ? 'active' : ''}
+                                    onClick={()=>router.push(item.route)}
+                                >
+                                    <img  className="icone_side" src={item.icon} alt= {item.label} />
+                                </li>
+                            )
                         }
                     </ul>
                 </div>

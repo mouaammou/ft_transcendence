@@ -23,7 +23,7 @@ const users = [
     { id: 10,name: 'User 10', email: 'user10@example.com', active: false , img: '/Profil.svg'},
 ];
 
-const list_chat = ( {onUserSelect} ) =>{
+const list_chat = ( {onUserSelect, isChatVisible} ) =>{
 
     const [onlineUser, setOnlineUser] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -52,7 +52,9 @@ const list_chat = ( {onUserSelect} ) =>{
     };
 
     return(
-        <div className="list_chat">
+        // <div className="list_chat ">
+        // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
+        <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
             <div className='user-chat'>
                 <div className='info-user'>
                     <Image src="/med.jpeg" alt='mohammed' className='img-info-user'  width={65} height={65} style={{borderRadius: '50%', border: '3px solid #F1FAEE'}}/>

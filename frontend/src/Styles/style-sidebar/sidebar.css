@@ -11,10 +11,18 @@
 }
 .container .sidebar{
     height: 99vh;
-    padding: 0px 20px;
+    /* padding: 0px 20px; */
+    /* padding: 0px; */
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+}
+.icon_items img {
+    width: 32px;
+}
+
+.Logout img{
+    width: 42px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -27,7 +35,9 @@
     align-items: center;
     justify-content: center;
 }
-
+.sidebar .logo img{
+    width: 80px;
+}
 .sidebar .icon_items{
     
 }
@@ -64,9 +74,12 @@ ul{
         width: 80px;
         
     }
-    .icone_side{
+    /* .icone_side{
         width: 24px;
-    }
+    } */
+    /* .icon_items img, .Logout img{
+        width: 32px;
+    } */
     ul li{
     }
 }
@@ -135,3 +148,4 @@ ul{
         margin: 0px;
     }
 } */
+

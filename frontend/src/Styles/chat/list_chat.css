@@ -9,7 +9,10 @@
     overflow-y: auto;
     overflow-x: hidden;
     width: 25%;
+    /* width: 100%; */
 }
+
+
 h2{
     margin: 20px;
     margin-left: 65px;
@@ -79,7 +82,25 @@ input[type="text"]:focus::placeholder {
 .all-user{
     display: flex;
     justify-content: center;
+    /* overflow-y: auto;
+    overflow-x: hidden;
+    height: 600px; */
 }
+
+
+/* .all-user::-webkit-scrollbar {
+    width: 3px;
+}
+
+.all-user::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.all-user::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: linear-gradient(#642bff, #22fffb);
+} */
 
 
 /* Custom scrollbar styling */
@@ -98,12 +119,16 @@ input[type="text"]:focus::placeholder {
     background: linear-gradient(#642bff, #22fffb);
 }
 
-/* .list_chat::-webkit-scrollbar-thumb:hover {
+
+/* addd just to test */
+
+/* 
+.hidden {
+    display: none;
 } */
 
-/* @media (max-width: 1300px){
+/* addd just to test */
 
-} */
 
 @media (max-width: 1600px){
     .list_chat{
@@ -153,12 +178,16 @@ input[type="text"]:focus::placeholder {
 @media (max-width: 990px){
     .list_chat{
         flex-grow: 1;
-        margin: 40px 40px 40px 0px;
+        /* margin: 40px 40px 40px 0px; */
+        /* margin: 20px 20px 20px 0px; */
+        
         /* margin-right: 40px; */
         /* width: 500px; */
         /* width: 97%; */
         /* margin-right: 24px; */
+        margin: 20px 20px 20px 0px;
     }
+
     .HiBell{
         font-size: 35px;
     }
@@ -173,9 +202,11 @@ input[type="text"]:focus::placeholder {
 @media (max-width: 800px){
     .list_chat{
         /* margin: 10px 10px 90px 10px; */
-        margin: 0px 0px 0px 0px;
+        /* margin: 0px 0px 0px 0px; */
+        margin: 20px 20px 20px 20px;
+        /* margin: 20px; */
         /* width: auto; */
-        width: 100%;
+        /* width: 100%; */
     }
     .user-chat{
         gap: 10px;
@@ -184,10 +215,20 @@ input[type="text"]:focus::placeholder {
     }
 }
 
+
+
+@media (max-width: 600px){
+    .list_chat{
+        margin: 5px;
+    }
+}
 @media (max-width: 400px){
     /* .user-chat{
         gap: 10%;
         margin: 10px;
+    } */
+    /* .list_chat{
+        margin: 5px;
     } */
     .info-user{
         gap: 5%;
@@ -221,3 +262,17 @@ input[type="text"]:focus::placeholder {
         font-size: 20px;
     }
 }
+
+
+
+/* addd just to test */
+
+
+/* 
+@media (max-width: 990px) {
+    .list_chat.hidden {
+        display: none;
+    }
+} */
+
+/* addd just to test */
