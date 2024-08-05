@@ -7,29 +7,40 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from authentication.utils import set_jwt_cookies
 from authentication.utils import has_valid_token
+from rest_framework.views import APIView
 
-@api_view(["POST", "GET"])
-def SignUp(request):
-	if request.method == "GET":
-		try:
-			all_users = CustomUser.objects.all()
-			seriaze_user = UserSerializer(all_users, many=True)
-			return Response(seriaze_user.data)
-		except Exception as e:
-			return Response({"Error": str(e)})
+# @api_view(["POST", "GET"])
+# def SignUp(request, format=None):
+# 	if request.method == "GET":
+# 		try:
+# 			all_users = CustomUser.objects.all()
+# 			seriaze_user = UserSerializer(all_users, many=True)
+# 			return Response(seriaze_user.data)
+# 		except Exception as e:
+# 			return Response({"Error": str(e)})
 
-	seriaze_user = UserSerializer(data=request.data)
-	if seriaze_user.is_valid():
-		user = seriaze_user.save()
-		refresh = RefreshToken.for_user(user)  # Create a new refresh token for the user
-		response = set_jwt_cookies(Response(), refresh)
-		response.status_code = status.HTTP_201_CREATED
-		return response
-	else:
-		return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
+# 	seriaze_user = UserSerializer(data=request.data)
+# 	if seriaze_user.is_valid():
+# 		user = seriaze_user.save()
+# 		refresh = RefreshToken.for_user(user)  # Create a new refresh token for the user
+# 		response = set_jwt_cookies(Response(), refresh)
+# 		response.status_code = status.HTTP_201_CREATED
+# 		return response
+# 	else:
+# 		return Response(seriaze_user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SignUp(APIView):
+
+	def post(self, request, format=None):
+		serializer = UserSerializer(data=request.data)
+		if serializer.is_valid():
+			pass
+			
+
+
 
 @api_view(["POST"])
-def Login(request):
+def Login(request, format=None):
 	username = request.data.get("username")
 	password = request.data.get("password")
 

@@ -11,17 +11,18 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
-            username=validated_data["username"],
-            # nickname=validated_data["nickname"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-            # avatar=validated_data["avatar"],
-            # avatar_url=validated_data["avatar_url"]
-        )
-        return user
+        # user = CustomUser.objects.create_user(
+        #     first_name=validated_data["first_name"],
+        #     last_name=validated_data["last_name"],
+        #     username=validated_data["username"],
+        #     # nickname=validated_data["nickname"],
+        #     email=validated_data["email"],
+        #     password=validated_data["password"],
+        #     # avatar=validated_data["avatar"],
+        #     # avatar_url=validated_data["avatar_url"]
+        # )
+        return CustomUser.objects.create(**validated_data)
+        # return user
 
     def update(self, instance, validated_data):
         #update just the fields that are provided
