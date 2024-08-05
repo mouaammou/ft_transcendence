@@ -145,7 +145,6 @@ h2{
     .msg_chat.hidden {
         display: none;
     }
-    
 }
 
 @media (max-width: 800px){
@@ -159,6 +158,6 @@ h2{
 
 @media (min-width: 990px) {
     .hidden {
-        display: block ;
+        display: block;
     }
 }

@@ -1,6 +1,4 @@
 .msg_chat{
-    /* flex-grow: 2; */
-    /* background-color: rgba(163, 218, 232, 0.2); */
     display: block;
     border-radius: 10px;
     
@@ -9,7 +7,6 @@
     flex-direction: column;
     gap: 20px;
     width: 75%;
-    /* width: 100%; */
 }
 
 
@@ -65,12 +62,6 @@
     justify-content: space-between;
 }
 .section-profile{
-    /* left: 30px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 75px;
-    margin: 0px 70px; */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -104,8 +95,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* justify-content: space-between; */
-    /* padding: 20px; */
     margin: 20px 60px;
     gap: 22px;
 }
@@ -249,6 +238,10 @@
     .TiArrowBack {
         font-size: 25px;
     }
+    .bottom-chat {
+        margin: 20px 25px;
+        gap: 15px;
+    }
 }
 
 @media (max-width: 400px){
@@ -268,13 +261,26 @@
         border: 1px solid rgb(241, 250, 238);
     }
     .LiaGamepadSolid {
-        font-size: 25px;
+        font-size: 20px;
     }
     .ImBlocked {
-        font-size: 15px;
+        font-size: 12px;
     }
     .TiArrowBack {
         font-size: 20px;
+    }
+    .bottom-chat{
+        margin: 11px 10px;
+        gap: 10px;
+    }
+    .div_message_input .message{
+        padding: 10px;
+    }
+    .BsEmojiSmile {
+        font-size: 15px;
+    }
+    .send-icon {
+        font-size: 14px;
     }
 }
 
