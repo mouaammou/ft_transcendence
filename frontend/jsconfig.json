@@ -4,11 +4,11 @@
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
 			//for "@/styles
-			"@styles/*": ["/home/mouad/ft_transcendence/frontend/src/Styles/*"],
+			"@styles/*": ["./src/Styles/*"],
 			//loginContext
 			"@loginContext/*": ["./src/components/auth/*"],
 			// for src/app
-			"@app/*": ["./src/app/*"],
+			"@app/*": ["./src/app/*"]
 		}
 	}
 }

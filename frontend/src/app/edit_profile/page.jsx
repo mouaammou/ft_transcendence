@@ -19,7 +19,7 @@ const EditProfile = () => {
 	});
 
 	useEffect(() => {
-		getData("profile/data").then((res) => {
+		postData("profile/data").then((res) => {
 			if (res?.status === 200) {
 				setData(res.data.user);
 				console.log("USER DATA: ", res.data.user);

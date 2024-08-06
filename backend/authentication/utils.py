@@ -32,7 +32,7 @@ def has_valid_token(func):
 		refresh_token = request.COOKIES.get("refresh_token")
 		access_token = request.COOKIES.get("access_token")
 		if not refresh_token or not access_token:
-			request.customuser = AnonymousUser()
+			request.user = AnonymousUser()
 		try:
 			RefreshToken(refresh_token)
 			try:
@@ -40,13 +40,13 @@ def has_valid_token(func):
 				try:
 					myuser = User.objects.get(id=AccessToken(access_token).get("user_id"))
 					# serialize_user = UserSerializer(myuser, many=False).data
-					request.customuser = myuser
+					request.user = myuser
 				except User.DoesNotExist:
-					request.customuser = AnonymousUser()
+					request.user = AnonymousUser()
 			except TokenError:
-				request.customuser = AnonymousUser()
+				request.user = AnonymousUser()
 		except TokenError:
-			request.customuser = AnonymousUser()
+			request.user = AnonymousUser()
 		return func(request,*args, **kwargs)
 	return wrapper
 

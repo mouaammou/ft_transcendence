@@ -6,12 +6,12 @@ import Cart from "./Cart.jsx";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-import { getData } from "@/services/apiCalls.js";
+import { getData, postData } from "@/services/apiCalls.js";
 
 const Profile = () => {
 	const [data, setData] = useState({});
 	useEffect(() => {
-		getData("profile/data").then((res) => {
+		postData("profile/data").then((res) => {
 			setData(res?.data?.user);
 		});
 	}, []);

@@ -1,5 +1,4 @@
 from rest_framework.decorators import api_view
-from authentication.models import CustomUser
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from authentication.serializers import UserSerializer
@@ -63,12 +62,4 @@ class Logout(APIView):
 		response.data = {"message": "Logout successfully"}
 		return response
 
-
-@api_view(["POST"])
-# @has_valid_token
-def Verify_Token(request):
-	return Response(
-		{"message": "Tokens Still valid"},
-		status=status.HTTP_200_OK,
-	)
 
