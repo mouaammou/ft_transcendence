@@ -24,8 +24,9 @@ class CustomUser(AbstractUser):
 	password = models.CharField(max_length=255, blank=False, null=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	avatar = models.ImageField(upload_to=upload_location, blank=False, null=False,validators=[validate_image_size], default="avatars/default.png")
-	avatar_url = models.URLField(blank=False, null=False, default="https://www.gravatar.com/avatar/")
+	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True)
+	# ,validators=[validate_image_size], default="avatars/default.png")
+	# avatar_url = models.URLField(blank=False, null=False, default="https://www.gravatar.com/avatar/")
 
 	def __str__(self):
 		return self.username

@@ -23,6 +23,7 @@ class OAuth42Callback(APIView):
 		if not code:
 			return Response({"Error": "Code not provided"}, status=status.HTTP_400_BAD_REQUEST)
 		
+		
 		token_data = {
 			'grant_type': 'authorization_code',
 			'client_id': settings.OAUTH42_CLIENT_ID,
@@ -46,7 +47,7 @@ class OAuth42Callback(APIView):
 			"first_name":user_data['first_name'],
 			"last_name":user_data['last_name'],
 			"email":user_data['email'],
-			"avatar_url":user_data['image']['versions']['medium']
+			# "avatar_url":user_data['image']['versions']['medium']
 		}
 
 		response = Response()

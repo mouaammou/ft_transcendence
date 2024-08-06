@@ -9,9 +9,9 @@ from .views import UserProfile, UpdateProfile
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-	path("signup",views.SignUp, name="singup"),
-	path("login",views.Login, name="login"),
-	path("logout",views.Logout, name="logout"),
+	path("signup",views.SignUp.as_view(), name="singup"),
+	path("login",views.Login.as_view(), name="login"),
+	path("logout",views.Logout.as_view(), name="logout"),
 	path("", views.default, name="default"),
 	#for admin
 
