@@ -4,8 +4,10 @@ import Image from "next/image";
 import '@/Styles/chat/UserCard.css'
 
 const UserCard = ({user, listType, onUserSelect}) => {
+
     const borderColor = user.active ? 'green' : 'red';
     const imageSize = listType === 'online' ? '65' : '45';
+
     return (
         <div className= {`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`} onClick={() => onUserSelect(user)}>
             <Image 
