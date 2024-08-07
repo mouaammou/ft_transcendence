@@ -24,7 +24,7 @@ class SignUp(APIView):
 				response.status_code = status.HTTP_201_CREATED
 				return response
 			except Exception as error:
-				return Response({"Error":"Error on Signup class"}, status=status.					HTTP_500_INTERNAL_SERVER_ERROR)
+				return Response({"Error":"Error on Signup class"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class Login(APIView):
@@ -61,5 +61,9 @@ class Logout(APIView):
 		response.status_code = status.HTTP_205_RESET_CONTENT
 		response.data = {"message": "Logout successfully"}
 		return response
+	
+class VerifyToken(APIView):
+	def post(self, request, *args, **kwargs):
+		return Response({"message": "Tokens are valid"}, status=status.HTTP_200_OK)
 
 

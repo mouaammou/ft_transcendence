@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 // function axiosInstance() {
 // 	return axios.create({
@@ -29,10 +30,14 @@ const axiosInstance = axios.create({
 // 	(error) => {
 // 		//add redirect_to_login query param to the current url
 // 		console.log("error status", error.response.status);
-// 		if (error.response.status === 400) {
+// 		if (error.response.status === 401) {
+// 			console.log(
+// 				"hello response 4001"
+// 			);
+// 			window.location.href = '/login';
 // 		}
 // 		return error;
-// 	}
+	// })
 // );
 
 export default axiosInstance;

@@ -53,9 +53,8 @@ staticfiles/
 .ipynb_checkpoints
 
 # Environments
-.env
+
 .venv
-env/
 venv/
 ENV/
 env.bak/

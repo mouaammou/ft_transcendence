@@ -1,5 +1,5 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from .views import OAuth42Login, OAuth42Callback
 from . import views
 from django.conf import settings
@@ -12,6 +12,8 @@ urlpatterns = [
 	path("login",views.Login.as_view(), name="login"),
 	path("logout",views.Logout.as_view(), name="logout"),
 	path("", views.default, name="default"),
+    
+	path('verifyTokens', views.VerifyToken.as_view(), name='verify token'),
 	#for admin
 
 	path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -25,7 +27,7 @@ urlpatterns = [
 	path("profile/update",views.UpdateProfile, name="update profile"),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+# urlpatterns = format_suffix_patterns(urlpatterns)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

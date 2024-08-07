@@ -93,7 +93,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
-    # "authentication.middleware.TokenVerificationMiddleWare",  
+    "authentication.middleware.TokenVerificationMiddleWare",  
 ]
 
 ROOT_URLCONF = 'core.urls'

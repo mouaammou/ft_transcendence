@@ -15,9 +15,9 @@ export const LoginProvider = ({ children }) => {
 	useEffect(() => {
 		setMounted(true)
 		const isAuthValue = Cookies.get("isAuth");
-		console.log("cookies from middleware :: ", isAuthValue);
-		console.log("value of :: ", JSON.parse(isAuthValue));
-		setIsAuth(JSON.parse(isAuthValue));
+
+			if (isAuthValue)
+				setIsAuth(JSON.parse(isAuthValue));
 	}, []);
 
 	if (!mounted)
