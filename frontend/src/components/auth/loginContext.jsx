@@ -10,25 +10,30 @@ export const LoginContext = createContext(null);
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-	const [isAuth, setIsAuth] = useState(false);
+	const initialAuthState = typeof window !== 'undefined' ? JSON.parse(Cookies.get("isAuth") || 'false') : false;
+	const [isAuth, setIsAuth] = useState(initialAuthState);
 	const [mounted, setMounted] = useState(false);
-
 	const pathname = usePathname()
 
 	useEffect(() => {
-		setMounted(true)
-		setIsAuth(false)
 		const isAuthValue = Cookies.get("isAuth");
 		if (isAuthValue)
 			setIsAuth(JSON.parse(isAuthValue));
+		else
+		{
+			setIsAuth(false)
+			Cookies.set("isAuth", false, {path: "/"});
+			router.push("/login")
+		}
+		setMounted(true)
 	}, [pathname]);
-
-
+	
 	const AuthenticateTo = (endpoint, formData) => {
 		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
 					setIsAuth(true);
+					Cookies.set("isAuth", true);
 					console.log("Login successfully");
 					setErrors({
 						success: "Login Successful",
@@ -58,7 +63,7 @@ export const LoginProvider = ({ children }) => {
 
 	const Logout = () => {
 		setIsAuth(false);
-
+		Cookies.remove("isAuth");
 		postData("/logout").then((res) => {
 			if (res && res.status === 205) {
 				router.push("/login");
