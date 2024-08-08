@@ -5,7 +5,7 @@ import Links from "./Links/Links";
 
 const Navbar = () => {
 	const { Logout, isAuth } = useAuth();
-	
+	console.log("isis ", isAuth);
 	return (
 		<nav className="navbar">
 			<div className="logo">

@@ -1,8 +1,9 @@
 "use client";
 import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { usePathname } from 'next/navigation';
 
 export const LoginContext = createContext(null);
 
@@ -12,24 +13,18 @@ export const LoginProvider = ({ children }) => {
 	const [isAuth, setIsAuth] = useState(false);
 	const [mounted, setMounted] = useState(false);
 
+	const pathname = usePathname()
+
 	useEffect(() => {
 		setMounted(true)
+		setIsAuth(false)
 		const isAuthValue = Cookies.get("isAuth");
+		if (isAuthValue)
+			setIsAuth(JSON.parse(isAuthValue));
+	}, [pathname]);
 
-			if (isAuthValue)
-				setIsAuth(JSON.parse(isAuthValue));
-	}, []);
-
-	if (!mounted)
-		return <>
-			<body>
-				
-			</body>
-		</>;
 
 	const AuthenticateTo = (endpoint, formData) => {
-		
-
 		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
@@ -82,7 +77,7 @@ export const LoginProvider = ({ children }) => {
 				setIsAuth,
 			}}
 		>
-			{children}
+			{mounted && children}
 		</LoginContext.Provider>
 	);
 };

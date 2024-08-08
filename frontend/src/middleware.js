@@ -7,35 +7,45 @@ export async function middleware(request) {
 	const response = NextResponse.next();
 
 	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
-	if (isAuthPage)
-		return response
-	// Check the validity of tokens with the backend
-	const backendResponse = await fetch("http://localhost:8000/verifyTokens", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
-		},
-	});
-
-	// If the backend responds with 401, redirect to login
-	if (backendResponse.status === 401) {
-		console.log("-- 401 --");
-		return NextResponse.redirect(new URL('/login', request.url));
-	}
-
-	const hasToken = access_token && refresh_token;
-	if (hasToken) response.cookies.set("isAuth", "true", { path: "/" });
-	else response.cookies.set("isAuth", "false", { path: "/" });
 
 	if (request.url == "http://localhost:3000/")
 		return response
+	else if (!refresh_token && !isAuthPage)
+		return NextResponse.redirect(new URL("/login", request.url));
+
+	if (!isAuthPage)//if you have at least the refresh token, then we will validte it in the backend
+	{
+		const backendResponse = await fetch("http://localhost:8000/verifyTokens", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
+			},
+		});
+
+		if (backendResponse.status === 401) {
+			console.log("-- 401 --");
+			const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
+			redirectResponse.cookies.set("isAuth", "false", { path: "/" });
+			return redirectResponse;
+		}
+		else if (backendResponse.status == 200)
+		{
+			console.log("-- 200 --");
+			response.cookies.set("isAuth", "true", { path: "/" });
+			return response;
+		}
+	}
+
+	const hasToken = access_token && refresh_token;
+	if (hasToken)
+		response.cookies.set("isAuth", "true", { path: "/" });
+	else
+		response.cookies.set("isAuth", "false", { path: "/" });
+
+	
 	if (access_token && refresh_token && isAuthPage)
 		return NextResponse.redirect(new URL("/profile", request.url));
-	else if ((!access_token || !refresh_token) && isAuthPage)
-		NextResponse.next();
-	else if ((!access_token || !refresh_token) && !isAuthPage)
-		return NextResponse.redirect(new URL("/login", request.url));
 
 	return response;
 }
@@ -48,5 +58,6 @@ export const config = {
 		"/dashboard/:path*",
 		"/profile/:path*",
 		"/game/:path*",
+		"/chat/:path*",
 	],
 };
