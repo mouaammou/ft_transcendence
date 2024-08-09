@@ -144,10 +144,10 @@
     color: rgb(12, 76, 92);
 }
 
-.img-section-profile{
-    /* width: 45;
-    height: 45; */
-}
+/* .img-section-profile{
+    width: 45;
+    height: 45;
+} */
 
 .user-not-select{
     background-color: rgba(163, 218, 232, 0.2);
@@ -159,9 +159,9 @@
     height: 100%;
 }
 
-.user-not-select h2{
-    /* text-align: center; */
-}
+/* .user-not-select h2{
+    text-align: center;
+} */
 
 
 

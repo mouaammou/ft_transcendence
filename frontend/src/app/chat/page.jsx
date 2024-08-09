@@ -6,7 +6,12 @@ import Listchat from '@/components/chat/list/list_chat'
 import Sidebar from '@/components/sidebar/sidebar'
 import { ChatProvider } from './chat_context/ChatContext';
 
+import {ChatContext} from '@/app/chat/chat_context/ChatContext'
+import React, { useContext } from 'react';
+
+
 const Chat = () => {
+
 
 	return (
 		<ChatProvider>

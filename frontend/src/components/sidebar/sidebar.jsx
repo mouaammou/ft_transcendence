@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 // import '../../styles/sidebar/sidebar.css';
 import '@styles/style-sidebar/sidebar.css';
 import '@/Styles/style-sidebar/sidebarMobil.css'
+import { ChatContext} from '@/app/chat/chat_context/ChatContext'
+import React, { useContext } from 'react'
 
-export default function Sidebar( { isChatVisible } ) {
+
+
+export default function Sidebar( ) {
 
     const router = useRouter();
     const sidebarItems = [
@@ -20,10 +24,13 @@ export default function Sidebar( { isChatVisible } ) {
         // {label: 'Logout',icon: '../public/back.png', route: '/Logout'},
     ];
 
+    // Try to access the ChatContext, but fallback to undefined if not available
+    const SidebarContext = useContext(ChatContext);
+    const ischatVisible = SidebarContext ? SidebarContext.isChatVisible : false ;
+
+
     return(
-        // <div className ="container">
-        // <div className ={`sidebar ${isChatVisible ? '' : 'visible'}`}>
-        <div className ={`container ${isChatVisible ? 'hidden' : 'visible'}`}>
+        <div className ={`container ${ischatVisible ? 'hidden' : 'visible'}`}>
             <div className ="sidebar">
                 <div className ="logo">
                     <img src="new-logo.svg" alt="logo" />
