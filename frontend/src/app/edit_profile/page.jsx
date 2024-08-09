@@ -1,15 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getData, postData } from "@/services/apiCalls.js";
+import { useAuth } from "@/components/auth/loginContext";
 
 const EditProfile = () => {
-	const [data, setData] = useState({
-		nickname: "",
-		email: "",
-		first_name: "",
-		last_name: "",
-		avatar: "",
-	});
+	
+	const {profileData: data, fetch_profile} = useAuth()
+
+	useEffect(() =>{
+		fetch_profile()
+	}, [])
+
 	const [userData, setUserData] = useState({
 		nickname: "",
 		email: "",
@@ -17,15 +18,6 @@ const EditProfile = () => {
 		last_name: "",
 		avatar: "",
 	});
-
-	useEffect(() => {
-		postData("profile/data").then((res) => {
-			if (res?.status === 200) {
-				setData(res.data.user);
-				console.log("USER DATA: ", res.data.user);
-			}
-		});
-	}, []);
 
 	const handleChange = (e) => {
 		setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -38,29 +30,19 @@ const EditProfile = () => {
 	const UpdateProfile = async (e) => {
 		e.preventDefault();
 
+		const updatedData = {
+			nickname: formData.nickname || data.nickname,
+			email: formData.email || data.email,
+			first_name: formData.first_name || data.first_name,
+			last_name: formData.last_name || data.last_name,
+			avatar: formData.avatar || data.avatar,
+			password: formData.password,
+		  };
+
 		try {
-			postData(
-				"profile/update",
-				{
-					nickname: userData.nickname
-						? userData.nickname
-						: data.nickname,
-					email: userData.email ? userData.email : data.email,
-					first_name: userData.first_name
-						? userData.first_name
-						: data.first_name,
-					last_name: userData.last_name
-						? userData.last_name
-						: data.last_name,
-					avatar: userData.avatar ? userData.avatar : "",
-					password: userData.password,
-				},
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				}
-			);
+			const res = postData(
+				"profile/update", updatedData, {headers: { "Content-Type": "multipart/form-data",},
+			});
 			console.log(res);
 		} catch (err) {
 			console.log(err);

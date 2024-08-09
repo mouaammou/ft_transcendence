@@ -16,6 +16,8 @@ export const LoginProvider = ({ children }) => {
 	const [mounted, setMounted] = useState(false);
 	const pathname = usePathname()
 
+	const [profileData, setProfileData] = useState({});
+
 	useEffect(() => {
 		const isAuthValue = Cookies.get("isAuth");
 		if (isAuthValue)
@@ -28,9 +30,9 @@ export const LoginProvider = ({ children }) => {
 		}
 		setMounted(true)
 
-		// return ()=> {
-		// 	setMounted(false)
-		// }
+		return ()=> {//cleanup function
+			setMounted(false)
+		}
 	}, [pathname]);
 	
 	const AuthenticateTo = (endpoint, formData) => {
@@ -76,6 +78,17 @@ export const LoginProvider = ({ children }) => {
 		});
 	};
 
+	const fetch_profile  = async () => {
+		try {
+			const res = await postData("profile/data");
+			if (res?.status === 200) {
+				setProfileData(res.data.user);
+			}
+		} catch (error) {
+			console.error("Failed to fetch profile data:", error);
+		}
+	}
+
 	return (
 		<LoginContext.Provider
 			value={{
@@ -85,6 +98,8 @@ export const LoginProvider = ({ children }) => {
 				Logout,
 				isAuth,
 				setIsAuth,
+				fetch_profile,
+				profileData
 			}}
 		>
 			{mounted && children}

@@ -47,8 +47,9 @@ class OAuth42Callback(APIView):
 			"first_name":user_data['first_name'],
 			"last_name":user_data['last_name'],
 			"email":user_data['email'],
-			# "avatar_url":user_data['image']['versions']['medium']
 		}
+
+		avatar_url = user_data['image']['versions']['medium']
 
 		response = Response()
 		try:
@@ -59,6 +60,7 @@ class OAuth42Callback(APIView):
 				user = CustomUser.objects.create(**user_data_set)
 				random = CustomUser.objects.make_random_password()
 				user.set_password(make_password(random))
+				user.download_and_save_image(avatar_url)
 				user.save()
 				response.status = status.HTTP_201_CREATED
 			except Exception as e:

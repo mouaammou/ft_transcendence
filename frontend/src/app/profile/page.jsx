@@ -3,18 +3,17 @@ import HorizontalLine from "./HorizontalLine.jsx";
 import CustomButton from "./CustomButton.jsx";
 import "../../Styles/profile/profile.css";
 import Cart from "./Cart.jsx";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import Link from "next/link";
 
-import { getData, postData } from "@/services/apiCalls.js";
+import { useAuth } from "@/components/auth/loginContext.jsx";
 
 const Profile = () => {
-	const [data, setData] = useState({});
-	useEffect(() => {
-		postData("profile/data").then((res) => {
-			setData(res?.data?.user);
-		});
-	}, []);
+	const {profileData: data, fetch_profile} = useAuth()
+
+	useEffect(() =>{
+		fetch_profile()
+	}, [])
 
 	return (
 		<>
@@ -24,7 +23,7 @@ const Profile = () => {
 						<div className="">
 							<img
 								className="profile-pic"
-								src={data?.avatar_url}
+								src={data?.avatar}
 								alt="profile_pic"
 							/>
 						</div>

@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+import requests
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+from PIL import Image, UnidentifiedImageError
+
 
 # Create your models here.
 
@@ -22,11 +27,27 @@ class CustomUser(AbstractUser):
 	phone = models.CharField(max_length=255, blank=True)
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
-	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True)
-	# ,validators=[validate_image_size], default="avatars/default.png")
-	# avatar_url = models.URLField(blank=False, null=False, default="https://www.gravatar.com/avatar/")
+	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
+
+	
+	def download_and_save_image(self, image_url):
+
+		img_temp = NamedTemporaryFile(delete=True)
+		#download the image form the url
+		response = requests.get(url=image_url)
+		if response.status_code == 200:
+			img_temp.write(response.content)
+			img_temp.flush()
+
+			#valid the file is and actual image file
+			try:
+				img = Image.open(img_temp)
+				img.verify()
+				img_temp.seek(0)
+				self.avatar.save(f"{self.username}.{img.format.lower()}", File(img_temp), save=True)
+				print("\n download success -- \n")
+			except UnidentifiedImageError:
+				print("The file downloaded is not a valid image.")
 
 	def __str__(self):
 		return self.username
