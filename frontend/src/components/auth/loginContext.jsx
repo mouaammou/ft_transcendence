@@ -1,16 +1,17 @@
 "use client";
 import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { usePathname } from 'next/navigation';
 
 export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
+
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-	const initialAuthState = typeof window !== 'undefined' ? JSON.parse(Cookies.get("isAuth") || 'false') : false;
+	const initialAuthState = JSON.parse(Cookies.get("isAuth") || 'false')
 	const [isAuth, setIsAuth] = useState(initialAuthState);
 	const [mounted, setMounted] = useState(false);
 	const pathname = usePathname()
@@ -26,6 +27,10 @@ export const LoginProvider = ({ children }) => {
 			router.push("/login")
 		}
 		setMounted(true)
+
+		// return ()=> {
+		// 	setMounted(false)
+		// }
 	}, [pathname]);
 	
 	const AuthenticateTo = (endpoint, formData) => {
@@ -33,7 +38,7 @@ export const LoginProvider = ({ children }) => {
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
 					setIsAuth(true);
-					Cookies.set("isAuth", true);
+					Cookies.set("isAuth", true, {path: "/"});
 					console.log("Login successfully");
 					setErrors({
 						success: "Login Successful",

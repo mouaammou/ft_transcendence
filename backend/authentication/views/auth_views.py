@@ -1,11 +1,9 @@
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from authentication.serializers import UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from authentication.utils import set_jwt_cookies
-from authentication.utils import has_valid_token
 from rest_framework.views import APIView
 
 

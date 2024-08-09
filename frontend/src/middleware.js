@@ -6,10 +6,12 @@ export async function middleware(request) {
 
 	const response = NextResponse.next();
 
+	
 	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
+	const isRoot = request.nextUrl.pathname === "/";
 
-	if (request.url == "http://localhost:3000/")
-		return response
+	if (isRoot)
+		return response;
 	else if (!refresh_token && !isAuthPage)
 		return NextResponse.redirect(new URL("/login", request.url));
 
@@ -20,31 +22,25 @@ export async function middleware(request) {
 			headers: {
 				"Content-Type": "application/json",
 				"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
-			},
+			}
 		});
 
 		if (backendResponse.status === 401) {
-			console.log("-- 401 --");
 			const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
 			redirectResponse.cookies.set("isAuth", "false", { path: "/" });
 			return redirectResponse;
 		}
 		else if (backendResponse.status == 200)
 		{
-			console.log("-- 200 --");
 			response.cookies.set("isAuth", "true", { path: "/" });
 			return response;
 		}
 	}
 
 	const hasToken = access_token && refresh_token;
-	if (hasToken)
-		response.cookies.set("isAuth", "true", { path: "/" });
-	else
-		response.cookies.set("isAuth", "false", { path: "/" });
+	response.cookies.set("isAuth", hasToken ? "true" : "false", { path: "/" });
 
-	
-	if (access_token && refresh_token && isAuthPage)
+	if (hasToken && isAuthPage)
 		return NextResponse.redirect(new URL("/profile", request.url));
 
 	return response;
