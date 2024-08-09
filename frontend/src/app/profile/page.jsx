@@ -5,12 +5,11 @@ import "../../Styles/profile/profile.css";
 import Cart from "./Cart.jsx";
 import { useEffect} from "react";
 import Link from "next/link";
-
 import { useAuth } from "@/components/auth/loginContext.jsx";
 
 const Profile = () => {
+	
 	const {profileData: data, fetch_profile} = useAuth()
-
 	useEffect(() =>{
 		fetch_profile()
 	}, [])

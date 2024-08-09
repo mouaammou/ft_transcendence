@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getData, postData } from "@/services/apiCalls.js";
+import { postData } from "@/services/apiCalls.js";
 import { useAuth } from "@/components/auth/loginContext";
 
 const EditProfile = () => {
-	
-	const {profileData: data, fetch_profile} = useAuth()
 
+	const {profileData: data, fetch_profile} = useAuth()
 	useEffect(() =>{
 		fetch_profile()
 	}, [])
@@ -31,7 +30,8 @@ const EditProfile = () => {
 		e.preventDefault();
 
 		const updatedData = {
-			nickname: formData.nickname || data.nickname,
+			username: data.username,
+			nickname: formData.nickname || data.username,
 			email: formData.email || data.email,
 			first_name: formData.first_name || data.first_name,
 			last_name: formData.last_name || data.last_name,

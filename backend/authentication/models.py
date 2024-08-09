@@ -20,7 +20,7 @@ def upload_location(instance, filename):
 
 class CustomUser(AbstractUser):
 	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
-	nickname = models.CharField(max_length=255, blank=True)
+	# nickname = models.CharField(max_length=255, blank=True)
 	email = models.EmailField(unique=True, blank=False, null=False)
 	first_name = models.CharField(max_length=255, blank=False)
 	last_name = models.CharField(max_length=255, blank=False)

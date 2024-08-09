@@ -27,29 +27,6 @@ def set_jwt_cookies(response, refresh):
 	)
 	return response
 
-def has_valid_token(func):
-	def wrapper(request, *args, **kwargs):
-		refresh_token = request.COOKIES.get("refresh_token")
-		access_token = request.COOKIES.get("access_token")
-		if not refresh_token or not access_token:
-			request.user = AnonymousUser()
-		try:
-			RefreshToken(refresh_token)
-			try:
-				AccessToken(access_token)
-				try:
-					myuser = User.objects.get(id=AccessToken(access_token).get("user_id"))
-					# serialize_user = UserSerializer(myuser, many=False).data
-					request.user = myuser
-				except User.DoesNotExist:
-					request.user = AnonymousUser()
-			except TokenError:
-				request.user = AnonymousUser()
-		except TokenError:
-			request.user = AnonymousUser()
-		return func(request,*args, **kwargs)
-	return wrapper
-
 def save_image_from_url(url):
     response = requests.get(url)
     if response.status_code == 200:
