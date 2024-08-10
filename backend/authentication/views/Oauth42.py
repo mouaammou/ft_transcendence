@@ -43,7 +43,6 @@ class OAuth42Callback(APIView):
 
 		user_data_set = {
 			"username":user_data['login'],
-			# "nickname":user_data['login'], # nickname is the same as username
 			"first_name":user_data['first_name'],
 			"last_name":user_data['last_name'],
 			"email":user_data['email'],

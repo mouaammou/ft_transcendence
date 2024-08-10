@@ -3,40 +3,35 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from authentication.serializers import UserSerializer, ImageSerializer
 from django.conf import settings
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
+from authentication.utils import has_valid_token
 
 CustomUser = get_user_model()
 
 @api_view(["POST"])
+@has_valid_token
 def UserProfile(request):
-	user = UserSerializer(request.user, many=False).data
+	user = UserSerializer(request.user).data
 	return Response({"user": user}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
+@has_valid_token
 def UpdateProfile(request):
+
 	user = request.user
+
+	print(f"\n--- {user} --\n")
 	try:
-		user = CustomUser.objects.get(username=user.username)
+		user_instance = CustomUser.objects.get(id=user.id)
 	except CustomUser.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-	
-	print(f"request data {request.data}")
-	user_serializer = UserSerializer(user, data=request.data, partial=True)
-	if user_serializer.is_valid():
-		user_updated = user_serializer.update(user, user_serializer.validated_data)
-		if user_updated.avatar:
-			user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
-		user_updated.save()
-		return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-	# avatar_serializer = ImageSerializer(data=request.data)
-	# if avatar_serializer.is_valid():
-	# 	user_updated = avatar_serializer.update(user, avatar_serializer.validated_data)
-	# 	user_updated.avatar_url = f"http://localhost:8000{settings.MEDIA_URL}{user_updated.avatar}"
-	# 	user_updated.save()
-	# 	return Response(status=status.HTTP_200_OK)
-
-	return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	print(f"\n--- error here --\n")
+	serializer = UserSerializer(user_instance, data=request.data, partial=True)
+	if serializer.is_valid():
+		serializer.save()
+		return Response(serializer.data, status=status.HTTP_200_OK)
+	else:
+		return Response(status=444)
+	return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

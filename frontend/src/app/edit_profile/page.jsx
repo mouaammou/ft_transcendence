@@ -11,11 +11,11 @@ const EditProfile = () => {
 	}, [])
 
 	const [userData, setUserData] = useState({
-		nickname: "",
+		username: "",
 		email: "",
 		first_name: "",
 		last_name: "",
-		avatar: "",
+		// avatar: "",
 	});
 
 	const handleChange = (e) => {
@@ -30,20 +30,20 @@ const EditProfile = () => {
 		e.preventDefault();
 
 		const updatedData = {
-			username: data.username,
-			nickname: formData.nickname || data.username,
-			email: formData.email || data.email,
-			first_name: formData.first_name || data.first_name,
-			last_name: formData.last_name || data.last_name,
-			avatar: formData.avatar || data.avatar,
-			password: formData.password,
+			username: userData.username,
+			email: userData.email,
+			first_name: userData.first_name,
+			last_name: userData.last_name,
+			// avatar: userData.avatar,
+			// password: userData.password,
 		  };
 
+		console.log(updatedData);
 		try {
 			const res = postData(
 				"profile/update", updatedData, {headers: { "Content-Type": "multipart/form-data",},
 			});
-			console.log(res);
+			console.log("response : ",res);
 		} catch (err) {
 			console.log(err);
 		}
@@ -56,14 +56,14 @@ const EditProfile = () => {
 				<form
 					onSubmit={UpdateProfile}
 					method="POST"
-					enctype="multipart/form-data"
+					encType="multipart/form-data"
 				>
 					<div className="avatar_field">
 						<label>Change Avatar</label>
 						<input
 							type="file"
 							name="avatar"
-							onChange={handle_avatar}
+							// onChange={handle_avatar}
 						/>
 						<img
 							src={data?.avatar}
@@ -73,11 +73,11 @@ const EditProfile = () => {
 						/>
 					</div>
 					<div className="input_field">
-						<label>nickname</label>
+						<label>username</label>
 						<input
 							type="text"
-							placeholder="nickname"
-							name="nickname"
+							placeholder="username"
+							name="username"
 							onChange={handleChange}
 						/>
 					</div>

@@ -34,3 +34,14 @@ def save_image_from_url(url):
         file_name = "downloaded_image.jpg"
         my_model_instance = CustomUser(image_file=content, image_name=file_name)
         my_model_instance.save()
+
+
+def has_valid_token(func):
+	def wrapper(request, *args, **kwargs):
+		try:
+			myuser = User.objects.get(id=AccessToken(request.COOKIES.get("access_token")).get("user_id"))
+			request.user = myuser
+		except User.DoesNotExist:
+			request.user = AnonymousUser()
+		return func(request,*args, **kwargs)
+	return wrapper

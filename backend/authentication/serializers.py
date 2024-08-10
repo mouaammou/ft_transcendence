@@ -20,6 +20,23 @@ class UserSerializer(serializers.ModelSerializer):
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
 
+    def validate_email(self, value):
+        user = self.instance  # Get the current user instance
+        print(f"\n fdf-- {user.email} --\n")
+        print(f"\n fdfv-- {value} --\n")
+        # if user.email != value:  # Only validate if the email has changed
+        if CustomUser.objects.filter(email=value).exclude(id=user.id).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+
+    def validate_username(self, value):
+        user = self.instance  # Get the current user instance
+        print(f"\n fdf-- {user.username} --\n")
+        print(f"\n fdfv-- {value} --\n")
+        # if user.username != value:  # Only validate if the username has changed
+        if CustomUser.objects.filter(username=value).exclude(id=user.id).exists():
+            raise serializers.ValidationError("This username is already in use.")
+        return value
 
 class ImageSerializer(serializers.ModelSerializer):
 
