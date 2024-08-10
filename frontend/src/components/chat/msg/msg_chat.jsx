@@ -9,20 +9,29 @@ import { TiArrowBack } from "react-icons/ti";
 // import Picker from 'emoji-picker-react';
 import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext'
+// import React, { useRef } from 'react';
+// import { useEffect } from 'react';
 
 const Msg_chat = () => {
+    
     
     const { 
         selectedUser, 
         open, 
         setOpen, 
-        text, 
+        text,
         setText, 
         handleBackClick, 
-        handleEmojiClick, 
-        isChatVisible 
+        handleEmojiClick,
+        isChatVisible,
+        messages,
+        handleSendMessage,
+        handleKeyPress,
+        endRef
     } = useContext(ChatContext);
+    
 
+    
     return(
         <div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
             {selectedUser ? (
@@ -40,13 +49,120 @@ const Msg_chat = () => {
                     </div>
                     <div className="body-message-chat">
                         <div className='center-chat'>
-                            <h2> hey this is the message chat </h2>
+                            {/* <h2> hey this is the message chat </h2> */}
+                            <div className="message">
+                                <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="my-message">
+                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="message">
+                                <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="my-message">
+                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="message">
+                                <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="message">
+                                <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            <div className="message">
+                                <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
+                                <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
+                                    et la mise en page avant impression. Le Lorem Ipsum est le faux texte
+                                    standard de l'imprimerie depuis les années 1500, quand un imprimeur
+                                    anonyme assembla ensemble des morceaux de texte pour réaliser un livre
+                                    spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles,
+                                    mais s'est aussi adapté à la bureautique informatique, sans que son contenu
+                                    n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente
+                                    de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment,
+                                    par son inclusion dans des applications de mise en page de texte, comme Aldus
+                                    PageMaker.
+                                </p>
+                            </div>
+                            {messages[selectedUser.id] && messages[selectedUser.id].map((msg, index) => (
+                                <div key={index} className="my-message">
+                                    <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
+                                    <p>{msg.text}</p>
+                                </div>
+                            ))}
+                            <div ref={endRef}></div>
                         </div>
                         <div className="bottom-chat">
                             <div className='div_message_input'>
                                 <input className="message" type="text" placeholder='type a message ...' 
                                     onChange={e => setText(e.target.value)}
                                     value={text}
+                                    // onKeyPress={handleKeyPress}
+                                    onKeyDown={handleKeyPress}
                                 />
                             </div>
                             <div className='emoji'>
@@ -56,7 +172,7 @@ const Msg_chat = () => {
                                 </div>
                             </div>
                             <div>
-                                <button className='buttom-send'>
+                                <button className='buttom-send' onClick={handleSendMessage}>
                                     <BsSendFill className="send-icon" />
                                 </button>
                             </div>

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import '@styles/style-sidebar/sidebar.css';
 import '@/Styles/style-sidebar/sidebarMobil.css'
 import { ChatContext} from '@/app/chat/chat_context/ChatContext'
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 
 
 
