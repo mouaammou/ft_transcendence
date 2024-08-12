@@ -1,6 +1,5 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from .views import OAuth42Login, OAuth42Callback
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -19,8 +18,8 @@ urlpatterns = [
 	path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
 	path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
 
-	path('auth/login/42', OAuth42Login.as_view(), name='42_login'),
-	path('auth/callback/42', OAuth42Callback.as_view(), name='42_callback'),
+	path('auth/login/42', views.OAuth42Login.as_view(), name='42_login'),
+	path('auth/callback/42', views.OAuth42Callback.as_view() , name='42_callback'),
 
 	#user profile, get and update, delete
 	path("profile/data", views.UserProfile, name="profile"),

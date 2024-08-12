@@ -20,6 +20,7 @@ def upload_location(instance, filename):
 
 class CustomUser(AbstractUser):
 	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
+	user42 = models.CharField(max_length=255, unique=True, blank=True, null=True)
 	email = models.EmailField(unique=True, blank=False, null=False)
 	first_name = models.CharField(max_length=255, blank=False)
 	last_name = models.CharField(max_length=255, blank=False)
@@ -29,7 +30,7 @@ class CustomUser(AbstractUser):
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
 
 	
-	def download_and_save_image(self, image_url):
+	def download_and_save_image(self, image_url):#for 42 image
 
 		img_temp = NamedTemporaryFile(delete=True)
 		#download the image form the url

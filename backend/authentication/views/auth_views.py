@@ -22,8 +22,8 @@ class SignUp(APIView):
 				response.status_code = status.HTTP_201_CREATED
 				return response
 			except Exception as error:
-				return Response({"Error":"Error on Signup class"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+				return Response({"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
 	

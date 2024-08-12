@@ -1,6 +1,7 @@
 from .models import CustomUser
 from rest_framework import serializers
 from django.conf import settings
+from django.db import IntegrityError
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,31 +21,59 @@ class UserSerializer(serializers.ModelSerializer):
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
 
-    def validate_email(self, value):
-        user = self.instance  # Get the current user instance
-        print(f"\n fdf-- {user.email} --\n")
-        print(f"\n fdfv-- {value} --\n")
-        # if user.email != value:  # Only validate if the email has changed
-        if CustomUser.objects.filter(email=value).exclude(id=user.id).exists():
-            raise serializers.ValidationError("This email is already in use.")
-        return value
 
-    def validate_username(self, value):
-        user = self.instance  # Get the current user instance
-        print(f"\n fdf-- {user.username} --\n")
-        print(f"\n fdfv-- {value} --\n")
-        # if user.username != value:  # Only validate if the username has changed
-        if CustomUser.objects.filter(username=value).exclude(id=user.id).exists():
-            raise serializers.ValidationError("This username is already in use.")
-        return value
-
-class ImageSerializer(serializers.ModelSerializer):
-
+class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["avatar"]
-
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'avatar']
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'username': {'required': False},
+            'email': {'required': False},
+            'avatar': {'required': False},
+            'password': {'write_only': True, 'required': False}
+        }
     def update(self, instance, validated_data):
-        instance.avatar = validated_data.get("avatar", instance.avatar)
-        instance.save()
+        # Update fields other than password
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                instance.set_password(value)  # Hash the password
+            else:
+                setattr(instance, attr, value)  # Update other fields
+        
+        instance.save()  # Save the updated instance
         return instance
+    #     try:
+    #         for attr, value in validated_data.items():
+    #             setattr(instance, attr, value)
+    #         instance.save()
+    #         return instance
+    #     except IntegrityError as e:
+    #         if 'unique constraint' in str(e).lower():
+    #             if 'username' in str(e).lower():
+    #                 raise serializers.ValidationError({"username": str(e)})
+    #             elif 'email' in str(e).lower():
+    #                 raise serializers.ValidationError({"email": str(e)})
+    #         raise serializers.ValidationError("An error occurred while updating the user.")
+
+# class UserUPdateSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         fields = ["username", "email", "first_name", "last_name"]
+    
+#     def update(self, instance, validated_data):
+#         try:
+#             instance.username = validated_data.get('username', instance.username)
+#             instance.email = validated_data.get('email', instance.email)
+#             instance.first_name = validated_data.get('first_name', instance.first_name)
+#             instance.last_name = validated_data.get('last_name', instance.last_name)
+
+#             instance.save()
+
+#         except IntegrityError as error:
+#             if 'unique constraint' in str(error).lower():
+#                 raise serializers.ValidationError({"username": "this username is already in user"})
+#             elif 'email' in str(error).lower():
+#                 raise serializers.ValidationError({"email": "This email is already in use."})
+#             raise serializers.ValidationError("An error occurred while updating the user.")

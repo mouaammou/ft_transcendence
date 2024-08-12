@@ -2,21 +2,24 @@
 import { useEffect, useState } from "react";
 import { postData } from "@/services/apiCalls.js";
 import { useAuth } from "@/components/auth/loginContext";
+import axios from "axios";
 
 const EditProfile = () => {
+
+	const [errors, setErrors] = useState({})
+	const [userData, setUserData] = useState({
+		username: "",
+		email: "",
+		first_name: "",
+		last_name: "",
+		avatar: "",
+	});
 
 	const {profileData: data, fetch_profile} = useAuth()
 	useEffect(() =>{
 		fetch_profile()
 	}, [])
 
-	const [userData, setUserData] = useState({
-		username: "",
-		email: "",
-		first_name: "",
-		last_name: "",
-		// avatar: "",
-	});
 
 	const handleChange = (e) => {
 		setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -34,18 +37,21 @@ const EditProfile = () => {
 			email: userData.email,
 			first_name: userData.first_name,
 			last_name: userData.last_name,
-			// avatar: userData.avatar,
-			// password: userData.password,
+			avatar: userData.avatar,
+			password: userData.password,
 		  };
 
 		console.log(updatedData);
 		try {
-			const res = postData(
-				"profile/update", updatedData, {headers: { "Content-Type": "multipart/form-data",},
+			const res = await axios.post(
+				"api/profile/update", updatedData, {headers: { "Content-Type": "multipart/form-data",},
 			});
-			console.log("response : ",res);
+			console.log(res.data.success);
+			if (res.data.success)
+				setErrors({success: res.data.success})
 		} catch (err) {
-			console.log(err);
+			console.log("catch block : ",err.response.data.errors);
+			setErrors(err.response.data.errors)
 		}
 	};
 
@@ -63,7 +69,7 @@ const EditProfile = () => {
 						<input
 							type="file"
 							name="avatar"
-							// onChange={handle_avatar}
+							onChange={handle_avatar}
 						/>
 						<img
 							src={data?.avatar}
@@ -129,6 +135,14 @@ const EditProfile = () => {
 						/>
 					</div>
 					<button type="submit">Update</button>
+					<br />
+					<br />
+					<div>
+						{/* {errors.success ? errors.succes: ""} */}
+						{/* {errors.username} */}
+						<br />
+						{/* {errors.email} */}
+					</div>
 				</form>
 			</div>
 		</div>

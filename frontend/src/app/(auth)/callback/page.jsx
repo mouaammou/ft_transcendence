@@ -21,6 +21,7 @@ const AuthCallback = () => {
 						setIsAuth(true);
 						router.push("/profile");
 					}
+					console.log("res::: ", response);
 				})
 				.catch((error) => {
 					console.log("Error:", error);
