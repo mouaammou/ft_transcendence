@@ -17,24 +17,31 @@ export async function middleware(request) {
 
 	if (!isAuthPage)//if you have at least the refresh token, then we will validte it in the backend
 	{
-		const backendResponse = await fetch("http://localhost:8000/verifyTokens", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
+		try {
+			
+			const backendResponse = await fetch("http://localhost:8000/verifyTokens", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
+				}
+			});
+			if (backendResponse.status === 401) {
+				const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
+				redirectResponse.cookies.set("isAuth", "false", { path: "/" });
+				return redirectResponse;
 			}
-		});
+			else if (backendResponse.status == 200)
+			{
+				response.cookies.set("isAuth", "true", { path: "/" });
+				return response;
+			}
 
-		if (backendResponse.status === 401) {
-			const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
-			redirectResponse.cookies.set("isAuth", "false", { path: "/" });
-			return redirectResponse;
+		} catch (error) {
+			console.error("Fetch failed:", error);
+			return NextResponse.redirect(new URL("/500", request.url));
 		}
-		else if (backendResponse.status == 200)
-		{
-			response.cookies.set("isAuth", "true", { path: "/" });
-			return response;
-		}
+
 	}
 
 	const hasToken = access_token && refresh_token;

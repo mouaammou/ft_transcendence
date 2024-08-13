@@ -41,10 +41,6 @@ export const LoginProvider = ({ children }) => {
 				if (res.status == 200 || res.status == 201) {
 					setIsAuth(true);
 					Cookies.set("isAuth", true, {path: "/"});
-					console.log("Login successfully");
-					setErrors({
-						success: "Login Successful",
-					});
 					router.push("/profile")
 				} else {
 					if (res.response && res.response.status === 500) {
@@ -59,7 +55,7 @@ export const LoginProvider = ({ children }) => {
 						status: res.response.status,
 						server_error:
 							res.response.data + " " + res.response.status,
-						error: res.response.data.error,
+						error: res.response.data.Error,
 					});
 				}
 			})
@@ -89,6 +85,13 @@ export const LoginProvider = ({ children }) => {
 		}
 	}
 
+	useEffect(()=>{
+		setErrors({})
+		if (isAuth && (pathname == "/login" || pathname == "/signup" || pathname.startsWith("/callback")))
+			router.push("/profile")
+			
+	}, [pathname])
+
 	return (
 		<LoginContext.Provider
 			value={{
@@ -99,7 +102,8 @@ export const LoginProvider = ({ children }) => {
 				isAuth,
 				setIsAuth,
 				fetch_profile,
-				profileData
+				profileData,
+				setProfileData
 			}}
 		>
 			{mounted && children}

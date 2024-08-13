@@ -34,7 +34,7 @@ def UpdateProfile(request):
 		if password:
 			password = user_instance.set_password(password)
 		serializer.save()
-		return Response({"success":"updated sucessfully"}, status=status.HTTP_200_OK)
+		return Response({"success":"updated sucessfully", "avatar": serializer.data['avatar']}, status=status.HTTP_200_OK)
 	return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  # Use 400 for validation errors
 
 

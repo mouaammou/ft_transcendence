@@ -59,17 +59,20 @@ class OAuth42Callback(APIView):
 			}
 			avatar_url = user_data['image']['versions']['medium']
 
-			user, created = CustomUser.objects.get_or_create(user42=user_data['login'], defaults=user_data_set)
-			if user:
+			try:
+				user = CustomUser.objects.get(user42=user_data['login'])
 				response.status = status.HTTP_200_OK
 				response.data = {"success":"already exists"}
-			elif created:
-				random = CustomUser.objects.make_random_password()
-				user.set_password(make_password(random))
-				user.download_and_save_image(avatar_url)
-				user.save()
-				response.status = status.HTTP_201_CREATED
-
+			except CustomUser.DoesNotExist:
+				try:
+					user = CustomUser.objects.create(**user_data_set)
+					random = CustomUser.objects.make_random_password()
+					user.set_password(make_password(random))
+					user.download_and_save_image(avatar_url)
+					user.save()
+					response.status = status.HTTP_201_CREATED
+				except Exception as e:
+					return Response({"Error": f"Failed to create user: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 			response = set_jwt_cookies(response, RefreshToken.for_user(user))
 			return response
 		except Exception as e:

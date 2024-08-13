@@ -17,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        print(f"\n == {representation['avatar']} ==\n")
         if representation['avatar']:
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
@@ -34,8 +35,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'avatar': {'required': False},
             'password': {'write_only': True, 'required': False}
         }
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation['avatar']:
+            representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+        return representation
+
     def update(self, instance, validated_data):
-        # Update fields other than password
+
+        avatar = validated_data.get('avatar')
+        # If an avatar is provided and is empty, don't update it
+        if 'avatar' in validated_data and (avatar is None or not avatar):
+            validated_data.pop('avatar')
+
+        # Update fields other than password 
         for attr, value in validated_data.items():
             if attr == 'password':
                 instance.set_password(value)  # Hash the password
@@ -44,36 +58,3 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         
         instance.save()  # Save the updated instance
         return instance
-    #     try:
-    #         for attr, value in validated_data.items():
-    #             setattr(instance, attr, value)
-    #         instance.save()
-    #         return instance
-    #     except IntegrityError as e:
-    #         if 'unique constraint' in str(e).lower():
-    #             if 'username' in str(e).lower():
-    #                 raise serializers.ValidationError({"username": str(e)})
-    #             elif 'email' in str(e).lower():
-    #                 raise serializers.ValidationError({"email": str(e)})
-    #         raise serializers.ValidationError("An error occurred while updating the user.")
-
-# class UserUPdateSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         fields = ["username", "email", "first_name", "last_name"]
-    
-#     def update(self, instance, validated_data):
-#         try:
-#             instance.username = validated_data.get('username', instance.username)
-#             instance.email = validated_data.get('email', instance.email)
-#             instance.first_name = validated_data.get('first_name', instance.first_name)
-#             instance.last_name = validated_data.get('last_name', instance.last_name)
-
-#             instance.save()
-
-#         except IntegrityError as error:
-#             if 'unique constraint' in str(error).lower():
-#                 raise serializers.ValidationError({"username": "this username is already in user"})
-#             elif 'email' in str(error).lower():
-#                 raise serializers.ValidationError({"email": "This email is already in use."})
-#             raise serializers.ValidationError("An error occurred while updating the user.")

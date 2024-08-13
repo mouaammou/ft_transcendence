@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Login42 from "@/components/auth/login42";
 import "../../../Styles/auth/login.css";
@@ -13,7 +13,6 @@ export default function LoginPage() {
 	});
 
 	const { errors, AuthenticateTo } = useAuth();
-
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};

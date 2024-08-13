@@ -17,14 +17,12 @@ const AuthCallback = () => {
 			await getData(`auth/callback/42?code=${code}`)
 			.then((response) => {
 				if (response.status == 200 || response.status == 201) {
-						console.log("callback is true");
 						setIsAuth(true);
 						router.push("/profile");
 					}
-					console.log("res::: ", response);
 				})
 				.catch((error) => {
-					console.log("Error:", error);
+					router.push("/500");
 				});
 		};
 		fetchTokens();

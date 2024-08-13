@@ -9,3 +9,13 @@
 # 42 Oauth error
     if you update theuser the 42 Oauth create a new user ??
     modify the view Oauth42 ?
+
+# the image field empty ?
+    the image is updated when the field is empty?
+    store images in the cloud and retrieve them ??
+
+# errors message for frontend
+    error msgs are not handled proprely ?
+
+# remove the errors from console chrom ??
+    too many errors in console ?
