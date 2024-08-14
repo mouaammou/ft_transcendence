@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from .views import OAuth42Login, OAuth42Callback
 
 from . import views
-
+# @Trevorbubbis natashamarks_  han.greenberg
 urlpatterns = [
 	path("signup",views.SignUp, name="singup"),
 	path("login",views.Login, name="login"),

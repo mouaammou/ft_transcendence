@@ -71,8 +71,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    'game.apps.GameConfig',
+    'tournament',
+    'pong',
+    'game',
+    # 'game.apps.GameConfig',
     "authentication.apps.AuthenticationConfig",
     "rest_framework",
     "rest_framework_simplejwt",
@@ -89,7 +91,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
-    "authentication.middleware.TokenVerificationMiddleWare",
+    # "authentication.middleware.TokenVerificationMiddleWare",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -129,8 +131,18 @@ DATABASES = {
     }
 }
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Add your frontend URL here
+    'http://localhost:3000', #add your frontend url here
 ]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -179,3 +191,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #         'BACKEND': 'channels.layers.InMemoryChannelLayer',
 #     },
 # }
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWS_CREDENTIALS = True

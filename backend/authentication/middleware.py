@@ -13,18 +13,17 @@ class TokenVerificationMiddleWare:
 			"/auth/login/42", "/auth/callback/42",
 			"/signup", "/login", "/logout",
 			"/token", "/token/refresh",
-			
 		]
 
 		if request.path.startswith("/admin") or request.path in unrestricted_paths:
 			return self.get_response(request)
 		refresh_token = request.COOKIES.get("refresh_token")
 		access_token = request.COOKIES.get("access_token")
-		if not refresh_token or not access_token:
-			return JsonResponse(
-				{"error": "refresh token not found or access token not found"},
-				status=status.HTTP_401_UNAUTHORIZED,
-			)
+		# if not refresh_token or not access_token:
+		# 	return JsonResponse(
+		# 		{"error": "refresh token not found or access token not found"},
+		# 		status=status.HTTP_401_UNAUTHORIZED,
+		# 	)
 		try:
 			RefreshToken(refresh_token)
 			try:

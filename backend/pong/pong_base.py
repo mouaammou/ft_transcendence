@@ -29,7 +29,7 @@ class Base:
         
         self.ball_width = 30
         self.ball_height = self.ball_width
-        self.ball_speed = 1
+        self.ball_speed = 10
         
         self.window_center_x = self.window_width / 2
         self.window_center_y = self.window_height / 2

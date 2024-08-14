@@ -5,7 +5,7 @@ const Navbar = () => {
 	return (
 		<div className="navbar">
 			<div className="logo">
-				<img src="new-logo.svg" alt="logo" />
+				<img src="new-logo.svg" alt="logo" priority={true}/>
 			</div>
 			<Links/>
 			<div className="sign-in">

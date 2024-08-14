@@ -11,7 +11,7 @@ const Navbar = () => {
 	return (
 		<nav className={styles.container}>
 			<div className={styles.logo}>
-				<Image src="/new-logo.svg" width={100} height={100} alt="logo" />
+				<Image src="/new-logo.svg" width={100} height={100} alt="logo" priority={true}/>
 			</div>
 				{isAuthenticated ? (
 				<Links />
