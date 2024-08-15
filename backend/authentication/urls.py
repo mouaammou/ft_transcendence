@@ -22,8 +22,8 @@ urlpatterns = [
 	path('auth/callback/42', views.OAuth42Callback.as_view() , name='42_callback'),
 
 	#user profile, get and update, delete
-	path("profile/data", views.UserProfile, name="profile"),
-	path("profile/update",views.UpdateProfile, name="update profile"),
+	path("profile/data", views.UserProfile.as_view(), name="profile"),
+	path("profile/update",views.UpdateProfile.as_view(), name="update profile"),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

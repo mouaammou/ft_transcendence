@@ -6,7 +6,7 @@ export async function middleware(request) {
 
 	const response = NextResponse.next();
 
-	
+
 	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
 	const isRoot = request.nextUrl.pathname === "/";
 
@@ -26,7 +26,7 @@ export async function middleware(request) {
 					"Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
 				}
 			});
-			if (backendResponse.status === 401) {
+			if (backendResponse.status == 401) {
 				const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
 				redirectResponse.cookies.set("isAuth", "false", { path: "/" });
 				return redirectResponse;

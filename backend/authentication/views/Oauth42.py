@@ -6,10 +6,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 from authentication.utils import set_jwt_cookies
-from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
-from authentication.utils import has_valid_token
-from rest_framework.decorators import api_view
 
 
 CustomUser = get_user_model()

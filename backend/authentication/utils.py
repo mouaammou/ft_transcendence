@@ -36,12 +36,12 @@ def save_image_from_url(url):
         my_model_instance.save()
 
 
-def has_valid_token(func):
-	def wrapper(request, *args, **kwargs):
-		try:
-			myuser = User.objects.get(id=AccessToken(request.COOKIES.get("access_token")).get("user_id"))
-			request.user = myuser
-		except User.DoesNotExist:
-			request.user = AnonymousUser()
-		return func(request,*args, **kwargs)
-	return wrapper
+# def has_valid_token(func):
+# 	def wrapper(request, *args, **kwargs):
+# 		try:
+# 			myuser = User.objects.get(id=AccessToken(request.COOKIES.get("access_token")).get("user_id"))
+# 			request.user = myuser
+# 		except User.DoesNotExist:
+# 			request.user = AnonymousUser()
+# 		return func(request,*args, **kwargs)
+# 	return wrapper

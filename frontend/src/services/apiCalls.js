@@ -19,10 +19,11 @@ export const postData = async (
 			withCredentials: true,
 		});
 		// console.log("postData ==> ", response)
-		// if (response.status == 401)
-			// 	console.log("401 form axios");
-		return response;
-	} catch (error) {
+		if (response.status == 401)
+				console.log("401 form axios");
+			return response;
+		} catch (error) {
+		console.log(error);
 		return error;
 	}
 };

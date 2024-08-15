@@ -33,13 +33,10 @@ const EditProfile = () => {
             const reader = new FileReader();
 
             reader.onloadend = () => {
-                // Set the preview URL in state
                 setProfileData({avatar: reader.result});
-				console.log(`reader.resutl: ${reader.result}`);
             };
-
             reader.readAsDataURL(file); // Convert the file to a base64 string for preview
-
+			
             // Set the avatar file in userData state
             setUserData({ ...userData, avatar: file });
         }
@@ -74,7 +71,6 @@ const EditProfile = () => {
 			});
 			if (res.status == 200 && res.data.success)
 				{
-					console.log(`avatar ${res.data.avatar}`);
 					if (res.data.avatar)
 						setProfileData({avatar: res.data.avatar})
 					setErrors({success: res.data.success})

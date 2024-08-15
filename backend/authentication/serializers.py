@@ -17,7 +17,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        print(f"\n == {representation['avatar']} ==\n")
         if representation['avatar']:
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
