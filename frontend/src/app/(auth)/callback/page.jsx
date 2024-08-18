@@ -8,27 +8,27 @@ const AuthCallback = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const code = searchParams.get("code");
-	const { setIsAuthenticated } = useAuth();
+	const { setIsAuth } = useAuth();
 
 	useEffect(() => {
 		const fetchTokens = async () => {
+
+			
 			await getData(`auth/callback/42?code=${code}`)
-				.then((response) => {
-					setIsAuthenticated(false);
-					if (response.status === 200 || response.status === 201) {
-						// Tokens are set in cookies by the backend
-						setIsAuthenticated(true);
+			.then((response) => {
+				if (response.status == 200 || response.status == 201) {
+						setIsAuth(true);
 						router.push("/profile");
 					}
 				})
 				.catch((error) => {
-					console.log("Error:", error);
+					router.push("/500");
 				});
 		};
 		fetchTokens();
 	}, []);
 
-	return <div>Loading...</div>;
+	return <div>Loading...callback 42</div>;
 };
 
 export default AuthCallback;

@@ -13,18 +13,21 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import timedelta
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#3s3hx09&^k$5i$unb&nc47h)9a#e#^shvmgwxb0zgry=(3716'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -50,7 +53,11 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
     "ROTATE_REFRESH_TOKENS": True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'SIGNING_KEY': SECRET_KEY,
     "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),  # 1 hour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
 }
 
 # Set your 42 OAuth credentials
@@ -64,7 +71,6 @@ OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 
 INSTALLED_APPS = [
     'daphne',
-    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,11 +93,12 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    "authentication.middleware.TokenVerificationMiddleWare",  
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
-    # "authentication.middleware.TokenVerificationMiddleWare",
+    "authentication.middleware.TokenVerificationMiddleWare",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -117,8 +124,13 @@ ASGI_APPLICATION = 'core.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'}
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
 }
+
+#images settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Database

@@ -1,34 +1,51 @@
 "use client";
 import { useState, createContext, useContext, useEffect } from "react";
 import { postData } from "@/services/apiCalls";
-import { useRouter, usePathname } from "next/navigation";
-import { verifyToken } from "@/services/apiCalls";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { usePathname } from 'next/navigation';
 
 export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
+
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [endPoint, setEndPoint] = useState("/login");
+	const initialAuthState = JSON.parse(Cookies.get("isAuth") || 'false')
+	const [isAuth, setIsAuth] = useState(initialAuthState);
+	const [mounted, setMounted] = useState(false);
+	const pathname = usePathname()
 
-	const pathname = usePathname();
+	const [profileData, setProfileData] = useState({});
 
-	const login = (endpoint, formData) => {
+	useEffect(() => {
+		const isAuthValue = Cookies.get("isAuth");
+		if (isAuthValue)
+			setIsAuth(JSON.parse(isAuthValue));
+		else
+		{
+			setIsAuth(false)
+			Cookies.set("isAuth", false, {path: "/"});
+			router.push("/login")
+		}
+		setMounted(true)
+
+		return ()=> {//cleanup function
+			setMounted(false)
+		}
+	}, [pathname]);
+	
+	const AuthenticateTo = (endpoint, formData) => {
 		postData(endpoint, formData)
 			.then((res) => {
 				if (res.status == 200 || res.status == 201) {
-					setIsAuthenticated(true);
-					setErrors({
-						success: "Login Successful",
-					});
+					setIsAuth(true);
+					Cookies.set("isAuth", true, {path: "/"});
+					router.push("/profile")
 				} else {
 					if (res.response && res.response.status === 500) {
 						router.push("/500");
 					}
-					if (endpoint === "/signup") {
-						setEndPoint("/signup");
-					} else setEndPoint("/login");
 					setErrors({
 						first_name: res.response.data.first_name,
 						last_name: res.response.data.last_name,
@@ -38,7 +55,7 @@ export const LoginProvider = ({ children }) => {
 						status: res.response.status,
 						server_error:
 							res.response.data + " " + res.response.status,
-						error: res.response.data.error,
+						error: res.response.data.Error,
 					});
 				}
 			})
@@ -47,58 +64,49 @@ export const LoginProvider = ({ children }) => {
 			});
 	};
 
-	const logout = () => {
+	const Logout = () => {
+		setIsAuth(false);
+		Cookies.remove("isAuth");
 		postData("/logout").then((res) => {
 			if (res && res.status === 205) {
-				setIsAuthenticated(false);
-				router.push("/auth/login");
-			} else {
-				if (res.response.status === 500) {
-					router.push("/500");
-				} else {
-					console.log("logout error==> ", res);
-				}
+				router.push("/login");
 			}
 		});
 	};
 
-	const checkAuth = () => {
-		setIsAuthenticated(false);
-		console.log("pathname==>", pathname);
-		verifyToken("/token/verify").then((res) => {
-			if (res != null && res.status === 200) {
-				setIsAuthenticated(true);
-				if (pathname === "/auth/login" || pathname === "/auth/signup")
-					router.push("/profile");
-				else router.push(pathname);
-			} else {
-				if (res.response.status === 500) {
-					router.push("/500");
-				} else {
-					router.push(`/auth${endPoint}`);
-				}
+	const fetch_profile  = async () => {
+		try {
+			const res = await postData("profile/data");
+			if (res?.status === 200) {
+				setProfileData(res.data.user);
 			}
-		});
-	};
+		} catch (error) {
+			console.error("Failed to fetch profile data:", error);
+		}
+	}
 
 	useEffect(() => {
-		checkAuth();
-	}, [errors]);
+		setErrors({})
+		if (isAuth && (pathname == "/login" || pathname == "/signup" || pathname.startsWith("/callback")))
+			router.push("/profile")
+			
+	}, [pathname])
 
 	return (
 		<LoginContext.Provider
 			value={{
 				errors,
 				setErrors,
-				login,
-				logout,
-				isAuthenticated,
-				setIsAuthenticated,
-				endPoint,
-				setEndPoint,
+				AuthenticateTo,
+				Logout,
+				isAuth,
+				setIsAuth,
+				fetch_profile,
+				profileData,
+				setProfileData
 			}}
 		>
-			{children}
+			{mounted && children}
 		</LoginContext.Provider>
 	);
 };
