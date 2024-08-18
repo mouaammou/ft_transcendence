@@ -30,24 +30,6 @@ class PongRoomConsumer(AsyncWebsocketConsumer):
         self.game_engine.init_event_loop()
     
     async def connect(self):
-
-        headers = dict(self.scope.get('headers', {}))
-        cookies = headers.get(b'cookie', b'').decode()
-        cookies = SimpleCookie(cookies)
-        self.scope['cookies'] = {name: cookie.value for name, cookie in cookies.items()}
-        
-        # Extract tokens from cookies
-        refresh_token = self.scope.get("cookies", {}).get("refresh_token")
-        token_str = self.scope
-
-        # Decoding the JWT token
-        token = AccessToken(refresh_token)  # or RefreshToken(token_str) if it's a refresh token
-
-        # Access the payload
-        payload = token.payload
-
-        # Print the payload
-        print(payload)
         # self.group_name = 
         await self.accept()
         self.game_engine.new_game()

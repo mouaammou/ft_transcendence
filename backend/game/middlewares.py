@@ -18,17 +18,18 @@ class CookiesJWTAuthMiddleware:
         cookies = SimpleCookie(cookies)
         scope['cookies'] = {name: cookie.value for name, cookie in cookies.items()}
         
+        print('x*'*15)
         print(scope['cookies'])
+        print('*x'*15)
         # Extract tokens from cookies
         refresh_token = scope.get("cookies", {}).get("refresh_token")
         # access_token = scope.get("cookies", {}).get("access_token")
-
+        print('+'*15)
+        print(refresh_token)
+        print('+'*15)
         # Validate Refresh token
         try:
-            refresh_token_obj = RefreshToken(refresh_token)
-            # print('+'*15)
-            # print(refresh_token.payload)
-            # print('+'*15)
+            refresh_token_obj = await self.get_token_obj(refresh_token)
             user_id = refresh_token_obj.payload['user_id']
             scope['user'] = await self.get_user(user_id)
         except (TokenError, KeyError) as e:
@@ -41,9 +42,13 @@ class CookiesJWTAuthMiddleware:
         return await self.inner(scope, receive, send)
 
     @database_sync_to_async
-    def get_user(user_id):
+    def get_user(self, user_id):
         User = get_user_model()
         try:
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return AnonymousUser()
+    
+    @database_sync_to_async
+    def get_token_obj(self, refresh_token):
+        return RefreshToken(refresh_token)
