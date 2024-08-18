@@ -38,6 +38,9 @@ class TokenVerificationMiddleWare:
             if not access_token:
                 # Generate a new access token if none exists or is invalid
                 new_access_token = refresh_token_obj.access_token
+                print('-'*15)
+                print(refresh_token.payload)
+                print('-'*15)
                 response = self.get_response(request)
                 response.set_cookie("access_token", str(new_access_token))
                 return response

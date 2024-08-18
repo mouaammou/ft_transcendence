@@ -8,9 +8,12 @@ from django.core.files.base import ContentFile
 from .models import CustomUser
 from rest_framework_simplejwt.settings import api_settings
 
+import uuid
+
 User = get_user_model()
 
 def set_jwt_cookies(response, refresh):
+	refresh['uuid4'] = str(uuid.uuid4())
 	response.set_cookie(
 		key="refresh_token",
 		value=str(refresh),
@@ -18,9 +21,11 @@ def set_jwt_cookies(response, refresh):
 		samesite="Lax",#??
 		max_age= api_settings.REFRESH_TOKEN_LIFETIME,  # 7 days
 	)
+	access_token = refresh.access_token
+	# access_token['unique_key'] = refresh['unique_key']
 	response.set_cookie(
 		key="access_token",
-		value=str(refresh.access_token),
+		value=str(access_token),
 		samesite="Lax",#??
 		httponly=True,
 		max_age= api_settings.ACCESS_TOKEN_LIFETIME,  # 24 hours

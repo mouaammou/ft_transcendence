@@ -28,9 +28,6 @@ def SignUp(request):
 	if seriaze_user.is_valid():
 		user = seriaze_user.save()
 		refresh = RefreshToken.for_user(user)  # Create a refresh token for the user
-		print('-----------')
-		print(refresh)
-		print('-----------')
 		response = set_jwt_cookies(Response(), refresh)
 		response.status_code = status.HTTP_201_CREATED
 		return response
