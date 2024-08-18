@@ -27,14 +27,3 @@ export const postData = async (
 		return error;
 	}
 };
-
-export const verifyToken = async (endPoint) => {
-	try {
-		const response = await axiosInstance.post(endPoint, {
-			withCredentials: true,
-		});
-		return response;
-	} catch (error) {
-		return error;
-	}
-}

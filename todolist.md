@@ -19,3 +19,10 @@
 
 # remove the errors from console chrom ??
     too many errors in console ?
+
+# some errors, maybe the middleware
+    why the page not rendered 100% ??
+    is the middleware not capable for renderring it ??
+
+# Channels: redis or inMemory
+    what is the deffrence between redis and inMemory ?

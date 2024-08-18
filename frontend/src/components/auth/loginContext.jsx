@@ -80,18 +80,12 @@ export const LoginProvider = ({ children }) => {
 			if (res?.status === 200) {
 				setProfileData(res.data.user);
 			}
-			if (res.response?.status == 401)
-				{
-
-					Cookies.remove("isAuth");
-					router.push("/login")
-				}
 		} catch (error) {
 			console.error("Failed to fetch profile data:", error);
 		}
 	}
 
-	useEffect(()=>{
+	useEffect(() => {
 		setErrors({})
 		if (isAuth && (pathname == "/login" || pathname == "/signup" || pathname.startsWith("/callback")))
 			router.push("/profile")
