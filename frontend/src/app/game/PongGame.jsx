@@ -90,7 +90,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Constants
 		// create new websocket client
 		let token = '';
-		const socket = new WebSocket('ws://' + '127.0.0.1:8000' + '/ws/pong/game/?access_token=' + token);
+		const socket = new WebSocket('ws://127.0.0.1:8000/ws/pong/game/?access_token=' + token);
 		let conectionOn;
 		if (socket.readyState === WebSocket.OPEN) {
 			console.log('WebSocket connection is open');
