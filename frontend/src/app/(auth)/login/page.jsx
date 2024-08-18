@@ -1,9 +1,9 @@
 "use client";
+
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import Login42 from "@/components/auth/Oauth/login42";
+import Login42 from "@/components/auth/login42";
 import "@styles/auth/login.css";
 import Image from "next/image";
 
@@ -12,31 +12,20 @@ export default function LoginPage() {
 		username: "",
 		password: "",
 	});
-	const router = useRouter();
-	const { errors, login, endPoint, setErrors, setEndPoint, isAuthenticated } =
-		useAuth();
+
+	const { errors, AuthenticateTo } = useAuth();
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const signIn = async (e) => {
+	const LoginTo = async (e) => {
 		e.preventDefault();
-		await login("/login", formData);
+		await AuthenticateTo("/login", formData);
 	};
-
-	useEffect(() => {
-		if (endPoint === "/signup") {
-			setEndPoint("/login");
-			setErrors({});
-		}
-		if (isAuthenticated) {
-			router.push("/dashboard");
-		}
-	}, [isAuthenticated]);
 
 	return (
 		<div className="login-main-container">
-			<form onSubmit={signIn} className="main-login">
+			<form onSubmit={LoginTo} className="main-login">
 				<p>Join</p>
 				<input
 					type="text"
