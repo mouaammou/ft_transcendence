@@ -17,7 +17,7 @@ class CookiesJWTAuthMiddleware:
         cookies = headers.get(b'cookie', b'').decode()
         cookies = SimpleCookie(cookies)
         scope['cookies'] = {name: cookie.value for name, cookie in cookies.items()}
-        
+
         # Extract tokens from cookies
         refresh_token = scope.get("cookies", {}).get("refresh_token")
         # access_token = scope.get("cookies", {}).get("access_token")

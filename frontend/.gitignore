@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
 # C extensions
 *.so
 .next
@@ -44,7 +45,7 @@ staticfiles/
 static/
 
 # Media files
-media/
+backend/media/
 
 # Django collectstatic
 staticfiles/
@@ -53,9 +54,8 @@ staticfiles/
 .ipynb_checkpoints
 
 # Environments
-.env
+
 .venv
-env/
 venv/
 ENV/
 env.bak/

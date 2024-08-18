@@ -3,14 +3,14 @@ const CustomButton = ({myLabel, count, color}) => {
 		<div style={{
 				display: 'flex',
 				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center'
+				alignItems: 'center',
+				gap: '10px',
 					}}>
 			<p style={{
 					fontFamily: 'var(--principaleFont)',
 					fontSize: '16px',
 					fontWeight:'500',
-					marginBottom: '10px'
+					textAlign: 'center',
 				}}>{myLabel}</p>
 
 			<button style={{

@@ -1,41 +1,31 @@
 "use client";
+
 import { useAuth } from "@/components/auth/loginContext";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import Login42 from "@/components/auth/Oauth/login42";
+import Login42 from "@/components/auth/login42";
 import "@styles/auth/login.css";
+import Image from "next/image";
 
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-	const router = useRouter();
-	const { errors, login, endPoint, setErrors, setEndPoint, isAuthenticated } =
-		useAuth();
+
+	const { errors, AuthenticateTo } = useAuth();
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const signIn = async (e) => {
+	const LoginTo = async (e) => {
 		e.preventDefault();
-		await login("/login", formData);
+		await AuthenticateTo("/login", formData);
 	};
-
-	useEffect(() => {
-		if (endPoint === "/signup") {
-			setEndPoint("/login");
-			setErrors({});
-		}
-		if (isAuthenticated) {
-			router.push("/dashboard");
-		}
-	}, [isAuthenticated]);
 
 	return (
 		<div className="login-main-container">
-			<form onSubmit={signIn} className="main-login">
+			<form onSubmit={LoginTo} className="main-login">
 				<p>Join</p>
 				<input
 					type="text"
@@ -51,13 +41,13 @@ export default function LoginPage() {
 					placeholder="Enter Your Password"
 					onChange={handleChange}
 				/>
-				<button type="submit" className="btn btn-primary">
+				<button type="submit" className="">
 					Login
 				</button>
 				<img
 					src="/login-with.svg"
 					alt="login-with"
-					className="sign-with"
+					className="sign-wit"
 				/>
 				<div className="logos">
 					<Login42 />
@@ -68,7 +58,7 @@ export default function LoginPage() {
 					/>
 				</div>
 				<div className="forgot-password">
-					<a href="">Forgot your password?</a>
+					<Link className="pforgot" href="/forget_password">Forgot your password?</Link>
 					<div className="have-no-account">
 						Don't have an account?
 						<Link rel="stylesheet" href="/auth/signup">
@@ -84,7 +74,7 @@ export default function LoginPage() {
 				}
 			</form>
 			<div className="side-image">
-				<img className="sign-with" src="/login.svg" alt="welcome" width="150%"/>
+				<Image className="sign-with" width={400} height={400} src="/login.svg" alt="welcome"/>
 			</div>
 		</div>
 	);

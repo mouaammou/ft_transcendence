@@ -4,103 +4,131 @@
 
 .profile {
 	display: flex;
-	flex-direction: row;
-	margin-top: 130px;
-	margin-left: 80px;
+	justify-content: space-between;
+	margin: 0 auto;
+	gap: 50px;
+	padding-top: 40px;
+	max-width: 1530px;
 }
 
 .profile-section {
-	margin-right: 260px;
-	width: 400px;
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	padding:0 40px;
+	gap: 40px;
+	/* margin-right: 260px;
+	width: 400px; */
 }
 
 .profile-pic-name {
 	display: flex;
 	flex-direction: row;
+	gap: 50px;
 }
 
 .profile-name-btn {
-	margin-left: 50px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .profile-name-btn .profile-name {
 	font-family: var(--principaleFont);
 	font-size: 2rem;
-	color: white;
-	margin-bottom: 15px;
+	color: var(--wt);
+	max-width: 200px;
 }
 
 .profile-name-btn .edit-btn {
 	background-color: #797979;
 	font-family: var(--principaleFont);
 	font-size: 1.2rem;
-	color: white;
+	color: var(--wt);
 	border: none;
 	padding: 10px 20px;
 	border-radius: 10px;
 	cursor: pointer;
-	margin-left: 5px;
 }
 
 .profile-name-btn .edit-pen {
-	margin-left: 25px;
+	width: 60px;
+	height:20px;
 }
 
+
+.div-profile-pic {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 24%;
+	/* height: 100%; */
+}
 .profile-pic-name .profile-pic {
-	width: 150px;
-	height: 150px;
+	width: 100%;
 	border-radius: 50%;
 }
 
 .profile-level {
-	margin-top: 20px;
-	margin-bottom: 26px;
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	gap: 10px;
 }
 
 .profile-level p {
 	font-family: var(--principaleFont);
 	font-size: 1.2rem;
-	margin-bottom: 5px;
-	color: white;
+	color: var(--wt);
 }
 
 .info {
-	margin-bottom: 25px;
-	margin-top: 50px;
-
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	gap: 20px;
 }
 
 .info p {
 	font-family: var(--principaleFont);
-	font-size: 26px;
-	margin-top: 25px;
-	margin-left: 20px;
-	color: white;
-
+	font-size: 2rem;
+	color: var(--wt);
+	margin: 0; 
 }
 
 .info .info-section {
 	display: flex;
 	flex-direction: row;
-	margin-top: 30px;
-	margin-left: 50px;
+	align-items: center;
+	gap: 40px;
+}
+.info-section img {
+	width: 30px;
+	/* height: 30px; */
 }
 
 .info .info-section .sps-info {
+	display: flex;
 	font-size: 21px;
 	font-family: var(--principaleFont);
-	margin-left: 15px;
+	
 }
 
 .badges-collected{
 	font-family: var(--principaleFont);
 	font-size: 22px;
-	margin-top: 44px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 }
 
-.badges-collected .badges img{
-	margin-top: 22px;
-	margin-right: 24px;
+.badges-collected .badges {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
 }
 
 .badges-collected .badges .ramen {
@@ -108,43 +136,49 @@
 }
 
 .friends-section {
-	margin-left: 310px;
+	display: flex;
+	flex-direction: column;
+	width:50%;
+	padding: 0 40px;
+	gap: 30px;
 }
 
 
 .friends-section .title {
 	font-family: var(--principaleFont);
-	margin-bottom: 20px;
+	/* margin: auto; */
 	font-size: 22px;
 }
 
 .friends-section .title p {
-	margin-left: 85px;
-	margin-bottom: 10px;
+	text-align: center;
 	font-weight: bold;
 }
 
 .friends-section .statistics{
-	margin-top: 50px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	/* margin: auto; */
+	gap: 20px;
 }
 
 
 .buttons {
 	display: flex;
-	flex-direction: row;
+	justify-self: center;
+	gap: 20px;
 }
-.buttons div{
-	margin-right: 10px;
-}
+
 
 /* cart section */
 
 .friends-section .cards {
-	margin-top: 70px;
 	display: flex;
 	gap: 30px;
-	margin-left: -100px;
-	margin-bottom: 100px;
+	align-items: center;
+	justify-content: center;
 }
 
 .friends-section .cards .title-div{
@@ -152,7 +186,6 @@
 	justify-content: space-between;
 	font-family: Lato;
 	font-size: 15px;
-	margin-bottom: 15px;
 	color: rgba(235,235,245, 0.5);
 }
 
@@ -162,3 +195,47 @@
 
 /* cart component: */
 
+@media (max-width: 1330px) {
+	.profile {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		margin: auto;
+		gap: 50px;
+		width: 90%;
+		/* margin-top: 130px; */
+	}
+	.profile-section {
+		flex-wrap: wrap;
+		padding: 5px;
+		margin-right: 0px;
+		width: 100%;
+		/* margin-top: 50px; */
+	}
+
+	.profile-pic-name, .profile-level, .line-line  {
+		width: 70px;
+	}
+	.horizontal-line {
+		display: none;
+	}
+	.friends-section {
+		display: flex;
+		flex-direction: column;
+		width:100%;
+		padding: 0 40px;
+	}
+	.badges-collected .badges {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 20px;
+	}
+	.info-section img {
+		width: 20px;
+		/* height: 20px; */
+	}
+	
+}

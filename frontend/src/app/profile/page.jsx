@@ -1,20 +1,18 @@
 "use client";
 import HorizontalLine from "./HorizontalLine.jsx";
 import CustomButton from "./CustomButton.jsx";
-import "@styles/profile/profile.css";
+import "../../Styles/profile/profile.css";
 import Cart from "./Cart.jsx";
-import { useEffect, useState } from "react";
-
-import { getData } from "@/services/apiCalls.js";
+import { useEffect} from "react";
+import Link from "next/link";
+import { useAuth } from "@/components/auth/loginContext.jsx";
 
 const Profile = () => {
-	const [data, setData] = useState({});
-
-	useEffect(() => {
-		getData("profile/data").then((res) => {
-			setData(res.data.user);
-		});
-	}, []);
+	
+	const {profileData: data, fetch_profile} = useAuth()
+	useEffect(() =>{
+		fetch_profile()
+	}, [])
 
 	return (
 		<>
@@ -31,12 +29,14 @@ const Profile = () => {
 						<div className="profile-name-btn">
 							<div className="profile-name">{data?.username}</div>
 							<button className="edit-btn">
-								Edit Profile
-								{/* <img
-									className="edit-pen"
-									src="EditPen.svg"
-									alt=""
-								/> */}
+								<Link href="/edit_profile">
+									Edit Profile
+									<img
+										className="edit-pen"
+										src="EditPen.svg"
+										alt=""
+									/>
+								</Link>
 							</button>
 						</div>
 					</div>

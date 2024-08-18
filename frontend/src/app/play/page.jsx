@@ -1,7 +1,28 @@
+"use client";
 import "./style.css"
-
+import { useState } from "react";
 const PlayMode = () => {
-	
+    const [name, setName] = useState("");
+	const handleSaveBtn = () => {
+        fetch("http://localhost:8000/play/update_tournament_name"
+        , {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: name,
+            })
+          })
+        .then(response => response.json())
+        .then(data => console.log(data));
+    }
+    const handleInputChange = (event) => {
+        event.preventDefault();
+        console.log(event.target.value);
+        setName(event.target.value);
+      };
 	return (
 		<div className="main-page">
             <div className="transparent">
@@ -23,9 +44,11 @@ const PlayMode = () => {
                     </div>
                 </div>
                 <button className="big-button">NEXT</button>
+                <input type="text" onChange={handleInputChange} value={name}/>
+                <button onClick={handleSaveBtn}>save</button>
             </div>
         </div>
 	)
-}
 
+}
 export default PlayMode;

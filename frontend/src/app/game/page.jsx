@@ -1,7 +1,9 @@
 "use client";
 import PongGame from "./PongGame";
 import { useState, useEffect } from "react";
-import '@styles/game/game.css';
+import '@/Styles/game/game.css';
+import CountdownTimer from "@/components/countDown/CountDown.jsx";
+import Image from 'next/image';
 
 const GamePage = () => {
 	const [score1, setScore1] = useState(0);
@@ -19,11 +21,9 @@ const GamePage = () => {
 				</div>
 				<div className="vs-section">
 					<div className="vs-image">
-						<img src="/vs.svg" alt="vs" />
+						<Image src="/vs.svg" alt="vs" width={70} height={70}/>
 					</div>
-					<div className="vs-time">
-						03 : 15
-					</div>
+					<CountdownTimer />
 				</div>
 				<div className="right-score">
 					{score1}
@@ -31,15 +31,15 @@ const GamePage = () => {
 			</div>
 			<div className="down-section">
 				<div className="left-user">
-					<img className="left-user-img" src="/avatar3.jpeg" alt="user1" />
-					<div className="left-user-name">user1</div>
+					<Image className="left-user-img" src="/oredoine.webp" alt="user1" width={100} height={100}/>
+					<div className="left-user-name">Oussama</div>
 				</div>
 				<div className="self-game">
 					<PongGame  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2}/>
 				</div>
 				<div className="right-user">
-					<img className="right-user-img" src="/avatar4.jpeg" alt="user1" />
-					<div className="right-user-name">user2</div>
+					<Image className="right-user-img" src="/mouad.jpeg" alt="user1" width={100} height={100}/>
+					<div className="right-user-name">Mouad</div>
 				</div>
 			</div>
 		</div>

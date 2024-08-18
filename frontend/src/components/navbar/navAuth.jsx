@@ -2,37 +2,40 @@
 import Link from "next/link";
 import { useAuth } from "@/components/auth/loginContext";
 import Links from "./Links/Links";
+import styles from "@/styles/navbar/navbar.module.css";
+import Image from "next/image";
 
 const Navbar = () => {
-	const { isAuthenticated, logout } = useAuth();
 
+	const { Logout, isAuth } = useAuth();
+	
 	return (
-		<nav className="navbar">
-			<div className="logo">
-				<img src="/new-logo.svg" alt="logo" />
+		<nav className={styles.container}>
+			<div className={styles.logo}>
+				<Image src="/new-logo.svg" width={100} height={100} alt="logo" priority={true}/>
 			</div>
 			<div className="sign-in">
-				{isAuthenticated ? (
+				{isAuth ? (
 					<>
 						<Links />
 						<div>
 							<img
 								src="/logout.svg"
 								alt="logout"
-								onClick={logout}
+								onClick={Logout}
 								className="img-logout"
 							/>
 						</div>
-						<div className="logout-text" onClick={logout}>
+						<div className="logout-text" onClick={Logout}>
 							Logout
 						</div>
 					</>
 				) : (
 					<>
-						<Link href="/auth/login" className="login">
+						<Link href="/login" className="login">
 							Login
 						</Link>
-						<Link href="/auth/signup" className="sign-up">
+						<Link href="/signup" className="sign-up">
 							Signup
 						</Link>
 					</>

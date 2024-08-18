@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@loginContext/loginContext";
-import Login42 from "@components/auth/Oauth/login42";
-import "@styles/auth/signup.css";
+import Login42 from "@components/auth/login42";
+import "../../../Styles/auth/signup.css";
 
 function Signup() {
 	const [formData, setFormData] = useState({
@@ -13,7 +13,8 @@ function Signup() {
 		password: "",
 		confirmPassword: "",
 	});
-	const { errors, login, setErrors, endPoint, setEndPoint } = useAuth();
+
+	const { errors, AuthenticateTo } = useAuth();
 
 	const handleChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,15 +22,8 @@ function Signup() {
 
 	const singUp = async (e) => {
 		e.preventDefault();
-		await login("/signup", formData);
+		await AuthenticateTo("/signup", formData);
 	};
-
-	useEffect(() => {
-		if (endPoint === "/login") {
-			setEndPoint("/signup");
-			setErrors({});
-		}
-	}, []);
 
 	return (
 		<div className="main-container">
@@ -83,7 +77,7 @@ function Signup() {
 				<img
 					src="/login-with.svg"
 					alt="login-with"
-					className="sign-with"
+					className="sign-wit"
 				/>
 				<div className="logos">
 					<Login42 />
