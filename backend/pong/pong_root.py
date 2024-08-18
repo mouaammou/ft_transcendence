@@ -121,6 +121,14 @@ class PingPongGame(RootBase):
         to update the state of the game.
         
         Ball pos and Paddles pos.
+
+        output events:
+            - left_paddle_pos
+            - right_paddle_pos
+            - right_player_score
+            - left_player_score
+            - ball_pos
+            - finished
         """
         # print('here')
         # super().move_paddles(82, 82, 82, 82, 82);
