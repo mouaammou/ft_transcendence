@@ -28,6 +28,7 @@ class CustomUser(AbstractUser):
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
+	is_online = models.BooleanField(default=False)
 
 	
 	def download_and_save_image(self, image_url):#for 42 image

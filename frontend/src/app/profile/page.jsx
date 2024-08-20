@@ -6,9 +6,25 @@ import Cart from "./Cart.jsx";
 import { useEffect} from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/auth/loginContext.jsx";
+import useWebSocket from '@components/websocket/websocket';
 
 const Profile = () => {
 	
+
+	const { isConnected, messages } = useWebSocket('ws://localhost:8000/ws/online/');
+
+    useEffect(() => {
+        if (isConnected) {
+            console.log('Connected to WebSocket!');
+        }
+    }, [isConnected]);
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            console.log('Received messages:', messages);
+        }
+    }, [messages]);
+
 	const {profileData: data, fetch_profile} = useAuth()
 	useEffect(() =>{
 		fetch_profile()
@@ -72,6 +88,21 @@ const Profile = () => {
 								last_name: {data?.last_name}
 							</div>
 						</div>
+
+
+						{/* for websocket online/offline */}
+						<div>
+							<h1>WebSocket Status: {isConnected ? 'Connected' : 'Disconnected'}</h1>
+							<div>
+								<h2>Messages:</h2>
+								<ul>
+									{messages.map((msg, index) => (
+										<li key={index}>{JSON.stringify(msg)}</li>
+									))}
+								</ul>
+							</div>
+						</div>
+
 					</div>
 					<HorizontalLine lWidth="540px" />
 					<div className="badges-collected">

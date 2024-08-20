@@ -86,13 +86,12 @@ class TokenVerificationMiddleWare:
 class UserOnlineStatusMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
         headers = dict(scope["headers"])
-        cookie_str = headers[b'cookie'].decode('utf-8')
-        cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
-
-        # Now, cookies_dict contains the individual cookies as key-value pairs
         access_token = None
-        if access_token in cookies_dict:
-            access_token = cookies_dict['access_token']
+
+        if b'cookie' in headers:
+            cookie_str = headers[b'cookie'].decode('utf-8')
+            cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
+            access_token = cookies_dict.get('access_token')
         
         if not access_token:
             # return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -111,5 +110,5 @@ class UserOnlineStatusMiddleware(BaseMiddleware):
             user_id = AccessToken(token).get("user_id")
             user = User.objects.get(id=user_id)
             return user
-        except TokenError:
+        except (TokenError, User.DoesNotExist):
             raise TokenError("token is not valid")
