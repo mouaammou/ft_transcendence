@@ -4,11 +4,12 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.http import JsonResponse
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
-from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, TokenError
+from rest_framework_simplejwt.settings import api_settings
+from channels.middleware import BaseMiddleware
+from channels.db import database_sync_to_async
 
 User = get_user_model()
-
 
 class TokenVerificationMiddleWare:
     def __init__(self, get_response):
@@ -38,8 +39,18 @@ class TokenVerificationMiddleWare:
             if not access_token:
                 # Generate a new access token if none exists or is invalid
                 new_access_token = refresh_token_obj.access_token
+
+                user_id = AccessToken(new_access_token).get("user_id")
+                request.customUser = User.objects.get(id=user_id)
+
                 response = self.get_response(request)
-                response.set_cookie("access_token", str(new_access_token))
+                response.set_cookie(
+                    key="access_token",
+                    value=str(new_access_token),
+                    httponly=True,
+                    samesite="Lax",#??
+                    max_age= api_settings.ACCESS_TOKEN_LIFETIME,  # 7 days
+                )
                 return response
 
             # Validate the access token
@@ -49,11 +60,56 @@ class TokenVerificationMiddleWare:
             except (TokenError, User.DoesNotExist):
                 # If access token is invalid, create a new one
                 new_access_token = refresh_token_obj.access_token
+
+                user_id = AccessToken(new_access_token).get("user_id")
+                request.customUser = User.objects.get(id=user_id)
+
                 response = self.get_response(request)
-                response.set_cookie("access_token", str(new_access_token))
+                response.set_cookie(
+                    key="access_token",
+                    value=str(new_access_token),
+                    httponly=True,
+                    samesite="Lax",#??
+                    max_age= api_settings.ACCESS_TOKEN_LIFETIME,  # 7 days
+                )
                 return response
 
         except TokenError:
-            return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+            response = JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+            response.delete_cookie("refresh_token")
+            response.delete_cookie("access_token")
+            return response
 
         return self.get_response(request)  # Proceed with the request
+
+
+class UserOnlineStatusMiddleware(BaseMiddleware):
+    async def __call__(self, scope, receive, send):
+        headers = dict(scope["headers"])
+        cookie_str = headers[b'cookie'].decode('utf-8')
+        cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
+
+        # Now, cookies_dict contains the individual cookies as key-value pairs
+        access_token = None
+        if access_token in cookies_dict:
+            access_token = cookies_dict['access_token']
+        
+        if not access_token:
+            # return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+            scope['user'] = AnonymousUser()
+        try:
+            user = await self.get_user_from_token(str(access_token))
+            scope['user'] = user
+        except TokenError:
+            # return JsonResponse({"error": str(e)}, status=404)
+            scope['user'] = AnonymousUser()
+        return await super().__call__(scope, receive, send)
+
+    @database_sync_to_async
+    def get_user_from_token(self, token):
+        try:
+            user_id = AccessToken(token).get("user_id")
+            user = User.objects.get(id=user_id)
+            return user
+        except TokenError:
+            raise TokenError("token is not valid")

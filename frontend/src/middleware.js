@@ -29,6 +29,8 @@ export async function middleware(request) {
 			if (backendResponse.status == 401) {
 				const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
 				redirectResponse.cookies.set("isAuth", "false", { path: "/" });
+				redirectResponse.cookies.delete("access_token");
+				redirectResponse.cookies.delete("refresh_token")
 				return redirectResponse;
 			}
 			else if (backendResponse.status == 200)
