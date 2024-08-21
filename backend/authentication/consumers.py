@@ -12,9 +12,10 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         if self.user.is_authenticated:
 
             self.channel_layer.group_add(
-                f"user_{self.user.id}",
+                f"user_status",
                 self.channel_name
             )
+
             await self.update_user_status(True)
             
             await self.accept()

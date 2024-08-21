@@ -26,10 +26,11 @@ class Friendship(models.Model):
 
 	class Meta:
 		unique_together = (('user1', 'user2'))
-	
+
 	def save(self, *args, **kwargs):
-		if self.user1.id > self.user2.id:
-			self.user1.id, self.user2.id = self.user2.id, self.user1.id
+		if self.user1 and self.user2:
+			if self.user1.id > self.user2.id:
+				self.user1.id, self.user2.id = self.user2.id, self.user1.id
 		super(Friendship, self).save(*args, **kwargs)
 
 	def __str__(self):
@@ -58,9 +59,7 @@ class CustomUser(AbstractUser):
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
 	is_online = models.BooleanField(default=False)
 
-	
-	def download_and_save_image(self, image_url):#for 42 image
-
+	def download_and_save_image(self, image_url): # for 42 image
 		img_temp = NamedTemporaryFile(delete=True)
 		#download the image form the url
 		response = requests.get(url=image_url)
@@ -68,7 +67,7 @@ class CustomUser(AbstractUser):
 			img_temp.write(response.content)
 			img_temp.flush()
 
-			#valid the file is and actual image file
+			# valid the file is and actual image file
 			try:
 				img = Image.open(img_temp)
 				img.verify()

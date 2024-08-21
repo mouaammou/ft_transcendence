@@ -5,15 +5,25 @@ from django.db import IntegrityError
 
 #============= friends Serializer +++++++++++++++
 class FriendshipSerializer(serializers.ModelSerializer):
-    friend = serializers.SerializerMethodField()
+    # friend = serializers.SerializerMethodField()
     
     class Meta:
         model = Friendship
-        fields = ['id', 'friend', 'created_at']
+        # fields = ['user1', 'friend', 'created_at']
+        fields = ['user1', 'user2', 'created_at']
     
-    def get_friend(self, obj):
-        user = self.context['request'].user
-        return obj.user2 if obj.user1 == user else obj.user1
+
+    def create(self, validated_data):
+        # Ensure that user1 and user2 are set before saving
+        user1 = validated_data.get('user1')
+        user2 = validated_data.get('user2')
+
+        # Additional logic can go here if needed
+        return Friendship.objects.create(user1=user1, user2=user2)
+
+    # def get_friend(self, obj):
+    #     user = self.context['request'].customUser
+    #     return obj.user2 if obj.user1 == user else obj.user1
 # end friends Serializer ================
 
 #============= CustomeUser Serializer +++++++++++++++

@@ -1,10 +1,9 @@
-from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from . import views
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
-from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
 	path("signup",views.SignUp.as_view(), name="singup"),
@@ -24,9 +23,11 @@ urlpatterns = [
 	#user profile, get and update, delete
 	path("profile/data", views.UserProfile.as_view(), name="profile"),
 	path("profile/update",views.UpdateProfile.as_view(), name="update profile"),
+    
+	# for friends
+    path("friends/", views.FriendshipListCreateView.as_view(), name="list friends, create friend"),
+    path("friends/<int:friend_id>/", views.CancelFriendshipView.as_view(), name="cancel the friendship")
 ]
-
-# urlpatterns = format_suffix_patterns(urlpatterns)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
