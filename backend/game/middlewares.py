@@ -17,19 +17,23 @@ class CookiesJWTAuthMiddleware:
         cookies = headers.get(b'cookie', b'').decode()
         cookies = SimpleCookie(cookies)
         scope['cookies'] = {name: cookie.value for name, cookie in cookies.items()}
-        
-        print('x*'*15)
-        print(scope['cookies'])
-        print('*x'*15)
         # Extract tokens from cookies
         refresh_token = scope.get("cookies", {}).get("refresh_token")
         # access_token = scope.get("cookies", {}).get("access_token")
-        print('+'*15)
-        print(refresh_token)
-        print('+'*15)
+        # print("-----------cookies----------")
+        # print(scope['cookies'], refresh_token)
+        # print("-----------end--cookies------")
+        # print("-----------tokens----------")
+        # print("refresh: ", scope['cookies'].get('refresh_token'))
+        # print("access: ", scope['cookies'].get('access_token'))
+        # print("----------end--tokens------")
         # Validate Refresh token
         try:
             refresh_token_obj = await self.get_token_obj(refresh_token)
+            # print('--------------refresh-payload--------')
+            # print(refresh_token_obj.payload)
+            # print('--------------------------------------')
+            scope['channel_name'] = refresh_token_obj.payload['channel_name']
             user_id = refresh_token_obj.payload['user_id']
             scope['user'] = await self.get_user(user_id)
         except (TokenError, KeyError) as e:

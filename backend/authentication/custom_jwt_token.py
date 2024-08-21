@@ -8,6 +8,6 @@ class CustomToken(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add the custom claim to the token
-        token['uuid4'] = str(uuid.uuid4())
+        token['channel_name'] = str(uuid.uuid4())
 
         return token

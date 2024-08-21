@@ -10,11 +10,15 @@ except:
 from copy import deepcopy
 
 class RootBase(Base):
-    
+    count = 0
+    def __close__(self):
+       print('====>close: ', __class__.count) 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.left_player = Paddle('left', root_obj=self)
         self.right_player = Paddle('right', root_obj=self)
+        print('====>', __class__.count)
+        __class__.count += 1
         self.ball = Ball(root_obj=self)
         self.scope = {}
         self.start_game = False
@@ -29,10 +33,25 @@ class RootBase(Base):
         data = deepcopy(self.scope)
         self.scope.clear()
         return data
+    
+    @property
+    def get_game_config(self):
+        conf = super().get_game_config
+        self = self.ball.root_obj
+        data = {
+            'left_player_score': self.left_player.score,
+            'right_player_score': self.right_player.score,
+            'left_paddle_pos': self.left_player.padd_pos,
+            'right_paddle_pos': self.right_player.padd_pos,
+        }
+        conf.update(data)
+        del conf['ball_pos']
+        return self.transform(conf)
 
     def is_finished(self):
         try:
             self.scope['finished']
+            # game is finished here
             # self.reset_to_default_state()
             # self.ball.move_paddles(self.game_mode)
             # self.ball.move(self.game_mode)
@@ -58,14 +77,11 @@ class RootBase(Base):
     def update(self) -> dict:
         if not self.start_game:
             return
-        # print('=====xxsxs======')
         self.move_paddles() # update paddles pos if there is a press event
-        # print('======x=====')
-        # if not self.is_finished():
         self.ball.move(self.ball_win)
-        return self.transform()
+        return self.transform(self.get_next_frame)
 
-    def transform(self):
+    def transform(self, frame):
         """
         The back-end game x,y coordinates origin is bottom-left.
         but front-end uses top-left origin.
@@ -76,7 +92,6 @@ class RootBase(Base):
         
         we need just to transform y.
         """
-        frame = self.get_next_frame
         # print('--->>>>>>>>>>>>>>\n', frame)
         try:
             if frame.get('ball_pos', None) is not None:
@@ -99,7 +114,7 @@ class RootBase(Base):
         self.start_game = False
     
     def reset_to_default_state(self):
-        # keep scope saved
+        # keep scope saved\
         self.ball.reset_keys_state(self.game_mode, 'left') # reset any pressed key to not pressed
         self.ball.reset_keys_state(self.game_mode, 'right') # reset any pressed key to not pressed
         self.left_player = Paddle('left', root_obj=self)
