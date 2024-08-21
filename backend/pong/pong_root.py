@@ -19,6 +19,7 @@ class RootBase(Base):
         self.scope = {}
         self.start_game = False
         self.game_mode = 'local' # options: [local, remote]
+        self.finished = False
     
     ###############################################
     def set_game_mode(self, game_mode):
@@ -45,15 +46,7 @@ class RootBase(Base):
         return self.transform(conf)
 
     def is_finished(self):
-        try:
-            self.scope['finished']
-            # game is finished here
-            # self.reset_to_default_state()
-            # self.ball.move_paddles(self.game_mode)
-            # self.ball.move(self.game_mode)
-            return True
-        except:
-            return False
+        return self.finished
     ###############################################
     
     def move_paddles(self):
@@ -110,13 +103,15 @@ class RootBase(Base):
         self.start_game = False
     
     def reset_to_default_state(self):
-        # keep scope saved\
-        self.ball.reset_keys_state(self.game_mode, 'left') # reset any pressed key to not pressed
-        self.ball.reset_keys_state(self.game_mode, 'right') # reset any pressed key to not pressed
-        self.left_player = Paddle('left', root_obj=self)
-        self.right_player = Paddle('right', root_obj=self)
-        self.ball = Ball(root_obj=self)
+        # keep scope saved
+        # self.ball.reset_keys_state(self.game_mode, 'left') # reset any pressed key to not pressed
+        # self.ball.reset_keys_state(self.game_mode, 'right') # reset any pressed key to not pressed
+        # self.left_player = Paddle('left', root_obj=self)
+        # self.right_player = Paddle('right', root_obj=self)
+        # self.ball = Ball(root_obj=self)
+        self.ball.ball_pos = self.ball_start_x, self.ball_start_y
         self.start_game = False
+        self.finished = True
 
 
 class PingPongGame(RootBase):
@@ -157,18 +152,21 @@ class PingPongGame(RootBase):
         """
         # print('mode: ', self.game_mode)
         self.ball.on_release(self.game_mode, player_direction, key)
+    
+    def __str__(self):
+        return f"------------- {self.game_mode.upper()} Game: left {self.left_player.score} : {self.right_player.score} right ---------------"
 
-    def debug_key_down(self, instance, keyboard, keycode, text, modifiers):
-        keys={82: 'ArrowUp',81:'ArrowDown', 26:'w', 22:'s'}
-        key = keys.get(keycode, None)
-        if key is not None:
-                self.on_press('left', key)
-                self.on_press('right', key)
+    # def debug_key_down(self, instance, keyboard, keycode, text, modifiers):
+    #     keys={82: 'ArrowUp',81:'ArrowDown', 26:'w', 22:'s'}
+    #     key = keys.get(keycode, None)
+    #     if key is not None:
+    #             self.on_press('left', key)
+    #             self.on_press('right', key)
         
-    def debug_key_up(self, a, b,c):
-        keys={82: 'ArrowUp',81:'ArrowDown', 26:'w', 22:'s'}
-        key = keys.get(c, None)
-        if key is not None:
-                self.on_release('left', key)
-                self.on_release('right', key)
+    # def debug_key_up(self, a, b,c):
+    #     keys={82: 'ArrowUp',81:'ArrowDown', 26:'w', 22:'s'}
+    #     key = keys.get(c, None)
+    #     if key is not None:
+    #             self.on_release('left', key)
+    #             self.on_release('right', key)
         

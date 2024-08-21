@@ -35,18 +35,7 @@ from pong.pong_root import PingPongGame
 
 
 class LocalGameOutputMiddleware:
-    channel_layer = get_channel_layer()
     callbacks = {}
-
-    @classmethod
-    async def send_to_channel(cls, channel_name, message):
-        await cls.channel_layer.send(
-            channel_name,
-            {
-                'type': 'send_message',# method with this name in consumer will be called, make sure it exsists
-                'update': message
-            }
-        )
     
     @classmethod
     def send(cls, channel_name, frame) -> None:
@@ -113,12 +102,14 @@ class EventLoopManager:
     def _save_finished(cls, game_obj):
         # finished games here
         # do your things here
+        print(game_obj)
         pass
         
     @classmethod
     def _clean(cls):
         for channel_name in cls.finished:
             cls.runing.pop(channel_name)
+        cls.finished.clear()
 
     @classmethod
     def add(cls, channel_name, send_callback, game_mode='local'):
