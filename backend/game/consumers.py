@@ -38,7 +38,7 @@ class NewGameConsumer(AsyncWebsocketConsumer):
         self.game_engine.play(self.channel_name)
 
         
-    async def disconnect(self, close_code=1):
+    async def disconnect(self, close_code=0):
         self.game_engine.stop(self.channel_name)
     
     async def receive(self, text_data):

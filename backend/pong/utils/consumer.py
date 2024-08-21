@@ -62,9 +62,6 @@ class LocalGameOutputMiddleware:
     @classmethod
     def send_config(cls, channel_name, game_obj):
         data = {'config': game_obj.get_game_config}
-        print('&'*50)
-        print(data)
-        print('&'*50)
         send_task = cls.callbacks.get(channel_name)
         send_task(data)
 
@@ -109,11 +106,17 @@ class EventLoopManager:
             frame :dict = game.update()
             if game.is_finished():
                 cls.finished.append(channel_name)
+                cls._save_finished(game)
             cls._dispatch_send_event(channel_name, game, frame)
 
     @classmethod
-    def _clean(cls):
+    def _save_finished(cls, game_obj):
         # finished games here
+        # do your things here
+        pass
+        
+    @classmethod
+    def _clean(cls):
         for channel_name in cls.finished:
             cls.runing.pop(channel_name)
 
@@ -148,13 +151,13 @@ class EventLoopManager:
             return True
         return False
     
-    @classmethod
-    def get_game_obj(cls, channel_name):# not used
-        return cls.runing.get(channel_name)
+    # @classmethod
+    # def get_game_obj(cls, channel_name):# not used
+    #     return cls.runing.get(channel_name)
     
-    @classmethod
-    def is_channel_name_already_in_use(cls, channel_name): # not used
-        return bool(cls.runing.get(channel_name))
+    # @classmethod
+    # def is_channel_name_already_in_use(cls, channel_name): # not used
+    #     return bool(cls.runing.get(channel_name))
     
     @classmethod
     def dispatch_recieved_event(cls, channel_name, event_dict):

@@ -10,15 +10,11 @@ except:
 from copy import deepcopy
 
 class RootBase(Base):
-    count = 0
-    def __close__(self):
-       print('====>close: ', __class__.count) 
+    
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.left_player = Paddle('left', root_obj=self)
         self.right_player = Paddle('right', root_obj=self)
-        print('====>', __class__.count)
-        __class__.count += 1
         self.ball = Ball(root_obj=self)
         self.scope = {}
         self.start_game = False
