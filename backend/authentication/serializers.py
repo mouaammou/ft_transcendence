@@ -1,9 +1,22 @@
-from .models import CustomUser
+from .models import CustomUser, Friendship
 from rest_framework import serializers
 from django.conf import settings
 from django.db import IntegrityError
 
+#============= friends Serializer +++++++++++++++
+class FriendshipSerializer(serializers.ModelSerializer):
+    friend = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Friendship
+        fields = ['id', 'friend', 'created_at']
+    
+    def get_friend(self, obj):
+        user = self.context['request'].user
+        return obj.user2 if obj.user1 == user else obj.user1
+# end friends Serializer ================
 
+#============= CustomeUser Serializer +++++++++++++++
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -20,8 +33,9 @@ class UserSerializer(serializers.ModelSerializer):
         if representation['avatar']:
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
+# end CustomeUser Serializer ================
 
-
+#============= CustomeUser Update Serializer +++++++++++++++
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -57,3 +71,4 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         
         instance.save()  # Save the updated instance
         return instance
+# end CustomeUser Update Serializer ================

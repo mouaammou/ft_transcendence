@@ -1,13 +1,40 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 import requests
+from django.db import models
 from django.core.files import File
-from django.core.files.temp import NamedTemporaryFile
 from PIL import Image, UnidentifiedImageError
-
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
+from django.core.files.temp import NamedTemporaryFile
+from django.conf import settings
 
 # Create your models here.
+
+# class of the model Friends, Many to Many
+class Friendship(models.Model):
+	user1 = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		related_name='friendship',
+		on_delete=models.CASCADE
+	)
+
+	user2 = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		related_name="friends",
+		on_delete=models.CASCADE
+	)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		unique_together = (('user1', 'user2'))
+	
+	def save(self, *args, **kwargs):
+		if self.user1.id > self.user2.id:
+			self.user1.id, self.user2.id = self.user2.id, self.user1.id
+		super(Friendship, self).save(*args, **kwargs)
+
+	def __str__(self):
+		return f"{self.user1.username} is friends with {self.user2.username}"
+# +++++++++ done model Friendship ++++++++++++#
 
 def validate_image_size(image):
     max_size = 50 * 1024 * 1024  # 50MB
@@ -18,6 +45,7 @@ def upload_location(instance, filename):
 	filename = instance.username +"."+ filename.split(".")[-1]
 	return f"avatars/{filename}"
 
+# class of the model CustomUser, override the User model class
 class CustomUser(AbstractUser):
 	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
 	user42 = models.CharField(max_length=255, unique=True, blank=True, null=True)
@@ -52,4 +80,5 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return self.username
+# +++++++++ done model CustomeUser ++++++++++++#
 

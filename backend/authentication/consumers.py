@@ -2,7 +2,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
-import json
 
 User = get_user_model()
 
@@ -16,7 +15,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 f"user_{self.user.id}",
                 self.channel_name
             )
-            self.update_user_status(True)
+            await self.update_user_status(True)
             
             await self.accept()
         else:
@@ -29,11 +28,9 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 f"user_{self.user.id}",
                 self.channel_name
             )
-
     async def receive(self, text_data):
         pass  # Handle incoming messages if needed
 
     @database_sync_to_async
-    def update_user_status(self, is_online):
-        self.user.is_online = is_online
-        self.user.save()
+    def update_user_status(self, status):
+        User.objects.filter(pk=self.user.pk).update(is_online=status)
