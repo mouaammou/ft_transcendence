@@ -9,6 +9,7 @@ except:
 
 from copy import deepcopy
 
+
 class RootBase(Base):
     
     def __init__(self, *args, **kwargs) -> None:
@@ -114,13 +115,15 @@ class RootBase(Base):
         self.finished = True
 
 
-class PingPongGame(RootBase):
+class PingPongGameLogic(RootBase):
     """
     All game logic is implemented here.
     This class represents a single ping pong game.
     You should use this class when you want another game instance.
     """
-    
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
     def update(self, *args):
         """
         game engine will call this in order
