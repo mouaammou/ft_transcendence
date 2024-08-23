@@ -2,11 +2,17 @@
     display: block;
     border-radius: 10px;
     
-    margin: 55px 55px 55px 10px;
+    /* margin: 55px 55px 55px 10px; */
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 75%;
+    /*  add commante  */
+    /* height: 1207px; */
+    margin-left: 5px;
+    /*  add commante  */
+    /* overflow: hidden; */
+
 }
 
 
@@ -41,7 +47,9 @@
     justify-content: space-between;
     background-color: rgba(163, 218, 232, 0.2);
     border-radius: 10px;
-    height: 11%;
+    /* height: 11%; */
+    height: fit-content;
+    padding: 14px;
 }
 
 
@@ -53,8 +61,12 @@
     /* flex-grow: 18; */
     display: flex;
     flex-direction: column;
-    
-    height: 89%;
+    padding-top: 15px;
+    /* height: 91%; */
+    /* height: 1053px; */
+    height: calc(100% - 113px);
+    /* flex-grow: 1;     */
+
 }
 
 .body-message-chat::-webkit-scrollbar {
@@ -103,7 +115,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    /* gap: 10px; */
     /* height: 40%; */
 }
 
@@ -113,26 +125,27 @@
 
 .my-message {
     display: flex;
-    width: 70%;
+    /* width: 70%; */
+    align-self: flex-end;
     /* margin-left: 10px; */
 }
 
 .img_my_message{
-    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .message {
     display: flex;
     width: 70%;
-    align-self: flex-end;
-    margin-top: 15px;
+    /* margin-top: 15px; */
 }
 
 .center-chat p{
     /* background-color: rgb(179, 193, 190); */
     padding: 20px;
-    margin: 20px;
-    border-radius: 20px;
+    /* margin: 20px; */
+    margin: 10px;
+    border-radius: 10px;
 }
 
 .message p {
@@ -142,9 +155,15 @@
     background-color: rgb(7 8 40);
 }
 
+.img_msg {
+    /* width: 30px;
+    height: 30px; */
+    margin-left: 10px;
+}
+
 .bottom-chat{
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
     margin: 20px 60px;
     gap: 22px;
@@ -303,7 +322,7 @@
 
     }
     .my-message {
-        width: 85%;
+        /* width: 85%; */
     }
     /* .body-message-chat {
         height: 94%;
@@ -313,6 +332,7 @@
 @media (max-width: 400px){
     .section-profile {
         gap: 7px;
+        margin-left: 0%;
     }
     .section_action {
         gap: 10px;
@@ -321,16 +341,16 @@
         font-size: 10px;
     }
     .img-section-profile{
-        width: 30px;
-        height: 30px;
+        width: 35px;
+        height: 35px;
         border: none;
         border: 1px solid rgb(241, 250, 238);
     }
     .LiaGamepadSolid {
-        font-size: 20px;
+        font-size: 25px;
     }
     .ImBlocked {
-        font-size: 12px;
+        font-size: 17px;
     }
     .TiArrowBack {
         font-size: 20px;
@@ -351,7 +371,10 @@
     .message {
         width: 100%;
         align-self:flex-start;
-        margin-left: 10px;
+        margin: 15px 0px 0px 0px;
+        /* margin: 0px; */
+        /* margin-left: 10px; */
+        /* margin-top: 15px; */
     }
     .my-message {
         width: 100%;
@@ -359,10 +382,12 @@
     /* .body-message-chat {
         height: 96%;
     } */
-    .message .img_msg{
+    .img_msg{
         width: 30px;
         height: 30px;
-        margin-left: 10px;
+        /* margin-right: 10px; */
+        /* margin-right: 10px; */
+        /* margin-left: 10px; */
     }
 
     .center-chat p{
@@ -370,11 +395,6 @@
         margin: 10px;
         padding: 10px;
         font-size: 10px;
-    }
-    .message {
-
-        margin: 0px;
-        /* margin-left: 10px; */
     }
     .my-message {
         /* margin: 0px; */

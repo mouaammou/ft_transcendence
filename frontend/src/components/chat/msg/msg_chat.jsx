@@ -9,8 +9,6 @@ import { TiArrowBack } from "react-icons/ti";
 // import Picker from 'emoji-picker-react';
 import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext'
-// import React, { useRef } from 'react';
-// import { useEffect } from 'react';
 
 const Msg_chat = () => {
     
@@ -65,7 +63,6 @@ const Msg_chat = () => {
                                 </p>
                             </div>
                             <div className="my-message">
-                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                                 <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
                                     et la mise en page avant impression. Le Lorem Ipsum est le faux texte
                                     standard de l'imprimerie depuis les années 1500, quand un imprimeur
@@ -77,6 +74,7 @@ const Msg_chat = () => {
                                     par son inclusion dans des applications de mise en page de texte, comme Aldus
                                     PageMaker.
                                 </p>
+                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                             </div>
                             <div className="message">
                                 <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
@@ -93,7 +91,6 @@ const Msg_chat = () => {
                                 </p>
                             </div>
                             <div className="my-message">
-                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                                 <p>Le Lorem Ipsum est simplement du faux texte employé dans la composition
                                     et la mise en page avant impression. Le Lorem Ipsum est le faux texte
                                     standard de l'imprimerie depuis les années 1500, quand un imprimeur
@@ -105,6 +102,7 @@ const Msg_chat = () => {
                                     par son inclusion dans des applications de mise en page de texte, comme Aldus
                                     PageMaker.
                                 </p>
+                                <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                             </div>
                             <div className="message">
                                 <Image src={selectedUser.img} alt={selectedUser.name} className='img_msg' width={45} height={45} style={{ borderRadius: '50%', border: ' solid #F1FAEE' }} />
@@ -150,8 +148,8 @@ const Msg_chat = () => {
                             </div>
                             {messages[selectedUser.id] && messages[selectedUser.id].map((msg, index) => (
                                 <div key={index} className="my-message">
-                                    <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                                     <p>{msg.text}</p>
+                                    <Image src="/med.jpeg" alt='mohammed' className='img_my_message'  width={45} height={45} style={{borderRadius: '50%', border: 'solid #F1FAEE'}}/>
                                 </div>
                             ))}
                             <div ref={endRef}></div>
@@ -181,6 +179,11 @@ const Msg_chat = () => {
                 </>
             ) : (
                 <div className='user-not-select'>
+
+
+        
+
+
                     <h2>Select a user to start chating</h2>
                 </div>
             )}
@@ -189,3 +192,5 @@ const Msg_chat = () => {
 }
 
 export default Msg_chat;
+
+

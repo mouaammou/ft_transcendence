@@ -15,7 +15,10 @@
     /* padding: 0px; */
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    
+    /*  add commante  */
+    /* overflow-y: auto; */
+    /*  add commante  */
 }
 .icon_items img {
     width: 32px;

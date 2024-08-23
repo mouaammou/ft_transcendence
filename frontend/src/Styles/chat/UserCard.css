@@ -3,20 +3,26 @@
     flex-direction: row;
     /* justify-content: space-around; */
     align-items: center;
-    gap: 20%;    ;
+    gap: 20%;
+    gap: 10%;
     margin: 10px 30px 10px 30px;
     cursor: pointer;
-    transition: border 0.3s, border-radius 0.3s;
+    /* transition: border 0.3s, border-radius 0.3s; */
     padding: 3px;
     border: 1px solid transparent;
-    border-radius: 24px;
-    background: #060B16;
+    /* border-radius: 24px; */
+    border-radius: 10px;
+    /* background: #060B16; */
+    position: relative;
 }
 
-
+/* .img-usercard{
+    position: relative;
+} */
 
 .UserCardAll:hover {
-    border: 1px solid #aaa; /* Border on hover */
+    border: 1px solid #ffffff; /* Border on hover */
+    background-color: #041921;
 }
 
 /* Styling for clicked card */
@@ -24,6 +30,35 @@
     border: 1px solid #333; /* Solid border when clicked */
     border-radius: 5px; /* Reduced border radius when clicked */
 }
+
+.UserCardOnline{
+    position: relative;
+}
+
+.status{
+    border: 2px solid #fff;
+    /* border-radius: 50%; */
+    width: 15px;
+    height: 15px;
+    /* background-color: red; */
+    position: absolute;
+
+}
+
+.UserCardOnline .status{
+    top: 0px;
+    right: 5px;
+}
+
+.UserCardAll .status{
+    bottom: 6px;
+    left: 40px;
+}
+
+/* .img-usercard .status{
+    bottom: 34px;
+    left: 86px;
+} */
 
 @media (max-width: 1600px){
     .UserCardOnline .img-usercard{

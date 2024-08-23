@@ -9,7 +9,6 @@ import UserList from '@/components/chat/list/UserList/UserList'
 import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext'
 
-
 const list_chat = () => {
 
     const { isChatVisible, onlineUser, allUsers, handleSearch } = useContext(ChatContext);

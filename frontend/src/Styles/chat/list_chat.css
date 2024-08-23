@@ -3,13 +3,20 @@
 
     background-color: rgba(163, 218, 232, 0.2);
     border-radius: 10px;
-    margin: 55px 10px 55px 0px;
+    /* margin: 55px 10px 55px 0px; */
     /* width: 500px; */
-    flex-shrink: 0; /* Prevent shrinking below 400px */
-    overflow-y: auto;
-    overflow-x: hidden;
+    /* flex-shrink: 0; Prevent shrinking below 400px */
+
+    /* commant */
+    /* overflow-y: auto;
+    overflow-x: hidden; */
+    /* commant */
+
     width: 25%;
     /* width: 100%; */
+    margin-right: 5px;
+    /* overflow: hidden; */
+
 }
 
 
@@ -82,6 +89,11 @@ input[type="text"]:focus::placeholder {
 .all-user{
     display: flex;
     justify-content: center;
+    /* add */
+    
+    /* height: 600px; */
+    /* add */
+
     /* overflow-y: auto;
     overflow-x: hidden;
     height: 600px; */
@@ -105,6 +117,8 @@ input[type="text"]:focus::placeholder {
 
 /* Custom scrollbar styling */
 
+/* commante */
+
 .list_chat::-webkit-scrollbar {
     width: 3px;
 }
@@ -119,6 +133,7 @@ input[type="text"]:focus::placeholder {
     background: linear-gradient(#642bff, #22fffb);
 }
 
+/* commante */
 
 /* addd just to test */
 
@@ -185,7 +200,7 @@ input[type="text"]:focus::placeholder {
         /* width: 500px; */
         /* width: 97%; */
         /* margin-right: 24px; */
-        margin: 20px 20px 20px 0px;
+        /* margin: 20px 20px 20px 0px; */
     }
 
     .HiBell{
@@ -203,7 +218,7 @@ input[type="text"]:focus::placeholder {
     .list_chat{
         /* margin: 10px 10px 90px 10px; */
         /* margin: 0px 0px 0px 0px; */
-        margin: 20px 20px 20px 20px;
+        /* margin: 20px 20px 20px 20px; */
         /* margin: 20px; */
         /* width: auto; */
         /* width: 100%; */
@@ -219,7 +234,7 @@ input[type="text"]:focus::placeholder {
 
 @media (max-width: 600px){
     .list_chat{
-        margin: 5px;
+        /* margin: 5px; */
     }
 }
 @media (max-width: 400px){

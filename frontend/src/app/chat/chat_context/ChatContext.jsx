@@ -41,7 +41,7 @@ export const ChatProvider = ( { children } ) => {
             setAllUsers(users);
 
             const online = users.filter(user => user.active).slice(0, 4);
-
+ 
             // Fill the active users list with default users if there are less than 4 active users
             const defaultUser = { name: 'Default User', email: '', active: false, img: '/Profil.svg' };
             while (online.length < 4) {
@@ -51,7 +51,8 @@ export const ChatProvider = ( { children } ) => {
             setOnlineUser(online);
         };
             fetchUsers();
-    }, [allUsers])
+    // }, [allUsers])
+    }, [])
 
 
     // Function to handle search input and filter the users list based on the search term
@@ -105,21 +106,43 @@ export const ChatProvider = ( { children } ) => {
             
         //     setText(''); // Clear the input field
         // }
+
+        
         if (selectedUser && text.trim() !== "") {
             const newMessage = {
                 text: text.trim(),
             };
+            console.log("this the text = ",text);
 
-            // Create a new messages object to avoid using spread operator
-            const newMessages = Object.assign({}, messages);
+            // // Create a new messages object
+            // const newMessages = Object.assign({}, messages);
 
-            // Initialize the user's message array if it doesn't exist
+            // // Initialize the user's message array if it doesn't exist
+            // if (!newMessages[selectedUser.id]) {
+            //     newMessages[selectedUser.id] = [];
+            // }
+
+            // --------- add -------
+            // Create a new empty object to copy the existing messages
+            const newMessages = {};
+
+            // Manually copy properties from the original messages object to the new object
+            for (let key in messages) {
+                if (messages.hasOwnProperty(key)) {
+                    newMessages[key] = messages[key];
+                }
+            }
+            
+            // Check if the selected user's message array exists, if not, create it
             if (!newMessages[selectedUser.id]) {
                 newMessages[selectedUser.id] = [];
-            }
-
+            }       // --------- add -------
+            
             // Add the new message to the user's message array
             newMessages[selectedUser.id].push(newMessage);
+
+            console.log("this the newMessage = ",newMessage);
+            console.log("this the messages = ",newMessages);
 
             // Update the state with the modified messages object
             setMessages(newMessages);

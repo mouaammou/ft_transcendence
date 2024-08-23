@@ -5,6 +5,7 @@
     /* width: auto; */
     /* width: 100%; */
     width: 100%;
+    padding: 50px 50px 50px 0px;
 }
 
 /* .hidden{
@@ -141,6 +142,9 @@ h2{
     }
     .msg_chat.hidden {
         display: none;
+    }
+    .main-chat{
+        padding: 5px 5px 5px 0px;
     }
 }
 

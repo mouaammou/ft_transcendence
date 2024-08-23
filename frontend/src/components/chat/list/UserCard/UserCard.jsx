@@ -18,9 +18,10 @@ const UserCard = ({user, listType, onUserSelect}) => {
                 className="img-usercard"
                 style={{
                     borderRadius: '50%',
-                    border: `2px solid ${borderColor}`
+                    border: `2px solid #fff`
                 }}
             />
+            <div className='status'  style={{ backgroundColor : `${borderColor}` , borderRadius: '50%'}} ></div>
             {listType === 'all' && (
                 <>
                     <p>{user.name}</p>

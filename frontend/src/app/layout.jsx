@@ -24,11 +24,19 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<LoginProvider>
-				{/* <body className={inter.className}> */}
-				<body className={`${inter.className} ${isChatPage ? 'style-chat' : ''}`}>
-
-					{isChatPage ? <Sidebar /> : <Navbar />}
-					{children}
+				{/* <body className={`${inter.className} ${isChatPage ? 'style-chat' : ''}`}> */}
+				<body className={inter.className}>
+					{isChatPage ? (
+						<div className="content">
+							<Sidebar />
+							{children}
+						</div>
+					) : (
+						<>
+							<Navbar />
+							{children}
+						</>
+					)}
 				</body>
 			</LoginProvider>
 		</html>
