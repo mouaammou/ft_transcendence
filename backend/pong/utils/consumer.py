@@ -34,9 +34,7 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
 
         # steps bellow is required
         self.channel_name = self.scope['channel_name']
-        self.game_engine.run_event_loop()
-        self.game_engine.add_or_reconnect(self.channel_name, self.send_game_message)
-        self.game_engine.play(self.channel_name)
+        self.game_engine.connect(self.channel_name, self.send_game_message)
         # dont forget to set timout callback
 
         

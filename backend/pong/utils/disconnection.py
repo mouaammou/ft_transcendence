@@ -21,7 +21,7 @@ output events:
 import asyncio
 
 
-#DONT FORGET: DO NOT UPDATE THE GAME ON DISCONNECTION
+# DONT FORGET: DO NOT UPDATE THE GAME ON DISCONNECTION
 
 class LocalGameDisconnection:
     # PING PONG Game will inherete this
@@ -50,7 +50,7 @@ class LocalGameDisconnection:
         else:
             self._cancel_task()
     
-    def set_disconncetion_timeout_callback(self, callback, *args, **kwargs):
+    def set_disconnection_timeout_callback(self, callback, *args, **kwargs):
         """
         This is used to set a callback when local game is 
         didn't reconnect in the specified period.
@@ -63,9 +63,9 @@ class LocalGameDisconnection:
     
     ################## private interface ######################
     def _cancel_task(self):
-        print('************* task is canceled *************')
         if self._disconnetion_task is None:
             return
+        print('************* task is canceled *************')
         self._disconnetion_task.cancel()
         self._outside_callback = None
         self._outside_callback_args = list()
@@ -81,9 +81,9 @@ class LocalGameDisconnection:
         self._disconnetion_task = task
     
     def _disconnection_timeout(self):
-        print('************* task is timedout *************')
         if self._outside_callback is None:
             return
+        print('************* task is timedout *************')
         
         self._outside_callback(
             *self._outside_callback_args,

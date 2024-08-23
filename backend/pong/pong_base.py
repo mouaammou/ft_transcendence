@@ -9,6 +9,7 @@ class Base:
     """Bottom left corner is x=0, y=0"""
     
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60

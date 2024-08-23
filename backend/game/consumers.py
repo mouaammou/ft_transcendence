@@ -26,3 +26,4 @@ from pong.utils.consumer import LocalGameConsumer
 
 class GlobalConsumer(LocalGameConsumer):
     pass
+    

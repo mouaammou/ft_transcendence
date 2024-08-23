@@ -51,7 +51,7 @@ class EventLoopManager:
     @classmethod
     def _clean(cls):
         for channel_name in cls.finished:
-            cls.runing.pop(channel_name, None)
+            cls.runing.pop(channel_name)
         cls.finished.clear()
 
     @classmethod
@@ -70,7 +70,9 @@ class EventLoopManager:
     @classmethod
     def remove(cls, channel_name):
         cls.runing.pop(channel_name)
-        cls.finished.pop(channel_name, None)
+        try:
+            cls.finished.pop(channel_name)
+        except: pass
 
     
     @classmethod
@@ -81,13 +83,23 @@ class EventLoopManager:
             return True
         return False
     
+
+    # used from consumer
     @classmethod
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
         if game_obj:
             game_obj.disconnected = True # and disconnetion class also used here
+            game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
             return True
         return False
+    
+    @classmethod
+    def connect(cls, channel_name, send_game_message):
+        cls.run_event_loop()
+        cls.add_or_reconnect(channel_name, send_game_message)
+        cls.play(channel_name)
+    # end used from consumer
 
     @classmethod
     def play(cls, channel_name):
