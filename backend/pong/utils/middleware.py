@@ -1,16 +1,14 @@
 """
-game modes:
-    - remote
-    - local
-
 input events:
     - onPress:
         - key: 't' ----> stops the game
-        call: game.on_press('left|right', key)
+        -keys [w, s, arrowUp, arrowDown]
+            call: game.on_press('left|right', key)
     - onRelease
-        call: game.on_release('left|right', key)
+        -keys [w, s, arrowUp, arrowDown]
+            call: game.on_release('left|right', key)
     - create:
-        mode: local
+        mode: local # required
         left: pass
         right: pass
         ...
