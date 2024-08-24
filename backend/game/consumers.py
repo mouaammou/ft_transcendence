@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocke
 # from channels.exceptions import DenyConnection
 from channels.db import database_sync_to_async
 
-from pong.utils.consumer import LocalGameConsumer
+from .local_game.consumer import LocalGameConsumer
 
 
 # class BaseAsyncConsumer(AsyncWebsocketConsumer):

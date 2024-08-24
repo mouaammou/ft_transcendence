@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocke
 # from channels.exceptions import DenyConnection
 from channels.db import database_sync_to_async
 
-from pong.utils.eventloop import EventLoopManager
+from .eventloop import EventLoopManager
 
 
 # class BaseAsyncConsumer(AsyncWebsocketConsumer):

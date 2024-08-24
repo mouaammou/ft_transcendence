@@ -163,8 +163,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				user.y = gameConfig.left_paddle_pos[1];
 				computer.x = gameConfig.right_paddle_pos[0];
 				computer.y = gameConfig.right_paddle_pos[1];
-				// ball.x = gameConfig.ball_pos[0];
-				// ball.y = gameConfig.ball_pos[1];
+				ball.x = gameConfig.ball_pos[0];
+				ball.y = gameConfig.ball_pos[1];
 				ball.radius = gameConfig.ball_size[0] / 2;
 				// rectBall.x = gameConfig.ball_pos[0];
 				// rectBall.y = gameConfig.ball_pos[1];

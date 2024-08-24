@@ -41,9 +41,10 @@ class RootBase(Base):
             'right_player_score': self.right_player.score,
             'left_paddle_pos': self.left_player.padd_pos,
             'right_paddle_pos': self.right_player.padd_pos,
+            'ball_pos': self.ball.ball_pos,
         }
         conf.update(data)
-        del conf['ball_pos']
+        # conf['ball_pos'] = self.ball.ball_pos
         return self.transform(conf)
 
     def is_finished(self):

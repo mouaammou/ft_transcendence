@@ -12,7 +12,6 @@ input events:
         left: pass
         right: pass
         ...
-    
 
 output events:
     - left_paddle_pos
@@ -36,6 +35,9 @@ class LocalGameOutputMiddleware:
 
     @classmethod
     def add_callback(cls, channel_name, send_callback, game_obj=None) -> None:
+        """
+        game_obj is None on connect, But a game instance on reconnect.
+        """
         cls.callbacks[channel_name] = send_callback # only this line means connect
         if game_obj is not None:
             # this means reconncet
