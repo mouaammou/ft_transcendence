@@ -84,7 +84,8 @@ class EventLoopManager:
         print('************ RECONNECT *************')
         LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
-        cls.play(channel_name)
+        # cls.play(channel_name) # i think i dont need this on reconnection
+        #      beause reconnection controls only disconnection properties not the stop or play properties
         return True
 
     @classmethod

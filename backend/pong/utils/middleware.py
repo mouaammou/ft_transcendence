@@ -5,6 +5,7 @@ game modes:
 
 input events:
     - onPress:
+        - key: 't' ----> stops the game
         call: game.on_press('left|right', key)
     - onRelease
         call: game.on_release('left|right', key)
@@ -13,6 +14,7 @@ input events:
         left: pass
         right: pass
         ...
+    
 
 output events:
     - left_paddle_pos
@@ -58,12 +60,17 @@ class LocalGameInputMiddleware:
         """
         dict_text_data: is the recieved text data as dict. as it is recieved
         """
-        if dict_text_data.get('onPress') is not None:
-            game_obj.on_press('left', dict_text_data.get('onPress').strip())
-            game_obj.on_press('right', dict_text_data.get('onPress').strip())
-        elif dict_text_data.get('onRelease') is not None:
-            game_obj.on_release('left', dict_text_data.get('onRelease').strip())
-            game_obj.on_release('right', dict_text_data.get('onRelease').strip())
+        press = dict_text_data.get('onPress')
+        release = dict_text_data.get('onRelease')
+        if press is not None and press.strip() == 't':
+            game_obj.start_game = not game_obj.start_game
+            return
+        if press is not None:
+            game_obj.on_press('left', press.strip())
+            game_obj.on_press('right', press.strip())
+        elif release is not None:
+            game_obj.on_release('left', release.strip())
+            game_obj.on_release('right', release.strip())
     
     @classmethod
     def try_create(cls, event_loop_cls, channel_name, event_dict):
