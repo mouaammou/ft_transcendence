@@ -33,13 +33,13 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # steps bellow is required
-        self.channel_name = self.scope['channel_name']
-        self.game_engine.connect(self.channel_name, self.send_game_message)
+        self.channel_namex = self.scope['channel_name']
+        self.game_engine.connect(self.channel_namex, self.send_game_message)
         # dont forget to set timout callback
 
         
     async def disconnect(self, *arg, **kwrags):
-        self.game_engine.disconnect(self.channel_name)
+        self.game_engine.disconnect(self.channel_namex)
     
     async def receive(self, text_data, *args, **kwargs):
         data = {}
@@ -48,7 +48,7 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
         except:
             print('EXCEPTION: received invaled data from the socket')
         
-        self.game_engine.recieve(self.channel_name, data)
+        self.game_engine.recieve(self.channel_namex, data)
     
     def send_game_message(self, event):
         try:
