@@ -41,9 +41,9 @@ class TokenVerificationMiddleWare:
             if not access_token:
                 # Generate a new access token if none exists or is invalid
                 new_access_token = refresh_token_obj.access_token
-                print('x'*15)
-                print(new_access_token.payload)
-                print('x'*15)
+                # print('x'*15)
+                # print(new_access_token.payload)
+                # print('x'*15)
                 response = self.get_response(request)
                 response.set_cookie(
                     key="access_token",
@@ -62,9 +62,9 @@ class TokenVerificationMiddleWare:
             except (TokenError, User.DoesNotExist):
                 # If access token is invalid, create a new one
                 new_access_token = refresh_token_obj.access_token
-                print('x'*15)
-                print(new_access_token.payload)
-                print('x'*15)
+                # print('x'*15)
+                # print(new_access_token.payload)
+                # print('x'*15)
                 response = self.get_response(request)
                 response.set_cookie(
                     key="access_token",
@@ -73,7 +73,7 @@ class TokenVerificationMiddleWare:
                     samesite="Lax",#??
                     max_age= 60*60*24,  # 7 days
                 )
-                print("___)))))))))))))))")
+                # print("___)))))))))))))))")
                 return response
         except TokenError:
             return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)

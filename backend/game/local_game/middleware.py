@@ -62,7 +62,10 @@ class LocalGameInputMiddleware:
         """
         press = dict_text_data.get('onPress')
         release = dict_text_data.get('onRelease')
-        if press is not None and press.strip() == 't':
+        if press is not None and press.strip() == 'p':
+            game_obj.start_game = not game_obj.start_game
+            return
+        elif press is not None and press.strip() == 'esc':
             game_obj.start_game = not game_obj.start_game
             return
         if press is not None:

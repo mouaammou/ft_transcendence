@@ -67,6 +67,7 @@ class LocalGameDisconnection:
             return
         print('************* task is canceled *************')
         self._disconnetion_task.cancel()
+        self._disconnetion_task = None
         self._outside_callback = None
         self._outside_callback_args = list()
         self._outside_callback_kwargs = dict()
