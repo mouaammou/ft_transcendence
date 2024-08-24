@@ -55,18 +55,38 @@ class EventLoopManager:
         cls.finished.clear()
 
     @classmethod
-    def add_or_reconnect(cls, channel_name, send_callback, game_mode='local'):
-        """used to run new game instance in the event loop"""
+    def add(cls, channel_name, game_mode='local'):
+        """
+        This method is handled by input middlware.
+        so when create event is recieved it uses it
+        to add new game instance to the event loop.
+
+        To avoid any issue if multiple CREATE events
+        is sent. we handle it like an ATOMIC OPERATION
+        """
+        print("******** ATOMIC OPERATION ********: add new game")
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             game_obj = cls.game_class()
             game_obj.set_game_mode(game_mode)
             cls.runing[channel_name] = game_obj
-        else:
-            game_obj.disconnected = False # disconnetion class used here
-        LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj)
+        # else:
+        #     game_obj.disconnected = False # disconnetion class used here
+        # LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj)
         
     
+    @classmethod
+    def _reconnect(cls, channel_name, send_callback):
+        # """used to run new game instance in the event loop"""
+        game_obj = cls.runing.get(channel_name)
+        if game_obj is None:
+            return False
+        print('************ RECONNECT *************')
+        LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj=game_obj)
+        game_obj.disconnected = False # disconnetion class used here
+        cls.play(channel_name)
+        return True
+
     @classmethod
     def remove(cls, channel_name):
         cls.runing.pop(channel_name)
@@ -97,9 +117,34 @@ class EventLoopManager:
     @classmethod
     def connect(cls, channel_name, send_game_message):
         cls.run_event_loop()
-        cls.add_or_reconnect(channel_name, send_game_message)
-        cls.play(channel_name)
-    # end used from consumer
+        if not cls._reconnect(channel_name, send_game_message):
+            LocalGameOutputMiddleware.add_callback(channel_name, send_game_message)
+        # always on connect set send callback
+        # because the CREATE event assumes that
+        # send calback is already set on connect
+    
+    @classmethod
+    def recieve(cls, channel_name, event_dict):
+        """
+        To be called from outside of this class.
+        Dont forget To handle game events using GAME
+        as the key for revieved events.
+        """
+        # print("******** RECIEVE ********", cls.runing)
+        game_obj = cls.runing.get(channel_name)
+        if game_obj is None:
+            """
+            There is no game runing with that channel name.
+            So check if recieved event is CREATE
+            """
+            LocalGameInputMiddleware.try_create(cls, channel_name, event_dict)
+            return None
+        if game_obj.game_mode == 'local':
+            LocalGameInputMiddleware.recieved_dict_text_data(game_obj, event_dict)
+        elif game_obj.game_mode == 'remote':
+            pass
+            # add middleware for remote game here
+    # end used
 
     @classmethod
     def play(cls, channel_name):
@@ -116,20 +161,6 @@ class EventLoopManager:
     # @classmethod
     # def is_channel_name_already_in_use(cls, channel_name): # not used
     #     return bool(cls.runing.get(channel_name))
-    
-    @classmethod
-    def dispatch_recieved_event(cls, channel_name, event_dict):
-        """
-        To be called from outside of this class.
-        """
-        game_obj = cls.runing.get(channel_name)
-        if game_obj is None:
-            return
-        if game_obj.game_mode == 'local':
-            LocalGameInputMiddleware.recieved_dict_text_data(game_obj, event_dict)
-        elif game_obj.game_mode == 'remote':
-            pass
-            # add middleware for remote game here
     
     @classmethod
     def _dispatch_send_event(cls, channel_name, game_obj, frame):

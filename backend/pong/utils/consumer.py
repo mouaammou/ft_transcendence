@@ -48,7 +48,7 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
         except:
             print('EXCEPTION: received invaled data from the socket')
         
-        self.game_engine.dispatch_recieved_event(self.channel_name, data)
+        self.game_engine.recieve(self.channel_name, data)
     
     def send_game_message(self, event):
         try:

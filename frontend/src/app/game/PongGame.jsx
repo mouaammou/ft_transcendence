@@ -88,10 +88,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		}
 
 		const socket = new WebSocket('ws://localhost:8000/ws/global/');
+		
+
 		let conectionOn;
 		if (socket.readyState === WebSocket.OPEN) {
 			console.log('WebSocket connection is open');
 			conectionOn = true;
+			// create new game EVENT
 		} else {
 			console.log('WebSocket connection is not open');
 			conectionOn = false;
@@ -213,6 +216,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			console.log(event.key);
 			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
+			if (event.key === ' ')
+			{
+				// create new game if space key is created
+				socket.send(JSON.stringify(
+					{
+						"create":
+						{
+							mode:'local'
+						}
+					}
+				));
+			}
 		};
 
 		// set the key to false when the key is released
