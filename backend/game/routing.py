@@ -4,6 +4,5 @@ from . import consumers
 
 
 websocket_urlpatterns = [
-    re_path(r'ws/pong/game/$', consumers.PongRoomConsumer.as_asgi()),
-    re_path(r'ws/pong/new_game/$', consumers.PongRoomConsumer.as_asgi()),
+    re_path(r'ws/global/$', consumers.GlobalConsumer.as_asgi()),
 ]

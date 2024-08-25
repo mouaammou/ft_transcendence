@@ -56,7 +56,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'SIGNING_KEY': SECRET_KEY,
     "ALGORITHM": "HS256",
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),  # 1 hour
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 hour
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
 }
 
@@ -77,7 +77,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'pong',
+=======
+>>>>>>> game
     'game',
     # 'game.apps.GameConfig',
     "authentication.apps.AuthenticationConfig",
@@ -92,11 +95,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    "authentication.middleware.TokenVerificationMiddleWare",  
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    # my middles
     "authentication.middleware.TokenVerificationMiddleWare",
 ]
 

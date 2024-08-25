@@ -87,14 +87,14 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.fill();
 		}
 
-		// Constants
-		// create new websocket client
-		let token = '';
-		const socket = new WebSocket('ws://' + '127.0.0.1:8000' + '/ws/pong/game/?access_token=' + token);
+		const socket = new WebSocket('ws://localhost:8000/ws/global/');
+		
+
 		let conectionOn;
 		if (socket.readyState === WebSocket.OPEN) {
 			console.log('WebSocket connection is open');
 			conectionOn = true;
+			// create new game EVENT
 		} else {
 			console.log('WebSocket connection is not open');
 			conectionOn = false;
@@ -149,7 +149,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			{
 				// setScore1(score1 => data.config.right_player_score);
 				// setScore2(score2 => data.config.left_player_score);
-				// console.log(data.config);
+				console.log(data.config);
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
@@ -163,13 +163,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				user.y = gameConfig.left_paddle_pos[1];
 				computer.x = gameConfig.right_paddle_pos[0];
 				computer.y = gameConfig.right_paddle_pos[1];
-				ball.x = gameConfig.ball_pos[0];
-				ball.y = gameConfig.ball_pos[1];
+				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.x = gameConfig.ball_pos[0] + ball.radius;
+				ball.y = gameConfig.ball_pos[1] + ball.radius;
 				ball.radius = gameConfig.ball_size[0] / 2;
 				// rectBall.x = gameConfig.ball_pos[0];
 				// rectBall.y = gameConfig.ball_pos[1];
 				// rectBall.width = gameConfig.ball_size[0];
 				// rectBall.height = gameConfig.ball_size[1];
+				user.score = gameConfig.left_player_score;
+				setScore2(score2 => gameConfig.left_player_score);
+				computer.score = gameConfig.right_player_score;
+				setScore1(score1 => gameConfig.right_player_score);
 				drawGame();
 			}
 		}
@@ -212,6 +217,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			console.log(event.key);
 			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
+			if (event.key === ' ')
+			{
+				// create new game if space key is created
+				socket.send(JSON.stringify(
+					{
+						"create":
+						{
+							mode:'local'
+						}
+					}
+				));
+			}
 		};
 
 		// set the key to false when the key is released
@@ -272,24 +289,3 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		</canvas>
 	);
 }
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
