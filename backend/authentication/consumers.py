@@ -17,12 +17,14 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope.get("user")
-        self.user_data = UserSerializer(self.user).data
         
         if self.user and self.user.is_authenticated:
+            self.user_data = UserSerializer(self.user).data
             self.cache_key = f"user_{self.user.id}_connections"
             
             try:
+                #accept the connection, the send_status_to_user needs that, otherwise error
+                await self.accept()
                 # Add the user to their own connection group
                 await self.channel_layer.group_add(
                     self.cache_key,
@@ -35,18 +37,14 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 )
 
                 number_of_connections = await self.increment_connections()
-                
                 if number_of_connections == 1:
                     await self.send_status_to_user(True)
                     await self.update_user_status(True)
                     await self.broadcast_online_status(self.user_data, True)
 
-                await self.accept()
-
             except Exception as e:
                 logger.error(f"\nError during connection: {e}\n")
                 await self.close()
-        
         else:
             await self.close()
 
@@ -90,7 +88,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 if event['id'] != self.user.id:
                     await self.send(text_data=json.dumps({
                         "type": "user_status_change",
-                        "id": event['id'],
                         "username": event['username'],
                         "avatar": event['avatar'],
                         "status": event['status'],
