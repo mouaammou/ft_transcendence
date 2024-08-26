@@ -1,10 +1,13 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
+from authentication.serializers import UserSerializer
 from channels.db import database_sync_to_async
+from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from django.core.cache import cache
 import logging
 import json
 
+User = get_user_model()
 # Set up logging
 logger = logging.getLogger(__name__)
 
@@ -14,6 +17,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope.get("user")
+        self.user_data = UserSerializer(self.user).data
         
         if self.user and self.user.is_authenticated:
             self.cache_key = f"user_{self.user.id}_connections"
@@ -24,7 +28,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                     self.cache_key,
                     self.channel_name
                 )
-
                 # Add the user to the global status group
                 await self.channel_layer.group_add(
                     self.USER_STATUS_GROUP,
@@ -36,7 +39,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 if number_of_connections == 1:
                     await self.send_status_to_user(True)
                     await self.update_user_status(True)
-                    await self.broadcast_online_status(self.user.id, True)
+                    await self.broadcast_online_status(self.user_data, True)
 
                 await self.accept()
 
@@ -55,7 +58,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 if number_of_connections == 0:
                     await self.send_status_to_user(False)
                     await self.update_user_status(False)
-                    await self.broadcast_online_status(self.user.id, False)
+                    await self.broadcast_online_status(self.user_data, False)
 
                 await self.channel_layer.group_discard(
                     self.cache_key,
@@ -69,27 +72,29 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
             except Exception as e:
                 logger.error(f"\nError during disconnection: {e}\n")
 
-    async def broadcast_online_status(self, user_id, status):
+    async def broadcast_online_status(self, user_data, status):
         try:
             await self.channel_layer.group_send(
                 self.USER_STATUS_GROUP,
                 {
                     "type": "user_status_change",
-                    "user_id": user_id,
-                    "status": status
+                    "status": status,
+                    **user_data
                 }
             )
         except Exception as e:
             logger.error(f"\nError broadcasting status: {e}\n")
 
     async def user_status_change(self, event):
-        if event['user_id'] != self.user.id:
             try:
-                await self.send(text_data=json.dumps({
-                    "type": "user_status_change",
-                    "user_id": event['user_id'],
-                    "status": event['status']
-                }))
+                if event['id'] != self.user.id:
+                    await self.send(text_data=json.dumps({
+                        "type": "user_status_change",
+                        "id": event['id'],
+                        "username": event['username'],
+                        "avatar": event['avatar'],
+                        "status": event['status'],
+                    }))
             except Exception as e:
                 logger.error(f"\nError sending user status change: {e}\n")
 
@@ -97,7 +102,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         try:
             await self.send(text_data=json.dumps({
                 "type": "friend_status",
-                "user_id": self.user.id,
                 "status": 'online' if status else 'offline'
             }))
         except Exception as e:

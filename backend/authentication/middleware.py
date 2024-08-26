@@ -1,15 +1,18 @@
-from rest_framework import status
-from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import AccessToken, TokenError
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.settings import api_settings
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import AccessToken, TokenError
-from rest_framework_simplejwt.settings import api_settings
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
+from channels.exceptions import DenyConnection
+from django.http import JsonResponse
+from rest_framework import status
+import logging
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 class TokenVerificationMiddleWare:
     def __init__(self, get_response):
@@ -85,23 +88,27 @@ class TokenVerificationMiddleWare:
 
 class UserOnlineStatusMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
-        headers = dict(scope["headers"])
-        access_token = None
-
-        if b'cookie' in headers:
-            cookie_str = headers[b'cookie'].decode('utf-8')
-            cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
-            access_token = cookies_dict.get('access_token')
-        
-        if not access_token:
-            # return JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
-            scope['user'] = AnonymousUser()
         try:
-            user = await self.get_user_from_token(str(access_token))
-            scope['user'] = user
-        except TokenError:
-            # return JsonResponse({"error": str(e)}, status=404)
-            scope['user'] = AnonymousUser()
+            headers = dict(scope["headers"])
+            access_token = None
+
+            if b'cookie' in headers:
+                cookie_str = headers[b'cookie'].decode('utf-8')
+                cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
+                access_token = cookies_dict.get('access_token')
+            
+            if not access_token:
+                scope['user'] = AnonymousUser()
+            try:
+                user = await self.get_user_from_token(str(access_token))
+                scope['user'] = user
+            except TokenError:
+                scope['user'] = AnonymousUser()
+
+            if isinstance(scope['user'], AnonymousUser):
+                raise DenyConnection("Authentication Required !")
+        except Exception as e:
+            logger.error(f"\nConnection Denied: {e}\n")
         return await super().__call__(scope, receive, send)
 
     @database_sync_to_async
