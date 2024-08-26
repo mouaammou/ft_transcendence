@@ -1,9 +1,5 @@
 from django.contrib import admin
 from django.urls import path, include
-<<<<<<< HEAD
-
-=======
->>>>>>> game
 
 urlpatterns = [
     path('game/', include('game.urls')),

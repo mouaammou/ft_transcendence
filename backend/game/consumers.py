@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocke
 # from channels.exceptions import DenyConnection
 from channels.db import database_sync_to_async
 
-from .local_game.consumer import LocalGameConsumer
+from .remote_game.consumer import remoteGameConsumer
 
 
 # class BaseAsyncConsumer(AsyncWebsocketConsumer):
@@ -24,6 +24,9 @@ from .local_game.consumer import LocalGameConsumer
 
 
 
-class GlobalConsumer(LocalGameConsumer):
-    pass
+# class GlobalConsumer(LocalGameConsumer):
+#     pass
     
+
+class GlobalConsumer(remoteGameConsumer):
+    pass

@@ -77,10 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
     'pong',
-=======
->>>>>>> game
     'game',
     # 'game.apps.GameConfig',
     "authentication.apps.AuthenticationConfig",

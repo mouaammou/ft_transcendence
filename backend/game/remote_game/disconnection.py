@@ -1,0 +1,4 @@
+
+
+class remoteGameDisconnection:
+    pass

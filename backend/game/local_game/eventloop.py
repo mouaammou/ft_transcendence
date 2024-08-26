@@ -142,8 +142,6 @@ class EventLoopManager:
             return None
         if game_obj.game_mode == 'local':
             LocalGameInputMiddleware.recieved_dict_text_data(game_obj, event_dict)
-        elif game_obj.game_mode == 'remote':
-            pass
             # add middleware for remote game here
     # end used
 
@@ -169,8 +167,6 @@ class EventLoopManager:
             return
         if game_obj.game_mode == 'local':
             LocalGameOutputMiddleware.send(channel_name, frame)
-        elif game_obj.game_mode == 'remote':
-            pass
             # add middleware for remote game here
     
     @classmethod
