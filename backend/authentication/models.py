@@ -8,48 +8,17 @@ from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
 
 
-# ################### class of the Model Manager ##############
-# class FriendshipManager(models.manager):
-# 	def create_friendship(self, user1, user2, type):
-# 		if user1 == user2:
-# 			raise ValidationError("You cannot be friend of yourself")
-# 		if self.are_friends(user1, user2):
-# 			raise ValidationError("This friendship already exists")
-# 		friendship = self.create()
-# 		friendship.friends.add(user1, user2, type)
-# 		return friendship
-
-# 	def are_friends(self, user1, user2):
-# 		return self.filter(friends=user1).filter(friends=user2).exists()
-
-# ################### class of the model Friends, Many to Many
-# class Friendship(models.Model):
-# 	friends 	= models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="friends", blank=True, symmetrical=True)
-# 	created_at	= models.DateTimeField(auto_now_add=True)
-# 	type       	= models.CharField(blank=False)
-
-# 	objects = FriendshipManager()
-
-# 	def change_type(self, new_type):
-# 		self.type = new_type
-# 		self.save()
-
-# 	def __str__(self):
-# 		return f"Friendship between {', '.join(user.username for user in self.friends.all())}"
-# # +++++++++ done model Friendship ++++++++++++#
-
 # class of the model FriendRequest ---
-class FriendRequest(models.Model):
+class Friendship(models.Model):
 	STATUS_CHOICES = (
 		('pending', 'Pending'),
 		('accepted', 'Accepted'),
-		('rejected', 'Rejected'),
 		('blocked', 'Blocked'),
 	)
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
 	reciever 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reciever", on_delete=models.CASCADE)
-	status 		= models.CharField(choices=STATUS_CHOICES, default='pending')
+	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 	created_at  = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
@@ -60,18 +29,11 @@ class FriendRequest(models.Model):
 			raise ValidationError("this request already passed")
 		self.status = 'accepted'
 		self.save()
-		FriendshipManager.create_friendship(self.sender, self.reciever, self.status)
 
 	def blocked(self):
 		if self.status == 'accepted':
 			self.status = 'blocked'
-			Friendship.change_type(self.status)
-			self.delete()
-	
-	def rejected(self):
-		if self.status != 'pending':
-			raise ValidationError("this request already passed")
-		self.delete()
+			self.save()
 # +++++++++ done model FriendRequest ++++++++++++#
 
 
@@ -96,6 +58,8 @@ class CustomUser(AbstractUser):
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
 	is_online = models.BooleanField(default=False)
+
+	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 
 	def download_and_save_image(self, image_url): # for 42 image
 		img_temp = NamedTemporaryFile(delete=True)
