@@ -4,5 +4,5 @@ __pycache__
 migrations
 settings.py
 *.pyc
-
+db.sqlite3
 media/avatars/
