@@ -17,13 +17,26 @@ class Friendship(models.Model):
 	)
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
-	reciever 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reciever", on_delete=models.CASCADE)
+	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE)
 	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 	created_at  = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
-		unique_together = ('sender', 'reciever')
+		unique_together = ('sender', 'receiver')
 	
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		if self.status in  ('accepted', 'blocked'):
+			Friendship.objects.update_or_create(
+				sender=self.receiver,
+				receiver=self.sender,
+				defaults={'status': self.status}
+			)
+
+	def delete(self, *args, **kwargs):
+		Friendship.objects.filter(sender=self.receiver, receiver=self.sender).delete()
+		super().delete(*args, **kwargs)
+
 	def accept(self):
 		if self.status != 'pending':
 			raise ValidationError("this request already passed")
@@ -34,6 +47,9 @@ class Friendship(models.Model):
 		if self.status == 'accepted':
 			self.status = 'blocked'
 			self.save()
+
+	def __str__(self):
+		return f"{self.sender} is friend with {self.receiver}, friend status: {self.status}"
 # +++++++++ done model FriendRequest ++++++++++++#
 
 
@@ -60,6 +76,18 @@ class CustomUser(AbstractUser):
 	is_online = models.BooleanField(default=False)
 
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
+
+	def get_friends(self):
+		return CustomUser.objects.filter(
+			Q(sent_friendships__receiver=self, sent_friendships__status='accepted') |
+			Q(received_friendships__sender=self, sent_friendships__status='accepted')
+		)
+
+	def get_blocked(self):
+		return CustomUser.objects.filter(
+			Q(sent_friendships__receiver=self, sent_friendships__status='blocked') |
+			Q(received_friendships__sender=self, sent_friendships__status='blocked')
+		)
 
 	def download_and_save_image(self, image_url): # for 42 image
 		img_temp = NamedTemporaryFile(delete=True)
