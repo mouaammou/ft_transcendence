@@ -1,5 +1,5 @@
 from django.db import models
-from authentication.models import CustomUser
+from authentication.models import  CustomUser
 
 import uuid
 
@@ -8,17 +8,17 @@ class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     player1 = models.ForeignKey(
-        'CustomUser',
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='as_player1'
     )
     player2 = models.ForeignKey(
-        'CustomUser',
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='as_player2'
     )
     winner = models.ForeignKey(
-        'CustomUser',
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='won_games',
         null=True,

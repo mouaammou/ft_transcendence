@@ -6,7 +6,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocke
 from channels.db import database_sync_to_async
 
 from .remote_game.consumer import remoteGameConsumer
-
+from .local_game.consumer import LocalGameConsumer
 
 # class BaseAsyncConsumer(AsyncWebsocketConsumer):
 #     async def connect(self):
