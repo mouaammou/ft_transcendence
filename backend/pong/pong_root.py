@@ -52,19 +52,10 @@ class RootBase(Base):
     ###############################################
     
     def move_paddles(self):
-        # scope or frame will be updated inside move_paddles method
-        # print('before_pos=', l.padd_pos)
         if not self.start_game:
             return
         self.ball.move_paddles(self.game_mode)
-        # print('after_pos=', l.padd_pos)
-        
-        # update frame here with paddles pos
-        # if self.debug :
-        #     print('++++++++++')
-        #     self.left_padd_win.pos = self.left_player.padd_pos
-        #     self.right_padd_win.pos = self.right_player.padd_pos
-    
+
     def update(self) -> dict:
         if not self.start_game or self.disconnected:
             return

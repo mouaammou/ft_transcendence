@@ -23,34 +23,57 @@ output events:
 """
 
 from pong.pong_base import Base
+# from asgiref.sync import async_to_sync
+# import asyncio
+import weakref
 
 class LocalGameOutputMiddleware:
-    callbacks = {}
-    
+    consumer_group = {}
+
+    @classmethod
+    def add_callback(cls, channel_name, consumer, game_obj=None) -> None:
+        """
+        game_obj is None on connect, But a game instance on reconnect.
+
+        Note: instead of using chained methods to remove consumer from 
+            consumer_group every time a socket disconnects. For this i will use
+            weak refrence to store consumers.
+        """
+        if cls.consumer_group.get(channel_name) is None:
+            cls.consumer_group[channel_name] = set()
+        cls.consumer_group[channel_name].add(weakref.ref(consumer))
+            
+        cls.send_config(channel_name, game_obj or Base())
+
+        # print("-"*15)
+        # print("consumers: ", len(cls.consumer_group.get(channel_name)))
+        # print("-"*15)
+
     @classmethod
     def send(cls, channel_name, frame) -> None:
         data = {'update': frame}
-        send_task = cls.callbacks.get(channel_name)
-        send_task(data)
-
-    @classmethod
-    def add_callback(cls, channel_name, send_callback, game_obj=None) -> None:
-        """
-        game_obj is None on connect, But a game instance on reconnect.
-        """
-        cls.callbacks[channel_name] = send_callback # only this line means connect
-        if game_obj is not None:
-            # this means reconncet
-            cls.send_config(channel_name, game_obj)
-        else:
-            cls.send_config(channel_name, Base())
-
+        cls._send_to_consumer_group(channel_name, data)
     
     @classmethod
-    def send_config(cls, channel_name, game_obj):
+    def send_config(cls, channel_name, game_obj) -> None:
         data = {'config': game_obj.get_game_config}
-        send_task = cls.callbacks.get(channel_name)
-        send_task(data)
+        cls._send_to_consumer_group(channel_name, data)
+    
+    @classmethod
+    def _send_to_consumer_group(cls, channel_name, data) -> None:
+        group = cls.consumer_group.get(channel_name)
+        if group is None:
+            return
+        collected_ref = []
+        for consumer_ref in group:
+            consumer = consumer_ref()
+            if consumer is None:
+                collected_ref.append(consumer_ref)
+            else:
+                consumer.send_game_message(data)
+        # remove all None refrences
+        for ref in collected_ref:
+            group.discard(ref)
 
 
 class LocalGameInputMiddleware:
@@ -83,5 +106,5 @@ class LocalGameInputMiddleware:
         mode = data.get('mode')
         if mode is None or mode != 'local':
             return
-        event_loop_cls.add(channel_name, game_mode=mode)
+        event_loop_cls.add(channel_name)
         event_loop_cls.play(channel_name)

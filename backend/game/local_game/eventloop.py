@@ -76,13 +76,13 @@ class EventLoopManager:
         
     
     @classmethod
-    def _reconnect(cls, channel_name, send_callback):
+    def _reconnect(cls, channel_name, consumer):
         # """used to run new game instance in the event loop"""
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             return False
         print('************ RECONNECT *************')
-        LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj=game_obj)
+        LocalGameOutputMiddleware.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
@@ -116,10 +116,10 @@ class EventLoopManager:
         return False
     
     @classmethod
-    def connect(cls, channel_name, send_game_message):
+    def connect(cls, channel_name, consumer):
         cls.run_event_loop()
-        if not cls._reconnect(channel_name, send_game_message):
-            LocalGameOutputMiddleware.add_callback(channel_name, send_game_message)
+        if not cls._reconnect(channel_name, consumer):
+            LocalGameOutputMiddleware.add_callback(channel_name, consumer)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
