@@ -90,6 +90,8 @@ export const ChatProvider = ( { children } ) => {
     // Function to handle emoji selection and append the selected emoji to the message text
     const handleEmojiClick = (emoji) => {
         setText((prev) => prev + emoji.emoji);
+        // if i want select just one emogi -> setOpen(false)
+        setOpen(false);
     };
 
     const handleSendMessage = (() => {

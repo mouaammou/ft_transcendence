@@ -12,6 +12,7 @@
     margin-left: 5px;
     /*  add commante  */
     /* overflow: hidden; */
+    height: 1290px;
 
 }
 
@@ -264,7 +265,9 @@
     
     .msg_chat{
         width: 100%;
-        margin: 20px 20px 20px 0px;
+        /* height: 100%; */
+        /* padding: 20px 20px 20px 0px; */
+        /* margin: 20px 20px 20px 0px; */
     }
     .TiArrowBack {
         display: block;

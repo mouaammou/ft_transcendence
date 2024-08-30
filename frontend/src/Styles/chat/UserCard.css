@@ -42,7 +42,6 @@
     height: 15px;
     /* background-color: red; */
     position: absolute;
-
 }
 
 .UserCardOnline .status{
@@ -50,10 +49,15 @@
     right: 5px;
 }
 
+
 .UserCardAll .status{
     bottom: 6px;
     left: 40px;
 }
+
+/* .img-usercard{
+    position: fixed;
+} */
 
 /* .img-usercard .status{
     bottom: 34px;
@@ -91,6 +95,16 @@
         gap: 15%;
     }
     
+    .UserCardOnline .status {
+        top: -5px;
+        right: 1px;
+    }
+
+    .UserCardAll .status {
+        bottom: 18px;
+        left: 29px;
+    }
+
     .UserCardOnline .img-usercard{
         width: 45px;
         height: 45px;

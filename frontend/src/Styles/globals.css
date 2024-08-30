@@ -122,6 +122,10 @@ body {
 	height: 100%;
 }
 
+.content::-webkit-scrollbar {
+    display: none;
+}
+
 /* add */
 
 .logo {

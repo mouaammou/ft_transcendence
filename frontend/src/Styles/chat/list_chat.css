@@ -16,6 +16,7 @@
     /* width: 100%; */
     margin-right: 5px;
     /* overflow: hidden; */
+    height: 1290px;
 
 }
 
@@ -91,7 +92,7 @@ input[type="text"]:focus::placeholder {
     justify-content: center;
     /* add */
     
-    /* height: 600px; */
+    height: 700px;
     /* add */
 
     /* overflow-y: auto;
@@ -119,11 +120,11 @@ input[type="text"]:focus::placeholder {
 
 /* commante */
 
-.list_chat::-webkit-scrollbar {
+/* .list_chat::-webkit-scrollbar {
     width: 3px;
-}
+} */
 
-.list_chat::-webkit-scrollbar-track {
+/* .list_chat::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
 }
@@ -131,7 +132,7 @@ input[type="text"]:focus::placeholder {
 .list_chat::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: linear-gradient(#642bff, #22fffb);
-}
+} */
 
 /* commante */
 
@@ -168,6 +169,11 @@ input[type="text"]:focus::placeholder {
         /* flex-shrink: 0; */
         /* width: 100%; */
         /* width: 35%; */
+        
+        
+        /* add */
+
+        height: 1280px;
     }
     /* .user-chat{
         gap: 10px;
@@ -181,7 +187,7 @@ input[type="text"]:focus::placeholder {
     }
     .info-user p{
         font-weight: bold;
-        font-size: 20px;
+        font-size: 18px;
     }
     .user-chat{
         gap: 17%;
@@ -195,12 +201,14 @@ input[type="text"]:focus::placeholder {
         flex-grow: 1;
         /* margin: 40px 40px 40px 0px; */
         /* margin: 20px 20px 20px 0px; */
-        
+        /* padding: 20px 20px 20px 0px; */
+        margin-right: 0px;
         /* margin-right: 40px; */
         /* width: 500px; */
         /* width: 97%; */
         /* margin-right: 24px; */
         /* margin: 20px 20px 20px 0px; */
+        /* height: 1175px; */
     }
 
     .HiBell{
@@ -222,10 +230,14 @@ input[type="text"]:focus::placeholder {
         /* margin: 20px; */
         /* width: auto; */
         /* width: 100%; */
+        margin-right: 0px;
+        margin: 20px;
     }
     .user-chat{
         gap: 10px;
-        margin: 10px;
+        /* margin: 10px; */
+        /* margin: 10px 0px; */
+        /* margin: 10px 0px; */
         /* margin: 10px 10px 90px 10px; */
     }
 }
@@ -234,7 +246,9 @@ input[type="text"]:focus::placeholder {
 
 @media (max-width: 600px){
     .list_chat{
-        /* margin: 5px; */
+        margin: 5px;
+        /*  test  */
+        height: fit-content;
     }
 }
 @media (max-width: 400px){

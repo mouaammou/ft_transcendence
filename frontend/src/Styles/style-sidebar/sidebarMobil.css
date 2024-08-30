@@ -29,7 +29,7 @@
     }
     .main-chat .container{
         display: block;
-        position: absolute;
+        position: fixed;
         width: 100%;
         bottom: 0px;
     }

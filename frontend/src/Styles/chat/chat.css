@@ -1,11 +1,16 @@
 .main-chat{
     display: flex;
+    /* add */
+    align-items: center;
+    padding-right: 30px;
+
     /* flex-grow: 1; */
     /* border: solid rgb(0, 125, 10); */
     /* width: auto; */
     /* width: 100%; */
     width: 100%;
-    padding: 50px 50px 50px 0px;
+    
+    /* padding: 50px 50px 50px 0px; */
 }
 
 /* .hidden{
@@ -136,6 +141,14 @@ h2{
     display: none;
 }
 
+
+
+@media (max-width: 1300px) {
+    .main-chat{
+        align-items: initial;
+        padding-top: 30px;
+    }
+}
 @media (max-width: 990px) {
     .list_chat.hidden {
         display: none;
@@ -144,7 +157,7 @@ h2{
         display: none;
     }
     .main-chat{
-        padding: 5px 5px 5px 0px;
+        /* padding: 5px 5px 5px 0px; */
     }
 }
 
@@ -154,6 +167,10 @@ h2{
     }
     .main-chat .container.visible {
         display: block;
+    }
+    .main-chat{
+        padding-right: 0px;
+        padding-top: 0px;
     }
 }
 

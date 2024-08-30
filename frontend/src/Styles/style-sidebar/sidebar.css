@@ -28,9 +28,9 @@
     width: 42px;
 }
 
-.sidebar::-webkit-scrollbar {
+/* .sidebar::-webkit-scrollbar {
     display: none;
-}
+} */
 
 .sidebar .logo{
     margin: 80px 0px;
@@ -87,6 +87,12 @@ ul{
     }
 }
 
+
+@media (max-width: 990px){
+    .Logout{
+        margin-top: 0px;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+    }
+}
 @media (max-width: 800px){
     .container .sidebar {
         display: none;

@@ -28,7 +28,7 @@
 
 /* Custom scrollbar styling */
 
-/* .UserListAll::-webkit-scrollbar {
+.UserListAll::-webkit-scrollbar {
     width: 5px;
 }
 
@@ -40,7 +40,7 @@
 .UserListAll::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: linear-gradient(#642bff, #22fffb);
-} */
+}
 
 
 @media (max-width: 990px){
