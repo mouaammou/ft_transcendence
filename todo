@@ -12,7 +12,7 @@ resolve channel name from user_ids
 
 
 # when trying to send using callback middleware if there is callback
-#        associated with the game you should stop it.
+#        associated with the game you should stop the game.
 
 
 
