@@ -11,6 +11,7 @@ from django.conf import settings
 # class of the model FriendRequest ---
 class Friendship(models.Model):
 	STATUS_CHOICES = (
+		('pending', 'Pending'),
 		('accepted', 'Accepted'),
 		('blocked', 'Blocked'),
 	)
@@ -27,6 +28,10 @@ class Friendship(models.Model):
 		# Ensure that sender and receiver are not the same user
 		if self.sender == self.receiver:
 			raise ValidationError("Sender and receiver cannot be the same user.")
+		if not self.receiver:
+			raise ValidationError("Receiver must be provided.")
+		if not self.sender:
+			raise ValidationError("The sender cannot be null.")
 
 	def save(self, *args, **kwargs):
 		self.clean()
@@ -41,7 +46,6 @@ class Friendship(models.Model):
 				receiver=self.sender,
 				defaults={'status': self.status}
 			)
-
 
 	def delete(self, *args, **kwargs):
 		Friendship.objects.filter(sender=self.receiver, receiver=self.sender).delete()

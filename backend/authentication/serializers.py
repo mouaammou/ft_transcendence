@@ -14,6 +14,8 @@ class FriendsSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['sender'] == data['receiver']:
             raise serializers.ValidationError("Sender and receiver cannot be the same user.")
+        if not data.get('receiver'):
+            raise serializers.ValidationError("Receiver is not provided !")
         return data
 # end friendship Serializer ================
 
