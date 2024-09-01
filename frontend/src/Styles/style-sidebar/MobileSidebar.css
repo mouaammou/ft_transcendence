@@ -84,7 +84,7 @@
     .main-chat .Logout ul li{
 
         padding: 10px 0px;
-        margin: 0px 30px;
+        margin: 0px 37px;
 
         
     }
@@ -96,9 +96,32 @@
     }
 }
 
-@media (max-width: 600px){
-    li {
+@media (max-width: 660px){
+
+    .main-chat .icon_items ul li, 
+    .main-chat .Logout ul li{
+        margin: 0px 29px;
     }
+    
+}
+@media (max-width: 600px){
+
+    .main-chat .icon_items ul li, 
+    .main-chat .Logout ul li{
+        margin: 0px 25px;
+    }
+    
+}
+@media (max-width: 512px){
+
+    .main-chat .icon_items ul li, 
+    .main-chat .Logout ul li{
+        margin: 0px 21px;
+    }
+    
+}
+@media (max-width: 467px){
+
     .main-chat .icon_items ul li, 
     .main-chat .Logout ul li{
         margin: 0px 15px;
@@ -107,8 +130,7 @@
 }
 
 @media (max-width: 400px){
-    li {
-    }
+
     .main-chat .container .sidebar{
         padding: 0px;
     }

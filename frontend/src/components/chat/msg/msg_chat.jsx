@@ -156,7 +156,7 @@ const Msg_chat = () => {
                         </div>
                         <div className="bottom-chat">
                             <div className='div_message_input'>
-                                <input className="message" type="text" placeholder='type a message ...' 
+                                <input className="message_input" type="text" placeholder='type a message ...' 
                                     onChange={e => setText(e.target.value)}
                                     value={text}
                                     // onKeyPress={handleKeyPress}
@@ -166,7 +166,9 @@ const Msg_chat = () => {
                             <div className='emoji'>
                                 <BsEmojiSmile className='BsEmojiSmile' onClick={() => setOpen((prev) => !prev)} />
                                 <div className='Picker'>
-                                    <EmojiPicker open={open} onEmojiClick={handleEmojiClick} />
+                                    {/* <div className='div_EmojiPicker'> */}
+                                        <EmojiPicker open={open} onEmojiClick={handleEmojiClick} />
+                                    {/* </div> */}
                                 </div>
                             </div>
                             <div>

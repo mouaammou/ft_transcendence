@@ -17,6 +17,7 @@ export const ChatProvider = ( { children } ) => {
     const [open, setOpen] = useState(false);
     const [text, setText] = useState('');
     const [messages, setMessages] = useState({}); // Messages stored by user ID
+    const [originalUsers, setOriginalUsers] = useState([]); // Store the full list of users
 
 
     // // Effect to initialize the online users state with a default set of users
@@ -38,6 +39,7 @@ export const ChatProvider = ( { children } ) => {
             const responce = await fetch('data/users.json');
             // const response = await fetch(`/users.json?timestamp=${new Date().getTime()}`);
             const users = await responce.json();
+            setOriginalUsers(users); // Store the original list of users
             setAllUsers(users);
 
             const online = users.filter(user => user.active).slice(0, 4);
@@ -67,13 +69,29 @@ export const ChatProvider = ( { children } ) => {
     // };
 
     // Handle user search
+    // const handleSearch = (event) => {
+    //     const term = event.target.value.toLowerCase();
+    //     setSearchTerm(term);
+    //     const filtered = allUsers.filter(user =>
+    //         user.name.toLowerCase().includes(term)
+    //     );
+    //     setAllUsers(filtered);
+    // };
+
     const handleSearch = (event) => {
         const term = event.target.value.toLowerCase();
         setSearchTerm(term);
-        const filtered = allUsers.filter(user =>
-            user.name.toLowerCase().includes(term)
-        );
-        setAllUsers(filtered);
+
+        if (term === '') {
+            // Reset to full list if search term is cleared
+            setAllUsers(originalUsers);
+        } else {
+            // Filter based on search term
+            const filtered = originalUsers.filter(user =>
+                user.name.toLowerCase().includes(term)
+            );
+            setAllUsers(filtered);
+        }
     };
 
     // Function to handle user selection, update the selected user state, and show the chat component on smaller screens
@@ -91,7 +109,7 @@ export const ChatProvider = ( { children } ) => {
     const handleEmojiClick = (emoji) => {
         setText((prev) => prev + emoji.emoji);
         // if i want select just one emogi -> setOpen(false)
-        setOpen(false);
+        // setOpen(false);
     };
 
     const handleSendMessage = (() => {
@@ -114,7 +132,7 @@ export const ChatProvider = ( { children } ) => {
             const newMessage = {
                 text: text.trim(),
             };
-            console.log("this the text = ",text);
+            // console.log("this the text = ",text);
 
             // // Create a new messages object
             // const newMessages = Object.assign({}, messages);
@@ -143,8 +161,8 @@ export const ChatProvider = ( { children } ) => {
             // Add the new message to the user's message array
             newMessages[selectedUser.id].push(newMessage);
 
-            console.log("this the newMessage = ",newMessage);
-            console.log("this the messages = ",newMessages);
+            // console.log("this the newMessage = ",newMessage);
+            // console.log("this the messages = ",newMessages);
 
             // Update the state with the modified messages object
             setMessages(newMessages);

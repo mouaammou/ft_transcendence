@@ -126,7 +126,7 @@
 
 .my-message {
     display: flex;
-    /* width: 70%; */
+    max-width: 70%;
     align-self: flex-end;
     /* margin-left: 10px; */
 }
@@ -137,7 +137,7 @@
 
 .message {
     display: flex;
-    width: 70%;
+    max-width: 70%;
     /* margin-top: 15px; */
 }
 
@@ -189,7 +189,25 @@
     /* left: 0; */
 }
 
-.div_message_input .message{
+.div_EmojiPicker {
+    /* width: 300px; */
+    /* height: 300px; */
+    /*
+    overflow: hidden; /* To ensure that the content does not overflow */
+    /* overflow: auto; /* Enable scrolling both horizontally and vertically */
+    
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; */
+}
+
+
+
+/* .Picker aside{
+    width: 350px;
+    height: 450px;
+} */
+
+.div_message_input .message_input{
     flex: 1;
     background-color: rgba(17, 25, 40, 0.5);
     border: none;
@@ -198,6 +216,10 @@
     padding: 18px;
     border-radius: 10px;
     font-size: 16px;
+    width: 100%;
+}
+
+input placeholder{
     width: 100%;
 }
 .buttom-send{
@@ -223,11 +245,12 @@
 .user-not-select{
     background-color: rgba(163, 218, 232, 0.2);
     border-radius: 10px;
-    flex-grow: 1;
+    /* flex-grow: 1; */
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    /* height: 100%; */
+    height: 1290px;
 }
 
 /* .user-not-select h2{
@@ -259,6 +282,12 @@
     /* .body-message-chat {
         height: 90%;
     } */
+}
+
+@media (max-width: 1280px){
+    .user-not-select{
+        height: 1280px;
+    }
 }
 
 @media (max-width: 990px){
@@ -320,10 +349,10 @@
         margin: 20px 25px;
         gap: 15px;
     }
-    .message {
+    /* .message {
         width: 85%;
 
-    }
+    } */
     .my-message {
         /* width: 85%; */
     }
@@ -332,6 +361,36 @@
     } */
 }
 
+@media (max-width: 500px){
+
+    .div_EmojiPicker {
+        /* width: 300px; */
+        /* height: 300px; */
+    }
+    /* aside .EmojiPickerReact{
+        width: 200px;
+        height: 200px;
+    } */
+    /* .div_EmojiPicker .EmojiPickerReact.epr-main {
+        width: 300px !important;
+        height: 300px !important;
+        overflow: auto;
+    } */
+
+    /* .div_EmojiPicker .EmojiPickerReact.epr-main {
+        width: 300px !important;
+        height: 300px !important;
+        overflow-x: auto !important; 
+        overflow-y: auto !important; 
+        overflow: hidden;
+        white-space: nowrap; 
+    }
+    
+    .div_EmojiPicker .EmojiPickerReact.epr-main * {
+        max-width: none !important;
+        box-sizing: border-box; 
+    } */
+}
 @media (max-width: 400px){
     .section-profile {
         gap: 7px;
@@ -372,7 +431,7 @@
         font-size: 14px;
     }
     .message {
-        width: 100%;
+        max-width: 100%;
         align-self:flex-start;
         margin: 15px 0px 0px 0px;
         /* margin: 0px; */
@@ -380,7 +439,7 @@
         /* margin-top: 15px; */
     }
     .my-message {
-        width: 100%;
+        max-width: 100%;
     }
     /* .body-message-chat {
         height: 96%;

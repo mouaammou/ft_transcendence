@@ -14,6 +14,7 @@
     border-radius: 10px;
     /* background: #060B16; */
     position: relative;
+    border-bottom: solid 1px;
 }
 
 /* .img-usercard{
@@ -92,7 +93,7 @@
     .UserCardAll{
         margin: 10px 15px;
         padding: 0px;
-        gap: 15%;
+        gap: 12%;
     }
     
     .UserCardOnline .status {
@@ -101,8 +102,8 @@
     }
 
     .UserCardAll .status {
-        bottom: 18px;
-        left: 29px;
+        bottom: 23px;
+        left: 27px;
     }
 
     .UserCardOnline .img-usercard{
@@ -112,6 +113,9 @@
     .UserCardAll .img-usercard{
         width: 35px;
         height: 35px;
+    }
+    p {
+        font-size: 12px;
     }
     
 }

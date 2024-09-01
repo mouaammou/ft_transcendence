@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 // import Image from "next/image";
 // import '../../styles/sidebar/sidebar.css';
-import '@styles/style-sidebar/sidebar.css';
-// import '@/Styles/style-sidebar/sidebarMobil.css'
+// import '@styles/style-sidebar/sidebar.css';
+import '@/Styles/style-sidebar/MobileSidebar.css'
 import { ChatContext} from '@/app/chat/chat_context/ChatContext'
 import React, { useContext } from 'react';
 
 
 
-export default function Sidebar( ) {
+export default function MobileSidebar( ) {
 
     const router = useRouter();
     const sidebarItems = [
