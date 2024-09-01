@@ -1,30 +1,21 @@
+from django.core.exceptions import ValidationError
 from .models import CustomUser, Friendship
 from rest_framework import serializers
 from django.conf import settings
-from django.db import IntegrityError
 
-#============= friends Serializer +++++++++++++++
-class FriendshipSerializer(serializers.ModelSerializer):
-    # friend = serializers.SerializerMethodField()
-    
+#============= friendship Serializer +++++++++++++++
+class FriendsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Friendship
-        # fields = ['user1', 'friend', 'created_at']
-        fields = ['user1', 'user2', 'created_at']
-    
+        fields = '__all__'
+        read_only_fields = ['created_at']
 
-    def create(self, validated_data):
-        # Ensure that user1 and user2 are set before saving
-        user1 = validated_data.get('user1')
-        user2 = validated_data.get('user2')
-
-        # Additional logic can go here if needed
-        return Friendship.objects.create(user1=user1, user2=user2)
-
-    # def get_friend(self, obj):
-    #     user = self.context['request'].customUser
-    #     return obj.user2 if obj.user1 == user else obj.user1
-# end friends Serializer ================
+    def validate(self, data):
+        if data['sender'] == data['receiver']:
+            raise serializers.ValidationError("Sender and receiver cannot be the same user.")
+        return data
+# end friendship Serializer ================
 
 #============= CustomeUser Serializer +++++++++++++++
 class UserSerializer(serializers.ModelSerializer):

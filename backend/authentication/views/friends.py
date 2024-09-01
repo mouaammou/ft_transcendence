@@ -1,36 +1,36 @@
+from authentication.serializers import FriendsSerializer
 from rest_framework import generics, permissions
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from authentication.models import Friendship
-from authentication.serializers import FriendshipSerializer
+from django.contrib.auth.models import AnonymousUser
+from rest_framework import status
+from rest_framework.response import Response
 
-
-# list the user friends, or create a new friend for the user
 class FriendshipListCreateView(generics.ListCreateAPIView):
-    serializer_class = FriendshipSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Friendship.objects.all()
+    serializer_class = FriendsSerializer
 
-    def get_queryset(self):
-        user = self.request.customUser #moaud _> said
-        return Friendship.objects.filter(user1=user) | Friendship.objects.filter(user2=user)
-    
-    def perfom_create(self, serializer):
-        user1 = self.request.customUser
-        user2 = serializer.validated_data['friend']
+class FriendshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Friendship.objects.all()
+    serializer_class = FriendsSerializer
 
-        if user1.id > user2.id:
-            user1 , user2 = user2, user1
+class AcceptFriendshipView(generics.GenericAPIView):
+    queryset = Friendship.objects.all()
+    serializer_class = FriendsSerializer
 
-        if not Friendship.objects.filter(user1=user1, user2=user2).exists():
-            serializer.save(user1=user1, user2=user2)
+    def post(self, request, *args, **kwargs):
+        friendship = self.get_object()
+        try:
+            friendship.accept()
+            return Response({'status': 'friendship accepted'}, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# for delete or cancel the friendship, means friends recode will be destroy
-class CancelFriendshipView(generics.DestroyAPIView):
-    serializer_class = FriendshipSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class BlockFriendshipView(generics.GenericAPIView):
+    queryset = Friendship.objects.all()
+    serializer_class = FriendsSerializer
 
-    def get_queryset(self):
-        user1 = self.request.customUser
-        user2 = self.kwargs['friend_id']
-        if user1.id > user2.id:
-            user1 , user2 = user2, user1
-        return Friendship.objects.filter(user1=user1, user2=user2)
-
+    def post(self, request, *args, **kwargs):
+        friendship = self.get_object()
+        friendship.blocked()
+        return Response({'status': 'friendship blocked'}, status=status.HTTP_200_OK)

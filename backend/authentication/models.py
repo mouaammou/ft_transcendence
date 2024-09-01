@@ -17,7 +17,7 @@ class Friendship(models.Model):
 	)
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
-	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE)
+	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
 	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 	created_at  = models.DateTimeField(auto_now_add=True)
 
@@ -25,13 +25,18 @@ class Friendship(models.Model):
 		unique_together = ('sender', 'receiver')
 	
 	def save(self, *args, **kwargs):
+		# Avoid recursion by checking if the reciprocal friendship already exists with the same status.
+		reciprocal = Friendship.objects.filter(sender=self.receiver, receiver=self.sender).first()
+		
 		super().save(*args, **kwargs)
-		if self.status in  ('accepted', 'blocked'):
+		
+		if self.status in ('accepted', 'blocked') and (not reciprocal or reciprocal.status != self.status):
 			Friendship.objects.update_or_create(
 				sender=self.receiver,
 				receiver=self.sender,
 				defaults={'status': self.status}
 			)
+
 
 	def delete(self, *args, **kwargs):
 		Friendship.objects.filter(sender=self.receiver, receiver=self.sender).delete()
