@@ -11,7 +11,6 @@ from django.conf import settings
 # class of the model FriendRequest ---
 class Friendship(models.Model):
 	STATUS_CHOICES = (
-		('pending', 'Pending'),
 		('accepted', 'Accepted'),
 		('blocked', 'Blocked'),
 	)
@@ -24,7 +23,13 @@ class Friendship(models.Model):
 	class Meta:
 		unique_together = ('sender', 'receiver')
 	
+	def clean(self):
+		# Ensure that sender and receiver are not the same user
+		if self.sender == self.receiver:
+			raise ValidationError("Sender and receiver cannot be the same user.")
+
 	def save(self, *args, **kwargs):
+		self.clean()
 		# Avoid recursion by checking if the reciprocal friendship already exists with the same status.
 		reciprocal = Friendship.objects.filter(sender=self.receiver, receiver=self.sender).first()
 		
