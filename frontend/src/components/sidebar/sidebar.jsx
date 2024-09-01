@@ -1,18 +1,17 @@
-// import { useRouter } from "next/router";
 'use client'
 import { useRouter } from "next/navigation";
-// import Image from "next/image";
-// import '../../styles/sidebar/sidebar.css';
 import '@styles/style-sidebar/sidebar.css';
-// import '@/Styles/style-sidebar/sidebarMobil.css'
 import { ChatContext} from '@/app/chat/chat_context/ChatContext'
 import React, { useContext } from 'react';
-
+import { useAuth } from "@/components/auth/loginContext";
 
 
 export default function Sidebar( ) {
 
     const router = useRouter();
+
+    const { logout } = useAuth();
+
     const sidebarItems = [
         {label: 'Home', icon: '/vector.svg', route: '/'},
         {label: 'Freinds',icon: '/3-User.svg', route: '/freinds'},
@@ -50,7 +49,9 @@ export default function Sidebar( ) {
                 <div className ="Logout">
                     <ul>
                         <li>
-                            <img src="/Logout.svg" alt="" />
+                            <img src="/Logout.svg" 
+                                alt="logout"
+								onClick={logout} />
                         </li>
                     </ul>
                 </div>
