@@ -1,36 +1,45 @@
-"use client";
-import {useState, useEffect, createContext, useContext } from "react";
+import Cookies from "js-cookie"
+import { useEffect, useState } from "react"
 
-export const WebSocketContext = createContext(null);
+function getCookie(){
+    const access_token = Cookies.get("access_token")
+    return access_token
+}
 
-export const WebSocketProvider = ({children}) => {
-    const [socket, setSocket] = useState(null);
+const useWebSocket = (url) => {
+    const [messages, setMessages] = useState([]);
+    const [isConnected, setIsConnected] = useState(false);
 
-    useEffect (() => {
-        const newWebSocket = new WebSocket("    ");
-        newWebSocket.onopen = () => {
-            console.log('Global WebSocket connected')
-        }
-        
-        newWebSocket.onclose = () => {
-            console.log('Global WebSocked disconnected');
-        }
-        
-        newWebSocket.onerror = (error) => {
-            console.log('Global WebSocket error: ', error);
-        }
-        
-        setSocket(newWebSocket);
+    useEffect(() => {
+        // const token = getCookie(); // Retrieve the access_token
+        // const wsUrl = `${url}?token=${token}`;
+        const ws = new WebSocket(url);
+
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+            setIsConnected(true);
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            setMessages((prevMessages) => [...prevMessages, data]);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket disconnected');
+            setIsConnected(false);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
 
         return () => {
-            newWebSocket.close();
+            ws.close();
         };
-    }, []);
-    return (
-        <WebSocketContext.provider value={{socket}}>
-            {children}
-        </WebSocketContext.provider>
-    );
-};
+    }, [url]);
 
-export const useWebSocket = () => useContext(WebSocketContext);
+    return {isConnected, messages}
+}
+
+export default useWebSocket

@@ -1,0 +1,181 @@
+.main-chat{
+    display: flex;
+    /* add */
+    align-items: center;
+    padding-right: 30px;
+
+    /* flex-grow: 1; */
+    /* border: solid rgb(0, 125, 10); */
+    /* width: auto; */
+    /* width: 100%; */
+    width: 100%;
+    
+    /* padding: 50px 50px 50px 0px; */
+}
+
+/* .hidden{
+    display: none;
+} */
+
+h2{
+    font-size: 30px;
+}
+
+/* -------------- */
+/* .div_list{
+    width: 25%;
+}
+.div_msg{
+    width: 75%;
+} */
+
+
+/*  ---------- test ------------ */
+/* .list-chat {
+    display: block;
+}
+
+.msg-chat {
+    display: none;
+}
+
+.list-chat.hidden {
+    display: none;
+}
+
+.msg-chat.hidden {
+    display: block;
+}
+
+@media (min-width: 990px) {
+    .list-chat,
+    .msg-chat {
+        display: block;
+    }
+
+    .list-chat.hidden,
+    .msg-chat.hidden {
+        display: block;
+    }
+} */
+
+/* .chat-mini-sidebare
+{
+    display: none;
+} */
+
+/* .main-chat .container .sidebar
+{
+    display: none;
+} */
+
+/* add */
+
+/* .main-chat .container
+{
+    display: none;
+}
+
+
+@media (min-width: 990px) {
+    .hidden{
+        display: block;
+    }
+} */
+
+
+/* .hidden{
+    display: block;
+}
+@media (max-width: 990px) {
+    .main-chat .container
+    {
+        display: none;
+    }
+} */
+
+
+/* .hidden {
+    display: none;
+}
+
+@media (max-width: 990px) {
+    .list_chat {
+        display: block;
+    }
+
+    .list_chat.hidden {
+        display: none;
+    }
+
+    .msg_chat {
+        display: none;
+    }
+
+    .msg_chat.hidden {
+        display: block;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.visible {
+        display: block;
+    }
+} */
+
+
+
+/* -------------- ---------------- */
+
+.hidden {
+    display: none ;
+}
+
+.visible {
+    display: block ;
+}
+
+.main-chat .container{
+    display: none;
+}
+
+
+
+@media (max-width: 1300px) {
+    .main-chat{
+        align-items: initial;
+        padding-top: 30px;
+    }
+}
+@media (max-width: 990px) {
+    .list_chat.hidden {
+        display: none;
+    }
+    .msg_chat.hidden {
+        display: none;
+    }
+    .main-chat{
+        /* padding: 5px 5px 5px 0px; */
+    }
+}
+
+@media (max-width: 800px){
+    .main-chat .container.hidden {
+        display: none;
+    }
+    .main-chat .container.visible {
+        display: block;
+    }
+    .main-chat{
+        padding-right: 0px;
+        padding-top: 0px;
+    }
+}
+
+@media (min-width: 990px) {
+    .hidden {
+        display: block;
+    }
+}

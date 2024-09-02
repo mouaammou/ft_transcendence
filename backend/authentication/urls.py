@@ -22,6 +22,12 @@ urlpatterns = [
 	#user profile, get and update, delete
 	path("profile/data", views.UserProfile.as_view(), name="profile"),
 	path("profile/update",views.UpdateProfile.as_view(), name="update profile"),
+    
+	# for friends
+    path('friends/', views.FriendshipListCreateView.as_view(), name='friendship-list-create'),
+    path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
+    path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
+    path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
 ]
 
 if settings.DEBUG:

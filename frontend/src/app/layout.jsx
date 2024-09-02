@@ -5,6 +5,10 @@ import { LoginProvider } from "@components/auth/loginContext";
 import Navbar from "@/components/navbar/navAuth";
 import { WebSocketProvider } from "@/components/websocket/websocket";
 
+// add
+import { usePathname } from 'next/navigation';
+import Sidebar from "@/components/sidebar/sidebar";
+//
 const inter = Inter({ subsets: ["latin"] });
 // import "@/Styles/navbar/navbar.css";
 
@@ -16,7 +20,10 @@ const inter = Inter({ subsets: ["latin"] });
 // };
 
 export default function RootLayout({ children }) {
-
+	// add
+	const pathname = usePathname();
+	const isChatPage = pathname === '/chat';
+	//
 	return (
 		<html lang="en">
 			<head>
@@ -27,15 +34,22 @@ export default function RootLayout({ children }) {
 				/>
 			</head>
 			{/* <WebSocketProvider> */}
-				<LoginProvider>
-					<body>
-						{/* <div className="container"> */}
+			<LoginProvider>
+				{/* <body className={`${inter.className} ${isChatPage ? 'style-chat' : ''}`}> */}
+				<body className={inter.className}>
+					{isChatPage ? (
+						<div className="content">
+							<Sidebar />
+							{children}
+						</div>
+					) : (
+						<>
 							<Navbar />
 							{children}
-							<div className="footer"></div>
-						{/* </div> */}
-					</body>
-				</LoginProvider>
+						</>
+					)}
+				</body>
+			</LoginProvider>
 			{/* </WebSocketProvider> */}
 		</html>
 	);

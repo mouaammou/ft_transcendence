@@ -27,5 +27,10 @@
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
 
+<<<<<<< HEAD
 
 
+=======
+# bandwidth: means what
+    what means bandwidth ?
+>>>>>>> origin/main
