@@ -110,11 +110,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
-<<<<<<< HEAD
-    "authentication.middleware.TokenVerificationMiddleWare",
-=======
     "authentication.middleware.TokenVerificationMiddleWare",  
->>>>>>> user_profile
 ]
 
 ROOT_URLCONF = 'core.urls'
