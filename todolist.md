@@ -26,3 +26,6 @@
 
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
+
+# bandwidth: means what
+    what means bandwidth ?

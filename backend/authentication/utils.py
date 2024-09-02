@@ -1,9 +1,6 @@
 #import get_user_model
 import requests
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
-from django.contrib.auth.models import AnonymousUser
 from django.core.files.base import ContentFile
 from .models import CustomUser
 from rest_framework_simplejwt.settings import api_settings
@@ -27,6 +24,7 @@ def set_jwt_cookies(response, refresh):
 	)
 	return response
 
+
 def save_image_from_url(url):
     response = requests.get(url)
     if response.status_code == 200:
@@ -34,14 +32,3 @@ def save_image_from_url(url):
         file_name = "downloaded_image.jpg"
         my_model_instance = CustomUser(image_file=content, image_name=file_name)
         my_model_instance.save()
-
-
-# def has_valid_token(func):
-# 	def wrapper(request, *args, **kwargs):
-# 		try:
-# 			myuser = User.objects.get(id=AccessToken(request.COOKIES.get("access_token")).get("user_id"))
-# 			request.user = myuser
-# 		except User.DoesNotExist:
-# 			request.user = AnonymousUser()
-# 		return func(request,*args, **kwargs)
-# 	return wrapper

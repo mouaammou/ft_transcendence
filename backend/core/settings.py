@@ -33,6 +33,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
 AUTH_USER_MODEL = "authentication.CustomUser"
 
 AUTHENTICATION_BACKENDS = [
@@ -40,6 +41,18 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # rest framework: simple jwt
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         "rest_framework_simplejwt.authentication.JWTAuthentication",  # or JWTAuthentication if using JWT
+#         'rest_framework.authentication.SessionAuthentication',
+#     ),
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+# }
+
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -71,6 +84,7 @@ OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 
 INSTALLED_APPS = [
     'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,12 +106,15 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    "authentication.middleware.TokenVerificationMiddleWare",  
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+<<<<<<< HEAD
     "authentication.middleware.TokenVerificationMiddleWare",
+=======
+    "authentication.middleware.TokenVerificationMiddleWare",  
+>>>>>>> user_profile
 ]
 
 ROOT_URLCONF = 'core.urls'

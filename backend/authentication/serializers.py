@@ -1,14 +1,30 @@
-from .models import CustomUser
+from django.core.exceptions import ValidationError
+from .models import CustomUser, Friendship
 from rest_framework import serializers
 from django.conf import settings
-from django.db import IntegrityError
 
+#============= friendship Serializer +++++++++++++++
+class FriendsSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Friendship
+        fields = '__all__'
+        read_only_fields = ['created_at']
+
+    def validate(self, data):
+        if data['sender'] == data['receiver']:
+            raise serializers.ValidationError("Sender and receiver cannot be the same user.")
+        if not data.get('receiver'):
+            raise serializers.ValidationError("Receiver is not provided !")
+        return data
+# end friendship Serializer ================
+
+#============= CustomeUser Serializer +++++++++++++++
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("first_name", "last_name", "username", "email", "password", "avatar")
+        fields = ("id", "first_name", "last_name", "username", "email", "password", "avatar")
         extra_kwargs = {"username": {"read_only": True}}
         extra_kwargs = {"password": {"write_only": True}}
 
@@ -20,8 +36,9 @@ class UserSerializer(serializers.ModelSerializer):
         if representation['avatar']:
             representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
         return representation
+# end CustomeUser Serializer ================
 
-
+#============= CustomeUser Update Serializer +++++++++++++++
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -57,3 +74,4 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         
         instance.save()  # Save the updated instance
         return instance
+# end CustomeUser Update Serializer ================
