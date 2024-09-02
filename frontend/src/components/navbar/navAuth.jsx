@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useAuth } from "@/components/auth/loginContext";
 import Links from "./Links/Links";
-import styles from "@/styles/navbar/navbar.module.css";
+import styles from "@/Styles/navbar/navbar.module.css";
 import Image from "next/image";
 
 const Navbar = () => {
@@ -16,26 +16,18 @@ const Navbar = () => {
 			</div>
 			<div className="sign-in">
 				{isAuth ? (
-					<>
+					<div className={styles.linksLogout}>
 						<Links />
-						<div>
-							<img
-								src="/logout.svg"
-								alt="logout"
-								onClick={Logout}
-								className="img-logout"
-							/>
-						</div>
-						<div className="logout-text" onClick={Logout}>
+						<div className={styles.logoutText} onClick={Logout}>
 							Logout
 						</div>
-					</>
+					</div>
 				) : (
 					<>
-						<Link href="/login" className="login">
+						<Link href="/login" className={styles.login}>
 							Login
 						</Link>
-						<Link href="/signup" className="sign-up">
+						<Link href="/signup" className={styles.signUp}>
 							Signup
 						</Link>
 					</>

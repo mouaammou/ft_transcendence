@@ -16,7 +16,6 @@ const Chat = () => {
 			<div className="main-chat">
 				<Listchat />
 				<Msgchat />
-				{/* <Sidebar /> */}
 				<MobileSidebar />
 			</div>
 		</ChatProvider>

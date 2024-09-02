@@ -29,7 +29,7 @@ export default function MobileSidebar( ) {
 
 
     return(
-        <div className ={`container ${ischatVisible ? 'hidden' : 'visible'}`}>
+        <div className ={`containerSidebar ${ischatVisible ? 'hidden' : 'visible'}`}>
             <div className ="sidebar">
                 <div className ="logo">
                     <img src="new-logo.svg" alt="logo" />

@@ -3,8 +3,6 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
-			//for "@/styles
-			"@styles/*": ["./src/styles/*"],
 			//loginContext
 			"@loginContext/*": ["./src/components/auth/*"],
 			// for src/app

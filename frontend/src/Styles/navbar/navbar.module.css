@@ -2,24 +2,34 @@
 	display: flex;
 	margin: auto;
 	max-width: 1530px;
-	justify-content: space-between;
+	/* justify-content: space-between; */
 	padding: 35px;
 	height: fit-content;
 	background-color: transparent;
 	color: var(--wt);
 	font-family: "Courier New", Courier, monospace;
+	align-items: center;
 }
 
 .logo {
 	display: flex;
 	align-items: center;
 	gap: 80px;
+	width: 30%;
 }
 
 /* .logo img {
 	width: 100%;
 } */
 
+
+.linksLogout {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 50%;
+}
 
 .navbarLinks {
 	/* margin-left: 100px; */
@@ -54,6 +64,8 @@
 	cursor: pointer;
 	/* margin-right: 70px; */
 }
+
+
 
 
 .login {
