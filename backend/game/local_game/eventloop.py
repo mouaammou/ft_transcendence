@@ -28,7 +28,7 @@ class EventLoopManager:
     @classmethod
     async def _event_loop(cls):
         while True:
-            cls._update()
+            cls._update() 
             cls._clean()
             await asyncio.sleep(1/60)
 

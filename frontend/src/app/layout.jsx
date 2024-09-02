@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import { LoginProvider } from "@components/auth/loginContext";
 import Navbar from "@/components/navbar/navAuth";
+import { WebSocketProvider } from "@/components/websocket/websocket";
 
 const inter = Inter({ subsets: ["latin"] });
 // import "@/Styles/navbar/navbar.css";
@@ -25,15 +26,17 @@ export default function RootLayout({ children }) {
 					content="width=device-width, initial-scale=1.0"
 				/>
 			</head>
-			<LoginProvider>
-				<body>
-					{/* <div className="container"> */}
-						<Navbar />
-						{children}
-						<div className="footer"></div>
-					{/* </div> */}
-				</body>
-			</LoginProvider>
+			{/* <WebSocketProvider> */}
+				<LoginProvider>
+					<body>
+						{/* <div className="container"> */}
+							<Navbar />
+							{children}
+							<div className="footer"></div>
+						{/* </div> */}
+					</body>
+				</LoginProvider>
+			{/* </WebSocketProvider> */}
 		</html>
 	);
 }

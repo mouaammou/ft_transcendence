@@ -14,31 +14,23 @@ const Navbar = () => {
 			<div className={styles.logo}>
 				<Image src="/new-logo.svg" width={100} height={100} alt="logo" priority={true}/>
 			</div>
-			<div className="sign-in">
+			<div className={styles.signIn}>
 				{isAuth ? (
-					<>
+					<div>
 						<Links />
-						<div>
-							<img
-								src="/logout.svg"
-								alt="logout"
-								onClick={Logout}
-								className="img-logout"
-							/>
-						</div>
-						<div className="logout-text" onClick={Logout}>
+						<div className={styles.logoutText} onClick={Logout}>
 							Logout
 						</div>
-					</>
+					</div>
 				) : (
-					<>
-						<Link href="/login" className="login">
+					<div>
+						<Link href="/login" className={styles.login}>
 							Login
 						</Link>
-						<Link href="/signup" className="sign-up">
+						<Link href="/signup" className={styles.signUp}>
 							Signup
 						</Link>
-					</>
+					</div>
 				)}
 			</div>
 		</nav>

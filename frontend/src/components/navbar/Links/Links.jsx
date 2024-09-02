@@ -33,7 +33,7 @@ const Links = () => {
 	const pathName = usePathname();
 	const { logout } = useAuth();
 	return (
-		<>
+		<div>
 			<div className={styles.navbarLinks}>
 				{
 					links.map(link => (
@@ -49,7 +49,8 @@ const Links = () => {
 				width={30} 
 				height={30}
 				className={styles.menubtn} 
-				onClick={() => {setIsOpen(prev => !prev)}} />
+				onClick={() => {setIsOpen(prev => !prev)}} 
+			/>
 			{isOpen && (
 				<div className={styles.mobileLinks}>
 					{links.map(link => (
@@ -64,7 +65,7 @@ const Links = () => {
 					</div>
 				</div>
 			)} 
-		</>
+		</div>
 	 );
 }
 

@@ -9,8 +9,13 @@
 	color: var(--wt);
 	font-family: "Courier New", Courier, monospace;
 }
+.container > div {
+	display: flex;
+	gap: 100px;
+}
 
 .logo {
+	flex: 1;
 	display: flex;
 	align-items: center;
 	gap: 80px;
@@ -23,7 +28,6 @@
 
 .navbarLinks {
 	/* margin-left: 100px; */
-	display: flex;
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -48,6 +52,7 @@
 }
 
 .logoutText {
+	flex: 1;
 	font-family: "Montserrat", sans-serif;
 	font-size: 1.2rem;
 	color: lightcoral;

@@ -7,7 +7,9 @@ import uuid
 class remoteGameConsumer(AsyncWebsocketConsumer):
     
     group_connection_counts = {}
-    game_logic = PingPongGameLogic
+    game_logic = PingPongGameLogic()
+    # if game_logic:
+    #         game_logic.play()
     async def connect(self):
         all_groups_have_two = self.all_groups_have_two()
         if all_groups_have_two:
@@ -24,24 +26,37 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
                     group_info['count'] += 1
                     group_info['channels'].append(self.channel_name)
                     await self.channel_layer.group_add(group_name, self.channel_name)
+        self.print_all_groups()
         await self.channel_layer.group_send(
             self.get_group(self.channel_name),
             {
                 'type': 'chat_message',
-                'message': 'start_game'
+                'message': 'start_game',
+                'config': self.game_logic.get_game_config
             }
         )
         await self.accept()
+        while True:
+            frame = self.game_logic.update()
+            self.send(text_data=json.dumps(frame))
+
 
     async def chat_message(self, event):
         message = event["message"]
+        dfg = event["config"]
+        data = { 'config':dfg }
         print('in the chat_message event handler')
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({"message": message}))
+        await self.send(text_data=json.dumps((data)))
 
         print(f"\nuser connected {self.channel_name}\n")
-        self.game_logic.set_game_mode(self, 'remote')
+        self.game_logic.set_game_mode('remote')
+
+
+    def print_all_groups(self):
         print("-------------------------------------------")
+        for group_name, info in self.group_connection_counts.items():
+            print(f"Group Name: {group_name}, Count: {info['count']}, Channels: {info['channels']}")
 
     async def disconnect(self, *arg, **kwrags):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
@@ -68,11 +83,31 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
         except:
             print('EXCEPTION: received invaled data from the socket')
         
-        self.game_engine.recieve(self.channel_namex, data)
-    
+        # print(f"\n{data}\n")
+        print(f"\n{data}\n")
+        self.game_logic.play()
+        press = data.get('onPress')
+        release = data.get('onRelease')
+        if press is not None and press.strip() == 'p':
+            self.game_logic.start_game = not self.game_logic.start_game
+            return
+        elif press is not None and press.strip() == 'esc':
+            self.game_logic.start_game = not self.game_logic.start_game
+            return
+        if press is not None:
+            self.game_logic.on_press('left', press.strip())
+            self.game_logic.on_press('right', press.strip())
+        elif release is not None:
+            self.game_logic.on_release('left', release.strip())
+            self.game_logic.on_release('right', release.strip())
+        # self.game_engine.recieve(self.channel_namex, data)
+
     def send_game_message(self, event):
         try:
             # dont await it
+            print(f"\n -------------------- send game message --------------------")
+            print(json.dump(event))
+            print(f"\n -------------------- send game message --------------------")
             self.send(text_data=json.dumps(event))
         except:
             print("Exception: send_game_message: Failed")
