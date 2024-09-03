@@ -30,7 +30,7 @@ axiosInstance.interceptors.response.use(
 	(error) => {
 		//add redirect_to_login query param to the current url
 		console.log("error status", error.response.status);
-		if (error.response.status === 401) {
+		if (typeof window !== 'undefined' && error.response.status === 401) {
 			console.log(
 				"hello response 4001"
 			);
@@ -40,3 +40,26 @@ axiosInstance.interceptors.response.use(
 })
 
 export default axiosInstance;
+
+// import { useRouter } from 'next/navigation';
+
+// const MyComponent = () => {
+//     const router = useRouter();
+
+//     axiosInstance.interceptors.response.use(
+//         (response) => {
+//             console.log("response status: ", response.status);
+//             return response;
+//         },
+//         (error) => {
+//             console.log("error status", error.response.status);
+//             if (error.response.status === 401) {
+//                 console.log("hello response 4001");
+//                 router.push('/login'); // Use router for navigation
+//             }
+//             return Promise.reject(error); // Ensure to return a rejected promise for error handling
+//         }
+//     );
+
+// };
+// export default MyComponent;

@@ -151,6 +151,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				// setScore1(score1 => data.config.right_player_score);
 				// setScore2(score2 => data.config.left_player_score);
 				gameConfig = data.config;
+				console.log("TTTTTTTTTTTTTTTTTTTTTTT");
+				console.log(gameConfig);
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
 				// console.log(canvas.height);

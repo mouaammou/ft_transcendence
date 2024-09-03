@@ -5,10 +5,10 @@ from pong.pong_root import PingPongGameLogic
 import uuid
 
 class remoteGameConsumer(AsyncWebsocketConsumer):
-    
     group_connection_counts = {}
-    game_logic = PingPongGameLogic()
     make_grp = False
+    game_logic = PingPongGameLogic()
+    game_logic.set_game_mode('remote')
     # if game_logic:
     #         game_logic.play()
     async def connect(self):
@@ -39,14 +39,46 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             #         'config': self.game_logic.get_game_config
             #     }
             # )
-            await self.send(text_data=json.dumps({'config': self.game_logic.get_game_config}))
-            self.game_logic.play()
-            while True:
-                frame = self.game_logic.update()
-                update = {'update':frame}
-                # print(frame)
-                asyncio.create_task(self.send(text_data=json.dumps(update)))
-                await asyncio.sleep(1/60)
+            twochannels=self.get_channels(self.channel_name)
+            send_once = True
+            if twochannels is not None:
+                print(twochannels)
+                first_channel = twochannels[0]
+                second_channel = twochannels[1]
+                print("---------------TWO-------------------")
+                game_config = self.game_logic.get_game_config  # Call the method properly
+                print("\n\n")
+                print(game_config)
+                print("\n\n")
+                if (send_once):
+                    await asyncio.gather(
+                        self.channel_layer.send(
+                            first_channel,
+                            game_config
+                        ),
+                        self.channel_layer.send(
+                            second_channel,
+                            game_config
+                        )
+                    )
+                    send_once = False
+
+                self.game_logic.play()
+                while True:
+                    frame = self.game_logic.update()
+                    update = {'update':frame}
+                    # print(frame)
+                    await asyncio.gather(
+                    self.channel_layer.send(
+                            first_channel,
+                            update
+                        ),
+                        self.channel_layer.send(
+                            second_channel,
+                            update
+                        )
+                    )
+                    await asyncio.sleep(0.1)
            
     async def disconnect(self):
         self.game_logic.disconnected = True
@@ -63,8 +95,6 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps((data)))
 
         print(f"\nuser connected {self.channel_name}\n")
-        self.game_logic.set_game_mode('remote')
-
 
     def print_all_groups(self):
         print("-------------------------------------------")
@@ -78,6 +108,12 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             if channel_name in group_info['channels']:
                 return group
             
+    def get_channels(self, channel_name):
+        group = self.get_group(channel_name)  # Assuming this returns the group name
+        if group in self.group_connection_counts:
+            return self.group_connection_counts[group]['channels']
+        return None  # Or an empty list if you prefer
+
 
     def all_groups_have_two(self):
         if not self.group_connection_counts:
@@ -86,30 +122,21 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             if group['count'] != 2:
                 return False
         return True
-
     async def receive(self, text_data, *args, **kwargs):
         data = {}
         try:
             data = json.loads(text_data)
         except:
             print('EXCEPTION: received invaled data from the socket')
-        
-        # print(f"\n{data}\n")
+        print(f"\nINSIDE THE RECEIVE METHODE\n")        
         print(f"\n{data}\n")
-        self.game_logic.play()
         press = data.get('onPress')
         release = data.get('onRelease')
-        if press is not None and press.strip() == 'p':
-            self.game_logic.start_game = not self.game_logic.start_game
-            return
-        elif press is not None and press.strip() == 'esc':
-            self.game_logic.start_game = not self.game_logic.start_game
-            return
         if press is not None:
             self.game_logic.on_press('left', press.strip())
-            self.game_logic.on_press('right', press.strip())
+            self.game_logic.on_press('left', press.strip())
         elif release is not None:
-            self.game_logic.on_release('left', release.strip())
+            self.game_logic.on_release('right', release.strip())
             self.game_logic.on_release('right', release.strip())
         # self.game_engine.recieve(self.channel_namex, data)
 
@@ -122,3 +149,8 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             self.send(text_data=json.dumps(event))
         except:
             print("Exception: send_game_message: Failed")
+    async def send_to_channel(self, event):
+        await self.send(text_data=json.dumps({'config': event}))
+
+    async def send_update_channel(self, event):
+        await self.send(text_data=json.dumps({'config': event}))
