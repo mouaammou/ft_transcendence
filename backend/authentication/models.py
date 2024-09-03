@@ -8,6 +8,21 @@ from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
 
 
+#---------------- Notifications model ===================#
+class NotificationModel(models.Model):
+	to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+	message = models.CharField(max_length=70, blank=False, null=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+	is_read = models.BooleanField(default=False)
+
+	class Meta:
+		ordering = ['-created_at']
+
+	def __str__(self):
+		return f'Notification for {self.user.username}'
+#---------------- # Notifications model ===================#
+
+
 # class of the model FriendRequest ---
 class Friendship(models.Model):
 	STATUS_CHOICES = (
@@ -18,7 +33,7 @@ class Friendship(models.Model):
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
 	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
-	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
 	created_at  = models.DateTimeField(auto_now_add=True)
 
 	class Meta:

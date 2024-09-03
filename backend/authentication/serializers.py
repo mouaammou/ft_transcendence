@@ -3,6 +3,14 @@ from .models import CustomUser, Friendship
 from rest_framework import serializers
 from django.conf import settings
 
+#-------------- Notificaion Serializer ================#
+class NotificationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        read_only_fields = ['created_at']
+#-------------- # Notificaion Serializer ================#
+
 #============= friendship Serializer +++++++++++++++
 class FriendsSerializer(serializers.ModelSerializer):
 
