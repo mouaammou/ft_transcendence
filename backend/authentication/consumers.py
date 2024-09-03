@@ -12,7 +12,8 @@ User = get_user_model()
 # Set up logging
 logger = logging.getLogger(__name__)
 
-class OnlineStatusConsumer(AsyncWebsocketConsumer):
+
+class BaseConsumer(AsyncWebsocketConsumer):
     USER_STATUS_GROUP = 'users_status'
     CACHE_TIMEOUT = 60 * 60  # 1 hour cache timeout to avoid stale data
 
@@ -20,12 +21,18 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         self.user = self.scope.get("user")
         
         if self.user and self.user.is_authenticated:
-            self.user_data = UserSerializer(self.user).data
+            self.user_data =  UserSerializer(self.user).data
             self.cache_key = f"user_{self.user.id}_connections"
-            
+            self.room_notifications = f"notifications_{self.user.id}"
+
             try:
                 #accept the connection, the send_status_to_user needs that, otherwise error
                 await self.accept()
+                #add the user to their notification room
+                await self.channel_layer.group_add(
+                    self.room_notifications,
+                    self.channel_name
+                )
                 # Add the user to their own connection group
                 await self.channel_layer.group_add(
                     self.cache_key,
@@ -48,7 +55,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 await self.close()
         else:
             await self.close()
-
+    
     async def disconnect(self, close_code):
         if self.user and self.user.is_authenticated:
             try:
@@ -60,6 +67,10 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                     await self.broadcast_online_status(self.user_data, False)
 
                 await self.channel_layer.group_discard(
+                    self.room_notifications,
+                    self.channel_name
+                )
+                await self.channel_layer.group_discard(
                     self.cache_key,
                     self.channel_name
                 )
@@ -67,9 +78,15 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                     self.USER_STATUS_GROUP,
                     self.channel_name
                 )
-
             except Exception as e:
                 logger.error(f"\nError during disconnection: {e}\n")
+
+class OnlineStatusConsumer(BaseConsumer):
+    async def connect(self):
+        await super().connect()
+
+    async def disconnect(self, close_code):
+        await super().disconnect()
 
     async def broadcast_online_status(self, user_data, status):
         try:
@@ -137,28 +154,12 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
             logger.error(f"\nError updating user status in database: {e}\n")
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
+class NotificationConsumer(BaseConsumer):
     async def connect(self):
-        self.user = self.scope['user']
-        if not self.user.is_authenticated:
-            await self.close()
-        else:
-            await self.accept()
-            self.user_data = UserSerializer(self.user).data
-
-            self.room_notifications = f"notifications_{self.user.id}"
-
-            await self.channel_layer.group_add(
-                self.room_notifications,
-                self.channel_name
-            )
+        await super().connect()
 
     async def disconnect(self, close_code):
-        if self.user.is_authenticated:
-            await self.channel_layer.group_discard(
-                self.room_notifications,
-                self.channel_name
-            )
+        await super().disconnect()
     
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -185,7 +186,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             await self.reject_friend_request(rejected_id)
 
     @database_sync_to_async
-    def send_friend_request(self, to_user_id):
+    async def send_friend_request(self, to_user_id):
         try:
             to_user = User.objects.get(id=to_user_id)
             friend_request, created = Friendship.objects.get_or_create(sender=self.user.id, receiver=to_user_id)
@@ -195,7 +196,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     message=f"{self.user} send to you friend request"
                 )
                 if to_user.online:
-                    self.channel_layer.group_send(
+                        await self.channel_layer.group_send(
                         f"notifications_{to_user_id}",
                         {
                             'type': 'send_notification',
@@ -211,7 +212,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             return False, "User not found"
     
     @database_sync_to_async
-    def accept_friend_request(self, request_id):
+    async def accept_friend_request(self, request_id):
         try:
             friend_request = Friendship.objects.get(sender=request_id, receiver=self.user.id)
             if friend_request.status == 'Pending':
@@ -223,7 +224,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     message=f"{self.user} accepted your friend request."
                 )
                 if friend_request.sender.online:
-                    self.channel_layer.group_send(
+                    await self.channel_layer.group_send(
                         f"notifications_{friend_request.sender.id}",
                         {
                             'type': 'send_notification',
