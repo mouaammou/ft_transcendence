@@ -28,6 +28,9 @@ urlpatterns = [
     path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
     path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
     path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
+    
+	# for notificaions
+    path('sendFriendshipRequest/', views.CreateFriendshipRequest.as_view(), name="send friendship request")
 ]
 
 if settings.DEBUG:

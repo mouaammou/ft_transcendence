@@ -19,8 +19,6 @@ const Navbar = () => {
 				<div className="logout-text">
 					LOGOUT
 				</div>
-				<button className="sign-up">Sign up</button>
-				<button className="login">login</button>
 
 			</div>
 		</div>
