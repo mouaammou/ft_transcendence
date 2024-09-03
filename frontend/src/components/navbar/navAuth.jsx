@@ -16,7 +16,7 @@ const Navbar = () => {
 			</div>
 			<div className={styles.signIn}>
 				{isAuth ? (
-					<div>
+					<div className={styles.linksLogout}>
 						<Links />
 						<div className={styles.logoutText} onClick={Logout}>
 							Logout

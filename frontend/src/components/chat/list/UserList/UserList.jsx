@@ -1,5 +1,5 @@
 import UserCard from '../UserCard/UserCard'
-import '@/Styles/chat/UserList.css'
+import '@/styles/chat/UserList.css'
 import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext'
 

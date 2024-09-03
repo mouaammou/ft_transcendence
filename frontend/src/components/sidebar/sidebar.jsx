@@ -1,16 +1,16 @@
 'use client'
 import { useRouter } from "next/navigation";
-import '@styles/style-sidebar/sidebar.css';
+import '@/styles/style-sidebar/sidebar.css';
 import { ChatContext} from '@/app/chat/chat_context/ChatContext'
 import React, { useContext } from 'react';
-import { useAuth } from "@/components/auth/loginContext";
+import { useAuth } from "@components/auth/loginContext";
 
 
 export default function Sidebar( ) {
 
     const router = useRouter();
 
-    const { logout } = useAuth();
+    const { Logout } = useAuth();
 
     const sidebarItems = [
         {label: 'Home', icon: '/vector.svg', route: '/'},
@@ -29,7 +29,7 @@ export default function Sidebar( ) {
 
 
     return(
-        <div className ={`container ${ischatVisible ? 'hidden' : 'visible'}`}>
+        <div className ={`containerSidebar ${ischatVisible ? 'hidden' : 'visible'}`}>
             <div className ="sidebar">
                 <div className ="logo">
                     <img src="new-logo.svg" alt="logo" />
@@ -51,7 +51,7 @@ export default function Sidebar( ) {
                         <li>
                             <img src="/Logout.svg" 
                                 alt="logout"
-								onClick={logout} />
+								onClick={Logout} />
                         </li>
                     </ul>
                 </div>

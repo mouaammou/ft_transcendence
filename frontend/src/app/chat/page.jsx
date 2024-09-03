@@ -1,6 +1,6 @@
 "use client";
-import '@/Styles/chat/chat.css'
-import '@/Styles/style-sidebar/MobileSidebar.css'
+import '@/styles/chat/chat.css'
+import '@/styles/style-sidebar/MobileSidebar.css'
 import Msgchat from  '@/components/chat/msg/msg_chat'
 import Listchat from '@/components/chat/list/list_chat'
 // import Sidebar from '@/components/sidebar/sidebar'
@@ -16,7 +16,6 @@ const Chat = () => {
 			<div className="main-chat">
 				<Listchat />
 				<Msgchat />
-				{/* <Sidebar /> */}
 				<MobileSidebar />
 			</div>
 		</ChatProvider>

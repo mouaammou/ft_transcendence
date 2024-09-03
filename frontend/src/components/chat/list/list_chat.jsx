@@ -1,7 +1,7 @@
 // add "use client" because of onChange in input;
 "use client";
 
-import '@/Styles/chat/list_chat.css'
+import '@/styles/chat/list_chat.css'
 import Image from "next/image";
 // import { BiSolidBellRing } from "react-icons/bi";
 import { HiBell } from "react-icons/hi2";

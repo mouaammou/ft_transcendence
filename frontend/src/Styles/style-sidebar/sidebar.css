@@ -6,10 +6,10 @@
 :root{
     --blue: rgb(27, 152, 194);
 }
-.container{
+.containerSidebar{
     /* height: 100vh; */
 }
-.container .sidebar{
+.containerSidebar .sidebar{
     height: 99vh;
     /* padding: 0px 20px; */
     /* padding: 0px; */
@@ -70,7 +70,7 @@ ul{
 
 
 @media (max-width: 1600px){
-    .container .sidebar{
+    .containerSidebar .sidebar{
         padding: 0px;
     }
     .sidebar .logo img{
@@ -94,7 +94,7 @@ ul{
     }
 }
 @media (max-width: 800px){
-    .container .sidebar {
+    .containerSidebar .sidebar {
         display: none;
         /* flex-direction: row;
         align-items: center;
@@ -108,7 +108,7 @@ ul{
         background-color: rgba(163, 218, 232, 0.2); */
     }
 
-    /* .container .sidebar .logo {
+    /* .containerSidebar .sidebar .logo {
         display: none;
     }
     li {
@@ -117,7 +117,7 @@ ul{
     .icone_side{
         width: 20px;
     }
-    .container .sidebar .icon_items ul {
+    .containerSidebar .sidebar .icon_items ul {
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -125,21 +125,21 @@ ul{
         padding: 0;
     }
 
-    .container .sidebar .icon_items ul li {
+    .containerSidebar .sidebar .icon_items ul li {
         padding: 20px;
     }
 
-    .container .sidebar .Logout {
+    .containerSidebar .sidebar .Logout {
         margin-top: 0;
         position: static;
     }
 
-    .container .sidebar .Logout ul {
+    .containerSidebar .sidebar .Logout ul {
         display: flex;
         justify-content: center;
     }
 
-    .container .sidebar .Logout ul li {
+    .containerSidebar .sidebar .Logout ul li {
         padding: 10px;
     } */
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from "next/navigation";
-import '@/Styles/style-sidebar/MobileSidebar.css'
+import '@/styles/style-sidebar/MobileSidebar.css'
 import { ChatContext} from '@/app/chat/chat_context/ChatContext'
 import React, { useContext } from 'react';
 import { useAuth } from "@/components/auth/loginContext";
@@ -29,7 +29,7 @@ export default function MobileSidebar( ) {
 
 
     return(
-        <div className ={`container ${ischatVisible ? 'hidden' : 'visible'}`}>
+        <div className ={`containerSidebar ${ischatVisible ? 'hidden' : 'visible'}`}>
             <div className ="sidebar">
                 <div className ="logo">
                     <img src="new-logo.svg" alt="logo" />

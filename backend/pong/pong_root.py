@@ -66,7 +66,7 @@ class RootBase(Base):
         #     self.right_padd_win.pos = self.right_player.padd_pos
     
     def update(self) -> dict:
-        if not self.start_game or self.disconnected:
+        if not self.start_game: # or self.disconnected
             return
         self.move_paddles() # update paddles pos if there is a press event
         self.ball.move(self.ball_win)

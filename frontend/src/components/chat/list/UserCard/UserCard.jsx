@@ -1,7 +1,7 @@
 // import React from 'react';
 import React, { useState } from 'react';
 import Image from "next/image";
-import '@/Styles/chat/UserCard.css'
+import '@/styles/chat/UserCard.css'
 
 const UserCard = ({user, listType, onUserSelect}) => {
 

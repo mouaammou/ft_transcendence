@@ -1,4 +1,4 @@
-import '@/Styles/chat/msg.css'
+import '@/styles/chat/msg.css'
 import Image from "next/image";
 import { LiaGamepadSolid } from "react-icons/lia";
 import { ImBlocked } from "react-icons/im";

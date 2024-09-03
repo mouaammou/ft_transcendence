@@ -54,6 +54,7 @@ html {
 		),#000000;
     background-repeat: no-repeat;
 	background-size: cover;
+	overflow: hidden;
 }
 
 body {
@@ -150,7 +151,7 @@ body {
 	color: var(--wt);
 	overflow: none;
 	/* height: 100vh; */
-	padding: 10px; 
+	/* padding: 10px;  */
 }
 
 .container {

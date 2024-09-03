@@ -1,3 +1,4 @@
+"use client";
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState} from 'react';
 
@@ -149,7 +150,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			{
 				// setScore1(score1 => data.config.right_player_score);
 				// setScore2(score2 => data.config.left_player_score);
-				console.log(data.config);
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
@@ -213,7 +213,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
-			console.log('hi');
+			console.log('Key pressed');
 			console.log(event.key);
 			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;

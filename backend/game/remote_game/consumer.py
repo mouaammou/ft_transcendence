@@ -1,4 +1,4 @@
-
+import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from pong.pong_root import PingPongGameLogic
@@ -8,44 +8,57 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
     
     group_connection_counts = {}
     game_logic = PingPongGameLogic()
+    make_grp = False
     # if game_logic:
     #         game_logic.play()
     async def connect(self):
-        all_groups_have_two = self.all_groups_have_two()
-        if all_groups_have_two:
+        await self.accept()
+        self.make_grp = self.all_groups_have_two()
+        if self.make_grp:
             self.group_name = 'group_' + str(uuid.uuid4())
             self.group_connection_counts[self.group_name] = {
                 'count': 1,
                 'channels': []
             }
             self.group_connection_counts[self.group_name]['channels'].append(self.channel_name)
-            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            # await self.channel_layer.group_add(self.group_name, self.channel_name)
         else:
             for group_name, group_info in self.group_connection_counts.items():
                 if group_info['count'] < 2:
                     group_info['count'] += 1
                     group_info['channels'].append(self.channel_name)
-                    await self.channel_layer.group_add(group_name, self.channel_name)
+                    # await self.channel_layer.group_add(group_name, self.channel_name)
         self.print_all_groups()
-        await self.channel_layer.group_send(
-            self.get_group(self.channel_name),
-            {
-                'type': 'chat_message',
-                'message': 'start_game',
-                'config': self.game_logic.get_game_config
-            }
-        )
-        await self.accept()
-        while True:
-            frame = self.game_logic.update()
-            self.send(text_data=json.dumps(frame))
-
+        self.make_grp = self.all_groups_have_two()
+        if self.make_grp == True:
+            # await self.channel_layer.group_send(
+            #     self.get_group(self.channel_name),
+            #     {
+            #         'type': 'chat_message',
+            #         'message': 'start_game',
+            #         'config': self.game_logic.get_game_config
+            #     }
+            # )
+            await self.send(text_data=json.dumps({'config': self.game_logic.get_game_config}))
+            self.game_logic.play()
+            while True:
+                frame = self.game_logic.update()
+                update = {'update':frame}
+                # print(frame)
+                asyncio.create_task(self.send(text_data=json.dumps(update)))
+                await asyncio.sleep(1/60)
+           
+    async def disconnect(self):
+        self.game_logic.disconnected = True
+        await self.close()
 
     async def chat_message(self, event):
         message = event["message"]
         dfg = event["config"]
         data = { 'config':dfg }
         print('in the chat_message event handler')
+        print('->'*43)
+        print(f"\n{dfg}\n")
         # Send message to WebSocket
         await self.send(text_data=json.dumps((data)))
 
@@ -58,8 +71,6 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
         for group_name, info in self.group_connection_counts.items():
             print(f"Group Name: {group_name}, Count: {info['count']}, Channels: {info['channels']}")
 
-    async def disconnect(self, *arg, **kwrags):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
     
     def get_group(self, channel_name):
         print(f"\n--------------------\n")

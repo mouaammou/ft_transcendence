@@ -1,7 +1,8 @@
 import Links from "./Links/Links";
 import Link from "next/link";
+import '@/styles/navbar/navbar.css'
 
-const Navbar = () => {
+const NavbarLogin = ({Logout}) => {
 	return (
 		<div className="navbar">
 			<div className="logo">
@@ -16,15 +17,13 @@ const Navbar = () => {
 				<div>
 					<img src="/logout.svg" alt="logout" className="img-logout"/>
 				</div>
-				<div className="logout-text">
+				<div className="logout-text" onClick={Logout}>
 					LOGOUT
 				</div>
-				<button className="sign-up">Sign up</button>
-				<button className="login">login</button>
 
 			</div>
 		</div>
 	 );
 }
 
-export default Navbar;
+export default NavbarLogin;

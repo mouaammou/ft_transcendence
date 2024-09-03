@@ -1,5 +1,5 @@
 import Link from "next/link";
-import "@/Styles/auth/change_password.css";
+import "@/styles/auth/change_password.css";
 
 const SignUp = () => {
 	

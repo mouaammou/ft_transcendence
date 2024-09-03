@@ -1,5 +1,5 @@
 import Link from "next/link";
-import "@/Styles/auth/forget_password.css";
+import "@/styles/auth/forget_password.css";
 
 const SignUp = () => {
 	

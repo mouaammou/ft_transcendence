@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation';
 import Sidebar from "@/components/sidebar/sidebar";
 //
 const inter = Inter({ subsets: ["latin"] });
-// import "@/Styles/navbar/navbar.css";
+// import "@/styles/navbar/navbar.css";
 
 
 // export const metadata = {
