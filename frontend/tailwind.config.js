@@ -12,7 +12,7 @@ module.exports = {
         bchannel: '#0e2742',
       },
       fontFamily: {
-        manrope: ['Manrope'],
+        suse: ['SUSE', 'sans-serif'],
       },
     },
   },

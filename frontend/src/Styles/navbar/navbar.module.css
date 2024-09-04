@@ -135,7 +135,7 @@
   }
 }
 
-@media (max-width: 888px) {
+@media (max-width: 638px) {
   .container {
     display: flex;
     justify-content: space-between;
@@ -195,8 +195,9 @@
   .menubtn {
     display: flex;
     position: absolute;
-    top: 70px;
-    right: 20px;
+    top: 2rem;
+    right: 4rem;
+    cursor: pointer;
     z-index: 300;
   }
 }

@@ -37,7 +37,7 @@ img {
 html {
   width: 100%;
   /* height: 100%; */
-  height: 100vh; 
+  height: 100vh;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -110,12 +110,11 @@ body {
   background-color: transparent;
   color: white;
   font-family: 'Courier New', Courier, monospace;
-  
-  }
-  
-  /* add */
-  
-  .content {
+}
+
+/* add */
+
+.content {
   display: flex;
   width: 100%;
   overflow-y: auto;
@@ -171,4 +170,22 @@ body {
 
 .footer {
   height: 0px;
+}
+
+/* for O auth : 42 auth, google, future add github */
+.logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.google-logo {
+  width: 2rem;
+  cursor: pointer;
+}
+
+._42-logo {
+  margin-right: 3rem;
+  cursor: pointer;
 }

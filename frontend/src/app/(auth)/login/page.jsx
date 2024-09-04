@@ -4,8 +4,8 @@ import { useAuth } from '@/components/auth/loginContext';
 import { useState } from 'react';
 import Link from 'next/link';
 import Login42 from '@/components/auth/login42';
-import '@/styles/auth/login.css';
 import Image from 'next/image';
+import '@/styles/auth/login.css';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -25,8 +25,11 @@ export default function LoginPage() {
 
   return (
     <div className="login-main-container">
-      <form onSubmit={LoginTo} className="main-login">
-        <p>Join</p>
+      <form
+        onSubmit={LoginTo}
+        className="main-login flex flex-col mr-20 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-4/5"
+      >
+        <p>Sign in to your account</p>
         <input
           type="text"
           className="form-control"
@@ -53,18 +56,23 @@ export default function LoginPage() {
           <Link className="pforgot" href="/forget_password">
             Forgot your password?
           </Link>
-          <div className="have-no-account">
-            Don't have an account?
-            <Link rel="stylesheet" href="/auth/signup">
-              Sign up
+          <div className="">
+            <Link rel="stylesheet" href="/signup" className="have-no-account">
+              Don't have an account? Sign up
             </Link>
           </div>
         </div>
         <br />
         {<p className="text-danger">{errors.error ? errors.error : errors.server_error}</p>}
       </form>
-      <div className="side-image">
-        <Image className="sign-with" width={400} height={400} src="/login.svg" alt="welcome" />
+      <div className="max-w-full hidden sm:block">
+        <Image
+          width={0}
+          height={0}
+          className="h-[30rem] w-[30rem]"
+          src="/login.svg"
+          alt="welcome"
+        />
       </div>
     </div>
   );

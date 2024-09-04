@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '@loginContext/loginContext';
 import Login42 from '@components/auth/login42';
-import '../../../Styles/auth/signup.css';
+import '@/styles/auth/signup.css';
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -27,8 +27,12 @@ function Signup() {
 
   return (
     <div className="main-container">
-      <form onSubmit={singUp} method="POST" className="main-login">
-        <p>Sing Up</p>
+      <form
+        onSubmit={singUp}
+        method="POST"
+        className="main-signup flex flex-col mr-20 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-4/5"
+      >
+        <p>Create an account</p>
         <div className="first-last-names">
           <input
             type="text"

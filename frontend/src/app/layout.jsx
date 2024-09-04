@@ -1,10 +1,12 @@
 'use client';
-import '@/styles/globals.css';
 import { Inter } from 'next/font/google';
 import { LoginProvider } from '@components/auth/loginContext';
 import Navbar from '@/components/navbar/navAuth';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar/sidebar';
+
+import '@/styles/globals.css';
+import '@/styles/globalsTailwind.css';
 
 const inter = Inter({ subsets: ['latin'] });
 // import "@/styles/navbar/navbar.css";
