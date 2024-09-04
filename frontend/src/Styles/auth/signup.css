@@ -1,165 +1,166 @@
-
 .main-container {
-    display: flex;
-    /* height: 80vh; */
-	width: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: 150px;
+  display: flex;
+  /* height: 80vh; */
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 150px;
 }
 
-.main-login{
-    display: flex;
-    margin-right: 150px;
-    flex-direction: column;
-    max-width: 500px;
+.main-login {
+  display: flex;
+  margin-right: 150px;
+  flex-direction: column;
+  max-width: 500px;
 }
 
 .main-login p {
-    font-family: var(--secondFont);
-    font-size: 20px;
-    font-weight: bold;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
+  font-family: var(--secondFont);
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
 }
 
 .main-login input {
-    background-color: transparent;
-    font-family: var(--principaleFont);
-    font-size: 18px;
-    margin-top: 12px;
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 12px 0 12px 15px;
-    border: 1.45px solid white;
-    border-radius: 8px;
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
 }
 
 .first-last-names {
-    display: flex;
-    width: 100%;
-    gap: 4%;
+  display: flex;
+  width: 100%;
+  gap: 4%;
 }
 .main-login input:not(:placeholder-shown) {
-    font-family: var(--principaleFont);
-    color: var(--wt);
-    background-color: transparent;
-    font-family: var(--principaleFont);
-    font-size: 18px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    padding: 12px 0 12px 15px;
-    border: 1.45px solid white;
-    border-radius: 8px;
-    outline: none;
+  font-family: var(--principaleFont);
+  color: var(--wt);
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+  outline: none;
 }
 
 .main-login input:focus {
-    outline: 1.2px solid white;
+  outline: 1.2px solid white;
 }
 
-
 .main-login button {
-    font-family: var(--secondFont);
-    font-size: 20px;
-    font-weight: bold;
-    background-color: var(--principaleColor);
-    border-radius: 10px;
-    border: none;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    color: var(--wt);
-    margin-top: 20px;
-    cursor: pointer;
-    margin-bottom: 30px;
+  font-family: var(--secondFont);
+  font-size: 20px;
+  font-weight: bold;
+  background-color: var(--principaleColor);
+  border-radius: 10px;
+  border: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  color: var(--wt);
+  margin-top: 20px;
+  cursor: pointer;
+  margin-bottom: 30px;
 }
 
 .sign-with {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .logos {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .google-logo {
-    width: 40px;
-    cursor: pointer;
+  width: 40px;
+  cursor: pointer;
 }
 
 ._42-logo {
-    margin-right: 30px;
-    cursor: pointer;
+  margin-right: 30px;
+  cursor: pointer;
 }
-
 
 .forgot-password {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 60px;
-    gap: 1%;
-    width: 80%;
-    /* align-items: center; */
+  display: flex;
+  justify-content: space-around;
+  margin-top: 60px;
+  gap: 1%;
+  width: 80%;
+  /* align-items: center; */
 }
 
-.forgot-password a, .forgot-password .have-no-account {
-    color: var(--wt);
-    font-family: var(--principaleFont);;
-    font-size: 15.5px;
-    width: 70%;
+.forgot-password a,
+.forgot-password .have-no-account {
+  color: var(--wt);
+  font-family: var(--principaleFont);
+  font-size: 15.5px;
+  width: 70%;
 }
 
-.have-no-account  a {
-    display: flex;
-    flex-direction: column;
-    font-family: var(--principaleFont);;
-    font-size: 18px;
-    width: 40%;
-    min-width: 70px;
+.have-no-account a {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  width: 40%;
+  min-width: 70px;
 }
 @media (max-width: 1050px) {
-    .main-container {
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      margin-top: 100px;
-      gap: 70px;
-      width: 100%;
-      align-items: center;
-      justify-content: center;
-    }
-    .main-container .main-login p {
-        font-size: 20px;
-    }
-    .main-container .main-login {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 0px;
-        flex: 1;
-        max-width: 500px;
-        flex-direction: column;
-    }
-    .main-container .main-login input, .first-last-names,    .sign-wit, .main-container .main-login button  {
-        width: 80%;
-    }
-    .side-image {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* margin: auto; */
-        max-width: 200px;
-        max-height: 200px;
-        /* margin-top: 50px; */
-    }
-    .sign-with {
-        width: 100%;
-        pointer-events: none;
-        /* display: none; */
-    }
+  .main-container {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+    gap: 70px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
   }
+  .main-container .main-login p {
+    font-size: 20px;
+  }
+  .main-container .main-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0px;
+    flex: 1;
+    max-width: 500px;
+    flex-direction: column;
+  }
+  .main-container .main-login input,
+  .first-last-names,
+  .sign-wit,
+  .main-container .main-login button {
+    width: 80%;
+  }
+  .side-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* margin: auto; */
+    max-width: 200px;
+    max-height: 200px;
+    /* margin-top: 50px; */
+  }
+  .sign-with {
+    width: 100%;
+    pointer-events: none;
+    /* display: none; */
+  }
+}

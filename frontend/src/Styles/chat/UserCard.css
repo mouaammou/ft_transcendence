@@ -1,20 +1,20 @@
-.UserCardAll{
-    display: flex;
-    flex-direction: row;
-    /* justify-content: space-around; */
-    align-items: center;
-    gap: 20%;
-    gap: 10%;
-    margin: 10px 30px 10px 30px;
-    cursor: pointer;
-    /* transition: border 0.3s, border-radius 0.3s; */
-    padding: 3px;
-    border: 1px solid transparent;
-    /* border-radius: 24px; */
-    border-radius: 10px;
-    /* background: #060B16; */
-    position: relative;
-    border-bottom: solid 1px;
+.UserCardAll {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-around; */
+  align-items: center;
+  gap: 20%;
+  gap: 10%;
+  margin: 10px 30px 10px 30px;
+  cursor: pointer;
+  /* transition: border 0.3s, border-radius 0.3s; */
+  padding: 3px;
+  border: 1px solid transparent;
+  /* border-radius: 24px; */
+  border-radius: 10px;
+  /* background: #060B16; */
+  position: relative;
+  border-bottom: solid 1px;
 }
 
 /* .img-usercard{
@@ -22,38 +22,37 @@
 } */
 
 .UserCardAll:hover {
-    border: 1px solid #ffffff; /* Border on hover */
-    background-color: #041921;
+  border: 1px solid #ffffff; /* Border on hover */
+  background-color: #041921;
 }
 
 /* Styling for clicked card */
 .usercard.clicked {
-    border: 1px solid #333; /* Solid border when clicked */
-    border-radius: 5px; /* Reduced border radius when clicked */
+  border: 1px solid #333; /* Solid border when clicked */
+  border-radius: 5px; /* Reduced border radius when clicked */
 }
 
-.UserCardOnline{
-    position: relative;
+.UserCardOnline {
+  position: relative;
 }
 
-.status{
-    border: 2px solid #fff;
-    /* border-radius: 50%; */
-    width: 15px;
-    height: 15px;
-    /* background-color: red; */
-    position: absolute;
+.status {
+  border: 2px solid #fff;
+  /* border-radius: 50%; */
+  width: 15px;
+  height: 15px;
+  /* background-color: red; */
+  position: absolute;
 }
 
-.UserCardOnline .status{
-    top: 0px;
-    right: 5px;
+.UserCardOnline .status {
+  top: 0px;
+  right: 5px;
 }
 
-
-.UserCardAll .status{
-    bottom: 6px;
-    left: 40px;
+.UserCardAll .status {
+  bottom: 6px;
+  left: 40px;
 }
 
 /* .img-usercard{
@@ -65,57 +64,56 @@
     left: 86px;
 } */
 
-@media (max-width: 1600px){
-    .UserCardOnline .img-usercard{
-        width: 55px;
-        height: 55px;
-    }
-    /* .UserCardAll .img-usercard{
+@media (max-width: 1600px) {
+  .UserCardOnline .img-usercard {
+    width: 55px;
+    height: 55px;
+  }
+  /* .UserCardAll .img-usercard{
         width: 45px;
         height: 45px;
     } */
 }
 
-@media (max-width: 990px){
-    /* .UserCardAll{
+@media (max-width: 990px) {
+  /* .UserCardAll{
         gap: 40px;
     } */
-    .UserCardOnline .img-usercard{
-        width: 65px;
-        height: 65px;
-    }
-    /* .UserCardAll .img-usercard{
+  .UserCardOnline .img-usercard {
+    width: 65px;
+    height: 65px;
+  }
+  /* .UserCardAll .img-usercard{
         width: 45px;
         height: 45px;
     } */
 }
-@media (max-width: 400px){
-    .UserCardAll{
-        margin: 10px 15px;
-        padding: 0px;
-        gap: 12%;
-    }
-    
-    .UserCardOnline .status {
-        top: -5px;
-        right: 1px;
-    }
+@media (max-width: 400px) {
+  .UserCardAll {
+    margin: 10px 15px;
+    padding: 0px;
+    gap: 12%;
+  }
 
-    .UserCardAll .status {
-        bottom: 23px;
-        left: 27px;
-    }
+  .UserCardOnline .status {
+    top: -5px;
+    right: 1px;
+  }
 
-    .UserCardOnline .img-usercard{
-        width: 45px;
-        height: 45px;
-    }
-    .UserCardAll .img-usercard{
-        width: 35px;
-        height: 35px;
-    }
-    p {
-        font-size: 12px;
-    }
-    
+  .UserCardAll .status {
+    bottom: 23px;
+    left: 27px;
+  }
+
+  .UserCardOnline .img-usercard {
+    width: 45px;
+    height: 45px;
+  }
+  .UserCardAll .img-usercard {
+    width: 35px;
+    height: 35px;
+  }
+  p {
+    font-size: 12px;
+  }
 }

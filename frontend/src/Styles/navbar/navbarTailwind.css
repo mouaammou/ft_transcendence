@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Mingzat&display=swap');
+
+@layer base {
+    @font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('https://fonts.googleapis.com/css2?family=Mingzat&display=swap') format('woff2');
+    }
+}
