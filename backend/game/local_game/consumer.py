@@ -4,7 +4,6 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocketConsumer
 # from channels.exceptions import DenyConnection
 from channels.db import database_sync_to_async
-
 from .eventloop import EventLoopManager
 
 
@@ -31,10 +30,9 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
         if self.user.is_anonymous:
-            await self.close()
-            return 
+            return await self.close()
         await self.accept()
-
+        self.is_focused = True
         # steps bellow is required
         self.unique_name = self.scope['channel_name']
 
@@ -51,7 +49,10 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
             data = json.loads(text_data)
         except:
             print('EXCEPTION: received invaled data from the socket')
-        
+        self.is_focused = data.get('tabFocused', True)
+        # print("}"*30)
+        # print(data)
+        # print("}"*30)
         self.game_engine.recieve(self.unique_name, data)
     
     def send_game_message(self, event):

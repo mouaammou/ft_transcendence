@@ -17,10 +17,11 @@ class RootBase(Base):
         self.left_player = Paddle('left', root_obj=self)
         self.right_player = Paddle('right', root_obj=self)
         self.ball = Ball(root_obj=self)
+        self.game_mode = 'local' # options: [local, remote]
         self.scope = {}
         self.start_game = False
-        self.game_mode = 'local' # options: [local, remote]
         self.finished = False
+        # self.focused = True
     
     ###############################################
     def set_game_mode(self, game_mode):

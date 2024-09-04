@@ -88,9 +88,16 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		}
 
 		const socket = new WebSocket('ws://localhost:8000/ws/global/');
-		
+		let conectionOn = false;
+		function sendVisibilityStatus() {
+			console.log("Visibility: ")
+			// if (conectionOn === true) {
+				console.log(document.visibilityState)
+				let isTabFocused = document.visibilityState === 'visible';
+				socket.send(JSON.stringify({ tabFocused: isTabFocused }));
+			// }
+		}
 
-		let conectionOn;
 		if (socket.readyState === WebSocket.OPEN) {
 			console.log('WebSocket connection is open');
 			conectionOn = true;
@@ -265,6 +272,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
 		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
 		document.addEventListener('keyup', handleKeyUp);
+		document.addEventListener('visibilitychange', sendVisibilityStatus);
 
 		// Animation loop
 		// const animate = () => {
@@ -281,6 +289,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
+			document.removeEventListener('visibilitychange', sendVisibilityStatus);
 		};
 	}, []);
 	return (

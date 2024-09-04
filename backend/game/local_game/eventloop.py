@@ -84,6 +84,7 @@ class EventLoopManager:
         print('************ RECONNECT *************')
         LocalGameOutputMiddleware.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
+        # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
         return True
@@ -109,7 +110,7 @@ class EventLoopManager:
     @classmethod
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
-        if game_obj:
+        if game_obj and LocalGameOutputMiddleware.is_disconnection(channel_name):
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
             return True
@@ -141,7 +142,7 @@ class EventLoopManager:
             LocalGameInputMiddleware.try_create(cls, channel_name, event_dict)
             return None
         if game_obj.game_mode == 'local':
-            LocalGameInputMiddleware.recieved_dict_text_data(game_obj, event_dict)
+            LocalGameInputMiddleware.recieved_dict_text_data(channel_name, game_obj, event_dict)
         elif game_obj.game_mode == 'remote':
             pass
             # add middleware for remote game here
@@ -169,8 +170,8 @@ class EventLoopManager:
             return
         if game_obj.game_mode == 'local':
             LocalGameOutputMiddleware.send(channel_name, frame)
-        elif game_obj.game_mode == 'remote':
-            pass
+        # elif game_obj.game_mode == 'remote':
+        #     pass
             # add middleware for remote game here
     
     @classmethod

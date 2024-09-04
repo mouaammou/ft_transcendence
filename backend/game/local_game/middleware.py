@@ -65,16 +65,28 @@ class LocalGameOutputMiddleware:
         if group is None:
             return
         for consumer in group:
-                consumer.send_game_message(data)
-
+            consumer.send_game_message(data)
+    
+    @classmethod
+    def is_disconnection(cls, unique_key):
+        return len(cls.consumer_group.get(unique_key)) <= 1
+    
+    @classmethod
+    def there_is_focus(cls, unique_key):
+        group = cls.consumer_group.get(unique_key)
+        if group is None:
+            return False
+        return any(cons.is_focused for cons in group)
 
 class LocalGameInputMiddleware:
 
     @classmethod
-    def recieved_dict_text_data(cls, game_obj, dict_text_data):
+    def recieved_dict_text_data(cls, unique_key, game_obj, dict_text_data):
         """
         dict_text_data: is the recieved text data as dict. as it is recieved
         """
+        
+        # focus = dict_text_data.get('tabFocused')
         press = dict_text_data.get('onPress')
         release = dict_text_data.get('onRelease')
         if press is not None and press.strip() == 'p':
@@ -89,6 +101,15 @@ class LocalGameInputMiddleware:
         elif release is not None:
             game_obj.on_release('left', release.strip())
             game_obj.on_release('right', release.strip())
+        # if focus is not None:
+        #     if LocalGameOutputMiddleware.there_is_focus(unique_key):
+        #         game_obj.focused = True
+        #         print('++++++++++ paly +++++++++++++++')
+        #     else:
+        #         print('++++++++++ stop +++++++++++++++')
+        #         game_obj.focused = False
+
+
     
     @classmethod
     def try_create(cls, event_loop_cls, channel_name, event_dict):
