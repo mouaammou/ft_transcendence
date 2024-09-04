@@ -118,7 +118,7 @@ body {
   display: flex;
   width: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   height: 100%;
 }
 
@@ -145,7 +145,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   color: var(--wt);
-  overflow: none;
+  /* overflow: none; */
   /* height: 100vh; */
   /* padding: 10px;  */
 }
@@ -188,4 +188,10 @@ body {
 ._42-logo {
   margin-right: 3rem;
   cursor: pointer;
+}
+
+.first-last-names {
+  display: flex;
+  width: 100%;
+  gap: 4%;
 }

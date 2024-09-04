@@ -35,11 +35,6 @@
   border-radius: 8px;
 }
 
-.first-last-names {
-  display: flex;
-  width: 100%;
-  gap: 4%;
-}
 .main-signup input:not(:placeholder-shown) {
   font-family: var(--principaleFont);
   color: var(--wt);
@@ -101,45 +96,44 @@
 }
 @media (max-width: 1050px) {
   .main-container {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    margin-top: 100px;
-    gap: 70px;
     width: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-  .main-container .main-signup p {
-    font-size: 20px;
-  }
-  .main-container .main-signup {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0px;
-    flex: 1;
-    max-width: 500px;
+    height: auto;
+    font-size: small;
+    margin: 0;
     flex-direction: column;
   }
+
+  .main-signup {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    max-width: 700px;
+    font-size: unset;
+}
   .main-container .main-signup input,
   .first-last-names,
   .sign-wit,
   .main-container .main-signup button {
-    width: 80%;
+    width: 92%;
   }
-  .side-image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* margin: auto; */
-    max-width: 200px;
-    max-height: 200px;
-    /* margin-top: 50px; */
+  
+}
+
+@media (max-width: 630px) {
+  .first-last-names,
+  .sign-wit,
+  .main-container .main-signup button {
+    font-size: unset;
   }
-  .sign-with {
-    width: 100%;
-    pointer-events: none;
-    /* display: none; */
+  .main-container .main-signup input {
+    font-size: 1rem;
   }
+  .main-signup input {
+    padding: 8px 0;
+    padding-left: 13px;
+}
+
 }

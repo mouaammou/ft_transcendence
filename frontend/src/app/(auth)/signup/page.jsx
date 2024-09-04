@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@loginContext/loginContext';
 import Login42 from '@components/auth/login42';
 import '@/styles/auth/signup.css';
+import Image from 'next/image';
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -97,8 +98,17 @@ function Signup() {
           </div>
         }
       </form>
-      <div className="side-image">
+      {/* <div className="side-image">
         <img className="sign-with" src="/login-pane.svg" alt="welcome" />
+      </div> */}
+      <div className="max-w-full hidden sm:block">
+        <Image
+          width={0}
+          height={0}
+          className="h-[30rem] w-[30rem]"
+          src="/login-pane.svg"
+          alt="welcome"
+        />
       </div>
     </div>
   );
