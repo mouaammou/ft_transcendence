@@ -31,7 +31,7 @@ const links =  [
 const Links = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const pathName = usePathname();
-	const { logout } = useAuth();
+	const { Logout } = useAuth();
 	return (
 		<div>
 			<div className={styles.navbarLinks}>
@@ -60,7 +60,7 @@ const Links = () => {
 								{link.title}
 						</Link>
 					))}
-					<div className={styles.logoutTextt} onClick={logout}>
+					<div className={styles.logoutTextt} onClick={Logout}>
 							Logout
 					</div>
 				</div>
