@@ -6,7 +6,8 @@ class PlayerManager:
         self.games = {}  # Maps game ID to player pairs
 
     def add_player(self, player_id):
-        self.waiting_players.append(player_id)
+        if player_id not in self.waiting_players:
+            self.waiting_players.append(player_id)
         if len(self.waiting_players) >= 2:
             # Match two players
             player1 = self.waiting_players.pop(0)
