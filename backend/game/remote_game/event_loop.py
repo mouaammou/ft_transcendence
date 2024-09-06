@@ -35,17 +35,10 @@ class EventLoopManager:
 
     @classmethod
     def _update(cls):
-        print("\n I HAVE TO GO BACK UNTILL I GOT A FRIEND TO PLAY WITH\n")
-        print(f"\n{len(cls.running_games)}\n")
-        print(f"\nrunning --> {len(cls.running)}\n") 
         for game, player_ids in cls.running_games.items():
-            print(f"\ngame id --> {game.game_id}\n")
-            print(f"\ngame is fulfilled --> {game.fulfilled}\n")
             if game.fulfilled == False:
-                # print("\ngame go out\n")
                 return
-            frame :dict = game.update() 
-            # print(f"\ngame frame: {frame}\n")
+            frame :dict = game.update()
             # if game.is_finished():     
             #     cls.finished.append(player_id)
             #     cls._save_finished(game)
@@ -85,8 +78,7 @@ class EventLoopManager:
             else:
                 print(f"\nGame obj error \n")
             game_obj.set_game_mode(game_mode)
-            cls.running[player_id] = game_obj
-            print("11"*10)
+            cls.running[player_id] = game_ob
         elif game_obj is None:
             game_obj = cls.game_class()
             if (game_obj.player_1 is None):
@@ -95,7 +87,6 @@ class EventLoopManager:
                 game_obj.player_2 = player_id
             game_obj.set_game_mode(game_mode)
             cls.running[player_id] = game_obj
-            print("22"*10)
         else:
             print(f"\nYAHOYA\n")
         cls.unique_game_mapping()
@@ -167,9 +158,6 @@ class EventLoopManager:
             There is no game running with that channel name.
             So check if recieved event is CREATE
             """
-            print(f"\nASDFASDFASDFASDF\n")
-            print(f"{player_id}")
-            print(f"\nASDFASDFASDFASDF\n")
             RemoteGameInput.try_create(cls, player_id, event_dict)
             return None
         if game_obj.game_mode == 'remote':
@@ -225,11 +213,10 @@ class EventLoopManager:
     def unique_game_mapping(cls):
         """
         Retrieve a dictionary mapping each unique game_id to a list of player_ids.
-        Returns a dictionary where the key is game_id and the value is a list of player_ids.
+        Returns a dictionary where the key is game_id and the value is a list of 
+            player ids that have the same game.
         """
-        print("0"*20)
         for player_id, game in cls.running.items():
-            print("\n Im in\n")
             if game not in cls.running_games:
                 cls.running_games[game] = []  # Initialize a list for new game_ids
             cls.running_games[game].append(player_id)  # Append the player_id

@@ -36,7 +36,6 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
         self.game_engine.connect(self.player_id, self.send_game_message)
         # dont forget to set timout callback
 
-        
     async def disconnect(self, *arg, **kwrags):
         self.game_engine.disconnect(self.player_id)
     
