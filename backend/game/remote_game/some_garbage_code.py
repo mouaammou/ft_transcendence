@@ -21,7 +21,7 @@ class EventLoopManager:
             or use channel name as layer group name
     """
     running = {} # channel name as an id for every game
-    running_games = {}
+    games = {}
     finished = []
     _event_loop_task = None
     game_class = RemoteGameLogic
@@ -34,26 +34,44 @@ class EventLoopManager:
             await asyncio.sleep(1/60)
 
     @classmethod
-    def _update(cls):
-        print("\n I HAVE TO GO BACK UNTILL I GOT A FRIEND TO PLAY WITH\n")
-        print(f"\n{len(cls.running_games)}\n")
-        print(f"\nrunning --> {len(cls.running)}\n") 
-        for game, player_ids in cls.running_games.items():
+    def _update(cls): 
+        for player_id, game in cls.running.items():
+            if game not in cls.games:
+                cls.games[game.game_id] = []  # Initialize a list for new game_ids
+                print("1\n")  # Line 1
+            cls.games[game.game_id].append(player_id)  # Append the player_id
+            print("2\n")  # Line 2
+
+        print(f"\nrunning --> {len(cls.games)}\n") 
+        print("3\n")  # Line 3
+
+        for game, player_ids in cls.games.items():
             print(f"\ngame id --> {game.game_id}\n")
+            print("4\n")  # Line 4
+
             print(f"\ngame is fulfilled --> {game.fulfilled}\n")
+            print("5\n")  # Line 5
+
             if game.fulfilled == False:
                 # print("\ngame go out\n")
+                print("6\n")  # Line 6
                 return
-            frame :dict = game.update() 
+
+            frame: dict = game.update()
+            print("7\n")  # Line 7
+
             # print(f"\ngame frame: {frame}\n")
-            # if game.is_finished():     
-            #     cls.finished.append(player_id)
-            #     cls._save_finished(game)
+            if game.is_finished():   
+                cls.finished.append(player_id)
+                print("8\n")  # Line 8
+                cls._save_finished(game)
+
             for player_id in player_ids:
-                cls._dispatch_send_event(player_id, game, frame) 
+                cls._dispatch_send_event(player_id, game, frame)
+                print("9\n")  # Line 9
 
     @classmethod
-    def _save_finished(cls, game_obj): 
+    def _save_finished(cls, game_obj):
         # finished games here
         # do your things here
         print(game_obj)
@@ -86,7 +104,6 @@ class EventLoopManager:
                 print(f"\nGame obj error \n")
             game_obj.set_game_mode(game_mode)
             cls.running[player_id] = game_obj
-            print("11"*10)
         elif game_obj is None:
             game_obj = cls.game_class()
             if (game_obj.player_1 is None):
@@ -95,13 +112,11 @@ class EventLoopManager:
                 game_obj.player_2 = player_id
             game_obj.set_game_mode(game_mode)
             cls.running[player_id] = game_obj
-            print("22"*10)
         else:
             print(f"\nYAHOYA\n")
-        cls.unique_game_mapping()
         # else:
         #     game_obj.disconnected = False # disconnetion class used here
-        #RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
+        # RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
         
     
     @classmethod
@@ -148,7 +163,7 @@ class EventLoopManager:
     def connect(cls, player_id, send_game_message):
         cls.run_event_loop()
         if not cls._reconnect(player_id, send_game_message):
-           RemoteGameOutput.add_callback(player_id, send_game_message)
+            RemoteGameOutput.add_callback(player_id, send_game_message)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
@@ -167,9 +182,7 @@ class EventLoopManager:
             There is no game running with that channel name.
             So check if recieved event is CREATE
             """
-            print(f"\nASDFASDFASDFASDF\n")
-            print(f"{player_id}")
-            print(f"\nASDFASDFASDFASDF\n")
+            print(f"\n Player ID:----------------------> {player_id}\n")
             RemoteGameInput.try_create(cls, player_id, event_dict)
             return None
         if game_obj.game_mode == 'remote':
@@ -203,7 +216,7 @@ class EventLoopManager:
         if game_obj is None:
             return
         if game_obj.game_mode == 'remote':
-           RemoteGameOutput.send(player_id, frame)
+            RemoteGameOutput.send(player_id, frame)
             # add middleware for remote game here
     
     @classmethod
@@ -221,7 +234,6 @@ class EventLoopManager:
                 return game
         return None
 
-    @classmethod
     def unique_game_mapping(cls):
         """
         Retrieve a dictionary mapping each unique game_id to a list of player_ids.
@@ -230,6 +242,6 @@ class EventLoopManager:
         print("0"*20)
         for player_id, game in cls.running.items():
             print("\n Im in\n")
-            if game not in cls.running_games:
-                cls.running_games[game] = []  # Initialize a list for new game_ids
-            cls.running_games[game].append(player_id)  # Append the player_id
+            if game not in cls.games:
+                cls.games[game.game_id] = []  # Initialize a list for new game_ids
+            cls.games[game.game_id].append(player_id)  # Append the player_id

@@ -24,7 +24,7 @@ output events:
 
 from .game import RemoteGameLogic
 
-class LocalGameOutputMiddleware:
+class RemoteGameOutput:
     callbacks = {}
     
     @classmethod
@@ -53,7 +53,7 @@ class LocalGameOutputMiddleware:
         send_task(data)
 
 
-class LocalGameInputMiddleware:
+class RemoteGameInput:
 
     @classmethod
     def recieved_dict_text_data(cls, game_obj, side, dict_text_data):
