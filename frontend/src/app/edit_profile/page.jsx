@@ -79,65 +79,140 @@ const EditProfile = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Edit Profile</h1>
-      <div className="edit-profile">
-        <form onSubmit={UpdateProfile} method="POST" encType="multipart/form-data">
-          <div className="avatar_field">
-            <label>Change Avatar</label>
-            <input type="file" name="avatar" onChange={handle_avatar} />
-            <img src={data?.avatar} alt="profile_pic" width={200} height={200} />
-          </div>
-          <div className="input_field">
-            <label>username</label>
-            <input type="text" placeholder="username" name="username" onChange={handleChange} />
-          </div>
-          <div className="input_field">
-            <label>Email</label>
-            <input onChange={handleChange} type="email" placeholder="Email" name="email" />
-          </div>
-          <div className="input_field">
-            <label>First Name</label>
-            <input onChange={handleChange} type="text" placeholder="First Name" name="first_name" />
-          </div>
-          <div className="input_field">
-            <label>Last Name</label>
-            <input onChange={handleChange} type="text" placeholder="Last Name" name="last_name" />
-          </div>
-          <br />
-          <h2>Change Password</h2>
-          <div className="input_field">
-            <label>Password</label>
-            <input onChange={handleChange} type="password" placeholder="Password" name="password" />
-          </div>
-          <div className="input_field">
-            <label>Confirm Password</label>
-            <input
-              onChange={handleChange}
-              type="password"
-              placeholder="Confirm Password"
-              name="confirmPassword"
-            />
-          </div>
-          <button type="submit">Update</button>
-          <br />
-          <br />
-          <div>
-            {errors.success}
-            <br />
-            {errors.username}
-            <br />
-            {errors.email}
-            <br />
-            {errors.Error}
-            <br />
-            {errors.avatar}
-          </div>
-        </form>
+return (
+	<div className='edit-profile-page container '>
+      <div className="edit-profile ">
+			<form onSubmit={UpdateProfile} method="POST" encType="multipart/form-data">
+				<div className="avatar_field_update flex justify-center items-center max-md:flex-wrap gap-20">
+
+					<div className="w-40 h-40 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
+						<img className="w-full h-full object-cover" src={data.avatar} alt="profile picture" />
+					</div>
+
+					<div className="relative inline-block mt-12">
+						{/* <!-- Custom Button --> */}
+						<button className="rounded-md bg-white text-black px-6 py-3 text-[1rem] hover:bg-blue-600 focus:outline-none">
+							Change Avatar
+						</button>
+						
+						{/* <!-- Hidden File Input --> */}
+						<input
+							type="file"
+							name="avatar"
+							className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+							onChange={handle_avatar}
+						/>
+					</div>
+
+				</div>
+
+				{/*======== change user data */}
+				<div className="change-user-data mt-[5rem]">
+					{/* fistname & lastname */}
+					<div className="firtname_lastname flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+						{/* valid input */}
+						<div className="input_field w-full">
+							<label className="block font-medium mb-2">Firstname</label>
+							<input 
+								type="text" 
+								placeholder="Enter your Firstname" 
+								name="firstname" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+						{/* valid input */}
+						<div className="input_field w-full">
+							<label className="block font-medium mb-2">Lastname</label>
+							<input 
+								type="text" 
+								placeholder="Enter your lastname" 
+								name="lastname" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+
+					</div>
+					{/* email & username */}
+					<div className="email_username flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+						{/* valid input */}
+						<div className="input_field mb-4 w-full">
+							<label className="block font-medium mb-2">Email</label>
+							<input 
+								type="text" 
+								placeholder="Enter your Email" 
+								name="Email" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+						{/* valid input */}
+						<div className="input_field mb-4 w-full">
+							<label className="block font-medium mb-2">Username</label>
+							<input 
+								type="text" 
+								placeholder="Enter your username" 
+								name="username" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+
+					</div>
+					<hr className='w-full border-t border-gray-600 h-9 mt-10'/>
+
+					{/* pass & confirm pass */}
+					<div className="password_confirpass flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+						{/* valid input */}
+						<div className="input_field mb-4 w-full">
+							<label className="block font-medium mb-2">Password</label>
+							<input 
+								type="password" 
+								placeholder="Enter your password" 
+								name="password" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+						{/* valid input */}
+						<div className="input_field mb-4 w-full">
+							<label className="block font-medium mb-2">Confirm password</label>
+							<input 
+								type="password" 
+								placeholder="Enter your confirm password" 
+								name="confirm password" 
+								onChange={handleChange} 
+								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+							/>
+						</div>
+						{/* end valid input */}
+
+					</div>
+
+					<button type="submit" className='rounded-md bg-my_blue px-6 py-3 text-[1rem]'>Save Changes</button>
+				</div>
+				{/*======== change user data */}
+				<div>
+				{errors.success}
+				<br />
+				{errors.username}
+				<br />
+				{errors.email}
+				<br />
+				{errors.Error}
+				<br />
+				{errors.avatar}
+				</div>
+		</form>
       </div>
-    </div>
-  );
+	</div>
+);
 };
 
 export default EditProfile;
