@@ -1,12 +1,14 @@
 'use client';
-import HorizontalLine from './HorizontalLine.jsx';
-import CustomButton from './CustomButton.jsx';
-import '../../Styles/profile/profile.css';
-import Cart from './Cart.jsx';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import useWebSocket from '@components/websocket/websocket';
+import { MdOutlineAlternateEmail } from 'react-icons/md';
+import { MdDataSaverOff } from 'react-icons/md';
+import { IoMdPhonePortrait } from 'react-icons/io';
+import { TfiStatsUp } from "react-icons/tfi";
+import { GrHistory } from "react-icons/gr";
+
 
 const Profile = () => {
   const { isConnected, messages } = useWebSocket('ws://localhost:8000/ws/online/');
@@ -28,150 +30,371 @@ const Profile = () => {
     fetch_profile();
   }, []);
 
-  return (
-    <>
-      <div className="profile">
-        <div className="profile-section">
-          <div className="profile-pic-name">
-            <div className="">
-              <img className="profile-pic" src={data?.avatar} alt="profile_pic" />
-            </div>
-            <div className="profile-name-btn">
-              <div className="profile-name">{data?.username}</div>
-              <button className="edit-btn">
-                <Link href="/edit_profile">
-                  Edit Profile
-                  <img className="edit-pen" src="EditPen.svg" alt="" />
-                </Link>
-              </button>
-            </div>
-          </div>
-          <div className="profile-level">
-            <p>level</p>
-            <img src="levelBar.svg" alt="" />
-          </div>
-          <HorizontalLine lWidth="540px" />
-          <div className="info">
-            <p>Infos</p>
-            <div className="info-section">
-              {/* <div>
-								<img src="/call.svg" alt="" />
-							</div> */}
-              <div className="sps-info">Username : {data?.username}</div>
-            </div>
-            <div className="info-section">
-              {/* <div>
-								<img src="/email.svg" alt="" />
-							</div> */}
-              <div className="sps-info">email: {data?.email}</div>
-            </div>
-            <div className="info-section">
-              {/* <div>
-								<img src="/linkedin.svg" alt="" />
-							</div> */}
-              <div className="sps-info">
-                first_name: {data?.first_name}
-                <br />
-                <br />
-                last_name: {data?.last_name}
-              </div>
+return (
+	<div className="profile container max-md:p-3 overflow-hidden">
+      {/* user avatar and infos */}
+      <div className="profile-top-infos flex justify-center items-center gap-[20rem] max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
+        <div className="profile-pic-name flex items-start justify-center flex-col gap-4 max-md:items-center">
+          {/* avatar */}
+          <div className="flex items-start gap-4 max-md:items-center max-md:flex-col max-md:justify-center max-md:gap-1">
+            {/* the avatar */}
+            <div className="w-52 h-52 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
+              <img className="w-full h-full object-cover" src={data.avatar} alt="profile picture" />
             </div>
 
-            {/* for websocket online/offline */}
-            <div>
-              <h1>WebSocket Status: {isConnected ? 'Connected' : 'Disconnected'}</h1>
-              <div>
-                <h2>Messages:</h2>
-                <ul>
-                  {messages.map((msg, index) => (
-                    <li key={index}>{JSON.stringify(msg)}</li>
-                  ))}
-                </ul>
-              </div>
+            {/* username & nickname */}
+            <div className="mt-24 max-md:mt-3">
+              <h3>{data?.username}</h3>
             </div>
           </div>
-          <HorizontalLine lWidth="540px" />
-          <div className="badges-collected">
-            <p>Badges collected</p>
-            <div className="badges">
-              <img src="badge1.svg" alt="badge1" />
-              <img className="ramen" src="badge3.svg" alt="badge3" />
-              <img src="badge2.svg" alt="badge2" />
-              <img src="badge4.svg" alt="badge4" />
-            </div>
+
+          <div className="profile-update-button">
+            <button className="edit-btn rounded-md bg-white text-black px-6 py-3 text-[1rem]">
+              <Link href="/edit_profile">Update Profile</Link>
+            </button>
           </div>
         </div>
-        <div>
-          <hr
-            style={{
-              border: '0.5px solid gray',
-              height: '430px',
-              width: '0px',
-              position: 'absolute',
-              top: '380px',
-            }}
-          />
-        </div>
-        <div className="friends-section">
-          <div className="title">
-            <p>Friends</p>
-            <HorizontalLine lWidth="258px" />
-          </div>
-          <div className="cards">
-            <div className="recent-activity">
-              <div className="title-div">
-                <div>Recent activity</div>
-                <div className="see-all">See all</div>
-              </div>
-              <Cart cartColor="#797979" imgg="/samjaabo.jpeg" name="Said amjaabou" />
-              <Cart cartColor="#797979" imgg="/mouad.jpeg" name="Mouad Tsetta" />
-              <Cart cartColor="#797979" imgg="/user2.svg" name="Mouad lem9awd" />
-              <Cart cartColor="#797979" imgg="/med.jpeg" name="ching chong" />
+
+        {/* display user infos */}
+        <div className="user-infos">
+          <div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-72">
+            <div className="flex justify-center items-center gap-7 py-3">
+              <MdOutlineAlternateEmail className="bg-white text-black w-8 h-8 p-1 rounded-full" />
+              <span>email: {data?.email}</span>
             </div>
-            <div className="new-members">
-              <div className="title-div">
-                <div>New members</div>
-                <div className="see-all">See all</div>
-              </div>
-              <Cart
-                cartColor="rgba(255, 255, 255, 0.05)"
-                imgg="/avatar.webp"
-                name="Lina Gartitoz"
-              />
-              <Cart
-                cartColor="rgba(255, 255, 255, 0.05)"
-                imgg="/avatar3.jpeg"
-                name="Bsisi 3akh3oukh "
-              />
-              <Cart cartColor="rgba(255, 255, 255, 0.05)" imgg="/avatar4.jpeg" name="Hmida lamba" />
-              <Cart
-                cartColor="rgba(255, 255, 255, 0.05)"
-                imgg="/oredoine.webp"
-                name="Oussama Lapay"
-              />
+            <div className="flex justify-center items-center gap-7 py-3">
+              <MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
+              <span>first_name: {data?.first_name}</span>
             </div>
-          </div>
-          <div className="statistics">
-            <div className="title">
-              <p>Statistics</p>
-              <HorizontalLine lWidth="258px" />
+            <div className="flex justify-center items-center gap-7 py-3">
+              <MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
+              <span>last_name: {data?.last_name}</span>
             </div>
-            <div className="buttons">
-              <div>
-                <CustomButton myLabel={'Matches'} count={46} color="#E9C46A" />
-              </div>
-              <div>
-                <CustomButton myLabel={'Wins'} count={40} color="#2A9D8F" />
-              </div>
-              <div>
-                <CustomButton myLabel={'Loses'} count={6} color="#E63946" />
-              </div>
+            <div className="flex justify-center items-center gap-7 py-3">
+              <IoMdPhonePortrait className="bg-white text-black w-8 h-8 p-1 rounded-full" />
+              <span>phone number: 06666666666</span>
             </div>
           </div>
         </div>
       </div>
-    </>
-  );
+      {/* user level */}
+      <div className="profile-level h-full mt-4 mx-auto w-[83%] max-xl:w-[95%]">
+        <div className="bg-gray-200 rounded-md dark:bg-gray-700 h-10 text-center overflow-hidden">
+          <div
+            className="bg-darkgreen text-white text-center p-0.5 h-full"
+            style={{ width: '45%' }}
+          >
+            <div className="leading-9">Level 45%</div>
+          </div>
+        </div>
+      </div>
+
+
+      {/* for stats charts and history */}
+      <div className="user-stats-history flex justify-between items-start flex-wrap pt-9">
+
+			{/* user history: games 1v1 */}
+			<div className="user-history mx-auto p-4">
+				<div className="flex justify-between items-center mb-1">
+					<div className="text-base font-medium text-brand-500">
+						<GrHistory className="inline-block mx-2"/>
+						Match History
+					</div>
+				</div>
+
+				<div className='max-h-96 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent scroll-smooth'>
+					{/* <!-- Match Entry 1--> */}
+					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+						{/* <!-- User Profile and Basic Info --> */}
+						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
+							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
+							<div>
+								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
+								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+							</div>
+						</div>
+
+						{/* <!-- Match Details --> */}
+						<div className="flex flex-col sm:flex-row items-center justify-between">
+							{/* <!-- Gauge Component --> */}
+							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
+								{/* <!-- Value Text --> */}
+								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
+									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+								</div>
+							</div>
+
+							{/* <!-- Match Result --> */}
+							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
+								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
+								<div>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/* <!-- Match Entry 1--> */}
+					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+						{/* <!-- User Profile and Basic Info --> */}
+						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
+							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
+							<div>
+								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
+								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+							</div>
+						</div>
+
+						{/* <!-- Match Details --> */}
+						<div className="flex flex-col sm:flex-row items-center justify-between">
+							{/* <!-- Gauge Component --> */}
+							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
+								{/* <!-- Value Text --> */}
+								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
+									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+								</div>
+							</div>
+
+							{/* <!-- Match Result --> */}
+							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
+								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
+								<div>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/* <!-- Match Entry 1--> */}
+					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+						{/* <!-- User Profile and Basic Info --> */}
+						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
+							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
+							<div>
+								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
+								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+							</div>
+						</div>
+
+						{/* <!-- Match Details --> */}
+						<div className="flex flex-col sm:flex-row items-center justify-between">
+							{/* <!-- Gauge Component --> */}
+							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
+								{/* <!-- Value Text --> */}
+								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
+									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+								</div>
+							</div>
+
+							{/* <!-- Match Result --> */}
+							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
+								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
+								<div>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/* <!-- Match Entry 1--> */}
+					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+						{/* <!-- User Profile and Basic Info --> */}
+						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
+							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
+							<div>
+								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
+								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+							</div>
+						</div>
+
+						{/* <!-- Match Details --> */}
+						<div className="flex flex-col sm:flex-row items-center justify-between">
+							{/* <!-- Gauge Component --> */}
+							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
+								{/* <!-- Value Text --> */}
+								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
+									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+								</div>
+							</div>
+
+							{/* <!-- Match Result --> */}
+							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
+								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
+								<div>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/* <!-- Match Entry 1--> */}
+					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+						{/* <!-- User Profile and Basic Info --> */}
+						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
+							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
+							<div>
+								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
+								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+							</div>
+						</div>
+
+						{/* <!-- Match Details --> */}
+						<div className="flex flex-col sm:flex-row items-center justify-between">
+							{/* <!-- Gauge Component --> */}
+							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
+								{/* <!-- Value Text --> */}
+								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
+									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+								</div>
+							</div>
+
+							{/* <!-- Match Result --> */}
+							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
+								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
+								<div>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
+									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+					
+			</div>
+
+			{/* user statistics */}
+			<div className='user-stats mx-auto p-4'>
+				<div className="stats-icon text-base font-medium text-brand-500"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
+				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 py-5">
+
+					{/* <!-- Gauge Component --> */}
+					<div className="relative size-40">
+					<svg
+					className="rotate-[135deg] size-full"
+					viewBox="0 0 36 36"
+					xmlns="http://www.w3.org/2000/svg"
+					>
+					{/* <!-- Background Circle (Gauge) --> */}
+					<circle
+						cx="18"
+						cy="18"
+						r="16"
+						fill="none"
+						className="stroke-current text-purple-200 dark:text-neutral-700"
+						stroke-width="1"
+						stroke-dasharray="75 100"
+					></circle>
+
+					{/* <!-- Gauge Progress --> */}
+					<circle
+						cx="18"
+						cy="18"
+						r="16"
+						fill="none"
+						className="stroke-current text-purple-600 dark:text-purple-500"
+						stroke-width="2"
+						stroke-dasharray="18.75 100"
+					></circle>
+					</svg>
+
+					{/* <!-- Value Text --> */}
+					<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+					<span className="text-4xl font-bold text-purple-600 dark:text-purple-500">25</span>
+					<span className="text-purple-600 dark:text-purple-500 block">mph</span>
+					</div>
+					</div>
+					{/* <!-- End Gauge Component --> */}
+
+					{/* <!-- Gauge Component --> */}
+					<div className="relative size-40">
+						<svg
+						className="rotate-[135deg] size-full"
+						viewBox="0 0 36 36"
+						xmlns="http://www.w3.org/2000/svg"
+						>
+						{/* <!-- Background Circle (Gauge) --> */}
+						<circle
+							cx="18"
+							cy="18"
+							r="16"
+							fill="none"
+							className="stroke-current text-green-200 dark:text-neutral-700"
+							stroke-width="1"
+							stroke-dasharray="75 100"
+							stroke-linecap="round"
+						></circle>
+						{/*  */}
+						{/* <!-- Gauge Progress --> */}
+						<circle
+							cx="18"
+							cy="18"
+							r="16"
+							fill="none"
+							className="stroke-current text-green-500 dark:text-green-500"
+							stroke-width="2"
+							stroke-dasharray="56.25 100"
+							stroke-linecap="round"
+						></circle>
+						</svg>
+
+					{/* <!-- Value Text --> */}
+						<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+							<span className="text-4xl font-bold text-green-600 dark:text-green-500">75</span>
+							<span className="text-green-600 dark:text-green-500 block">Score</span>
+						</div>
+					</div>
+					{/* <!-- End Gauge Component --> */}
+
+					{/* <!-- Gauge Component --> */}
+					<div className="relative size-40">
+						<svg
+						className="rotate-[135deg] size-full"
+						viewBox="0 0 36 36"
+						xmlns="http://www.w3.org/2000/svg"
+						>
+							{/* <!-- Background Circle (Gauge) --> */}
+							<circle
+								cx="18"
+								cy="18"
+								r="16"
+								fill="none"
+								className="stroke-current text-orange-100 dark:text-neutral-700"
+								stroke-width="1"
+								stroke-dasharray="75 100"
+								stroke-linecap="round"
+							></circle>
+							{/* <!-- Gauge Progress --> */}
+							<circle
+								cx="18"
+								cy="18"
+								r="16"
+								fill="none"
+								className="stroke-current text-orange-600 dark:text-orange-500"
+								stroke-width="2"
+								stroke-dasharray="56.25 100"
+								stroke-linecap="round"
+							></circle>
+						</svg>
+
+						{/* <!-- Value Text --> */}
+						<div className="absolute top-9 start-1/2 transform -translate-x-1/2 text-center">
+							<span className="text-2xl font-bold text-orange-600 dark:text-orange-500">50</span>
+							<span className="text-xs text-orange-600 dark:text-orange-500 block">Average</span>
+						</div>
+					</div>
+					{/* <!-- End Gauge Component --> */}
+				</div>
+				
+			</div>
+      </div>
+	</div>
+);
 };
 
 export default Profile;

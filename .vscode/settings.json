@@ -1,0 +1,29 @@
+{
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnPaste": true,
+	"editor.formatOnSave": true,
+	  // Enable format on save for all files
+	"editor.formatOnSave": true,
+
+	// Set Prettier as the default formatter for JavaScript and React JSX
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	// Prettier settings
+	"prettier.singleQuote": true,      // Use single quotes instead of double quotes
+	"prettier.jsxSingleQuote": true,   // Use single quotes in JSX
+	"prettier.semi": false,            // No semicolons at the end of lines
+	"prettier.trailingComma": "all",   // Trailing commas wherever possible
+	"prettier.bracketSpacing": true,   // Spaces between brackets
+	"prettier.tabWidth": 2 ,
+	"prettier.documentSelectors": [
+		"**/*.js",
+		"**/*.jsx",
+		"**/*.ts",
+		"**/*.tsx"
+	]
+}

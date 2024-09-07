@@ -120,11 +120,6 @@
   cursor: pointer;
 }
 
-.sign-wit {
-  pointer-events: none;
-  width: 100%;
-}
-
 .forgot-password {
   display: flex;
   align-items: center;
@@ -185,8 +180,8 @@
   }
 
   .login-main-container .main-login input {
-    font-size: unset;
-}
+    font-size: 1rem;
+  }
 
   .login-main-container .main-login input:not(:placeholder-shown) {
     font-family: var(--principaleFont);
@@ -218,12 +213,6 @@
     margin-top: 16px;
     /* align-items: center; */
   }
-
-  .sign-wit {
-    pointer-events: none;
-    width: 80%;
-  }
-
   .logos {
     display: flex;
     justify-content: center;

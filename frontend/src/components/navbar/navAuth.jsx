@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="p-4">
-        <div className="container p-[0px] mx-auto flex flex-row items-center justify-between sm:space-y-0">
+        <div className="container p-[0px] mx-auto flex flex-row items-center justify-center sm:space-y-0">
           <div className="flex items-start justify-start w-full">
             <Image
               src="/new-logo.svg"
@@ -28,14 +28,11 @@ const Navbar = () => {
               <>
                 <Link
                   href="/login"
-                  className="text-black bg-white bg-gradient-to-r from-[#00aabd] via-[#45CCDA] to-[#a9f5fd] px-4 py-2 rounded hover:bg-black hover:text-white transition duration-200"
+                  className="text-black bg-white bg-gradient-to-r from-[#00aabd] via-[#45CCDA] to-[#a9f5fd] px-4 py-2 rounded"
                 >
                   Login
                 </Link>
-                <Link
-                  href="/signup"
-                  className="text-black bg-white px-4 py-2 rounded hover:bg-black hover:text-white transition duration-200"
-                >
+                <Link href="/signup" className="text-black bg-white px-7 py-2 rounded">
                   Signup
                 </Link>
               </>

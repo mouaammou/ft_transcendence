@@ -3,6 +3,8 @@ import styles from '@/styles/navbar/navbar.module.css';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import { IoLogOut } from 'react-icons/io5';
+import { CgMenuLeftAlt } from 'react-icons/cg';
 
 const links = [
   {
@@ -43,20 +45,17 @@ const Links = ({ Logout }) => {
         ))}
 
         <div
-          className="bg-black px-4 py-2 rounded cursor-pointer hover:bg-white hover:text-black transition duration-300"
+          className="group bg-black w-[8rem] px-4 py-2 rounded cursor-pointer hover:bg-white hover:text-black transition duration-300"
           onClick={Logout}
         >
-          Logout
+          <IoLogOut className="h-5 w-5 text-white group-hover:text-black inline mx-2 transition duration-300" />
+          <span className="text-[1rem]">Logout</span>
         </div>
       </div>
 
       {/* for mobile navigation */}
-      <Image
-        src="/menu.png"
-        alt="menu"
-        width={40}
-        height={40}
-        className={styles.menubtn}
+      <CgMenuLeftAlt
+        className={`${styles.menubtn} text-black  bg-white hover:bg-gray-100 p-2 rounded-full shadow-md transition-all duration-300 ease-in-out cursor-pointer w-10 h-10 absolute top-[2rem] right-[1rem]`}
         onClick={() => {
           setIsOpen(prev => !prev);
         }}

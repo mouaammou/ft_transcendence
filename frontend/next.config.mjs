@@ -1,6 +1,7 @@
 // /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  swcMinify: true,
   async rewrites() {
     return [
       {
@@ -9,9 +10,9 @@ const nextConfig = {
       },
     ];
   },
-  // server: {
-  // 	host: '0.0.0.0'`
-  // }
+  images: {
+    domains: ['localhost'], // Add this to allow images from localhost
+  },
 };
 
 export default nextConfig;
