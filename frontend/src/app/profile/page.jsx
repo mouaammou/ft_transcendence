@@ -79,7 +79,7 @@ return (
       </div>
       {/* user level */}
       <div className="profile-level h-full mt-4 mx-auto w-[83%] max-xl:w-[95%]">
-        <div className="bg-gray-200 rounded-md dark:bg-gray-700 h-10 text-center overflow-hidden">
+        <div className="bg-gray-200 rounded-md h-10 text-center overflow-hidden border border-white">
           <div
             className="bg-darkgreen text-white text-center p-0.5 h-full"
             style={{ width: '45%' }}
@@ -91,26 +91,26 @@ return (
 
 
       {/* for stats charts and history */}
-      <div className="user-stats-history flex justify-between items-start flex-wrap pt-9">
+      <div className="user-stats-history flex justify-between items-start flex-wrap pt-9 mt-10">
 
 			{/* user history: games 1v1 */}
 			<div className="user-history mx-auto p-4">
 				<div className="flex justify-between items-center mb-1">
-					<div className="text-base font-medium text-brand-500">
+					<div className="text-xl font-medium text-brand-500">
 						<GrHistory className="inline-block mx-2"/>
 						Match History
 					</div>
 				</div>
 
-				<div className='max-h-96 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent scroll-smooth'>
+				<div className='max-h-96 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-[#ffffff70] scrollbar-track-transparent scroll-smooth'>
 					{/* <!-- Match Entry 1--> */}
-					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+					<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
 						{/* <!-- User Profile and Basic Info --> */}
 						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
 							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
 							<div>
-								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+								<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
+								<p className="text-sm text-gray-600">2023-09-07</p>
 							</div>
 						</div>
 
@@ -120,8 +120,8 @@ return (
 							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
 								{/* <!-- Value Text --> */}
 								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
-									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+									<span className="text-xl font-bold text-purple-600">75</span>
+									<span className="text-purple-600 block text-xs">Score</span>
 								</div>
 							</div>
 
@@ -129,20 +129,20 @@ return (
 							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
 								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
 								<div>
-									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+									<p className="mt-2 text-sm text-gray-600">21 - 18</p>
+									<p className="text-sm text-gray-600 inline">15m 30s</p>
 								</div>
 							</div>
 						</div>
 					</div>
 					{/* <!-- Match Entry 1--> */}
-					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+					<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
 						{/* <!-- User Profile and Basic Info --> */}
 						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
 							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
 							<div>
-								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+								<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
+								<p className="text-sm text-gray-600">2023-09-07</p>
 							</div>
 						</div>
 
@@ -152,8 +152,8 @@ return (
 							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
 								{/* <!-- Value Text --> */}
 								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
-									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+									<span className="text-xl font-bold text-purple-600">75</span>
+									<span className="text-purple-600 block text-xs">Score</span>
 								</div>
 							</div>
 
@@ -161,20 +161,20 @@ return (
 							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
 								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
 								<div>
-									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+									<p className="mt-2 text-sm text-gray-600">21 - 18</p>
+									<p className="text-sm text-gray-600 inline">15m 30s</p>
 								</div>
 							</div>
 						</div>
 					</div>
 					{/* <!-- Match Entry 1--> */}
-					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+					<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
 						{/* <!-- User Profile and Basic Info --> */}
 						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
 							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
 							<div>
-								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+								<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
+								<p className="text-sm text-gray-600">2023-09-07</p>
 							</div>
 						</div>
 
@@ -184,8 +184,8 @@ return (
 							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
 								{/* <!-- Value Text --> */}
 								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
-									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+									<span className="text-xl font-bold text-purple-600">75</span>
+									<span className="text-purple-600 block text-xs">Score</span>
 								</div>
 							</div>
 
@@ -193,20 +193,20 @@ return (
 							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
 								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
 								<div>
-									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+									<p className="mt-2 text-sm text-gray-600">21 - 18</p>
+									<p className="text-sm text-gray-600 inline">15m 30s</p>
 								</div>
 							</div>
 						</div>
 					</div>
 					{/* <!-- Match Entry 1--> */}
-					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+					<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
 						{/* <!-- User Profile and Basic Info --> */}
 						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
 							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
 							<div>
-								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+								<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
+								<p className="text-sm text-gray-600">2023-09-07</p>
 							</div>
 						</div>
 
@@ -216,8 +216,8 @@ return (
 							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
 								{/* <!-- Value Text --> */}
 								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
-									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+									<span className="text-xl font-bold text-purple-600">75</span>
+									<span className="text-purple-600 block text-xs">Score</span>
 								</div>
 							</div>
 
@@ -225,20 +225,20 @@ return (
 							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
 								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
 								<div>
-									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+									<p className="mt-2 text-sm text-gray-600">21 - 18</p>
+									<p className="text-sm text-gray-600 inline">15m 30s</p>
 								</div>
 							</div>
 						</div>
 					</div>
 					{/* <!-- Match Entry 1--> */}
-					<div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
+					<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
 						{/* <!-- User Profile and Basic Info --> */}
 						<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
 							<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
 							<div>
-								<h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">John Doe</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">2023-09-07</p>
+								<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
+								<p className="text-sm text-gray-600">2023-09-07</p>
 							</div>
 						</div>
 
@@ -248,8 +248,8 @@ return (
 							<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
 								{/* <!-- Value Text --> */}
 								<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-									<span className="text-xl font-bold text-purple-600 dark:text-purple-500">75</span>
-									<span className="text-purple-600 dark:text-purple-500 block text-xs">Score</span>
+									<span className="text-xl font-bold text-purple-600">75</span>
+									<span className="text-purple-600 block text-xs">Score</span>
 								</div>
 							</div>
 
@@ -257,8 +257,8 @@ return (
 							<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
 								<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
 								<div>
-									<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">21 - 18</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400 inline">15m 30s</p>
+									<p className="mt-2 text-sm text-gray-600">21 - 18</p>
+									<p className="text-sm text-gray-600 inline">15m 30s</p>
 								</div>
 							</div>
 						</div>
@@ -270,49 +270,12 @@ return (
 
 			{/* user statistics */}
 			<div className='user-stats mx-auto p-4'>
-				<div className="stats-icon text-base font-medium text-brand-500"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
-				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 py-5">
+				<div className="stats-icon text-xl font-medium text-brand-500 text-center max-lg:mt-10"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
+				
+				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 p-5 mt-14 bg-[#ffffff1f] rounded-lg px-8">
 
 					{/* <!-- Gauge Component --> */}
-					<div className="relative size-40">
-					<svg
-					className="rotate-[135deg] size-full"
-					viewBox="0 0 36 36"
-					xmlns="http://www.w3.org/2000/svg"
-					>
-					{/* <!-- Background Circle (Gauge) --> */}
-					<circle
-						cx="18"
-						cy="18"
-						r="16"
-						fill="none"
-						className="stroke-current text-purple-200 dark:text-neutral-700"
-						stroke-width="1"
-						stroke-dasharray="75 100"
-					></circle>
-
-					{/* <!-- Gauge Progress --> */}
-					<circle
-						cx="18"
-						cy="18"
-						r="16"
-						fill="none"
-						className="stroke-current text-purple-600 dark:text-purple-500"
-						stroke-width="2"
-						stroke-dasharray="18.75 100"
-					></circle>
-					</svg>
-
-					{/* <!-- Value Text --> */}
-					<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-					<span className="text-4xl font-bold text-purple-600 dark:text-purple-500">25</span>
-					<span className="text-purple-600 dark:text-purple-500 block">mph</span>
-					</div>
-					</div>
-					{/* <!-- End Gauge Component --> */}
-
-					{/* <!-- Gauge Component --> */}
-					<div className="relative size-40">
+					<div className="relative size-52">
 						<svg
 						className="rotate-[135deg] size-full"
 						viewBox="0 0 36 36"
@@ -324,7 +287,45 @@ return (
 							cy="18"
 							r="16"
 							fill="none"
-							className="stroke-current text-green-200 dark:text-neutral-700"
+							className="stroke-current text-white"
+							stroke-width="1"
+							stroke-dasharray="75 100"
+						></circle>
+
+						{/* <!-- Gauge Progress --> */}
+						<circle
+							cx="18"
+							cy="18"
+							r="16"
+							fill="none"
+							className="stroke-current text-red-500"
+							stroke-width="3"
+							stroke-dasharray="18.75 100"
+						></circle>
+						</svg>
+
+						{/* <!-- Value Text --> */}
+						<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+							<span className="text-4xl font-bold text-red-500">25</span>
+							<span className="text-red-500 block">loses</span>
+						</div>
+					</div>
+					{/* <!-- End Gauge Component --> */}
+
+					{/* <!-- Gauge Component --> */}
+					<div className="relative size-56">
+						<svg
+						className="rotate-[135deg] size-full"
+						viewBox="0 0 36 36"
+						xmlns="http://www.w3.org/2000/svg"
+						>
+						{/* <!-- Background Circle (Gauge) --> */}
+						<circle
+							cx="18"
+							cy="18"
+							r="16"
+							fill="none"
+							className="stroke-current text-white"
 							stroke-width="1"
 							stroke-dasharray="75 100"
 							stroke-linecap="round"
@@ -336,23 +337,23 @@ return (
 							cy="18"
 							r="16"
 							fill="none"
-							className="stroke-current text-green-500 dark:text-green-500"
+							className="stroke-current text-green-500"
 							stroke-width="2"
 							stroke-dasharray="56.25 100"
 							stroke-linecap="round"
 						></circle>
 						</svg>
 
-					{/* <!-- Value Text --> */}
+						{/* <!-- Value Text --> */}
 						<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-							<span className="text-4xl font-bold text-green-600 dark:text-green-500">75</span>
-							<span className="text-green-600 dark:text-green-500 block">Score</span>
+							<span className="text-3xl font-bold text-green-600">75</span>
+							<span className="text-green-600 block">Wins</span>
 						</div>
 					</div>
 					{/* <!-- End Gauge Component --> */}
 
 					{/* <!-- Gauge Component --> */}
-					<div className="relative size-40">
+					<div className="relative size-25">
 						<svg
 						className="rotate-[135deg] size-full"
 						viewBox="0 0 36 36"
@@ -364,7 +365,7 @@ return (
 								cy="18"
 								r="16"
 								fill="none"
-								className="stroke-current text-orange-100 dark:text-neutral-700"
+								className="stroke-current text-white"
 								stroke-width="1"
 								stroke-dasharray="75 100"
 								stroke-linecap="round"
@@ -375,7 +376,7 @@ return (
 								cy="18"
 								r="16"
 								fill="none"
-								className="stroke-current text-orange-600 dark:text-orange-500"
+								className="stroke-current text-blue-600"
 								stroke-width="2"
 								stroke-dasharray="56.25 100"
 								stroke-linecap="round"
@@ -384,8 +385,8 @@ return (
 
 						{/* <!-- Value Text --> */}
 						<div className="absolute top-9 start-1/2 transform -translate-x-1/2 text-center">
-							<span className="text-2xl font-bold text-orange-600 dark:text-orange-500">50</span>
-							<span className="text-xs text-orange-600 dark:text-orange-500 block">Average</span>
+							<span className="text-4xl font-bold text-blue-600">50</span>
+							<span className="text-blue-600 block">Average</span>
 						</div>
 					</div>
 					{/* <!-- End Gauge Component --> */}
