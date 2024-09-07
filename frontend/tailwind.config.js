@@ -12,6 +12,7 @@ module.exports = {
 			bchannel: '#0e2742',
 			my_blue: '#46CCDA',
 			darkgreen: '#16486b',
+			btnColor: '#164465'
 		},
 		fontFamily: {
 			sans: ['Inter', 'SUSE', 'Roboto', 'Lato', 'sans-serif'],

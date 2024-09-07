@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth/loginContext';
 import { postData } from '@/services/apiCalls';
+import { SiAuthentik } from "react-icons/si";
+
 
 const EditProfile = () => {
   const [errors, setErrors] = useState({});
@@ -83,33 +85,39 @@ return (
 	<div className='edit-profile-page container '>
       <div className="edit-profile ">
 			<form onSubmit={UpdateProfile} method="POST" encType="multipart/form-data">
-				<div className="avatar_field_update flex justify-center items-center max-md:flex-wrap gap-20">
+				<div className="avatar_field_update flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 max-md:mt-10">
 
 					<div className="w-40 h-40 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
 						<img className="w-full h-full object-cover" src={data.avatar} alt="profile picture" />
 					</div>
 
-					<div className="relative inline-block mt-12">
-						{/* <!-- Custom Button --> */}
-						<button className="rounded-md bg-white text-black px-6 py-3 text-[1rem] hover:bg-blue-600 focus:outline-none">
-							Change Avatar
-						</button>
-						
-						{/* <!-- Hidden File Input --> */}
-						<input
-							type="file"
-							name="avatar"
-							className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-							onChange={handle_avatar}
-						/>
+					<div className="flex justify-center items-center gap-10 max-lg:gap-4 flex-wrap mt-14 max-md:mt-0">
+						<div className="relative inline-block">
+							{/* <!-- Custom Button --> */}
+							<button className="rounded-md bg-white text-black px-6 py-3 text-[1rem] hover:bg-blue-600 focus:outline-none">
+								Change Avatar
+							</button>
+							{/* <!-- Hidden File Input --> */}
+							<input
+								type="file"
+								name="avatar"
+								className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+								onChange={handle_avatar}
+							/>
+						</div>
+						<div className="bg-btnColor border border-white cursor-pointer text-white font-semibold px-6 py-2 rounded-md hover:bg-green-600 outline-none">
+								<SiAuthentik className='inline text-[1.8rem]'/>
+								<span className='p-3'>Activate 2FA</span>
+						</div>
 					</div>
+					
 
 				</div>
 
 				{/*======== change user data */}
 				<div className="change-user-data mt-[5rem]">
 					{/* fistname & lastname */}
-					<div className="firtname_lastname flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+					<div className="firtname_lastname flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full my-6">
 						{/* valid input */}
 						<div className="input_field w-full">
 							<label className="block font-medium mb-2">Firstname</label>
@@ -117,8 +125,8 @@ return (
 								type="text" 
 								placeholder="Enter your Firstname" 
 								name="firstname" 
-								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								onChange={handleChange} 	
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
@@ -130,14 +138,14 @@ return (
 								placeholder="Enter your lastname" 
 								name="lastname" 
 								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
 
 					</div>
 					{/* email & username */}
-					<div className="email_username flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+					<div className="email_username flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full my-6">
 						{/* valid input */}
 						<div className="input_field mb-4 w-full">
 							<label className="block font-medium mb-2">Email</label>
@@ -146,7 +154,7 @@ return (
 								placeholder="Enter your Email" 
 								name="Email" 
 								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
@@ -158,16 +166,16 @@ return (
 								placeholder="Enter your username" 
 								name="username" 
 								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
 
 					</div>
-					<hr className='w-full border-t border-gray-600 h-9 mt-10'/>
+
 
 					{/* pass & confirm pass */}
-					<div className="password_confirpass flex justify-center items-center max-md:flex-wrap gap-20 w-full">
+					<div className="password_confirpass flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full">
 						{/* valid input */}
 						<div className="input_field mb-4 w-full">
 							<label className="block font-medium mb-2">Password</label>
@@ -176,7 +184,7 @@ return (
 								placeholder="Enter your password" 
 								name="password" 
 								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
@@ -188,15 +196,16 @@ return (
 								placeholder="Enter your confirm password" 
 								name="confirm password" 
 								onChange={handleChange} 
-								className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900"
+								className="edit-input-field"
 							/>
 						</div>
 						{/* end valid input */}
 
 					</div>
 
-					<button type="submit" className='rounded-md bg-my_blue px-6 py-3 text-[1rem]'>Save Changes</button>
+					<button type="submit" className='rounded-md bg-my_blue px-6 py-3 text-[1rem] mt-5'>Save Changes</button>
 				</div>
+
 				{/*======== change user data */}
 				<div>
 				{errors.success}
@@ -209,7 +218,7 @@ return (
 				<br />
 				{errors.avatar}
 				</div>
-		</form>
+			</form>
       </div>
 	</div>
 );
