@@ -20,16 +20,53 @@ class EventLoopManager:
         remote: # set a class to resolve channel names to a game key
             or use channel name as layer group name
     """
-    running = {} # channel name as an id for every game
-    running_games = {}
-    finished = []
+    running = {} # player id as the key for every game
+    running_games = {} # game instance as the key and the two users in a list as value
+    finished = [] # finished players
+    finished_games = [] # finished games
     _event_loop_task = None
     game_class = RemoteGameLogic
 
+
+    @classmethod
+    def connect(cls, player_id, send_game_message):
+        cls.run_event_loop()
+        if not cls._reconnect(player_id, send_game_message):
+           RemoteGameOutput.add_callback(player_id, send_game_message)
+        # always on connect set send callback
+        # because the CREATE event assumes that
+        # send calback is already set on connect
+        
+            
+    @classmethod
+    def _reconnect(cls, player_id, send_callback):
+        # """used to run new game instance in the event loop"""
+        game_obj = cls.running.get(player_id)
+        if game_obj is None:
+            return False
+        print('************ RECONNECT *************')
+        RemoteGameOutput.add_callback(player_id, send_callback, game_obj=game_obj)
+        game_obj.disconnected = False # disconnetion class used here
+        # cls.play(player_id) # i think i dont need this on reconnection
+        #      beause reconnection controls only disconnection properties not the stop or play properties
+        return True
+     
+         
+    @classmethod
+    def run_event_loop(cls) -> None:
+        if cls._event_loop_task is not None:
+            return
+        print("================== EVENT LOOP CREATED ================")
+        task = cls._event_loop()
+        cls._event_loop_task = asyncio.create_task(task)
+        
+        
     @classmethod
     async def _event_loop(cls):
         while True:
+            print("updating\n")
             cls._update() 
+            print("cleaning\n")
             cls._clean()
             await asyncio.sleep(1/60)
 
@@ -39,24 +76,38 @@ class EventLoopManager:
             if game.fulfilled == False:
                 return
             frame :dict = game.update()
-            # if game.is_finished():     
-            #     cls.finished.append(player_id)
-            #     cls._save_finished(game)
+            if game.is_finished():
+                cls._save_finished(player_ids, game)     
+                print("go in finished\n")
+            print("1\n")
             for player_id in player_ids:
+                print("2\n")
                 cls._dispatch_send_event(player_id, game, frame) 
+            print("3\n")
 
     @classmethod
-    def _save_finished(cls, game_obj): 
-        # finished games here
-        # do your things here
+    def _save_finished(cls, player_ids, game_obj): 
+        for player_id in player_ids:
+            print(f"{player_id}  is appended\n")
+            cls.finished.append(player_id)
+        cls.finished_games.append(game_obj)
         print(game_obj)
-        pass
+        # pass
         
     @classmethod
     def _clean(cls):
+        print(f"im in clean func --> {len(cls.finished)}\n")
         for player_id in cls.finished:
             cls.running.pop(player_id)
+            print(f"pop player instance ----->{ player_id}")
+        for game in cls.finished_games:
+            print("pop game instance")
+            cls.running_games.pop(game)
         cls.finished.clear()
+        cls.finished_games.clear()
+        print("out of clean func\n")
+        # wait(10000000000000000000)
+        # print("yaaaawww\n")
 
     @classmethod
     def add(cls, player_id, game_mode='remote'):
@@ -70,43 +121,21 @@ class EventLoopManager:
         """
         print("******** ATOMIC OPERATION ********: add new game")
         game_obj = cls.pending_game()
-        if game_obj is not None:
-            if (game_obj.player_1 is None):
-                game_obj.player_1 = player_id
-            elif(game_obj.player_2 is None):
-                game_obj.player_2 = player_id
-            else:
-                print(f"\nGame obj error \n")
-            game_obj.set_game_mode(game_mode)
-            cls.running[player_id] = game_ob
-        elif game_obj is None:
+        if  game_obj is None:
             game_obj = cls.game_class()
-            if (game_obj.player_1 is None):
-                game_obj.player_1 = player_id
-            elif(game_obj.player_2 is None):
-                game_obj.player_2 = player_id
-            game_obj.set_game_mode(game_mode)
-            cls.running[player_id] = game_obj
+        game_obj.set_game_mode(game_mode)
+        if (game_obj.player_1 is None):
+            game_obj.player_1 = player_id
+        elif(game_obj.player_2 is None):
+            game_obj.player_2 = player_id
         else:
             print(f"\nYAHOYA\n")
+        cls.running[player_id] = game_obj #waht would happen if i save the game and then add the players.
         cls.unique_game_mapping()
         # else:
         #     game_obj.disconnected = False # disconnetion class used here
         #RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
         
-    
-    @classmethod
-    def _reconnect(cls, player_id, send_callback):
-        # """used to run new game instance in the event loop"""
-        game_obj = cls.running.get(player_id)
-        if game_obj is None:
-            return False
-        print('************ RECONNECT *************')
-        RemoteGameOutput.add_callback(player_id, send_callback, game_obj=game_obj)
-        game_obj.disconnected = False # disconnetion class used here
-        # cls.play(player_id) # i think i dont need this on reconnection
-        #      beause reconnection controls only disconnection properties not the stop or play properties
-        return True
 
     @classmethod
     def remove(cls, player_id):
@@ -135,19 +164,11 @@ class EventLoopManager:
             return True
         return False
     
-    @classmethod
-    def connect(cls, player_id, send_game_message):
-        cls.run_event_loop()
-        if not cls._reconnect(player_id, send_game_message):
-           RemoteGameOutput.add_callback(player_id, send_game_message)
-        # always on connect set send callback
-        # because the CREATE event assumes that
-        # send calback is already set on connect
     
-    @classmethod
+    @classmethod 
     def recieve(cls, player_id, event_dict):
         """
-        To be called from outside of this class.
+        To be called from outside of this class. 
         Dont forget To handle game events using GAME
         as the key for revieved events.
         """
@@ -193,25 +214,17 @@ class EventLoopManager:
         if game_obj.game_mode == 'remote':
            RemoteGameOutput.send(player_id, frame)
             # add middleware for remote game here
-    
-    @classmethod
-    def run_event_loop(cls) -> None:
-        if cls._event_loop_task is not None:
-            return
-        print("================== EVENT LOOP CREATED ================")
-        task = cls._event_loop()
-        cls._event_loop_task = asyncio.create_task(task)
 
     @classmethod
     def pending_game(cls):
-        for player_id, game in cls.running.items():
+        for game, players in cls.running_games.items():
             if game.fulfilled is False:
                 return game
         return None
 
     @classmethod
     def unique_game_mapping(cls):
-        """
+        """ 
         Retrieve a dictionary mapping each unique game_id to a list of player_ids.
         Returns a dictionary where the key is game_id and the value is a list of 
             player ids that have the same game.
@@ -220,3 +233,4 @@ class EventLoopManager:
             if game not in cls.running_games:
                 cls.running_games[game] = []  # Initialize a list for new game_ids
             cls.running_games[game].append(player_id)  # Append the player_id
+            print(f"yaw  {player_id}\n")        

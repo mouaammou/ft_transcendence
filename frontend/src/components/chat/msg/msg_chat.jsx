@@ -3,7 +3,7 @@ import Image from "next/image";
 import { LiaGamepadSolid } from "react-icons/lia";
 import { ImBlocked } from "react-icons/im";
 import { BsSendFill } from "react-icons/bs";
-import EmojiPicker from 'emoji-picker-react';
+// import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from "react-icons/bs";
 import { TiArrowBack } from "react-icons/ti";
 // import Picker from 'emoji-picker-react';

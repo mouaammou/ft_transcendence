@@ -60,7 +60,7 @@ class RemoteGameInput:
         """
         dict_text_data: is the recieved text data as dict. as it is recieved
         """
-        press = dict_text_data.get('onPress')
+        press = dict_text_data.get('onPress') 
         release = dict_text_data.get('onRelease')
         # if press is not None and press.strip() == 'p':
         #     game_obj.start_game = not game_obj.start_game
@@ -69,20 +69,12 @@ class RemoteGameInput:
         #     game_obj.start_game = not game_obj.start_game
         #     return
         print(f"\n{side}\n")
-        if (side == 'left'):
-            if press is not None:
-                game_obj.on_press('left', press.strip())
-                game_obj.on_press('left', press.strip())
-            elif release is not None:
-                game_obj.on_release('left', release.strip())
-                game_obj.on_release('left', release.strip())
-        elif (side == "right"):
-            if press is not None:
-                game_obj.on_press('right', press.strip())
-                game_obj.on_press('right', press.strip())
-            elif release is not None:
-                game_obj.on_release('right', release.strip())
-                game_obj.on_release('right', release.strip())
+        if press is not None:
+            game_obj.on_press(side, press.strip())
+            game_obj.on_press(side, press.strip())
+        elif release is not None:
+            game_obj.on_release(side, release.strip())
+            game_obj.on_release(side, release.strip())
 
     @classmethod
     def try_create(cls, event_loop_cls, player_id, event_dict):
