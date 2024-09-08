@@ -24,7 +24,7 @@ export default function Friends () {
 					<div className="list-friends-profile">
 
 						{/* DIV TWO users */}
-						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-md:gap-1">
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-sm:gap-1">
 							{/* USER Profile status online in game */}
 							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-4">
 								{/* Profile Picture */}
@@ -76,7 +76,7 @@ export default function Friends () {
 						</div>
 
 						{/* DIV TWO users */}
-						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-md:gap-1">
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-sm:gap-1">
 							{/* USER Profile status online in game */}
 							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-4">
 								{/* Profile Picture */}
@@ -128,7 +128,7 @@ export default function Friends () {
 						</div>
 
 						{/* DIV TWO users */}
-						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-md:gap-1">
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-sm:gap-1">
 							{/* USER Profile status online in tournament*/}
 							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-4">
 								{/* Profile Picture */}
@@ -180,7 +180,7 @@ export default function Friends () {
 						</div>
 
 						{/* DIV TWO users */}
-						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-md:gap-1">
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-10 max-sm:gap-1">
 							{/* USER Profile status online in tournament*/}
 							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-4">
 								{/* Profile Picture */}
@@ -231,7 +231,7 @@ export default function Friends () {
 							</div>
 						</div>
 						{/* DIV TWO users */}
-						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-4 max-md:gap-1">
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-4 max-sm:gap-1">
 							{/* USER Profile status online in tournament*/}
 							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-4">
 								{/* Profile Picture */}
