@@ -18,47 +18,54 @@
 @tailwind utilities;
 
 @layer base {
-  @font-face {
-    font-family: 'SUSE', sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    font-style: normal;
-    src: url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
-  }
+	@font-face {
+		font-family: 'SUSE', sans-serif;
+		font-style: normal;
+		font-weight: 400;
+		font-style: normal;
+		src: url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
+	}
 
-  body {
-    overflow: visible !important;
-    padding: 0;
-    margin: 0;
-  }
+	body {
+		overflow: visible !important;
+		padding: 0;
+		margin: 0;
+	}
 
-  h1 {
-    @apply text-4xl font-bold mb-4;
-  }
+	h1 {
+		@apply text-4xl font-bold mb-4;
+	}
 
-  h2 {
-    @apply text-3xl font-semibold mb-3;
-  }
+	h2 {
+		@apply text-3xl font-semibold mb-3;
+	}
 
-  h3 {
-    @apply text-2xl font-medium mb-2;
-  }
+	h3 {
+		@apply text-2xl font-medium mb-2;
+	}
 
-  h4 {
-    @apply text-xl font-medium mb-2;
-  }
+	h4 {
+		@apply text-xl font-medium mb-2;
+	}
 
-  h5 {
-    @apply text-lg font-medium mb-2;
-  }
+	h5 {
+		@apply text-lg font-medium mb-2;
+	}
 
-  h6 {
-    @apply text-base font-medium mb-2;
-  }
+	h6 {
+		@apply text-base font-medium mb-2;
+	}
 }
 
 @layer utilities {
 	.edit-input-field{
 		@apply outline-none border border-gray-500 bg-transparent w-full px-4 py-3 rounded-md
-	} 
+	}
+
+	.black-button {
+		@apply bg-black px-4 py-2 rounded cursor-pointer hover:bg-white hover:text-black transition duration-300
+	}
+	.primary-button {
+		@apply bg-btnColor border border-white  text-white font-semibold px-6 py-2 rounded-md outline-none
+	}
 }
