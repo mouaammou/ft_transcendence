@@ -4,7 +4,7 @@ import { MdNavigateNext } from "react-icons/md";
 
 export default function Friends () {
 	return (
-		<div className="friends container flex justify-center mt-14 rounded-lg py-20 max-md:p-2 max-md:w-[90%]">
+		<div className="friends container flex justify-center mt-14 rounded-lg py-6 max-md:p-2 max-md:w-[90%]">
 
 			{/* friends div options */}
 			<div className="friends-div-options flex items-center justify-evenly flex-wrap max-xl:gap-12">
@@ -230,6 +230,57 @@ export default function Friends () {
 								</span>
 							</div>
 						</div>
+						{/* DIV TWO users */}
+						<div className="div-for-two-users flex justify-around items-center flex-wrap gap-4 max-md:gap-1">
+							{/* USER Profile status online in tournament*/}
+							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-2">
+								{/* Profile Picture */}
+								<div className="relative">
+									<img
+										src="https://randomuser.me/api/portraits/men/1.jpg"
+										alt="Profile"
+										className="w-14 h-14 rounded-full object-cover"
+									/>
+									{/* Online/Offline Status Indicator */}
+									<span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white bg-green-500"></span>
+								</div>
+
+								{/* User Information */}
+								<div className="flex flex-col">
+									<span className="font-medium text-gray-800">Username</span>
+									<span className="text-xs text-gray-500">In Game</span>
+								</div>
+
+								{/* Status: In Game / In Tournament */}
+								<span className="ml-auto text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full">
+									In Tournament
+								</span>
+							</div>
+							{/* USER Profile status online in game */}
+							<div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition my-2">
+								{/* Profile Picture */}
+								<div className="relative">
+									<img
+										src="https://randomuser.me/api/portraits/men/1.jpg"
+										alt="Profile"
+										className="w-14 h-14 rounded-full object-cover"
+									/>
+									{/* Online/Offline Status Indicator */}
+									<span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white bg-red-500"></span>
+								</div>
+
+								{/* User Information */}
+								<div className="flex flex-col">
+									<span className="font-medium text-gray-800">Username</span>
+									<span className="text-xs text-gray-500">Offline</span>
+								</div>
+
+								{/* Status: In Game / In Tournament */}
+								<span className="ml-auto text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full">
+									In Tournament
+								</span>
+							</div>
+						</div>
 					</div>
 					<button className="float-end absolute right-0 bottom-[-3rem] my-6 w-20"> 
 						<span className="">next</span>
@@ -238,7 +289,7 @@ export default function Friends () {
 				</div>
 
 				{/* card of the friend for more option */}
-				<div className="cart-friend-option max-w-sm p-4 bg-white rounded-lg shadow-md max-md:mt-14">
+				<div className="cart-friend-option max-w-sm p-4 bg-white rounded-lg shadow-md max-sm:mt-14">
 					{/* User Info Section */}
 					<div className="flex items-center justify-center space-x-3">
 						{/* Avatar */}

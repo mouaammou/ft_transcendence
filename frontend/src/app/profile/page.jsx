@@ -34,7 +34,7 @@ return (
 	<div className="profile container max-md:p-3 overflow-hidden">
       {/* user avatar and infos */}
       <div className="profile-top-infos flex justify-center items-center gap-[20rem] max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
-        <div className="profile-pic-name flex items-start justify-center flex-col gap-4 max-md:items-center">
+        <div className="profile-pic-name flex justify-center flex-col gap-4 items-start">
           {/* avatar */}
           <div className="flex items-start gap-4 max-md:items-center max-md:flex-col max-md:justify-center max-md:gap-1">
             {/* the avatar */}
@@ -269,13 +269,13 @@ return (
 			</div>
 
 			{/* user statistics */}
-			<div className='user-stats mx-auto p-4'>
-				<div className="stats-icon text-xl font-medium text-brand-500 text-center max-lg:mt-10"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
+			<div className='user-stats mx-auto p-4 max-md:mt-10'>
+				<div className="stats-icon text-xl font-medium lg:text-center max-lg:mt-10"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
 				
-				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 p-5 mt-14 bg-[#ffffff1f] rounded-lg px-8">
+				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 p-5 mt-14 rounded-lg px-8">
 
 					{/* <!-- Gauge Component --> */}
-					<div className="relative size-52">
+					<div className="relative size-60">
 						<svg
 						className="rotate-[135deg] size-full"
 						viewBox="0 0 36 36"
@@ -313,7 +313,7 @@ return (
 					{/* <!-- End Gauge Component --> */}
 
 					{/* <!-- Gauge Component --> */}
-					<div className="relative size-56">
+					<div className="relative size-60">
 						<svg
 						className="rotate-[135deg] size-full"
 						viewBox="0 0 36 36"
@@ -353,7 +353,7 @@ return (
 					{/* <!-- End Gauge Component --> */}
 
 					{/* <!-- Gauge Component --> */}
-					<div className="relative size-25">
+					<div className="relative size-60">
 						<svg
 						className="rotate-[135deg] size-full"
 						viewBox="0 0 36 36"
@@ -376,7 +376,7 @@ return (
 								cy="18"
 								r="16"
 								fill="none"
-								className="stroke-current text-blue-600"
+								className="stroke-current text-yellow-500"
 								stroke-width="2"
 								stroke-dasharray="56.25 100"
 								stroke-linecap="round"
@@ -385,8 +385,8 @@ return (
 
 						{/* <!-- Value Text --> */}
 						<div className="absolute top-9 start-1/2 transform -translate-x-1/2 text-center">
-							<span className="text-4xl font-bold text-blue-600">50</span>
-							<span className="text-blue-600 block">Average</span>
+							<span className="text-4xl font-bold text-yellow-500">50</span>
+							<span className="text-yellow-500 block">Average</span>
 						</div>
 					</div>
 					{/* <!-- End Gauge Component --> */}
