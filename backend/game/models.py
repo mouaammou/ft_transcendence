@@ -81,6 +81,3 @@ class GameHistory(models.Model):
 
     def __str__(self):
         return f"Game between {self.player_1} and {self.player_2} - Result: {self.game_result}"
-
-    def get_absolute_url(self):
-        return reverse("_detail", kwargs={"pk": self.pk})

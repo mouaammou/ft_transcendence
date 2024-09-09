@@ -68,7 +68,7 @@ class RemoteGameInput:
         # elif press is not None and press.strip() == 'esc':
         #     game_obj.start_game = not game_obj.start_game
         #     return
-        print(f"\n{side}\n")
+        # print(f"\n{side}\n")
         if press is not None:
             game_obj.on_press(side, press.strip())
             game_obj.on_press(side, press.strip())
@@ -84,9 +84,9 @@ class RemoteGameInput:
         # mode = data.get('mode')
         # if mode is None or mode != 'remote':
         #     return
-        print(f"\nASDFASDFASDFASDF\n")
-        print(f"{player_id}")
-        print(f"\nASDFASDFASDFASDF\n")
+        # print(f"\nASDFASDFASDFASDF\n")
+        # print(f"{player_id}")
+        # print(f"\nASDFASDFASDFASDF\n")
         mode = 'remote'
         event_loop_cls.add(player_id, game_mode=mode)
         event_loop_cls.play(player_id)

@@ -117,6 +117,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
+				console.log(data.update);
 				if (data.update.left_paddle_pos)
 				{
 					user.x = data.update.left_paddle_pos[0];
