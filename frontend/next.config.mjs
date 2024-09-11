@@ -1,4 +1,3 @@
-// /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
@@ -6,12 +5,9 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/:path*',
+        destination: 'http://localhost:8000/:path*', // Proxies requests to localhost:8000
       },
     ];
-  },
-  images: {
-    domains: ['localhost'], // Add this to allow images from localhost
   },
 };
 

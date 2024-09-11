@@ -2,7 +2,6 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
-// import useWebSocket from '@components/websocket/websocket';
 import { MdOutlineAlternateEmail } from 'react-icons/md';
 import { MdDataSaverOff } from 'react-icons/md';
 import { IoMdPhonePortrait } from 'react-icons/io';
@@ -11,19 +10,6 @@ import { GrHistory } from "react-icons/gr";
 
 
 const Profile = () => {
-// const { isConnected, messages } = useWebSocket('ws://localhost:8000/ws/online/');
-
-	// useEffect(() => {
-	// 	if (isConnected) {
-	// 		console.log('Connected to WebSocket!');
-	// 	}
-	// }, [isConnected]);
-
-	// useEffect(() => {
-	// 	if (messages.length > 0) {
-	// 		console.log('Received messages:', messages);
-	// 	}
-	// }, [messages]);
 
 	const { profileData: data, fetch_profile } = useAuth();
 	useEffect(() => {

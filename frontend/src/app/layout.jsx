@@ -4,6 +4,7 @@ import { LoginProvider } from '@components/auth/loginContext';
 import Navbar from '@/components/navbar/navAuth';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar/sidebar';
+import { WebSocketProvider } from '@/components/websocket/websocketContext';
 
 import '@/styles/globals.css';
 import '@/styles/globalsTailwind.css';
@@ -16,23 +17,25 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<head>
-			<meta charSet="UTF-8" />
-			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<meta charSet="UTF-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
 			<LoginProvider>
-			<body className={inter.className}>
-				{isChatPage ? (
-					<div className="content">
-					<Sidebar />
-					{children}
-					</div>
-				) : (
-					<>
-					<Navbar />
-					{children}
-					</>
-				)}
-			</body>
+				<WebSocketProvider url="ws://localhost:8000/ws/online/">
+					<body className={inter.className}>
+						{isChatPage ? (
+							<div className="content">
+							<Sidebar />
+							{children}
+							</div>
+						) : (
+							<>
+							<Navbar />
+							{children}
+							</>
+						)}
+					</body>
+				</WebSocketProvider>
 			</LoginProvider>
 		</html>
 	);

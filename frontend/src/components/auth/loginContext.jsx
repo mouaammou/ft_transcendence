@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
 
-export const LoginContext = createContext(null);
+export const LoginContext = createContext("");
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();

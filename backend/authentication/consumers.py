@@ -9,9 +9,7 @@ import logging
 import json
 
 User = get_user_model()
-# Set up logging
 logger = logging.getLogger(__name__)
-
 
 class BaseConsumer(AsyncWebsocketConsumer):
 	USER_STATUS_GROUP = 'users_status'
@@ -46,9 +44,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 					number_of_connections = await self.increment_connections()
 					if number_of_connections == 1:
-						# await self.send_status_to_user(True)
-						await self.update_user_status(True)
-						await self.broadcast_online_status(self.user_data, True)
+						print(f"\n {self.user} is offline\n")
+						await self.update_user_status("online")
+						await self.broadcast_online_status(self.user_data, "online")
 
 				except Exception as e:
 					logger.error(f"\nError during connection: {e}\n")
@@ -62,9 +60,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 					number_of_connections = await self.decrement_connections()
 					
 					if number_of_connections == 0:
-						# await self.send_status_to_user(False)
-						await self.update_user_status(False)
-						await self.broadcast_online_status(self.user_data, False)
+						print(f"\n {self.user} is offline\n")
+						await self.update_user_status("offline")
+						await self.broadcast_online_status(self.user_data, "offline")
 
 					await self.channel_layer.group_discard(
 						self.room_notifications,
@@ -97,30 +95,22 @@ class OnlineStatusConsumer(BaseConsumer):
 						"status": status,
 						**user_data
 					}
+
 				)
 		except Exception as e:
 				logger.error(f"\nError broadcasting status: {e}\n")
 
 	async def user_status_change(self, event):
 				try:
-					if event['id'] != self.user.id:
-						await self.send(text_data=json.dumps({
-								"type": "user_status_change",
-								"username": event['username'],
-								"avatar": event['avatar'],
-								"status": event['status'],
-						}))
+					# if event['id'] != self.user.id:
+					await self.send(text_data=json.dumps({
+							"type": "user_status_change",
+							"username": event['username'],
+							"avatar": event['avatar'],
+							"status": event['status'],
+					}))
 				except Exception as e:
 					logger.error(f"\nError sending user status change: {e}\n")
-
-	async def send_status_to_user(self, status):
-		try:
-				await self.send(text_data=json.dumps({
-					"type": "friend_status",
-					"status": 'online' if status else 'offline'
-				}))
-		except Exception as e:
-				logger.error(f"\nError sending status to user: {e}\n")
 
 	@sync_to_async
 	def increment_connections(self):
@@ -149,7 +139,7 @@ class OnlineStatusConsumer(BaseConsumer):
 	@database_sync_to_async
 	def update_user_status(self, status):
 		try:
-				User.objects.filter(pk=self.user.pk).update(is_online=status)
+				User.objects.filter(pk=self.user.pk).update(status=status)
 		except Exception as e:
 				logger.error(f"\nError updating user status in database: {e}\n")
 
