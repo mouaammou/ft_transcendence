@@ -117,7 +117,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
-				console.log(data.update);
 				if (data.update.left_paddle_pos)
 				{
 					user.x = data.update.left_paddle_pos[0];
@@ -152,8 +151,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				// setScore1(score1 => data.config.right_player_score);
 				// setScore2(score2 => data.config.left_player_score);
 				gameConfig = data.config;
-				console.log("TTTTTTTTTTTTTTTTTTTTTTT");
-				console.log(gameConfig);
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
 				// console.log(canvas.height);
@@ -216,8 +213,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
-			console.log('Key pressed');
-			console.log(event.key);
 			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
 			if (event.key === ' ')
@@ -237,7 +232,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// set the key to false when the key is released
 		const handleKeyUp = (event) => {
 			socket.send(JSON.stringify({"onRelease" : event.key.trim()}));
-			console.log(event.key);
 			keys[event.key] = false;
 		};
 

@@ -80,7 +80,7 @@ class LocalGameDisconnection:
         future_time = loop.time() + self._timeout_in
         task = loop.call_at(future_time, self._disconnection_timeout)
         self._disconnetion_task = task
-    
+
     def _disconnection_timeout(self):
         if self._outside_callback is None:
             return

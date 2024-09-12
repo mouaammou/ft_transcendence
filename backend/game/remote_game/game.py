@@ -1,8 +1,9 @@
 from pong.pong_root import PingPongGameLogic
-from game.remote_game.disconnection import remoteGameDisconnection
+from game.local_game.disconnection import LocalGameDisconnection 
+
 import uuid
 
-class RemoteGameLogic(PingPongGameLogic, remoteGameDisconnection):
+class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     """
     Use this to create game instances.
     """

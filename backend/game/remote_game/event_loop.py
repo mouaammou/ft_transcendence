@@ -24,6 +24,7 @@ class EventLoopManager:
     """
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
+    channel_per_player = {} # channel per player, it is a list of player_id and an associated channel_name
     finished_players = [] # players who fininshed their games
     finished_games = [] # finished games
     _event_loop_task = None
@@ -32,13 +33,19 @@ class EventLoopManager:
     flag = True
 
     @classmethod
-    def connect(cls, player_id, send_game_message):
+    def connect(cls, player_id, channel, send_game_message):
+        a_channel = cls.channel_per_player.get(player_id)
+        if a_channel:
+            return False
+        else:
+            cls.channel_per_player[player_id] = channel
         cls.run_event_loop()
         if not cls._reconnect(player_id, send_game_message):
            RemoteGameOutput.add_callback(player_id, send_game_message)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
+        return True
         
              
     @classmethod
@@ -47,6 +54,7 @@ class EventLoopManager:
         game_obj = cls.active_players.get(player_id)
         if game_obj is None:
             return False 
+        game_obj.play() 
         print('************ RECONNECT *************')
         RemoteGameOutput.add_callback(player_id, send_callback, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
@@ -92,6 +100,7 @@ class EventLoopManager:
         cls.finished_players.append(game_obj.player_1)
         cls.finished_players.append(game_obj.player_2)
         cls.finished_games.append(game_obj)
+        cls.channel_per_player.clear()
         print("before saving\n")
         asyncio.create_task(cls.save_history(game_obj))
         print("after saving\n")
@@ -127,6 +136,8 @@ class EventLoopManager:
         if  game_obj is None:
             game_obj = cls.game_class()
             game_obj.set_game_mode(game_mode)
+        else:
+            cls.disconnected = False
         if (game_obj.player_1 is None):
             game_obj.player_1 = player_id
         elif(game_obj.player_2 is None):
@@ -138,14 +149,35 @@ class EventLoopManager:
         #RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
         
 
-    @classmethod
-    # def remove(cls, player_id):
-    #     cls.active_players.pop(player_id)
-    #     try:
-    #         cls.finished_players.pop(player_id)
-    #     except: pass
+    def remove(cls, player_id):
+        # Retrieve the game associated with the player_id
+        game = cls.active_players.get(player_id)
+        if game is None:
+            print(f"Player {player_id} is not active.")
+            return  # Player not found
 
-    
+        # Retrieve players from the running games
+        players = cls.running_games.get(game)
+        if players is None:
+            print(f"No players found for game {game}.")
+            return  # No players found for this game
+
+        # Remove the game from running games
+        cls.running_games.pop(game, None)  # Use pop with default to avoid KeyError
+
+        # Remove players from active players
+        for player in players:
+            cls.active_players.pop(player, None)  # Use pop with default
+            print("removed\n")
+
+        # Attempt to remove from finished players
+        if player_id in cls.finished_players:
+            print("removed2\n")
+            cls.finished_players.pop(player_id)
+        #now i just have to save the history of this game, the player_id passed to 
+        #   remove function is the disconnected player, he lose.
+
+     
     @classmethod
     def stop(cls, player_id):
         game_obj = cls.active_players.get(player_id)
@@ -159,9 +191,12 @@ class EventLoopManager:
     @classmethod
     def disconnect(cls, player_id):
         game_obj = cls.active_players.get(player_id)
+        # channel = cls.channel_per_player.get(player_id)
+        cls.channel_per_player.pop(player_id, None)
         if game_obj:
+            game_obj.pause()
             game_obj.disconnected = True # and disconnetion class also used here
-            # game_obj.set_disconnection_timeout_callback(cls.remove, player_id)
+            game_obj.set_disconnection_timeout_callback(cls.remove, cls, player_id)
             return True 
         return False
     
@@ -220,7 +255,6 @@ class EventLoopManager:
     def pending_game(cls):
         for player, game in cls.active_players.items():
             if game.is_fulfilled() == False:
-                print(f"{player}")
                 return game
         return None
 

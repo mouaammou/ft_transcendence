@@ -70,8 +70,8 @@ class EventLoopManager:
             game_obj = cls.game_class()
             game_obj.set_game_mode(game_mode)
             cls.runing[channel_name] = game_obj
-        # else:
-        #     game_obj.disconnected = False # disconnetion class used here
+        else:
+            game_obj.disconnected = False # disconnetion class used here
         # LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj)
         
     
