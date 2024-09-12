@@ -1,61 +1,49 @@
-"use client"
-
-
+"use client";
 import { useEffect, useState } from "react";
 import { getData } from "@/services/apiCalls";
-import { useWebSocketContext } from "@/components/websocket/websocketContext";
+import useWebSocketCustomHook from "@/components/websocket/useWebsocket";
 
 const FriendsList = () => {
-	const { isConnected, friends } = useWebSocketContext();
+	const { isConnected, friends } = useWebSocketCustomHook("ws://localhost:8000/ws/online/");
 	const [users, setUsers] = useState([]);
 
 	useEffect(() => {
-	const alluser = async () => {
-			// Use the /api prefix to trigger the proxy rewrite
-		const response = await getData("/allusers").then(response => {
-			setUsers(response.data);
-			if (response.status == 200 || response.status == 201) {
-			}
-			})
-	};
-
-	alluser();
-	}, []);
-
-	// Only proceed if both `users` and `friends` are available
-	if (!users || !Array.isArray(users)) {
-		return <p>Loading users...</p>; // Return a loading state if users are not yet available
-	}
-	// Merge users from REST API with friends from WebSocket to get online status
-	const usersWithStatus = users.map(user => {
-		const friendStatus = friends.find(friend => friend.username === user.username);
-		console.log("friendStatus", friendStatus)
-		if (!friendStatus) {	
-			return {
-			...user,
-			status: 'offline'
+		const fetchAllUsers = async () => {
+				try {
+					const response = await getData("/allusers");
+					if (response.status === 200) {
+						const fetchedUsers = response.data;
+						setUsers(fetchedUsers);
+					}
+				} catch (error) {
+					console.error("Error fetching users:", error);
+				}
 		};
-		}
-		return {
-			...user,
-			status: "online"
-		};
-	});
 
+		fetchAllUsers();
+	}, []); // Only fetch users once when the component mounts
+
+	useEffect(() => {
+		// Update users' status whenever friends array changes
+		setUsers(prevUsers => prevUsers.map(user => {
+				const friend = friends.find(friend => friend.username === user.username);
+				return friend ? { ...user, status: friend.status } : user;
+		}));
+	}, [friends]);
 
 	return (
 		<div>
-			<h1>Friends' Status</h1>
-			<ul>
-			{usersWithStatus.map((user, index) => (
-				<li key={index}>
-					<img src={user.avatar} alt={user.username} width="30" height="30" />
-					{user.username}: {user.status === "online" ? '🟢 Online' : '🔴 Offline'}
-				</li>
-			))}
-			</ul>
+				<h1>Friends' Status</h1>
+				<ul>
+					{users && users.map((user, index) => (
+						<li key={user.id || index}>
+								<img src={user.avatar} alt={user.username} width="30" height="30" />
+								{user.username}: {user.status === "online" ? '🟢 Online' : '🔴 Offline'}
+						</li>
+					))}
+				</ul>
 		</div>
 	);
-};
+}
 
 export default FriendsList;

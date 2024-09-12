@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
 			<LoginProvider>
-				<WebSocketProvider url="ws://localhost:8000/ws/online/">
+				{/* <WebSocketProvider url="ws://localhost:8000/ws/online/" apiEndpoint="/api/allusers"> */}
 					<body className={inter.className}>
 						{isChatPage ? (
 							<div className="content">
@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
 							</>
 						)}
 					</body>
-				</WebSocketProvider>
+				{/* </WebSocketProvider> */}
 			</LoginProvider>
 		</html>
 	);

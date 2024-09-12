@@ -18,6 +18,8 @@ useEffect(() => {
 
 		ws.current.onmessage = (event) => {
 			const data = JSON.parse(event.data);
+			
+			console.log("data on message:", data)
 
 			if (data.type === 'user_status_change') {
 				// Update the status of the specific user in the friends list

@@ -13,135 +13,123 @@ logger = logging.getLogger(__name__)
 
 class BaseConsumer(AsyncWebsocketConsumer):
 	USER_STATUS_GROUP = 'users_status'
-	CACHE_TIMEOUT = 60 * 60  # 1 hour cache timeout to avoid stale data
+	user_connections = {}
 
 	async def connect(self):
 		self.user = self.scope.get("user")
-		
 		if self.user and self.user.is_authenticated:
-				self.user_data =  UserSerializer(self.user).data
-				self.cache_key = f"user_{self.user.id}_connections"
-				self.room_notifications = f"notifications_{self.user.id}"
+			self.user_data =  UserSerializer(self.user).data
+			self.room_notifications = f"notifications_{self.user.id}"
 
-				try:
-					#accept the connection, the send_status_to_user needs that, otherwise error
-					await self.accept()
-					#add the user to their notification room
-					await self.channel_layer.group_add(
-						self.room_notifications,
-						self.channel_name
-					)
-					# Add the user to their own connection group
-					await self.channel_layer.group_add(
-						self.cache_key,
-						self.channel_name
-					)
-					# Add the user to the global status group
-					await self.channel_layer.group_add(
-						self.USER_STATUS_GROUP,
-						self.channel_name
-					)
+			try:
+				#accept the connection, the send_status_to_user needs that, otherwise error
+				await self.accept()
 
-					number_of_connections = await self.increment_connections()
-					if number_of_connections == 1:
-						print(f"\n {self.user} is offline\n")
-						await self.update_user_status("online")
-						await self.broadcast_online_status(self.user_data, "online")
+				#add the user to their notification room
+				await self.channel_layer.group_add(
+					self.room_notifications,
+					self.channel_name
+				)
+				await self.channel_layer.group_add(
+					self.USER_STATUS_GROUP,
+					self.channel_name
+				)
 
-				except Exception as e:
-					logger.error(f"\nError during connection: {e}\n")
-					await self.close()
+				# Add the user to their own connection group
+				if self.user.id not in self.user_connections:
+					self.user_connections[self.user.id] = []
+				
+				#add the current channel to the user's connection group
+				if self.channel_name not in self.user_connections[self.user.id]:
+					self.user_connections[self.user.id].append(self.channel_name)
+
+				# Add the user to the global status group
+				number_of_connections = len(self.user_connections[self.user.id])
+				if number_of_connections == 1:
+					print(f"\n {self.user} is ONLINE\n")
+					await self.update_user_status("online")
+
+			except Exception as e:
+				logger.error(f"\nError during connection: {e}\n")
+				await self.close()
 		else:
 				await self.close()
 	
 	async def disconnect(self, close_code):
 		if self.user and self.user.is_authenticated:
-				try:
-					number_of_connections = await self.decrement_connections()
-					
-					if number_of_connections == 0:
-						print(f"\n {self.user} is offline\n")
-						await self.update_user_status("offline")
-						await self.broadcast_online_status(self.user_data, "offline")
+			try:
+				# Remove the user from their own connection group
+				if self.user.id in self.user_connections:
+					if self.channel_name in self.user_connections[self.user.id]:
+						self.user_connections[self.user.id].remove(self.channel_name)
 
-					await self.channel_layer.group_discard(
-						self.room_notifications,
-						self.channel_name
-					)
-					await self.channel_layer.group_discard(
-						self.cache_key,
-						self.channel_name
-					)
-					await self.channel_layer.group_discard(
-						self.USER_STATUS_GROUP,
-						self.channel_name
-					)
-				except Exception as e:
-					logger.error(f"\nError during disconnection: {e}\n")
+				number_of_connections = len(self.user_connections[self.user.id])
+				if number_of_connections == 0:
+					print(f"\n {self.user} is offline\n")
+					await self.update_user_status("offline")
+					del self.user_connections[self.user.id]
 
-class OnlineStatusConsumer(BaseConsumer):
-	async def connect(self):
-		await super().connect()
-
-	async def disconnect(self, close_code):
-		await super().disconnect(close_code)
-
-	async def broadcast_online_status(self, user_data, status):
-		try:
-				await self.channel_layer.group_send(
-					self.USER_STATUS_GROUP,
-					{
-						"type": "user_status_change",
-						"status": status,
-						**user_data
-					}
-
+				await self.channel_layer.group_discard(
+					self.room_notifications,
+					self.channel_name
 				)
-		except Exception as e:
-				logger.error(f"\nError broadcasting status: {e}\n")
-
-	async def user_status_change(self, event):
-				try:
-					# if event['id'] != self.user.id:
-					await self.send(text_data=json.dumps({
-							"type": "user_status_change",
-							"username": event['username'],
-							"avatar": event['avatar'],
-							"status": event['status'],
-					}))
-				except Exception as e:
-					logger.error(f"\nError sending user status change: {e}\n")
-
-	@sync_to_async
-	def increment_connections(self):
-		try:
-				connections = cache.get(self.cache_key, 0)
-				connections += 1
-				cache.set(self.cache_key, connections, timeout=self.CACHE_TIMEOUT)
-				return connections
-		except Exception as e:
-				logger.error(f"\nError incrementing connections: {e}\n")
-				return 0
-
-	@sync_to_async
-	def decrement_connections(self):
-		try:
-				connections = cache.get(self.cache_key, 0)
-				connections -= 1
-				if connections < 0:
-					connections = 0
-				cache.set(self.cache_key, connections, timeout=self.CACHE_TIMEOUT)
-				return connections
-		except Exception as e:
-				logger.error(f"\nError decrementing connections: {e}\n")
-				return 0
+				await self.channel_layer.group_discard(
+					self.USER_STATUS_GROUP,
+					self.channel_name
+				)
+			except Exception as e:
+				logger.error(f"\nError during disconnection: {e}\n")
 
 	@database_sync_to_async
 	def update_user_status(self, status):
 		try:
-				User.objects.filter(pk=self.user.pk).update(status=status)
+				User.objects.filter(id=self.user.id).update(status=status)
 		except Exception as e:
 				logger.error(f"\nError updating user status in database: {e}\n")
+
+	async def broadcast_online_status(self, user_data, status):
+		try:
+			await self.channel_layer.group_send(
+				self.USER_STATUS_GROUP,
+				{
+					"type": "user_status_change",
+					"username": user_data['username'],
+					"avatar": user_data['avatar'],
+					"status": status,
+				}
+			)
+		except Exception as e:
+			logger.error(f"\nError broadcasting status: {e}\n")
+
+	async def user_status_change(self, event):
+		try:
+			# if event['id'] != self.user.id:
+			await self.send(text_data=json.dumps({
+					"type": "user_status_change",
+					"username": event['username'],
+					"avatar": event['avatar'],
+					"status": event['status'],
+			}))
+		except Exception as e:
+			logger.error(f"\nError sending user status change: {e}\n")
+
+class OnlineStatusConsumer(BaseConsumer):
+	async def connect(self):
+		await super().connect()
+		if self.user and self.user.id in self.user_connections:
+			#broadcast the user's online status
+			number_of_connections = len(self.user_connections[self.user.id])
+			if number_of_connections == 1:
+				print(f"\n broadcasting online : {self.user}\n")
+				await self.broadcast_online_status(self.user_data, "online")
+
+	async def disconnect(self, close_code):
+		await super().disconnect(close_code)
+		if self.user.id in self.user_connections:
+			number_of_connections = len(self.user_connections[self.user.id])
+			print(f"\nNumber of connections: {number_of_connections}\n")
+			if number_of_connections == 0:
+				await self.broadcast_online_status(self.user_data, "offline")
 
 
 class NotificationConsumer(BaseConsumer):
