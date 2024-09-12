@@ -34,20 +34,19 @@ class BaseConsumer(AsyncWebsocketConsumer):
 					self.USER_STATUS_GROUP,
 					self.channel_name
 				)
-
 				# Add the user to their own connection group
 				if self.user.id not in self.user_connections:
 					self.user_connections[self.user.id] = []
-				
 				#add the current channel to the user's connection group
 				if self.channel_name not in self.user_connections[self.user.id]:
 					self.user_connections[self.user.id].append(self.channel_name)
-
 				# Add the user to the global status group
-				# number_of_connections = len(self.user_connections[self.user.id])
-				# if number_of_connections == 1:
-				# 	print(f"\n {self.user} is ONLINE\n")
-				await self.update_user_status("online")
+				number_of_connections = len(self.user_connections[self.user.id])
+				if number_of_connections == 1:
+					print(f"\n {self.user} is ONLINE\n")
+					await self.update_user_status("online")
+					print(f"\n broadcasting online : {self.user}\n")
+					await self.broadcast_online_status(self.user_data, "online")
 
 			except Exception as e:
 				logger.error(f"\nError during connection: {e}\n")
@@ -64,10 +63,10 @@ class BaseConsumer(AsyncWebsocketConsumer):
 						self.user_connections[self.user.id].remove(self.channel_name)
 
 				number_of_connections = len(self.user_connections[self.user.id])
-				print(f"\nNumber of connections: {number_of_connections}\n")
 				if number_of_connections == 0:
 					print(f"\n {self.user} is offline\n")
 					await self.update_user_status("offline")
+					await self.broadcast_online_status(self.user_data, "offline")
 					if self.user.id in self.user_connections:
 						del self.user_connections[self.user.id]
 
@@ -118,20 +117,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 class OnlineStatusConsumer(BaseConsumer):
 	async def connect(self):
 		await super().connect()
-		if self.user and self.user.id in self.user_connections:
-			#broadcast the user's online status
-			number_of_connections = len(self.user_connections[self.user.id])
-			if number_of_connections == 1:
-				print(f"\n broadcasting online : {self.user}\n")
-				await self.broadcast_online_status(self.user_data, "online")
 
 	async def disconnect(self, close_code):
 		await super().disconnect(close_code)
-		if self.user.id in self.user_connections:
-			number_of_connections = len(self.user_connections[self.user.id])
-			print(f"\nNumber of connections: {number_of_connections}\n")
-			if number_of_connections == 0:
-				await self.broadcast_online_status(self.user_data, "offline")
 
 
 class NotificationConsumer(BaseConsumer):
