@@ -44,10 +44,10 @@ class BaseConsumer(AsyncWebsocketConsumer):
 					self.user_connections[self.user.id].append(self.channel_name)
 
 				# Add the user to the global status group
-				number_of_connections = len(self.user_connections[self.user.id])
-				if number_of_connections == 1:
-					print(f"\n {self.user} is ONLINE\n")
-					await self.update_user_status("online")
+				# number_of_connections = len(self.user_connections[self.user.id])
+				# if number_of_connections == 1:
+				# 	print(f"\n {self.user} is ONLINE\n")
+				await self.update_user_status("online")
 
 			except Exception as e:
 				logger.error(f"\nError during connection: {e}\n")
@@ -64,10 +64,12 @@ class BaseConsumer(AsyncWebsocketConsumer):
 						self.user_connections[self.user.id].remove(self.channel_name)
 
 				number_of_connections = len(self.user_connections[self.user.id])
+				print(f"\nNumber of connections: {number_of_connections}\n")
 				if number_of_connections == 0:
 					print(f"\n {self.user} is offline\n")
 					await self.update_user_status("offline")
-					del self.user_connections[self.user.id]
+					if self.user.id in self.user_connections:
+						del self.user_connections[self.user.id]
 
 				await self.channel_layer.group_discard(
 					self.room_notifications,

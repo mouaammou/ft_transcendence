@@ -24,7 +24,6 @@ useEffect(() => {
 			if (data.type === 'user_status_change') {
 				// Update the status of the specific user in the friends list
 				setFriends((prevFriends) => {
-					console.log("prevFriends", prevFriends)
 					const friendIndex = prevFriends.findIndex(f => f.username === data.username);
 					if (friendIndex !== -1) {
 						// Update the status if the friend is already in the list

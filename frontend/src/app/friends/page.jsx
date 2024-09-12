@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getData } from "@/services/apiCalls";
-import useWebSocketCustomHook from "@/components/websocket/useWebsocket";
+import { useWebSocketContext } from "@/components/websocket/websocketContext";
 
 const FriendsList = () => {
-	const { isConnected, friends } = useWebSocketCustomHook("ws://localhost:8000/ws/online/");
+	const { isConnected, friends }  = useWebSocketContext();
 	const [users, setUsers] = useState([]);
 
 	useEffect(() => {
@@ -13,6 +13,7 @@ const FriendsList = () => {
 					const response = await getData("/allusers");
 					if (response.status === 200) {
 						const fetchedUsers = response.data;
+						console.log("fetchedUsers", fetchedUsers)
 						setUsers(fetchedUsers);
 					}
 				} catch (error) {
