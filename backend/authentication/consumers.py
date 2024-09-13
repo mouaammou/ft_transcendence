@@ -81,21 +81,54 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
 		online = text_data_json.get('online')
+
+		# Handle user data, if sent
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
-			print(f"\n user_data in receive:: {self.user_data}\n")
 
+		# Handle logout event
 		if logout and self.user.is_authenticated:
-			#broadcast the user status to all users, change the status to offline
-			await self.update_user_status("offline")
-			await self.broadcast_online_status(self.user_data, "offline")
-			print(f"\n broadcasting offline when logout : {self.user}\n")
-			# del self.user_connections[self.user.id]
+			
+			# Ensure the user is removed from the active connections
+			if self.user.id in self.user_connections:
+				if self.channel_name in self.user_connections[self.user.id]:
+						self.user_connections[self.user.id].remove(self.channel_name)
+
+				number_of_connections = len(self.user_connections[self.user.id])
+				if number_of_connections == 0:
+						print(f"\n {self.user} is offline due to logout\n")
+						await self.update_user_status("offline")
+						print(f"\n broadcasting offline when logout : {self.user}\n")
+						await self.broadcast_online_status(self.user_data, "offline")
+						# Remove user from the connections
+						del self.user_connections[self.user.id]
+
+			await self.channel_layer.group_discard(
+				self.USER_STATUS_GROUP,
+				self.channel_name
+			)
+			return  # Exit after handling logout to avoid conflicting operations
+
+		# Handle online event
 		if online and self.user.is_authenticated:
-			await self.update_user_status("online")
-			await self.broadcast_online_status(self.user_data, "online")
-			print(f"\n broadcasting online when login : {self.user}\n")
+			await self.channel_layer.group_add(
+				self.USER_STATUS_GROUP,
+				self.channel_name
+			)
+			# If the user is not in connections, add them
+			if self.user.id not in self.user_connections:
+				self.user_connections[self.user.id] = []
+			# Add the channel name to track their connection
+			if self.channel_name not in self.user_connections[self.user.id]:
+				self.user_connections[self.user.id].append(self.channel_name)
+
+			number_of_connections = len(self.user_connections[self.user.id])
+			if number_of_connections == 1:
+				print(f"\n {self.user} is online due to profile page access\n")
+				await self.update_user_status("online")
+				print(f"\n broadcasting online when login: {self.user}\n")
+				await self.broadcast_online_status(self.user_data, "online")
 
 	@database_sync_to_async
 	def update_user_status(self, status):

@@ -21,7 +21,7 @@ const FriendsList = () => {
 		};
 
 		fetchAllUsers();
-	}, []);
+	}, []); // Fetch users every time websocket or users change
 
 	// WebSocket message handler to update the friends list when new status is received
 	useEffect(() => {
@@ -33,6 +33,8 @@ const FriendsList = () => {
 	
 				if (data.type === 'user_status_change') {
 					setUsers(prevUsers => prevUsers.map(user => user.username === data.username ? { ...user, status: data.status } : user));
+					//if there is a new user, add it to the list of users
+					setUsers(prevUsers => prevUsers.find(user => user.username === data.username) ? prevUsers : [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }]);
 				}
 			};
 		}

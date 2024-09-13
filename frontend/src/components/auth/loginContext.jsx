@@ -86,7 +86,6 @@ export const LoginProvider = ({ children }) => {
 			const res = await postData('profile/data');
 			if (res?.status === 200) {
 				setProfileData(res.data.user);
-				console.log(`isConnected in fetch profile: ${isConnected}`);
 				if (isConnected) {
 					// Ensure the WebSocket connection is open before sending the message
 					function sendOnlineStatus() {
