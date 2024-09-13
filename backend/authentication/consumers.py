@@ -3,15 +3,15 @@ from authentication.serializers import UserSerializer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
-from django.core.cache import cache
 from .models import Friendship, NotificationModel
+from django.contrib.auth.models import AnonymousUser
 import logging
 import json
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
-class BaseConsumer(AsyncWebsocketConsumer):
+class OnlineStatusConsumer(AsyncWebsocketConsumer):
 	USER_STATUS_GROUP = 'users_status'
 	user_connections = {}
 
@@ -20,11 +20,8 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		if self.user and self.user.is_authenticated:
 			self.user_data =  UserSerializer(self.user).data
 			self.room_notifications = f"notifications_{self.user.id}"
-
 			try:
 				#accept the connection, the send_status_to_user needs that, otherwise error
-				await self.accept()
-
 				#add the user to their notification room
 				await self.channel_layer.group_add(
 					self.room_notifications,
@@ -47,12 +44,10 @@ class BaseConsumer(AsyncWebsocketConsumer):
 					await self.update_user_status("online")
 					print(f"\n broadcasting online : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "online")
-
 			except Exception as e:
 				logger.error(f"\nError during connection: {e}\n")
 				await self.close()
-		else:
-				await self.close()
+		await self.accept()
 	
 	async def disconnect(self, close_code):
 		if self.user and self.user.is_authenticated:
@@ -66,9 +61,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 				if number_of_connections == 0:
 					print(f"\n {self.user} is offline\n")
 					await self.update_user_status("offline")
+					print(f"\n broadcasting offline : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "offline")
-					if self.user.id in self.user_connections:
-						del self.user_connections[self.user.id]
+					del self.user_connections[self.user.id]
 
 				await self.channel_layer.group_discard(
 					self.room_notifications,
@@ -80,6 +75,27 @@ class BaseConsumer(AsyncWebsocketConsumer):
 				)
 			except Exception as e:
 				logger.error(f"\nError during disconnection: {e}\n")
+
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		user = text_data_json.get('user')
+		logout = text_data_json.get('logout')
+		online = text_data_json.get('online')
+		if user:
+			self.user = await database_sync_to_async(User.objects.get)(username=user)
+			self.user_data = UserSerializer(self.user).data
+			print(f"\n user_data in receive:: {self.user_data}\n")
+
+		if logout and self.user.is_authenticated:
+			#broadcast the user status to all users, change the status to offline
+			await self.update_user_status("offline")
+			await self.broadcast_online_status(self.user_data, "offline")
+			print(f"\n broadcasting offline when logout : {self.user}\n")
+			# del self.user_connections[self.user.id]
+		if online and self.user.is_authenticated:
+			await self.update_user_status("online")
+			await self.broadcast_online_status(self.user_data, "online")
+			print(f"\n broadcasting online when login : {self.user}\n")
 
 	@database_sync_to_async
 	def update_user_status(self, status):
@@ -93,6 +109,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_send(
 				self.USER_STATUS_GROUP,
 				{
+					'id': user_data['id'],
 					"type": "user_status_change",
 					"username": user_data['username'],
 					"avatar": user_data['avatar'],
@@ -114,15 +131,8 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			logger.error(f"\nError sending user status change: {e}\n")
 
-class OnlineStatusConsumer(BaseConsumer):
-	async def connect(self):
-		await super().connect()
 
-	async def disconnect(self, close_code):
-		await super().disconnect(close_code)
-
-
-class NotificationConsumer(BaseConsumer):
+class NotificationConsumer(OnlineStatusConsumer):
 	async def connect(self):
 		await super().connect()
 

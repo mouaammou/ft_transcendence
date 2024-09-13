@@ -20,23 +20,23 @@ export default function RootLayout({ children }) {
 				<meta charSet="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
-			<LoginProvider>
-				<WebSocketProvider url="ws://localhost:8000/ws/online/">
-					<body className={inter.className}>
-						{isChatPage ? (
-							<div className="content">
-							<Sidebar />
-							{children}
-							</div>
-						) : (
-							<>
-							<Navbar />
-							{children}
-							</>
-						)}
-					</body>
-				</WebSocketProvider>
-			</LoginProvider>
+			<WebSocketProvider url="ws://localhost:8000/ws/online/">
+				<LoginProvider>
+						<body className={inter.className}>
+							{isChatPage ? (
+								<div className="content">
+								<Sidebar />
+								{children}
+								</div>
+							) : (
+								<>
+								<Navbar />
+								{children}
+								</>
+							)}
+						</body>
+				</LoginProvider>
+			</WebSocketProvider>
 		</html>
 	);
 }

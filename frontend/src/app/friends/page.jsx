@@ -16,7 +16,7 @@ const FriendsList = () => {
 					setUsers(fetchedUsers);
 				}
 			} catch (error) {
-				console.error("Error fetching users:", error);
+				console.error("Error fetching users in friends page:", error);
 			}
 		};
 
@@ -32,11 +32,11 @@ const FriendsList = () => {
 				console.log("WebSocket message received:", data);
 	
 				if (data.type === 'user_status_change') {
-					setUsers(prevMembers => prevMembers.map(member => member.username === data.username ? { ...member, 'status': data.status } : member));
+					setUsers(prevUsers => prevUsers.map(user => user.username === data.username ? { ...user, status: data.status } : user));
 				}
 			};
 		}
-	}, [users, websocket]); // Attach only once when websocket is available
+	}, [websocket]); // Attach only once when websocket is available
 
 	return (
 		<div>

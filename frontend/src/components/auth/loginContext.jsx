@@ -4,6 +4,7 @@ import { postData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
+import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
 export const LoginContext = createContext("");
 
@@ -16,6 +17,8 @@ export const LoginProvider = ({ children }) => {
 	const pathname = usePathname();
 
 	const [profileData, setProfileData] = useState({});
+
+	const {isConnected, websocket} = useWebSocketContext();
 
 	useEffect(() => {
 		const isAuthValue = Cookies.get('isAuth');
@@ -62,6 +65,12 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const Logout = () => {
+		console.log(`isConnected: ${isConnected}`);
+		console.log(`websocket: ${websocket}`);
+		if (isConnected) {
+			//send a message to the server that the user is logging out
+			websocket.current.send(JSON.stringify({ logout: 'logout' }));
+		}
 		setIsAuth(false);
 		Cookies.remove('isAuth');
 		postData('/logout').then(res => {
@@ -72,14 +81,25 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const fetch_profile = async () => {
+		
 		try {
 			const res = await postData('profile/data');
 			if (res?.status === 200) {
-			setProfileData(res.data.user);
+				setProfileData(res.data.user);
+				console.log(`isConnected in fetch profile: ${isConnected}`);
+				if (isConnected) {
+					// Ensure the WebSocket connection is open before sending the message
+					function sendOnlineStatus() {
+						console.log("user name: ", res.data.user.username);
+						websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.user.username }));
+					}
+					sendOnlineStatus();
+				}
 			}
 		} catch (error) {
 			console.error('Failed to fetch profile data:', error);
 		}
+
 	};
 
 	useEffect(() => {
@@ -88,7 +108,7 @@ export const LoginProvider = ({ children }) => {
 			isAuth &&
 			(pathname == '/login' || pathname == '/signup' || pathname.startsWith('/callback'))
 		)
-			router.push('/profile');
+		router.push('/profile');
 	}, [pathname]);
 
 	return (

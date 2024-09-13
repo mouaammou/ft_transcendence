@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useRef, createContext, useContext } from 'react';
 
 export const WebSocketContext = createContext("");
@@ -9,7 +10,7 @@ export const WebSocketProvider = ({url, children}) => {
 
 	useEffect(() => {
 		// Create WebSocket instance when the component mounts
-		if (!websocket.current) {
+		if ( ! isConnected) {
 			websocket.current = new WebSocket(url);
 
 			websocket.current.onopen = () => {
@@ -35,7 +36,7 @@ export const WebSocketProvider = ({url, children}) => {
 	}, []);
 
 	return (
-		<WebSocketContext.Provider value={{isConnected, websocket}}>
+		<WebSocketContext.Provider value={{isConnected, websocket, setIsConnected}}>
 			{children}
 		</WebSocketContext.Provider>
 	)
