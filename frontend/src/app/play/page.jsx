@@ -1,6 +1,9 @@
 "use client";
 import "./style.css"
 import { useState } from "react";
+import {RandomSvg} from "@components/modeSvgs/ModeSvgs"
+
+
 const PlayMode = () => {
     const [name, setName] = useState("");
 	const handleSaveBtn = () => {
@@ -43,6 +46,7 @@ const PlayMode = () => {
                         <p>TOURNAMENT</p>
                     </div>
                 </div>
+                <RandomSvg></RandomSvg>
                 <button className="big-button">NEXT</button>
                 <input type="text" onChange={handleInputChange} value={name}/>
                 <button onClick={handleSaveBtn}>save</button>

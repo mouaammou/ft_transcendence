@@ -32,13 +32,7 @@ class LocalGameOutputMiddleware:
 
     @classmethod
     def add_callback(cls, channel_name, consumer, game_obj=None) -> None:
-        """
-        game_obj is None on connect, But there is a game instance on reconnect.
 
-        Note: instead of using chained methods to remove consumer from 
-            consumer_group every time a socket disconnects. For this i will use
-            weak refrence to store consumers.
-        """
         if cls.consumer_group.get(channel_name) is None:
             cls.consumer_group[channel_name] = weakref.WeakSet()
         cls.consumer_group[channel_name].add(consumer)
@@ -110,7 +104,6 @@ class LocalGameInputMiddleware:
         #         game_obj.focused = False
 
 
-    
     @classmethod
     def try_create(cls, event_loop_cls, channel_name, event_dict):
         data = event_dict.get('create')
