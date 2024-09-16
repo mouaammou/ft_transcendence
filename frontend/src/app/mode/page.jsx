@@ -4,12 +4,19 @@
 </svg> */}
 
 import Selector from "@app/mode/selecor"
-import {RandomSvg} from "@components/modeSvgs/ModeSvgs.jsx"
+import {RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg} from "@components/modeSvgs/ModeSvgs.jsx"
 const Mode = () => {
 
     return (
-        <div>
-            <Selector title='RANDOM GAME' description='Have fun playing exciting ping pong games online with friends!' Svgvar={RandomSvg} ></Selector>
+        <div className="flex flex-row justify-center items-center gap-0 mt-[200px]">
+            <div>
+                <Selector title='RANDOM GAME' description='Have fun playing exciting online with friends!'  Svgvar={RandomSvg} ></Selector>
+                <Selector title='PLAY VS FRIEND' description='Online ping pong game with a friend!' Svgvar={VsfriendSvg} ></Selector>
+            </div>
+            <div>
+                <Selector title='PLAY VS BOT' description='Challenge a bot in an exciting ping pong game' Svgvar={VsbotSvg} ></Selector>
+                <Selector title='GO BACK' description={<br></br>} Svgvar={ExitSvg} ></Selector>
+            </div>
         </div>
     );
 };
