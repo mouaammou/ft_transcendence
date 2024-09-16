@@ -23,8 +23,8 @@ const links = [
 		path: '/play',
 	},
 	{
-		title: 'Friends',
-		path: '/friends',
+		title: 'All Users',
+		path: '/allusers',
 	},
 	{
 		title: 'Chat',

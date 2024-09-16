@@ -4,23 +4,25 @@ import { getData } from "@/services/apiCalls";
 import { useWebSocketContext } from "@/components/websocket/websocketContext";
 import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
-//for prev icon
 import Link  from "next/link";
+import {useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const FriendsList = () => {
 	const { isConnected, websocket}  = useWebSocketContext();
 	const [users, setUsers] = useState([]);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
-
+	const router = useRouter();
+	const query_params = useSearchParams();
+	const [pageNotFound, setPageNotFound] = useState(false);
+	
 	const fetchAllUsers = async (pageNumber) => {
-		console.log("Fetching users from page:", pageNumber);
+		router.push(`/allusers?page=${pageNumber}`);
 		try {
-			const response = await getData(`/allusers?page=${pageNumber}`);
+			const response = await getData(`/allusers?page=${pageNumber}`);			
 			if (response.status === 200) {
 				setUsers(response.data.results);
-
-				// Update prevPage
 				setPrevPage(() => {
 					if (response.data.previous) {
 						// Extract the page number from the previous URL
@@ -40,15 +42,24 @@ const FriendsList = () => {
 					return null; // No next page
 				});
 			}
+			else {
+				setPageNotFound(true);
+			}
 		} catch (error) {
 			console.error("Error fetching users in friends page:", error);
+			setPageNotFound(true)
 		}
 	};
 
 	// Fetch users on the initial render
 	useEffect(() => {
-		fetchAllUsers(1);
-	}, []); 
+		const page = query_params.get('page') || 1;
+		fetchAllUsers(page);
+
+		return () => {
+			setPageNotFound(false);
+		}
+	}, [query_params.get('page')]);
 
 	// WebSocket message handler to update the friends list when new status is received
 	useEffect(() => {
@@ -68,6 +79,28 @@ const FriendsList = () => {
 	}, [websocket]); // Attach only once when websocket is available
 
 	return (
+	(pageNotFound) ? <>
+	<div className="flex flex-col items-center justify-center min-h-screen">
+		<div className="bg-white p-8 rounded-lg shadow-md text-center">
+			<h1 className="text-5xl font-bold text-gray-800 mb-4">
+				404
+			</h1>
+			<h2 className="text-3xl font-semibold text-gray-700 mb-6">
+				Page Not Available
+			</h2>
+			<p className="text-xl text-gray-600 mb-8">
+				Oops! The page you're looking for doesn't exist or is currently unavailable.
+			</p>
+			<Link 
+				href="/allusers"
+				className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+			>
+				Go Back
+			</Link>
+		</div>
+	</div>
+	</> :
+		
 	<div className="friends container flex justify-center mt-14 rounded-lg max-md:p-2 max-md:w-[90%] max-sm:mb-20 bg-topBackground py-32">
 
 		{/* friends div options */}

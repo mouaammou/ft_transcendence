@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
-import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { MdDataSaverOff } from 'react-icons/md';
-import { IoMdPhonePortrait } from 'react-icons/io';
 import { TfiStatsUp } from "react-icons/tfi";
-import { GrHistory } from "react-icons/gr";
 import { notFound } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import { FaTrophy, FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
+import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
+import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
+import { FaUserCircle, FaHistory } from 'react-icons/fa';
+import { FaClock, FaTrophy } from 'react-icons/fa';
+
 
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
@@ -54,7 +54,7 @@ export default function FriendProfile({ params }) {
 	}, []);
 
 	if (userNotFound) {
-		return notFound();
+		notFound();
 	}
 
 	return (
@@ -99,49 +99,22 @@ export default function FriendProfile({ params }) {
 							{isOpen && (
 								<div
 									onMouseLeave={() => setIsOpen(false)}
-									className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg shadow"
+									className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg"
 								>
 									<ul className="py-0 text-sm text-gray-700 w-full">
-										{/* <li className="w-full py-2 px-4 bg-blue-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-blue-600 transition">
-											Invite to Tournament
-										</li>
-										<li className="w-full py-2 px-4 bg-indigo-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-indigo-600 transition">
-											Invite to Game
-										</li>
-										<li className="w-full py-2 px-4 bg-green-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-green-600 transition">
-											Add to Friend List
-										</li>
-										<li className="w-full py-2 px-4 bg-red-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-red-600 transition">
-											Block
-										</li> */}
-										{/* <li className="w-full py-2 px-4 bg-purple-600 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-purple-700 transition">
-											Invite to Tournament
-										</li>
-										<li className="w-full py-2 px-4 bg-teal-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-teal-600 transition">
-											Invite to Game
-										</li>
-										<li className="w-full py-2 px-4 bg-amber-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-600 transition">
-											Add to Friend List
-										</li>
-										<li className="w-full py-2 px-4 bg-rose-600 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-700 transition">
-											Block
-										</li> */}
-
 										<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
-											<FaTrophy className="mr-2" /> Invite to Tournament
+											<FaTrophy className="mr-2 size-5" /> Invite to Tournament
 										</li>
 										<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
-											<FaGamepad className="mr-2" /> Invite to Game
+											<FaGamepad className="mr-2 size-5" /> Invite to Game
 										</li>
 										<li className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
-											<FaUserPlus className="mr-2" /> Add to Friend List
+											<FaUserPlus className="mr-2 size-5" /> Add to Friend List
 										</li>
 										<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
-											<FaBan className="mr-2" /> Block
+											<FaBan className="mr-2 size-5" /> Block
 										</li>
-
 									</ul>
-
 								</div>
 
 							)}
@@ -161,22 +134,22 @@ export default function FriendProfile({ params }) {
 
 			{/* display user infos */}
 			<div className="user-infos">
-				<div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-72">
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdOutlineAlternateEmail className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>email: {profile?.email}</span>
+				<div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-60">
+					<div className="flex justify-start items-center gap-7 py-3 w-full">
+						<MdOutlineEmail className="bg-indigo-500 text-white w-8 h-8 p-1.5 rounded-full" />
+						<span className="">Email: {profile?.email}</span>
 					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>first_name: {profile?.first_name}</span>
+					<div className="flex justify-start items-center gap-7 py-3 w-full">
+						<FaUserCircle className="bg-emerald-500 text-white w-8 h-8 p-1.5 rounded-full" />
+						<span className="">First Name: {profile?.first_name}</span>
 					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>last_name: {profile?.last_name}</span>
+					<div className="flex justify-start items-center gap-7 py-3 w-full">
+						<MdPerson className="bg-amber-500 text-white w-8 h-8 p-1.5 rounded-full" />
+						<span className="">Last Name: {profile?.last_name}</span>
 					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<IoMdPhonePortrait className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>phone number: 06666666666</span>
+					<div className="flex justify-start items-center gap-7 py-3 w-full">
+						<MdPhone className="bg-rose-500 text-white w-8 h-8 p-1.5 rounded-full" />
+						<span className="">Phone: {profile?.phone || '06666666666'}</span>
 					</div>
 				</div>
 			</div>
@@ -200,176 +173,239 @@ export default function FriendProfile({ params }) {
 				{/* user history: games 1v1 */}
 				<div className="user-history mx-auto p-4">
 					<div className="flex justify-between items-center mb-1">
-						<div className="text-xl font-medium text-brand-500">
-							<GrHistory className="inline-block mx-2"/>
+						<div className="flex items-center bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-3 px-4 rounded-lg shadow-md">
+							<FaHistory className="mr-3" />
 							Match History
 						</div>
 					</div>
 
-					<div className='max-h-96 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-[#ffffff70] scrollbar-track-transparent scroll-smooth'>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
+					<div className='max-h-96 overflow-y-auto p-1 scrollbar-thin scrollbar-thumb-[#ffffff70] scrollbar-track-transparent scroll-smooth'>
+						{/* HISTORY 1 */}
+						<div className="bg-white shadow-lg rounded-lg p-6 mx-auto mt-2">
+							<div className="flex items-center justify-between flex-wrap max-sm:flex-col max-sm:gap-y-9 gap-x-6">
+							{/* Player 1 */}
+							<div className="flex flex-col items-start max-sm:justify-center max-sm:items-center">
+								<div className="bg-green-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									WIN
+								</div>
+								<div className="flex items-center">
+									<img className="w-16 h-16 rounded-full mr-4 border-2 border-green-500" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Player 1 Avatar"/>
+									<div>
+									<h3 className="text-lg text-gray-800">John Doe</h3>
+									<p className="text-3xl font-bold text-green-600 max-sm:text-lg">21</p>
+									</div>
 								</div>
 							</div>
 
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
+							{/* Versus */}
+							<div className="flex items-center">
+								<svg
+								fill="#444"
+								height="2rem"
+								width="2rem"
+								version="1.1"
+								id="Layer_1"
+								xmlns="http://www.w3.org/2000/svg"
+								xmlnsXlink="http://www.w3.org/1999/xlink"
+								viewBox="0 0 510.31 510.31"
+								xmlSpace="preserve"
+								stroke="#000000"
+								strokeWidth="0.0051031"
+								transform="rotate(180) matrix(1, 0, 0, 1, 0, 0)"
+								>
+									<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+									<g
+										id="SVGRepo_tracerCarrier"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										stroke="#CCCCCC"
+										strokeWidth="14.288680000000003"
+									></g>
+									<g id="SVGRepo_iconCarrier">
+										<g>
+											<g>
+											<path
+												d="M504.06,443.728c-8.341-8.341-21.845-8.341-30.165,0h-0.021L412.946,382.8c20.096-23.915,34.731-50.389,36.928-72.768 c1.131-11.733-7.424-22.165-19.157-23.317c-11.925-1.195-22.165,7.445-23.317,19.157c-0.256,2.773-1.067,5.803-2.091,8.917 l-59.648-59.627l128.235-128.235c2.325-2.347,4.096-5.205,5.141-8.341l30.165-90.496c2.56-7.68,0.555-16.128-5.141-21.845 c-5.717-5.717-14.187-7.701-21.845-5.141L391.719,31.27c-3.136,1.045-5.995,2.816-8.341,5.163L255.143,164.646L126.93,36.432 c-2.325-2.347-5.184-4.117-8.341-5.163L28.092,1.104c-7.616-2.56-16.128-0.597-21.824,5.141 c-5.717,5.717-7.723,14.165-5.163,21.845l30.165,90.496c1.045,3.136,2.816,5.995,5.163,8.341l128.213,128.213l-59.904,59.925 c-0.917-2.965-1.621-5.824-1.771-8.405c-0.704-11.755-10.88-20.693-22.592-20.011c-11.776,0.725-20.693,10.837-19.989,22.592 c1.344,22.251,16.149,49.237,36.864,73.643l-60.821,60.843c-8.341-8.341-21.845-8.341-30.165,0c-8.341,8.32-8.341,21.824,0,30.165 l30.165,30.165c4.16,4.16,9.621,6.251,15.083,6.251s10.901-2.091,15.083-6.251c8.32-8.341,8.32-21.845,0-30.165l60.907-60.928 c23.915,20.096,50.411,34.709,72.789,36.885c0.725,0.085,1.408,0.107,2.091,0.107c10.859,0,20.139-8.235,21.205-19.264 c1.152-11.712-7.445-22.165-19.157-23.296c-2.773-0.277-5.803-1.067-8.917-2.112l59.648-59.627l59.904,59.904 c-2.965,0.917-5.824,1.621-8.405,1.771c-11.776,0.704-20.715,10.816-20.011,22.592c0.683,11.307,10.091,20.032,21.269,20.032 c0.448,0,0.875,0,1.323-0.043c22.251-1.344,49.216-16.149,73.621-36.864l60.843,60.843c-8.32,8.32-8.32,21.824,0,30.165 c4.181,4.16,9.643,6.251,15.104,6.251c5.44,0,10.901-2.091,15.083-6.251l30.165-30.165 C512.38,465.552,512.38,452.048,504.06,443.728z M157.927,382.544c-5.653-4.587-11.2-9.557-16.448-14.784 c-0.149-0.149-0.299-0.32-0.448-0.469c-4.715-4.736-9.237-9.728-13.419-14.784l67.2-67.179l30.187,30.165L157.927,382.544z M298.194,207.696l-12.864-12.885L409.98,70.16l45.269-15.083l-15.104,45.248L315.495,224.998L298.194,207.696z"
+											></path>
+											</g>
+										</g>
+									</g>
+								</svg>
+							</div>
 
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
+							{/* Player 2 */}
+							<div className="flex flex-col items-end max-sm:justify-center max-sm:items-center">
+								<div className="bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									LOSE
 								</div>
+								<div className="flex items-center">
+									<div className="text-right mr-4">
+									<h4 className="text-lg text-gray-800">Jane Smith</h4>
+									<p className="text-3xl max-sm:text-lg font-bold text-red-600">18</p>
+									</div>
+									<img className="w-16 h-16 rounded-full border-2 border-red-500" src="https://randomuser.me/api/portraits/women/1.jpg" alt="Player 2 Avatar"/>
+								</div>
+							</div>
+							</div>
+
+							{/* Match Duration */}
+							<div className="flex justify-center items-center mt-2 text-sm text-gray-600">
+							<FaClock className="mr-1" />
+							<span>Match Duration: 15m 30s</span>
 							</div>
 						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
+						{/* END HISTORY 1*/}
+						{/* HISTORY 1 */}
+						<div className="bg-white shadow-lg rounded-lg p-6 mx-auto mt-2">
+							<div className="flex items-center justify-between flex-wrap max-sm:flex-col max-sm:gap-y-9 gap-x-6">
+							{/* Player 1 */}
+							<div className="flex flex-col items-start max-sm:justify-center max-sm:items-center">
+								<div className="bg-green-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									WIN
+								</div>
+								<div className="flex items-center">
+									<img className="w-16 h-16 rounded-full mr-4 border-2 border-green-500" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Player 1 Avatar"/>
+									<div>
+									<h3 className="text-lg text-gray-800">John Doe</h3>
+									<p className="text-3xl font-bold text-green-600 max-sm:text-lg">21</p>
+									</div>
 								</div>
 							</div>
 
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
+							{/* Versus */}
+							<div className="flex items-center">
+								<svg
+								fill="#444"
+								height="2rem"
+								width="2rem"
+								version="1.1"
+								id="Layer_1"
+								xmlns="http://www.w3.org/2000/svg"
+								xmlnsXlink="http://www.w3.org/1999/xlink"
+								viewBox="0 0 510.31 510.31"
+								xmlSpace="preserve"
+								stroke="#000000"
+								strokeWidth="0.0051031"
+								transform="rotate(180) matrix(1, 0, 0, 1, 0, 0)"
+								>
+									<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+									<g
+										id="SVGRepo_tracerCarrier"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										stroke="#CCCCCC"
+										strokeWidth="14.288680000000003"
+									></g>
+									<g id="SVGRepo_iconCarrier">
+										<g>
+											<g>
+											<path
+												d="M504.06,443.728c-8.341-8.341-21.845-8.341-30.165,0h-0.021L412.946,382.8c20.096-23.915,34.731-50.389,36.928-72.768 c1.131-11.733-7.424-22.165-19.157-23.317c-11.925-1.195-22.165,7.445-23.317,19.157c-0.256,2.773-1.067,5.803-2.091,8.917 l-59.648-59.627l128.235-128.235c2.325-2.347,4.096-5.205,5.141-8.341l30.165-90.496c2.56-7.68,0.555-16.128-5.141-21.845 c-5.717-5.717-14.187-7.701-21.845-5.141L391.719,31.27c-3.136,1.045-5.995,2.816-8.341,5.163L255.143,164.646L126.93,36.432 c-2.325-2.347-5.184-4.117-8.341-5.163L28.092,1.104c-7.616-2.56-16.128-0.597-21.824,5.141 c-5.717,5.717-7.723,14.165-5.163,21.845l30.165,90.496c1.045,3.136,2.816,5.995,5.163,8.341l128.213,128.213l-59.904,59.925 c-0.917-2.965-1.621-5.824-1.771-8.405c-0.704-11.755-10.88-20.693-22.592-20.011c-11.776,0.725-20.693,10.837-19.989,22.592 c1.344,22.251,16.149,49.237,36.864,73.643l-60.821,60.843c-8.341-8.341-21.845-8.341-30.165,0c-8.341,8.32-8.341,21.824,0,30.165 l30.165,30.165c4.16,4.16,9.621,6.251,15.083,6.251s10.901-2.091,15.083-6.251c8.32-8.341,8.32-21.845,0-30.165l60.907-60.928 c23.915,20.096,50.411,34.709,72.789,36.885c0.725,0.085,1.408,0.107,2.091,0.107c10.859,0,20.139-8.235,21.205-19.264 c1.152-11.712-7.445-22.165-19.157-23.296c-2.773-0.277-5.803-1.067-8.917-2.112l59.648-59.627l59.904,59.904 c-2.965,0.917-5.824,1.621-8.405,1.771c-11.776,0.704-20.715,10.816-20.011,22.592c0.683,11.307,10.091,20.032,21.269,20.032 c0.448,0,0.875,0,1.323-0.043c22.251-1.344,49.216-16.149,73.621-36.864l60.843,60.843c-8.32,8.32-8.32,21.824,0,30.165 c4.181,4.16,9.643,6.251,15.104,6.251c5.44,0,10.901-2.091,15.083-6.251l30.165-30.165 C512.38,465.552,512.38,452.048,504.06,443.728z M157.927,382.544c-5.653-4.587-11.2-9.557-16.448-14.784 c-0.149-0.149-0.299-0.32-0.448-0.469c-4.715-4.736-9.237-9.728-13.419-14.784l67.2-67.179l30.187,30.165L157.927,382.544z M298.194,207.696l-12.864-12.885L409.98,70.16l45.269-15.083l-15.104,45.248L315.495,224.998L298.194,207.696z"
+											></path>
+											</g>
+										</g>
+									</g>
+								</svg>
+							</div>
 
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
+							{/* Player 2 */}
+							<div className="flex flex-col items-end max-sm:justify-center max-sm:items-center">
+								<div className="bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									LOSE
 								</div>
+								<div className="flex items-center">
+									<div className="text-right mr-4">
+									<h4 className="text-lg text-gray-800">Jane Smith</h4>
+									<p className="text-3xl max-sm:text-lg font-bold text-red-600">18</p>
+									</div>
+									<img className="w-16 h-16 rounded-full border-2 border-red-500" src="https://randomuser.me/api/portraits/women/1.jpg" alt="Player 2 Avatar"/>
+								</div>
+							</div>
+							</div>
+
+							{/* Match Duration */}
+							<div className="flex justify-center items-center mt-2 text-sm text-gray-600">
+							<FaClock className="mr-1" />
+							<span>Match Duration: 15m 30s</span>
 							</div>
 						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
+						{/* END HISTORY 1*/}
+						{/* HISTORY 1 */}
+						<div className="bg-white shadow-lg rounded-lg p-6 mx-auto mt-2">
+							<div className="flex items-center justify-between flex-wrap max-sm:flex-col max-sm:gap-y-9 gap-x-6">
+							{/* Player 1 */}
+							<div className="flex flex-col items-start max-sm:justify-center max-sm:items-center">
+								<div className="bg-green-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									WIN
+								</div>
+								<div className="flex items-center">
+									<img className="w-16 h-16 rounded-full mr-4 border-2 border-green-500" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Player 1 Avatar"/>
+									<div>
+									<h3 className="text-lg text-gray-800">John Doe</h3>
+									<p className="text-3xl font-bold text-green-600 max-sm:text-lg">21</p>
+									</div>
 								</div>
 							</div>
 
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
+							{/* Versus */}
+							<div className="flex items-center">
+								<svg
+								fill="#444"
+								height="2rem"
+								width="2rem"
+								version="1.1"
+								id="Layer_1"
+								xmlns="http://www.w3.org/2000/svg"
+								xmlnsXlink="http://www.w3.org/1999/xlink"
+								viewBox="0 0 510.31 510.31"
+								xmlSpace="preserve"
+								stroke="#000000"
+								strokeWidth="0.0051031"
+								transform="rotate(180) matrix(1, 0, 0, 1, 0, 0)"
+								>
+									<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+									<g
+										id="SVGRepo_tracerCarrier"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										stroke="#CCCCCC"
+										strokeWidth="14.288680000000003"
+									></g>
+									<g id="SVGRepo_iconCarrier">
+										<g>
+											<g>
+											<path
+												d="M504.06,443.728c-8.341-8.341-21.845-8.341-30.165,0h-0.021L412.946,382.8c20.096-23.915,34.731-50.389,36.928-72.768 c1.131-11.733-7.424-22.165-19.157-23.317c-11.925-1.195-22.165,7.445-23.317,19.157c-0.256,2.773-1.067,5.803-2.091,8.917 l-59.648-59.627l128.235-128.235c2.325-2.347,4.096-5.205,5.141-8.341l30.165-90.496c2.56-7.68,0.555-16.128-5.141-21.845 c-5.717-5.717-14.187-7.701-21.845-5.141L391.719,31.27c-3.136,1.045-5.995,2.816-8.341,5.163L255.143,164.646L126.93,36.432 c-2.325-2.347-5.184-4.117-8.341-5.163L28.092,1.104c-7.616-2.56-16.128-0.597-21.824,5.141 c-5.717,5.717-7.723,14.165-5.163,21.845l30.165,90.496c1.045,3.136,2.816,5.995,5.163,8.341l128.213,128.213l-59.904,59.925 c-0.917-2.965-1.621-5.824-1.771-8.405c-0.704-11.755-10.88-20.693-22.592-20.011c-11.776,0.725-20.693,10.837-19.989,22.592 c1.344,22.251,16.149,49.237,36.864,73.643l-60.821,60.843c-8.341-8.341-21.845-8.341-30.165,0c-8.341,8.32-8.341,21.824,0,30.165 l30.165,30.165c4.16,4.16,9.621,6.251,15.083,6.251s10.901-2.091,15.083-6.251c8.32-8.341,8.32-21.845,0-30.165l60.907-60.928 c23.915,20.096,50.411,34.709,72.789,36.885c0.725,0.085,1.408,0.107,2.091,0.107c10.859,0,20.139-8.235,21.205-19.264 c1.152-11.712-7.445-22.165-19.157-23.296c-2.773-0.277-5.803-1.067-8.917-2.112l59.648-59.627l59.904,59.904 c-2.965,0.917-5.824,1.621-8.405,1.771c-11.776,0.704-20.715,10.816-20.011,22.592c0.683,11.307,10.091,20.032,21.269,20.032 c0.448,0,0.875,0,1.323-0.043c22.251-1.344,49.216-16.149,73.621-36.864l60.843,60.843c-8.32,8.32-8.32,21.824,0,30.165 c4.181,4.16,9.643,6.251,15.104,6.251c5.44,0,10.901-2.091,15.083-6.251l30.165-30.165 C512.38,465.552,512.38,452.048,504.06,443.728z M157.927,382.544c-5.653-4.587-11.2-9.557-16.448-14.784 c-0.149-0.149-0.299-0.32-0.448-0.469c-4.715-4.736-9.237-9.728-13.419-14.784l67.2-67.179l30.187,30.165L157.927,382.544z M298.194,207.696l-12.864-12.885L409.98,70.16l45.269-15.083l-15.104,45.248L315.495,224.998L298.194,207.696z"
+											></path>
+											</g>
+										</g>
+									</g>
+								</svg>
+							</div>
 
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
+							{/* Player 2 */}
+							<div className="flex flex-col items-end max-sm:justify-center max-sm:items-center">
+								<div className="bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm mb-2 max-sm:hidden">
+									LOSE
 								</div>
+								<div className="flex items-center">
+									<div className="text-right mr-4">
+									<h4 className="text-lg text-gray-800">Jane Smith</h4>
+									<p className="text-3xl max-sm:text-lg font-bold text-red-600">18</p>
+									</div>
+									<img className="w-16 h-16 rounded-full border-2 border-red-500" src="https://randomuser.me/api/portraits/women/1.jpg" alt="Player 2 Avatar"/>
+								</div>
+							</div>
+							</div>
+
+							{/* Match Duration */}
+							<div className="flex justify-center items-center mt-2 text-sm text-gray-600">
+							<FaClock className="mr-1" />
+							<span>Match Duration: 15m 30s</span>
 							</div>
 						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						
+						{/* END HISTORY 1*/}
 					</div>
-						
 				</div>
 
 				{/* user statistics */}
