@@ -61,7 +61,7 @@ export default function LoginPage() {
 					<Link className="pforgot" href="/forget_password">Forgot your password?</Link>
 					<div className="have-no-account">
 						Don't have an account?
-						<Link rel="stylesheet" href="/auth/signup">
+						<Link rel="stylesheet" href="/signup">
 							Sign up
 						</Link>
 					</div>

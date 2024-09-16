@@ -34,7 +34,7 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
 
         self.player_id = self.scope['user'].id
         ret = self.game_engine.connect(self.player_id, self.channel_name, self.send_game_message)
-        if ret == False:
+        if ret == False: 
             self.close()
         # dont forget to set timout callback
 

@@ -13,7 +13,8 @@ class Base:
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60
-        self.max_score = 4
+        self.max_score = 999
+        self.max_score = 40
         
         # assert self.max_score % 2 == 1, ValueError('value should be odd')
         

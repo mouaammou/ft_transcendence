@@ -76,14 +76,15 @@ class EventLoopManager:
         
     
     @classmethod
-    def _reconnect(cls, channel_name, send_callback):
+    def _reconnect(cls, channel_name, consumer):
         # """used to run new game instance in the event loop"""
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             return False
         print('************ RECONNECT *************')
-        LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj=game_obj)
+        LocalGameOutputMiddleware.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
+        # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
         return True
@@ -109,17 +110,17 @@ class EventLoopManager:
     @classmethod
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
-        if game_obj:
+        if game_obj and LocalGameOutputMiddleware.is_disconnection(channel_name):
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
             return True
         return False
     
     @classmethod
-    def connect(cls, channel_name, send_game_message):
+    def connect(cls, channel_name, consumer):
         cls.run_event_loop()
-        if not cls._reconnect(channel_name, send_game_message):
-            LocalGameOutputMiddleware.add_callback(channel_name, send_game_message)
+        if not cls._reconnect(channel_name, consumer):
+            LocalGameOutputMiddleware.add_callback(channel_name, consumer)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
@@ -141,7 +142,9 @@ class EventLoopManager:
             LocalGameInputMiddleware.try_create(cls, channel_name, event_dict)
             return None
         if game_obj.game_mode == 'local':
-            LocalGameInputMiddleware.recieved_dict_text_data(game_obj, event_dict)
+            LocalGameInputMiddleware.recieved_dict_text_data(channel_name, game_obj, event_dict)
+        elif game_obj.game_mode == 'remote':
+            pass
             # add middleware for remote game here
     # end used
 
@@ -167,6 +170,8 @@ class EventLoopManager:
             return
         if game_obj.game_mode == 'local':
             LocalGameOutputMiddleware.send(channel_name, frame)
+        # elif game_obj.game_mode == 'remote':
+        #     pass
             # add middleware for remote game here
     
     @classmethod

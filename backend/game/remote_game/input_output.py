@@ -69,6 +69,7 @@ class RemoteGameInput:
         #     game_obj.start_game = not game_obj.start_game
         #     return
         # print(f"\n{side}\n")
+        print(f"{side}\n")
         if press is not None:
             game_obj.on_press(side, press.strip())
             game_obj.on_press(side, press.strip())
@@ -76,7 +77,7 @@ class RemoteGameInput:
             game_obj.on_release(side, release.strip())
             game_obj.on_release(side, release.strip())
 
-    @classmethod
+    @classmethod 
     def try_create(cls, event_loop_cls, player_id, event_dict):
         # data = event_dict.get('create')
         # if data is None :

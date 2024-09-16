@@ -7,15 +7,25 @@ import Selector from "@app/mode/selecor"
 import {RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg} from "@components/modeSvgs/ModeSvgs.jsx"
 const Mode = () => {
 
+
+    const handleClick = () => {
+        const randomGame = {
+            type : 'random'
+        }
+        socket.send(JSON.stringify(randomGame))
+    }
+
     return (
-        <div className="container flex lg:flex-row justify-center items-center">
+        <div className="container flex lg:flex-row justify-end items-center">
             <div className="flex flex-col">
-                <Selector title='RANDOM GAME' description='Have fun playing exciting online with friends!'  svgvar={RandomSvg} ></Selector>
-                <Selector title='PLAY VS FRIEND' description='Online ping pong game with a friend!' svgvar={VsfriendSvg} ></Selector>
+                <Selector title='RANDOM GAME' description='Have fun playing exciting online with friends!'  Svgvar={RandomSvg} ></Selector>
+                <Selector title='PLAY VS FRIEND' description='Online ping pong game with a friend!' 
+                    Svgvar={VsfriendSvg} 
+                    onClick={handleClick}></Selector>
             </div>
             <div className="flex flex-col">
-                <Selector title='PLAY VS BOT' description='Challenge a bot in an exciting ping pong game' svgvar={VsbotSvg} ></Selector>
-                <Selector title='GO BACK' description={<br></br>} svgvar={ExitSvg} ></Selector>
+                <Selector title='PLAY VS BOT' description='Challenge a bot in an exciting ping pong game' Svgvar={VsbotSvg} ></Selector>
+                <Selector title='GO BACK' description={<br></br>} Svgvar={ExitSvg} ></Selector>
             </div>
         </div>
     );
