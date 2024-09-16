@@ -8,12 +8,12 @@ import {RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg} from "@components/modeSvgs/Mo
 const Mode = () => {
 
     return (
-        <div className="flex flex-row justify-center items-center gap-0 mt-[200px]">
-            <div>
+        <div className="container flex lg:flex-row justify-center items-center">
+            <div className="flex flex-col">
                 <Selector title='RANDOM GAME' description='Have fun playing exciting online with friends!'  Svgvar={RandomSvg} ></Selector>
                 <Selector title='PLAY VS FRIEND' description='Online ping pong game with a friend!' Svgvar={VsfriendSvg} ></Selector>
             </div>
-            <div>
+            <div className="flex flex-col">
                 <Selector title='PLAY VS BOT' description='Challenge a bot in an exciting ping pong game' Svgvar={VsbotSvg} ></Selector>
                 <Selector title='GO BACK' description={<br></br>} Svgvar={ExitSvg} ></Selector>
             </div>
