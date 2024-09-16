@@ -31,7 +31,10 @@ urlpatterns = [
 	
 	# for notificaions
 	path('sendFriendshipRequest/', views.CreateFriendshipRequest.as_view(), name="send friendship request"),
-	path("allusers", views.allUser.as_view(), name="all users"),
+	path("allusers", views.AllUser.as_view(), name="all users"),
+
+	# for Friend profile
+	path("friendProfile/<str:username>", views.FriendProfile.as_view(), name="friend profile"),
 ]
 
 if settings.DEBUG:
