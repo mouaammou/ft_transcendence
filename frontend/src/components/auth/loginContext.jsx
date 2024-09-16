@@ -1,109 +1,127 @@
-"use client";
-import { useState, createContext, useContext, useEffect } from "react";
-import { postData } from "@/services/apiCalls";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+'use client';
+import { useState, createContext, useContext, useEffect } from 'react';
+import { postData } from '@/services/apiCalls';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
+import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-export const LoginContext = createContext(null);
+export const LoginContext = createContext("");
 
 export const LoginProvider = ({ children }) => {
-
 	const router = useRouter();
 	const [errors, setErrors] = useState({});
-	const initialAuthState = JSON.parse(Cookies.get("isAuth") || 'false')
+	const initialAuthState = JSON.parse(Cookies.get('isAuth') || 'false');
 	const [isAuth, setIsAuth] = useState(initialAuthState);
 	const [mounted, setMounted] = useState(false);
-	const pathname = usePathname()
+	const pathname = usePathname();
 
 	const [profileData, setProfileData] = useState({});
 
-	useEffect(() => {
-		const isAuthValue = Cookies.get("isAuth");
-		if (isAuthValue)
-			setIsAuth(JSON.parse(isAuthValue));
-		else
-		{
-			setIsAuth(false)
-			Cookies.set("isAuth", false, {path: "/"});
-			router.push("/login")
-		}
-		setMounted(true)
+	const {isConnected, websocket} = useWebSocketContext();
 
-		return ()=> {//cleanup function
-			setMounted(false)
+	useEffect(() => {
+		const isAuthValue = Cookies.get('isAuth');
+		if (isAuthValue) setIsAuth(JSON.parse(isAuthValue));
+		else {
+			setIsAuth(false);
+			Cookies.set('isAuth', false, { path: '/' });
+			router.push('/login');
 		}
+		setMounted(true);
+
+		return () => {
+			//cleanup function
+			setMounted(false);
+		};
 	}, [pathname]);
-	
+
 	const AuthenticateTo = (endpoint, formData) => {
 		postData(endpoint, formData)
-			.then((res) => {
-				if (res.status == 200 || res.status == 201) {
-					setIsAuth(true);
-					Cookies.set("isAuth", true, {path: "/"});
-					router.push("/profile")
-				} else {
-					if (res.response && res.response.status === 500) {
-						router.push("/500");
-					}
-					setErrors({
-						first_name: res.response.data.first_name,
-						last_name: res.response.data.last_name,
-						username: res.response.data.username,
-						email: res.response.data.email,
-						password: res.response.data.password,
-						status: res.response.status,
-						server_error:
-							res.response.data + " " + res.response.status,
-						error: res.response.data.Error,
-					});
+			.then(res => {
+			if (res.status == 200 || res.status == 201) {
+				setIsAuth(true);
+				Cookies.set('isAuth', true, { path: '/' });
+				router.push('/profile');
+			} else {
+				if (res.response && res.response.status === 500) {
+					router.push('/500');
 				}
+				setErrors({
+					first_name: res.response.data.first_name,
+					last_name: res.response.data.last_name,
+					username: res.response.data.username,
+					email: res.response.data.email,
+					password: res.response.data.password,
+					status: res.response.status,
+					server_error: res.response.data + ' ' + res.response.status,
+					error: res.response.data.Error,
+				});
+			}
 			})
-			.catch((error) => {
-				console.log("error happens==> ", error);
+			.catch(error => {
+			console.log('error happens==> ', error);
 			});
 	};
 
 	const Logout = () => {
+		console.log(`isConnected: ${isConnected}`);
+		console.log(`websocket: ${websocket}`);
+		if (isConnected) {
+			//send a message to the server that the user is logging out
+			websocket.current.send(JSON.stringify({ logout: 'logout' }));
+		}
 		setIsAuth(false);
-		Cookies.remove("isAuth");
-		postData("/logout").then((res) => {
+		Cookies.remove('isAuth');
+		postData('/logout').then(res => {
 			if (res && res.status === 205) {
-				router.push("/login");
+			router.push('/login');
 			}
 		});
 	};
 
-	const fetch_profile  = async () => {
+	const fetch_profile = async () => {
+		
 		try {
-			const res = await postData("profile/data");
+			const res = await postData('profile/data');
 			if (res?.status === 200) {
 				setProfileData(res.data.user);
+				if (isConnected) {
+					// Ensure the WebSocket connection is open before sending the message
+					function sendOnlineStatus() {
+						console.log("user name: ", res.data.user.username);
+						websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.user.username }));
+					}
+					sendOnlineStatus();
+				}
 			}
 		} catch (error) {
-			console.error("Failed to fetch profile data:", error);
+			console.error('Failed to fetch profile data:', error);
 		}
-	}
+
+	};
 
 	useEffect(() => {
-		setErrors({})
-		if (isAuth && (pathname == "/login" || pathname == "/signup" || pathname.startsWith("/callback")))
-			router.push("/profile")
-			
-	}, [pathname])
+		setErrors({});
+		if (
+			isAuth &&
+			(pathname == '/login' || pathname == '/signup' || pathname.startsWith('/callback'))
+		)
+		router.push('/profile');
+	}, [pathname]);
 
 	return (
 		<LoginContext.Provider
 			value={{
-				errors,
-				setErrors,
-				AuthenticateTo,
-				Logout,
-				isAuth,
-				setIsAuth,
-				fetch_profile,
-				profileData,
-				setProfileData
+			errors,
+			setErrors,
+			AuthenticateTo,
+			Logout,
+			isAuth,
+			setIsAuth,
+			fetch_profile,
+			profileData,
+			setProfileData,
 			}}
 		>
 			{mounted && children}

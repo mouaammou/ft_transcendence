@@ -83,9 +83,9 @@ class Friendship(models.Model):
 
 
 def validate_image_size(image):
-    max_size = 50 * 1024 * 1024  # 50MB
-    if image.size > max_size:
-        raise ValidationError("Image size should not exceed 50MB")
+	max_size = 50 * 1024 * 1024  # 50MB
+	if image.size > max_size:
+		raise ValidationError("Image size should not exceed 50MB")
 
 def upload_location(instance, filename):
 	filename = instance.username +"."+ filename.split(".")[-1]
@@ -102,7 +102,7 @@ class CustomUser(AbstractUser):
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
-	is_online = models.BooleanField(default=False)
+	status = models.CharField(default="offline", max_length=10, null=False, blank=False)
 
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 

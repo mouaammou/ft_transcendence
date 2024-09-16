@@ -8,7 +8,7 @@ const CountdownTimer = () => {
       setSeconds(seconds => seconds - 1);
     }, 1000);
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const CountdownTimer = () => {
   const remainingSeconds = seconds % 60;
 
   return (
-    <div className='vs-time'>  
+    <div className="vs-time">
       {minutes}:{remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}
     </div>
   );

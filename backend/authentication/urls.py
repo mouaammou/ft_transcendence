@@ -9,7 +9,7 @@ urlpatterns = [
 	path("login",views.Login.as_view(), name="login"),
 	path("logout",views.Logout.as_view(), name="logout"),
 	path("", views.default, name="default"),
-    
+	
 	path('verifyTokens', views.VerifyToken.as_view(), name='verify token'),
 	#for admin
 
@@ -22,16 +22,17 @@ urlpatterns = [
 	#user profile, get and update, delete
 	path("profile/data", views.UserProfile.as_view(), name="profile"),
 	path("profile/update",views.UpdateProfile.as_view(), name="update profile"),
-    
+	
 	# for friends
-    path('friends/', views.FriendshipListCreateView.as_view(), name='friendship-list-create'),
-    path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
-    path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
-    path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
-    
+	path('friends/', views.FriendshipListCreateView.as_view(), name='friendship-list-create'),
+	path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
+	path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
+	path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
+	
 	# for notificaions
-    path('sendFriendshipRequest/', views.CreateFriendshipRequest.as_view(), name="send friendship request")
+	path('sendFriendshipRequest/', views.CreateFriendshipRequest.as_view(), name="send friendship request"),
+	path("allusers", views.allUser.as_view(), name="all users"),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

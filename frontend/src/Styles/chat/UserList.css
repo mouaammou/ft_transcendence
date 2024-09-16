@@ -8,50 +8,48 @@
     overflow-x: hidden;
 } */
 
-.UserListOnline{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+.UserListOnline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
 }
 
-.UserListAll{
-    display: flex;
-    flex-direction: column;
-    width: 95%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* overflow-y: auto;
+.UserListAll {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* overflow-y: auto;
     overflow-x: hidden; */
-    /* height: 100%; */
+  /* height: 100%; */
 }
-
 
 /* Custom scrollbar styling */
 
 .UserListAll::-webkit-scrollbar {
-    width: 5px;
+  width: 5px;
 }
 
 .UserListAll::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 
 .UserListAll::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: linear-gradient(#642bff, #22fffb);
+  border-radius: 10px;
+  background: linear-gradient(#642bff, #22fffb);
 }
 
-
-@media (max-width: 990px){
-    .UserListAll{
-        width: 85%;
-        margin-bottom: 100px;
-    }
+@media (max-width: 990px) {
+  .UserListAll {
+    width: 85%;
+    margin-bottom: 100px;
+  }
 }
-@media (max-width: 400px){
-    .UserListAll {
-        width: 85%;
-        margin-bottom: 60px;
-    }
+@media (max-width: 400px) {
+  .UserListAll {
+    width: 85%;
+    margin-bottom: 60px;
+  }
 }
