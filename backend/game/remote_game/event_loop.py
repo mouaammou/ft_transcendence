@@ -230,7 +230,8 @@ class EventLoopManager:
     @classmethod
     def play(cls, player_id):
         game_obj = cls.active_players.get(player_id)
-        if game_obj:
+        if game_obj.is_fulfilled():
+            RemoteGameOutput.add_callback(player_id, )
             game_obj.play()
             return True
         return False

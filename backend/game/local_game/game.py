@@ -10,16 +10,16 @@ class Players:
         self.right = {}
         self.game_type = 'regular' or 'tournament'
     
-    def set_nickname(self, direction, nickname):
+    def set_nickname(self, direction, nickname): 
         self.set_directive(direction, 'nickname', nickname)
 
     def get_nickname(self, direction):
         self.get_directive(direction, 'nickanme')
     
-    def get_directive(self, direction, key):
+    def get_directive(self, direction, key): 
         if direction == 'left':
             return self.left.get(key)
-        elif direction == 'right':
+        elif direction == 'right': 
             return self.right.get(key)
     
     def set_directive(self, direction, key, value):

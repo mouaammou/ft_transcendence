@@ -1,10 +1,9 @@
 "use client";
-import { useClient } from 'next/client';
 import { useEffect, useRef, useState} from 'react';
+import socket from '@/utils/WebSocketManager';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 	const canvasRef = useRef(null);
-	const [socketState, setSocketState] = useState(false);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -88,29 +87,28 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.fill();
 		}
 
-		const socket = new WebSocket('ws://localhost:8000/ws/global/');
 		let conectionOn = false;
 		function sendVisibilityStatus() {
 			console.log("Visibility: ")
 			// if (conectionOn === true) {
 				console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
-				socket.send(JSON.stringify({ tabFocused: isTabFocused }));
+				// socket.send(JSON.stringify({ tabFocused: isTabFocused }));
 			// }
 		}
 
-		if (socket.readyState === WebSocket.OPEN) {
-			console.log('WebSocket connection is open');
-			conectionOn = true;
-			// create new game EVENT
-		} else {
-			console.log('WebSocket connection is not open');
-			conectionOn = false;
-		  }
-		socket.addEventListener('open', (event) => {
-			// console.log(socketState);
-			console.log('Connected to WS Server');
-		});
+		// if (socket.readyState === WebSocket.OPEN) {
+		// 	console.log('WebSocket connection is open');
+		// 	conectionOn = true;
+		// 	// create new game EVENT
+		// } else {
+		// 	console.log('WebSocket connection is not open');
+		// 	conectionOn = false;
+		//   }
+		// socket.addEventListener('open', (event) => {
+		// 	// console.log(socketState);
+		// 	console.log('Connected to WS Server');
+		// });
 		// function resizeCanvas() {
 		// 	canvas.width = window.innerWidth/2;
 		// 	canvas.height = window.innerHeight/3;
@@ -120,8 +118,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		//   resizeCanvas();
 		let gameConfig = {};
 
-		socket.onmessage = function (message) {
-			const data = JSON.parse(message.data);
+		const handleMessage = (message) => {
+			if (!message) {
+				console.error('Received an undefined message or data:', message);
+				return; // Exit early if message is invalid
+			}
+			const data = JSON.parse(message);
 			if (data.update)
 			{
 				if (data.update.left_paddle_pos)
@@ -134,7 +136,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					computer.x = data.update.right_paddle_pos[0];
 					computer.y = data.update.right_paddle_pos[1];
 				}
-				ball.radius = gameConfig.ball_size[0] / 2;
+				// ball.radius = gameConfig.ball_size[0] / 2;
 				ball.x = data.update.ball_pos[0] + ball.radius;
 				ball.y = data.update.ball_pos[1] + ball.radius;
 				// rectBall.x = data.update.ball_pos[0];
@@ -154,37 +156,38 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					drawGame();
 				}
 				else if (data.config)
-			{
-				// setScore1(score1 => data.config.right_player_score);
-				// setScore2(score2 => data.config.left_player_score);
-				gameConfig = data.config;
-				canvas.width = gameConfig.window_size[0];
-				canvas.height = gameConfig.window_size[1];
-				// console.log(canvas.height);
-				net.x = canvas.width / 2 - 2;
-				computer.width = gameConfig.paddles_size[0];
-				computer.height = gameConfig.paddles_size[1];
-				user.width = gameConfig.paddles_size[0];
-				user.height = gameConfig.paddles_size[1];
-				user.x = gameConfig.left_paddle_pos[0];
-				user.y = gameConfig.left_paddle_pos[1];
-				computer.x = gameConfig.right_paddle_pos[0];
-				computer.y = gameConfig.right_paddle_pos[1];
-				ball.radius = gameConfig.ball_size[0] / 2;
-				ball.x = gameConfig.ball_pos[0] + ball.radius;
-				ball.y = gameConfig.ball_pos[1] + ball.radius;
-				ball.radius = gameConfig.ball_size[0] / 2;
-				// rectBall.x = gameConfig.ball_pos[0];
-				// rectBall.y = gameConfig.ball_pos[1];
-				// rectBall.width = gameConfig.ball_size[0];
-				// rectBall.height = gameConfig.ball_size[1];
-				user.score = gameConfig.left_player_score;
-				setScore2(score2 => gameConfig.left_player_score);
-				computer.score = gameConfig.right_player_score;
-				setScore1(score1 => gameConfig.right_player_score);
-				drawGame();
-			}
+				{
+					// setScore1(score1 => data.config.right_player_score);
+					// setScore2(score2 => data.config.left_player_score);
+					gameConfig = data.config;
+					canvas.width = gameConfig.window_size[0];
+					canvas.height = gameConfig.window_size[1];
+					// console.log(canvas.height);
+					net.x = canvas.width / 2 - 2;
+					computer.width = gameConfig.paddles_size[0];
+					computer.height = gameConfig.paddles_size[1];
+					user.width = gameConfig.paddles_size[0];
+					user.height = gameConfig.paddles_size[1];
+					user.x = gameConfig.left_paddle_pos[0];
+					user.y = gameConfig.left_paddle_pos[1];
+					computer.x = gameConfig.right_paddle_pos[0];
+					computer.y = gameConfig.right_paddle_pos[1];
+					ball.radius = gameConfig.ball_size[0] / 2;
+					ball.x = gameConfig.ball_pos[0] + ball.radius;
+					ball.y = gameConfig.ball_pos[1] + ball.radius;
+					ball.radius = gameConfig.ball_size[0] / 2;
+					// rectBall.x = gameConfig.ball_pos[0];
+					// rectBall.y = gameConfig.ball_pos[1];
+					// rectBall.width = gameConfig.ball_size[0];
+					// rectBall.height = gameConfig.ball_size[1];
+					user.score = gameConfig.left_player_score;
+					setScore2(score2 => gameConfig.left_player_score);
+					computer.score = gameConfig.right_player_score;
+					setScore1(score1 => gameConfig.right_player_score);
+					drawGame();
+				}
 		}
+		socket.registerMessageHandler(handleMessage)
 		// Game state
 		// Keyboard state
 		const keys = {};
@@ -220,12 +223,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
-			socket.send(JSON.stringify({"onPress" : event.key.trim()}));
+			socket.sendMessage(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
 			if (event.key === ' ')
 			{
 				// create new game if space key is created
-				socket.send(JSON.stringify(
+				socket.sendMessage(JSON.stringify(
 					{
 						"create":
 						{
@@ -238,7 +241,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 
 		// set the key to false when the key is released
 		const handleKeyUp = (event) => {
-			socket.send(JSON.stringify({"onRelease" : event.key.trim()}));
+			socket.sendMessage(JSON.stringify({"onRelease" : event.key.trim()}));
 			keys[event.key] = false;
 		};
 

@@ -106,11 +106,11 @@ class LocalGameInputMiddleware:
 
     @classmethod
     def try_create(cls, event_loop_cls, channel_name, event_dict):
-        data = event_dict.get('create')
+        data = event_dict.get('remote')
         if data is None :
             return
         mode = data.get('mode')
-        if mode is None or mode != 'local':
+        if mode is None or mode != 'random':
             return
         event_loop_cls.add(channel_name)
         event_loop_cls.play(channel_name)
