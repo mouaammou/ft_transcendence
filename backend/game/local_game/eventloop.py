@@ -1,6 +1,7 @@
 import asyncio
 from .game import PingPongGame
 from .middleware import LocalGameInputMiddleware, LocalGameOutputMiddleware
+from .tournament.manager import TrournamentManager
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -24,6 +25,9 @@ class EventLoopManager:
     finished = []
     _event_loop_task = None
     game_class = PingPongGame
+    trournament_manager_class = TrournamentManager
+    input_middleware_class =  LocalGameInputMiddleware
+    output_middlware_class = LocalGameOutputMiddleware
 
     @classmethod
     async def _event_loop(cls):
@@ -72,7 +76,7 @@ class EventLoopManager:
             cls.runing[channel_name] = game_obj
         # else:
         #     game_obj.disconnected = False # disconnetion class used here
-        # LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj)
+        # cls.output_middlware_class.add_callback(channel_name, send_callback, game_obj)
         
     
     @classmethod
@@ -82,7 +86,7 @@ class EventLoopManager:
         if game_obj is None:
             return False
         print('************ RECONNECT *************')
-        LocalGameOutputMiddleware.add_callback(channel_name, consumer, game_obj=game_obj)
+        cls.output_middlware_class.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
         # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
@@ -110,7 +114,8 @@ class EventLoopManager:
     @classmethod
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
-        if game_obj and LocalGameOutputMiddleware.is_disconnection(channel_name):
+        if game_obj and cls.output_middlware_class.is_disconnection(channel_name):
+            # dont disconnect game until all Tabs is disconnected
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
             return True
@@ -120,7 +125,7 @@ class EventLoopManager:
     def connect(cls, channel_name, consumer):
         cls.run_event_loop()
         if not cls._reconnect(channel_name, consumer):
-            LocalGameOutputMiddleware.add_callback(channel_name, consumer)
+            cls.output_middlware_class.add_callback(channel_name, consumer)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
@@ -139,10 +144,10 @@ class EventLoopManager:
             There is no game runing with that channel name.
             So check if recieved event is CREATE
             """
-            LocalGameInputMiddleware.try_create(cls, channel_name, event_dict)
+            cls.input_middleware_class.try_create(cls, channel_name, event_dict)
             return None
         if game_obj.game_mode == 'local':
-            LocalGameInputMiddleware.recieved_dict_text_data(channel_name, game_obj, event_dict)
+            cls.input_middleware_class.recieved_dict_text_data(channel_name, game_obj, event_dict)
         elif game_obj.game_mode == 'remote':
             pass
             # add middleware for remote game here
@@ -169,8 +174,8 @@ class EventLoopManager:
         if game_obj is None:
             return
         if game_obj.game_mode == 'local':
-            LocalGameOutputMiddleware.send(channel_name, frame)
-        # elif game_obj.game_mode == 'remote':
+            cls.output_middlware_class.send(channel_name, frame)
+        # elif game_obj.game_mode == 'remote': 
         #     pass
             # add middleware for remote game here
     
@@ -181,3 +186,4 @@ class EventLoopManager:
         print("================== EVENT LOOP CREATED ================")
         task = cls._event_loop()
         cls._event_loop_task = asyncio.create_task(task)
+        cls.trournament_manager_class.init_monitor(cls)

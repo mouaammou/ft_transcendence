@@ -33,5 +33,4 @@ class PingPongGame(PingPongGameLogic, LocalGameDisconnection, Players):
     """
     Use this to create game instances.
     """
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    pass

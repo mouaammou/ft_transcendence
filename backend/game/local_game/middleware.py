@@ -50,12 +50,28 @@ class LocalGameOutputMiddleware:
         # print("-"*15)
 
     @classmethod
+    def send_to_userid(cls, id, data :dict) -> None:
+        for unique_key, group in cls.consumer_group.items():
+            for consumer in group:
+                if consumer.user.id == id:
+                    consumer.send_game_message(data)
+    
+    @classmethod
+    def userid_to_uniquekey(cls, id) -> str:
+        for unique_key, group in cls.consumer_group.items():
+            for consumer in group:
+                if consumer.user.id == id:
+                    return unique_key
+        return None
+    
+    @classmethod
     def send(cls, channel_name, frame) -> None:
         data = {'update': frame}
-        cls._send_to_consumer_group(channel_name, data)
+        return cls._send_to_consumer_group(channel_name, data)
     
     @classmethod
     def send_config(cls, channel_name, game_obj) -> None:
+        """True if use """
         data = {'config': game_obj.get_game_config}
         cls._send_to_consumer_group(channel_name, data)
     
@@ -63,9 +79,10 @@ class LocalGameOutputMiddleware:
     def _send_to_consumer_group(cls, channel_name, data) -> None:
         group = cls.consumer_group.get(channel_name)
         if group is None:
-            return
+            return False
         for consumer in group:
             consumer.send_game_message(data)
+        return True
     
     @classmethod
     def is_disconnection(cls, unique_key):

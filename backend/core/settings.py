@@ -77,8 +77,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'game',
+
+    'game.apps.GameConfig',
     # 'game.apps.GameConfig',
+    
     "authentication.apps.AuthenticationConfig",
     "rest_framework",
     "rest_framework_simplejwt",
