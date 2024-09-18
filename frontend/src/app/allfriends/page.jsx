@@ -8,7 +8,7 @@ import Link  from "next/link";
 import {useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
-const AllUsers = () => {
+const Friends = () => {
 	const { isConnected, websocket}  = useWebSocketContext();
 	const [users, setUsers] = useState([]);
 	const [nextPage, setNextPage] = useState(null);
@@ -18,9 +18,10 @@ const AllUsers = () => {
 	const [pageNotFound, setPageNotFound] = useState(false);
 	
 	const fetchAllUsers = async (pageNumber) => {
-		router.push(`/allusers?page=${pageNumber}`);
+		router.push(`/allfriends?page=${pageNumber}`);
 		try {
-			const response = await getData(`/allusers?page=${pageNumber}`);			
+			const response = await getData(`/allfriends?page=${pageNumber}`);	
+			console.log('friends response', response.data);
 			if (response.status === 200) {
 				setUsers(response.data.results);
 				setPrevPage(() => {
@@ -64,19 +65,44 @@ const AllUsers = () => {
 	// WebSocket message handler to update the friends list when new status is received
 	useEffect(() => {
 		if (isConnected) {
-			// Attach onmessage listener
 			websocket.current.onmessage = (event) => {
-				const data = JSON.parse(event.data);
-				console.log("WebSocket message received:", data);
-	
-				if (data.type === 'user_status_change') {
-					setUsers(prevUsers => prevUsers.map(user => user.username === data.username ? { ...user, status: data.status } : user));
-					//if there is a new user, add it to the list of users
-					setUsers(prevUsers => prevUsers.find(user => user.username === data.username) ? prevUsers : [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }]);
-				}
+					const data = JSON.parse(event.data);
+					console.log("WebSocket message received:", data);
+
+					if (data.type === 'user_status_change') {
+						setUsers(prevUsers => {
+							const userIndex = prevUsers.findIndex(user => user.username === data.username);
+							if (userIndex !== -1) {
+									// User exists, update their status
+									const updatedUsers = [...prevUsers];
+									updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
+									return updatedUsers;
+							} else {
+									// User doesn't exist, add them to the list
+									return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
+							}
+						});
+					}
 			};
 		}
-	}, [websocket]); // Attach only once when websocket is available
+	}, [isConnected]); // Depend on isConnected instead of websocket
+
+	// useEffect(() => {
+	// 	if (isConnected) {
+	// 		// Attach onmessage listener
+	// 		websocket.current.onmessage = (event) => {
+	// 			const data = JSON.parse(event.data);
+	// 			console.log("WebSocket message received:", data);
+	
+	// 			if (data.type === 'user_status_change') {
+	// 				// Update the status of the user in the list
+	// 				setUsers(prevUsers => prevUsers.map(user => user.username === data.username ? { ...user, status: data.status } : user));
+	// 				//if there is a new user, add it to the list of users
+	// 				setUsers(prevUsers => prevUsers.find(user => user.username === data.username) ? prevUsers : [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }]);
+	// 			}
+	// 		};
+	// 	}
+	// }, [websocket]); // Attach only once when websocket is available
 
 	return (
 	(pageNotFound) ? <>
@@ -114,7 +140,7 @@ const AllUsers = () => {
 							<path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
 						</svg>
 					</span> 
-					<span className="inline-block">All Users</span>
+					<span className="inline-block">Friends</span>
 				</div>
 
 				<div className="list-friends-profile">
@@ -177,4 +203,4 @@ const AllUsers = () => {
 	)
 }
 
-export default AllUsers;
+export default Friends;

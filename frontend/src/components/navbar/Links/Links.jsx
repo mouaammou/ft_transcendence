@@ -27,6 +27,10 @@ const links = [
 		path: '/allusers',
 	},
 	{
+		title: 'Friends',
+		path: '/allfriends',
+	},
+	{
 		title: 'Chat',
 		path: '/chat',
 	},

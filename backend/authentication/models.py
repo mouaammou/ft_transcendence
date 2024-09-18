@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
-
+from django.db.models import Q
 
 #---------------- Notifications model ===================#
 class NotificationModel(models.Model):
