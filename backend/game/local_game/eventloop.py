@@ -111,8 +111,8 @@ class EventLoopManager:
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
         if game_obj and LocalGameOutputMiddleware.is_disconnection(channel_name):
-            game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
+            game_obj.disconnected = True # and disconnetion class also used here
             return True
         return False
     

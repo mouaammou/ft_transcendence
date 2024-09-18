@@ -23,34 +23,53 @@ output events:
 """
 
 from .game import RemoteGameLogic
+import weakref
+# from pong.pong_base import Base
+
 
 class RemoteGameOutput:
-    callbacks = {}
+    consumer_group = {}
     
-    @classmethod
-    def send(cls, player_id, frame) -> None:
-        data = {'update': frame}
-        send_task = cls.callbacks.get(player_id)
-        send_task(data)
 
     @classmethod
-    def add_callback(cls, player_id, send_callback, game_obj=None) -> None:
+    def add_callback(cls, player_id, consumer, game_obj=None) -> None:
         """
         game_obj is None on connect, But a game instance on reconnect.
         """
-        cls.callbacks[player_id] = send_callback # only this line means connect
-        if game_obj is not None:
-            # this means reconncet
-            cls.send_config(player_id, game_obj)
-        else:
-            cls.send_config(player_id, RemoteGameLogic())
+        if cls.consumer_group.get(player_id) is None:
+            cls.consumer_group[player_id] = weakref.WeakSet()
+        cls.consumer_group[player_id].add(consumer)
+            
+        cls.send_config(player_id, game_obj or RemoteGameLogic())
 
+    @classmethod
+    def send(cls, player_id, frame) -> None:
+        data = {'update': frame}
+        cls._send_to_consumer_group(player_id, data) 
     
     @classmethod
-    def send_config(cls, player_id, game_obj):
+    def send_config(cls, player_id, game_obj) -> None:
         data = {'config': game_obj.get_game_config}
-        send_task = cls.callbacks.get(player_id)
-        send_task(data)
+        cls._send_to_consumer_group(player_id, data)
+    
+    @classmethod
+    def _send_to_consumer_group(cls, player_id, data) -> None:
+        group = cls.consumer_group.get(player_id)
+        if group is None:
+            return
+        for consumer in group:
+            consumer.send_game_message(data)
+    
+    @classmethod
+    def is_disconnection(cls, player_id):
+        return len(cls.consumer_group.get(player_id)) <= 1
+    
+    @classmethod
+    def there_is_focus(cls, unique_key):
+        group = cls.consumer_group.get(unique_key)
+        if group is None:
+            return False
+        return any(cons.is_focused for cons in group)
 
 
 class RemoteGameInput:
@@ -79,15 +98,11 @@ class RemoteGameInput:
 
     @classmethod 
     def try_create(cls, event_loop_cls, player_id, event_dict):
-        # data = event_dict.get('create')
-        # if data is None :
-        #     return
-        # mode = data.get('mode')
-        # if mode is None or mode != 'remote':
-        #     return
-        # print(f"\nASDFASDFASDFASDF\n")
-        # print(f"{player_id}")
-        # print(f"\nASDFASDFASDFASDF\n")
-        mode = 'remote'
-        event_loop_cls.add(player_id, game_mode=mode)
-        event_loop_cls.play(player_id)
+        data = event_dict.get('remote')
+        if data is None :
+            return
+        mode = data.get('mode')
+        if mode is None or mode != 'random':
+            return
+        event_loop_cls.add(player_id, game_mode='remote')
+        event_loop_cls.play(player_id) 

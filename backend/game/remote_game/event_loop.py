@@ -33,15 +33,11 @@ class EventLoopManager:
     flag = True
 
     @classmethod
-    def connect(cls, player_id, channel, send_game_message):
-        a_channel = cls.channel_per_player.get(player_id)
-        if a_channel:
-            return False
-        else:
-            cls.channel_per_player[player_id] = channel
+    def connect(cls, channel, consumer):
+        player_id = consumer.scope['user'].id
         cls.run_event_loop()
-        if not cls._reconnect(player_id, send_game_message):
-           RemoteGameOutput.add_callback(player_id, send_game_message)
+        if not cls._reconnect(player_id, consumer):
+           RemoteGameOutput.add_callback(player_id, consumer)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
@@ -49,14 +45,14 @@ class EventLoopManager:
         
              
     @classmethod
-    def _reconnect(cls, player_id, send_callback):
+    def _reconnect(cls, player_id, consumer):
         # """used to run new game instance in the event loop"""
         game_obj = cls.active_players.get(player_id)
         if game_obj is None:
             return False 
         game_obj.play() 
         print('************ RECONNECT *************')
-        RemoteGameOutput.add_callback(player_id, send_callback, game_obj=game_obj)
+        RemoteGameOutput.add_callback(player_id, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
         # cls.play(player_id) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
@@ -192,8 +188,7 @@ class EventLoopManager:
     def disconnect(cls, player_id):
         game_obj = cls.active_players.get(player_id)
         # channel = cls.channel_per_player.get(player_id)
-        cls.channel_per_player.pop(player_id, None)
-        if game_obj:
+        if game_obj and RemoteGameOutput.is_disconnection(player_id): 
             game_obj.pause()
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, cls, player_id)
@@ -231,7 +226,7 @@ class EventLoopManager:
     def play(cls, player_id):
         game_obj = cls.active_players.get(player_id)
         if game_obj.is_fulfilled():
-            RemoteGameOutput.add_callback(player_id, )
+            # RemoteGameOutput.add_callback(player_id, )// add methode in the consumer to send what ever you want to the front!!!!
             game_obj.play()
             return True
         return False
@@ -273,7 +268,7 @@ class EventLoopManager:
         Returns a dictionary where the key is game_id and the value is a list of 
             player ids that have the same game.
         """
-
+        print(f"-----> {len(cls.running_games)}") 
         for player_id, game in cls.active_players.items():
             if game not in cls.running_games:
                 cls.running_games[game] = []  # Initialize a list for new game_ids

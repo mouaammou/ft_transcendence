@@ -1,7 +1,7 @@
 // src/components/WaitingPage.jsx
 "use client"
 import React from 'react'
-import WebSocketManager from '@/utils/WebSocketManager'; // Adjust the path as needed
+import mysocket from '@/utils/WebSocketManager'; // Adjust the path as needed
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from "@/components/auth/loginContext.jsx";
@@ -16,21 +16,21 @@ const WaitingPage = () => {
         const handleMessage = (message) => {
             const data = JSON.parse(message.data);
 
-            if (data.status === 'ready') {
+            if (data.status === 'start') {
                 // Redirect to the game page once both players are ready
                 setWaiting(false);
                 router.push('/game'); // Adjust the game route as needed
             }
         };
 
-        WebSocketManager.registerMessageHandler(handleMessage);
+        mysocket.registerMessageHandler(handleMessage);
 
         // Notify backend that the player is waiting
-        // WebSocketManager.sendMessage(JSON.stringify({ action: 'join_waiting_room' }));
+        // mysocket.sendMessage(JSON.stringify({ action: 'join_waiting_room' }));
 
         // Cleanup on unmount
         return () => {
-            WebSocketManager.unregisterMessageHandler(handleMessage);
+            mysocket.unregisterMessageHandler(handleMessage);
         };
     }, [router]);
 

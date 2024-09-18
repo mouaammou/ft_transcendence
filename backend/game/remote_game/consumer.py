@@ -29,11 +29,13 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
     game_engine = EventLoopManager
     
     async def connect(self):
-
-        await self.accept()
-
+        self.user = self.scope['user']
         self.player_id = self.scope['user'].id
-        ret = self.game_engine.connect(self.player_id, self.channel_name, self.send_game_message)
+        if self.user.is_anonymous:
+            return await self.close()
+        await self.accept()
+        
+        ret = self.game_engine.connect(self.channel_name, self)
         if ret == False: 
             self.close()
         # dont forget to set timout callback

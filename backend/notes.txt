@@ -76,3 +76,4 @@ scope={
     'root_path': '',
     'app': <ASGI app instance>
 }
+

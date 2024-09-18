@@ -10,11 +10,11 @@ import uuid
 User = get_user_model()
 
 def set_jwt_cookies(response, refresh):
+	if refresh.get('channel_name') is None:
+		refresh['channel_name'] = str(uuid.uuid4())
 	print('+L'*20)
 	print(refresh.payload)
 	print('L+'*20)
-	if refresh.get('channel_name') is None:
-		refresh['channel_name'] = str(uuid.uuid4())
 	response.set_cookie(
 		key="refresh_token",
 		value=str(refresh),

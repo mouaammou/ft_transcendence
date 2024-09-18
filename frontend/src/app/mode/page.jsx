@@ -11,12 +11,22 @@ const Mode = () => {
         const randomGame = {
             "remote" : {
                         mode : 'random'
-                }
+                        }
             }
             socket.sendMessage(JSON.stringify(randomGame))
             router.push('waiting')
     }
 
+    // socket.registerMessageHandler(redirect_to_game);
+    // const redirect_to_game = (message) => {
+    //     if (!message) {
+    //         console.error('Received an undefined message or data2:', message);
+    //         return; // Exit early if message is invalid
+    //     }
+    //     data = JSON.parse(message.data);
+    //     if (data.start)
+    //         router.push('game');
+    // }
     return (
         <div className="flex flex-col lg:flex-row items-center justify-center mt-52">
             <div className="flex flex-col">

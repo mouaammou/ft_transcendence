@@ -90,11 +90,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		let conectionOn = false;
 		function sendVisibilityStatus() {
 			console.log("Visibility: ")
-			// if (conectionOn === true) {
+			if (conectionOn === true) {
 				console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
-				// socket.send(JSON.stringify({ tabFocused: isTabFocused }));
-			// }
+				socket.send(JSON.stringify({ tabFocused: isTabFocused }));
+			}
 		}
 
 		// if (socket.readyState === WebSocket.OPEN) {
@@ -123,7 +123,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				console.error('Received an undefined message or data:', message);
 				return; // Exit early if message is invalid
 			}
-			const data = JSON.parse(message);
+			const data = JSON.parse(message.data);
 			if (data.update)
 			{
 				if (data.update.left_paddle_pos)
@@ -187,7 +187,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					drawGame();
 				}
 		}
-		socket.registerMessageHandler(handleMessage)
+		socket.registerMessageHandler(handleMessage);
 		// Game state
 		// Keyboard state
 		const keys = {};
@@ -225,18 +225,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		const handleKeyDown = (event) => {
 			socket.sendMessage(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
-			if (event.key === ' ')
-			{
-				// create new game if space key is created
-				socket.sendMessage(JSON.stringify(
-					{
-						"create":
-						{
-							mode:'remote'
-						}
-					}
-				));
-			}
+			// if (event.key === ' ')
+			// {
+			// 	// create new game if space key is created
+			// 	socket.sendMessage(JSON.stringify(
+			// 		{
+			// 			"create":
+			// 			{
+			// 				mode:'remote'
+			// 			}
+			// 		}
+			// 	));
+			// }
 		};
 
 		// set the key to false when the key is released
