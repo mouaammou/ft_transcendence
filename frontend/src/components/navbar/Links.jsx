@@ -2,13 +2,12 @@ import Link from 'next/link';
 import { useState } from 'react';
 import SearchProfileComponent from '@/components/navbar/search';
 
-const Links = ({ Logout }) => {
+const Links = () => {
 	const [isOpenUsers, setIsOpenUsers] = useState(false);
 	const [isOpenGame, setIsOpenGame] = useState(false);
 	return (
 		<> 
 			<div className="flex justify-center gap-x-5 items-center font-suse text-[1.1rem] ">
-				<Link href='/profile' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Profile</Link>
 				<Link href='/chat' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Chat</Link>	
 				{/* drop down menu for Users and game & tournament */}
 				<div className="relative">
