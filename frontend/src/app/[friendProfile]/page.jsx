@@ -6,8 +6,7 @@ import { notFound } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
-import { FaUserCircle, FaHistory } from 'react-icons/fa';
-import { FaClock, FaTrophy } from 'react-icons/fa';
+import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 
 
 export default function FriendProfile({ params }) {
@@ -71,54 +70,54 @@ export default function FriendProfile({ params }) {
 
 					{/* username & nickname */}
 					{/* drop down menu */}
-						<div className="relative inline-block text-left">
-							<button
-							onClick={() => setIsOpen(!isOpen)}
-							className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 text-center inline-flex items-center"
-							type="button"
-							>
-								<span className='text-lg'>{profile?.username}
-									<svg
-										className="w-2.5 h-2.5 ms-3 inline"
-										aria-hidden="true"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 10 6"
-									>
-										<path
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										d="m1 1 4 4 4-4"
-										/>
-									</svg>
-								</span>
-							</button>
-
-							{isOpen && (
-								<div
-									onMouseLeave={() => setIsOpen(false)}
-									className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg"
+					<div className="relative inline-block text-left">
+						<button
+						onClick={() => setIsOpen(!isOpen)}
+						className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 text-center inline-flex items-center"
+						type="button"
+						>
+							<span className='text-lg'>{profile?.username}
+								<svg
+									className="w-2.5 h-2.5 ms-3 inline"
+									aria-hidden="true"
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 10 6"
 								>
-									<ul className="py-0 text-sm text-gray-700 w-full">
-										<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
-											<FaTrophy className="mr-2 size-5" /> Invite to Tournament
-										</li>
-										<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
-											<FaGamepad className="mr-2 size-5" /> Invite to Game
-										</li>
-										<li className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
-											<FaUserPlus className="mr-2 size-5" /> Add to Friend List
-										</li>
-										<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
-											<FaBan className="mr-2 size-5" /> Block
-										</li>
-									</ul>
-								</div>
+									<path
+									stroke="currentColor"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="m1 1 4 4 4-4"
+									/>
+								</svg>
+							</span>
+						</button>
 
-							)}
-						</div>
+						{isOpen && (
+							<div
+								onMouseLeave={() => setIsOpen(false)}
+								className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg"
+							>
+								<ul className="py-0 text-sm text-gray-700 w-full">
+									<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
+										<FaTrophy className="mr-2 size-5" /> Invite to Tournament
+									</li>
+									<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
+										<FaGamepad className="mr-2 size-5" /> Invite to Game
+									</li>
+									<li className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
+										<FaUserPlus className="mr-2 size-5" /> Add to Friend List
+									</li>
+									<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
+										<FaBan className="mr-2 size-5" /> Block
+									</li>
+								</ul>
+							</div>
+
+						)}
+					</div>
 
 				</div>
 
