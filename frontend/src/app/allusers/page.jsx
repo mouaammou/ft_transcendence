@@ -9,7 +9,7 @@ import {useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import NotFound_404 from "@/components/error_pages/404";
 
-const Friends = () => {
+const AllUsers = () => {
 	const { isConnected, websocket}  = useWebSocketContext();
 	const [users, setUsers] = useState([]);
 	const [nextPage, setNextPage] = useState(null);
@@ -19,28 +19,22 @@ const Friends = () => {
 	const [pageNotFound, setPageNotFound] = useState(false);
 	
 	const fetchAllUsers = async (pageNumber) => {
-		router.push(`/friends?page=${pageNumber}`);
+		router.push(`/allusers?page=${pageNumber}`);
 		try {
-			const response = await getData(`/friends?page=${pageNumber}`);	
-			console.log('friends response', response.data);
+			const response = await getData(`/allusers?page=${pageNumber}`);			
 			if (response.status === 200) {
 				setUsers(response.data.results);
 				setPrevPage(() => {
-					if (response.data.previous) {
+					if (response.data.previous) 
+						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
 						// Extract the page number from the previous URL
-						const pageNumber = response.data.previous.split("page=")[1];
-						return pageNumber || 1; // If there's no page number, return null
-					}
 					return null; // No previous page
 				});
 
 				// Update nextPage
 				setNextPage(() => {
-					if (response.data.next) {
-						// Extract the page number from the next URL
-						const pageNumber = response.data.next.split("page=")[1];
-						return pageNumber || null; // If there's no page number, return null
-					}
+					if (response.data.next)
+						return response.data.next.split("page=")[1] || null; // If there's no page number, return null
 					return null; // No next page
 				});
 			}
@@ -57,7 +51,7 @@ const Friends = () => {
 	useEffect(() => {
 		const page = query_params.get('page') || 1;
 		fetchAllUsers(page);
-
+	
 		return () => {
 			setPageNotFound(false);
 		}
@@ -90,7 +84,7 @@ const Friends = () => {
 
 	return (
 	(pageNotFound) ? 
-		<NotFound_404 gobackPage="/friends" />
+		<NotFound_404 gobackPage="/allusers"/>
 	:
 		
 	<div className="friends container flex justify-center mt-14 rounded-lg max-md:p-2 max-md:w-[90%] max-sm:mb-20 bg-topBackground py-32">
@@ -106,7 +100,7 @@ const Friends = () => {
 							<path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
 						</svg>
 					</span> 
-					<span className="inline-block">Friends</span>
+					<span className="inline-block">All Users</span>
 				</div>
 
 				<div className="list-friends-profile">
@@ -173,4 +167,4 @@ const Friends = () => {
 	)
 }
 
-export default Friends;
+export default AllUsers;

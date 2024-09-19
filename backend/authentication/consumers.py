@@ -21,8 +21,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 			self.user_data =  UserSerializer(self.user).data
 			self.room_notifications = f"notifications_{self.user.id}"
 			try:
-				#accept the connection, the send_status_to_user needs that, otherwise error
-				#add the user to their notification room
 				await self.channel_layer.group_add(
 					self.room_notifications,
 					self.channel_name
@@ -48,7 +46,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				logger.error(f"\nError during connection: {e}\n")
 				await self.close()
 		await self.accept()
-	
+
 	async def disconnect(self, close_code):
 		if self.user and self.user.is_authenticated:
 			try:
@@ -56,14 +54,15 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				if self.user.id in self.user_connections:
 					if self.channel_name in self.user_connections[self.user.id]:
 						self.user_connections[self.user.id].remove(self.channel_name)
-
-				number_of_connections = len(self.user_connections[self.user.id])
-				if number_of_connections == 0:
-					print(f"\n {self.user} is offline\n")
-					await self.update_user_status("offline")
-					print(f"\n broadcasting offline : {self.user}\n")
-					await self.broadcast_online_status(self.user_data, "offline")
-					del self.user_connections[self.user.id]
+				# If the user has no connections, update their status to offline
+				if self.user.id in self.user_connections:
+					number_of_connections = len(self.user_connections[self.user.id])
+					if number_of_connections == 0:
+						print(f"\n {self.user} is offline\n")
+						await self.update_user_status("offline")
+						print(f"\n broadcasting offline : {self.user}\n")
+						await self.broadcast_online_status(self.user_data, "offline")
+						del self.user_connections[self.user.id]
 
 				await self.channel_layer.group_discard(
 					self.room_notifications,

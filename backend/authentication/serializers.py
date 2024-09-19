@@ -13,18 +13,33 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 #============= friendship Serializer +++++++++++++++
 class FriendsSerializer(serializers.ModelSerializer):
+	sender = serializers.SerializerMethodField()
+	receiver = serializers.SerializerMethodField()
 
 	class Meta:
 		model = Friendship
-		fields = '__all__'
+		fields = ('sender', 'receiver', 'status', 'created_at')
 		read_only_fields = ['created_at']
 
 	def validate(self, data):
 		if data['sender'] == data['receiver']:
-				raise serializers.ValidationError("Sender and receiver cannot be the same user.")
+			raise serializers.ValidationError("Sender and receiver cannot be the same user.")
 		if not data.get('receiver'):
-				raise serializers.ValidationError("Receiver is not provided !")
+			raise serializers.ValidationError("Receiver is not provided!")
 		return data
+
+	def get_user_data(self, user):
+		user = UserSerializer(user).data
+		return {
+			'username': user.get('username'),
+			'avatar': user.get('avatar')  # Assuming avatar is an ImageField
+		}	
+
+	def get_sender(self, obj):
+		return self.get_user_data(obj.sender)
+
+	def get_receiver(self, obj):
+		return self.get_user_data(obj.receiver)
 # end friendship Serializer ================
 
 #============= CustomeUser Serializer +++++++++++++++
