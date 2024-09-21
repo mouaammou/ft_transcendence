@@ -75,7 +75,7 @@ export const LoginProvider = ({ children }) => {
 		Cookies.remove('isAuth');
 		postData('/logout').then(res => {
 			if (res && res.status === 205) {
-			router.push('/login');
+				router.push('/login');
 			}
 		});
 	};
@@ -102,6 +102,7 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
+		if (isAuth) fetch_profile();
 		setErrors({});
 		if (
 			isAuth &&

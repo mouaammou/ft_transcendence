@@ -10,7 +10,16 @@ from django.db.models import Q
 
 #---------------- Notifications model ===================#
 class NotificationModel(models.Model):
-	to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+	sender = models.ForeignKey(
+			settings.AUTH_USER_MODEL, 
+			related_name="notifications_sent",  # Custom reverse accessor for sender
+			on_delete=models.CASCADE
+		)
+	receiver = models.ForeignKey(
+		settings.AUTH_USER_MODEL, 
+		related_name="notifications_received",  # Custom reverse accessor for receiver
+		on_delete=models.CASCADE
+	)
 	message = models.CharField(max_length=70, blank=False, null=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_read = models.BooleanField(default=False)

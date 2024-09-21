@@ -3,9 +3,8 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext';
 import Links from './Links';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IoLogOut } from 'react-icons/io5';
-import { IoIosNotificationsOutline } from "react-icons/io";
 import NotificationBell from './notifications';
 
 const Logo = () => {
@@ -27,8 +26,9 @@ const Logo = () => {
 }
 
 const Navbar = () => {
-	const { Logout, isAuth } = useAuth();
+	const { Logout, isAuth, profileData: data } = useAuth();
 	const [isOpen, setIsOpen] = useState(false);
+
 
 	return (
 		<>
@@ -44,19 +44,18 @@ const Navbar = () => {
 							</div>
 							{/* drop down menu for Userlogo and notification */}
 							<div className="relative">
-
 								{/* for notifications */}
 								<NotificationBell />
 								
 								<button type="button" onClick={() => setIsOpen(!isOpen)} className="max-w-16 overflow-hidden flex text-sm bg-gray-800 rounded-full md:me-0 hover:ring-4 hover:ring-gray-300">
-									<img className='w-full' src="https://randomuser.me/api/portraits/men/1.jpg" alt="down-arrow"/>
+									<img className='w-full' src={data.avatar} alt="down-arrow"/>
 								</button>
 
 								{isOpen && (
 									<div onMouseLeave={() => setIsOpen(false)} className="z-50 absolute right-3 mt-4 text-base list-none divide-y rounded-lg shadow-lg w-48 bg-gray-800 text-gray-400">
 										<div className="px-4 py-3">
-											<span className="block text-sm text-gray-900 dark:text-white">John Doe</span>
-											<span className="block text-sm text-gray-500 truncate dark:text-gray-400">john.doe@example.com</span>
+											<span className="block text-sm text-white">{data.username}</span>
+											<span className="block text-sm truncate text-gray-400">{data.email}</span>
 										</div>
 										<ul className="py-2">
 											<li>

@@ -29,3 +29,8 @@
 
 # bandwidth: means what
     what means bandwidth ?
+
+		############################################ from 18/09 ############################################
+# Promise in javascript
+	 what is the promise in javascript ??
+	 explain : await new Promise((resolve) => setTimeout(resolve, 1000));// 1 second delay, to simulate a real-world API call

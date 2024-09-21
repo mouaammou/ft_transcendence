@@ -12,9 +12,14 @@ const [loading, setLoading] = useState(false);
 const handleSearch = async (e) => {
 	e.preventDefault();
 	setLoading(true);
-
+	
 	try {
+		if (searchTerm.trim() === '') {
+			throw new Error('Search term cannot be empty');
+		}
 		const response = await getData(`/friendProfile/${searchTerm}`);
+		//delay for 1 second
+		await new Promise((resolve) => setTimeout(resolve, 500));// 1 second delay, to simulate a real-world API call
 		if (response.status === 200) {
 			const data = await response.data;
 
@@ -128,7 +133,14 @@ return (
 
 		<div className="absolute">
 			{/* Loading and Error States */}
-			{loading && <div className="text-sm">Loading...</div>}
+			{loading &&  <div className="flex items-center space-x-1 text-sm">
+								<span>search</span>
+								<span className="inline-flex space-x-1">
+								<span className="w-1 h-1 bg-current rounded-full animate-loading-dot"></span>
+								<span className="w-1 h-1 bg-current rounded-full animate-loading-dot" style={{ animationDelay: '0.2s' }}></span>
+								<span className="w-1 h-1 bg-current rounded-full animate-loading-dot" style={{ animationDelay: '0.4s' }}></span>
+								</span>
+							</div>}
 		</div>
 		</form>
 	</div>

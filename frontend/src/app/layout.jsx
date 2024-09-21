@@ -1,4 +1,5 @@
 'use client';
+
 import { Inter } from 'next/font/google';
 import { LoginProvider } from '@components/auth/loginContext';
 import Navbar from '@/components/navbar/navAuth';
@@ -14,29 +15,26 @@ const inter = Inter({ subsets: ['latin'] });
 export default function RootLayout({ children }) {
 	const pathname = usePathname();
 	const isChatPage = pathname === '/chat';
+
 	return (
 		<html lang="en">
-			<head>
-				<meta charSet="UTF-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-			</head>
-			<WebSocketProvider url="ws://localhost:8000/ws/online/">
-				<LoginProvider>
-						<body className={inter.className}>
-							{isChatPage ? (
-								<div className="content">
+			<body className={inter.className}>
+				<WebSocketProvider url="ws://localhost:8000/ws/online/">
+					<LoginProvider>
+						{isChatPage ? (
+							<div className="content">
 								<Sidebar />
 								{children}
-								</div>
-							) : (
-								<>
+							</div>
+						) : (
+							<>
 								<Navbar />
 								{children}
-								</>
-							)}
-						</body>
-				</LoginProvider>
-			</WebSocketProvider>
+							</>
+						)}
+					</LoginProvider>
+				</WebSocketProvider>
+			</body>
 		</html>
 	);
 }
