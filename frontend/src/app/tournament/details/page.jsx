@@ -71,20 +71,20 @@ const TournamentDetails = () => {
       {/* Round 2 */}
       <div className="round round-2">
         <div className="match">
-          <span>{tournament.match1_winner || 'Winner of Match 1'}</span> vs{' '}
-          <span>{tournament.match2_winner || 'Winner of Match 2'}</span>
+          <span>{tournament.match1_winner || 'Waiting...'}</span> vs{' '}
+          <span>{tournament.match2_winner || 'Waiting...'}</span>
         </div>
         <div className="match">
-          <span>{tournament.match3_winner || 'NoOne'}</span> vs{' '}
-          <span>{tournament.match4_winner || 'NoOne'}</span>
+          <span>{tournament.match3_winner || 'Waiting...'}</span> vs{' '}
+          <span>{tournament.match4_winner || 'Waiting...'}</span>
         </div>
       </div>
 
       {/* Final Round */}
       <div className="round final-round">
         <div className="match">
-          <span>{tournament.match5_winner || 'NoOne'}</span> vs{' '}
-          <span>{tournament.match6_winner || 'NoOne'}</span>
+          <span>{tournament.match5_winner || 'Waiting...'}</span> vs{' '}
+          <span>{tournament.match6_winner || 'Waiting...'}</span>
         </div>
       </div>
 
@@ -93,7 +93,7 @@ const TournamentDetails = () => {
         {tournament.match7_winner ? (
           <h2>Champion: {tournament.match7_winner}</h2>
         ) : (
-          <h2>NoOne</h2>
+          <h2>Waiting...</h2>
         )}
       </div>
     </div>

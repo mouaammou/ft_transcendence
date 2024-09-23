@@ -35,7 +35,9 @@ const TournamentList = () => {
         {tournaments.map((tournament) => (
           <li key={tournament.id}>
             <Link href={`/tournament/details?id=${tournament.id}`}>
-              {tournament.title}
+            <div className="match">
+            <span>{tournament.title}</span>
+          </div>
             </Link>
           </li>
         ))}
