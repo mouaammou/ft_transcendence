@@ -64,29 +64,29 @@ const Friends = () => {
 	}, [query_params.get('page')]);
 
 	// WebSocket message handler to update the friends list when new status is received
-	useEffect(() => {
-		if (isConnected) {
-			websocket.current.onmessage = (event) => {
-					const data = JSON.parse(event.data);
-					console.log("WebSocket message received:", data);
+	// useEffect(() => {
+	// 	if (isConnected) {
+	// 		websocket.current.onmessage = (event) => {
+	// 				const data = JSON.parse(event.data);
+	// 				console.log("WebSocket message received:", data);
 
-					if (data.type === 'user_status_change') {
-						setUsers(prevUsers => {
-							const userIndex = prevUsers.findIndex(user => user.username === data.username);
-							if (userIndex !== -1) {
-									// User exists, update their status
-									const updatedUsers = [...prevUsers];
-									updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
-									return updatedUsers;
-							} else {
-									// User doesn't exist, add them to the list
-									return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
-							}
-						});
-					}
-			};
-		}
-	}, [isConnected]); // Depend on isConnected instead of websocket
+	// 				if (data.type === 'user_status_change') {
+	// 					setUsers(prevUsers => {
+	// 						const userIndex = prevUsers.findIndex(user => user.username === data.username);
+	// 						if (userIndex !== -1) {
+	// 								// User exists, update their status
+	// 								const updatedUsers = [...prevUsers];
+	// 								updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
+	// 								return updatedUsers;
+	// 						} else {
+	// 								// User doesn't exist, add them to the list
+	// 								return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
+	// 						}
+	// 					});
+	// 				}
+	// 		};
+	// 	}
+	// }, [isConnected]); // Depend on isConnected instead of websocket
 
 	return (
 	(pageNotFound) ? 

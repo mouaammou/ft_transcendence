@@ -35,14 +35,14 @@ class NotificationModel(models.Model):
 # class of the model FriendRequest ---
 class Friendship(models.Model):
 	STATUS_CHOICES = (
-		('pending', 'Pending'),
-		('accepted', 'Accepted'),
-		('blocked', 'Blocked'),
+		('pending', 'pending'),
+		('accepted', 'accepted'),
+		('blocked', 'blocked'),
 	)
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
 	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
-	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 	created_at  = models.DateTimeField(auto_now_add=True)
 
 	class Meta:

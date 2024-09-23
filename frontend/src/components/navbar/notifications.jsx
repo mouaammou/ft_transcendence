@@ -70,7 +70,7 @@ const FriendRequestNotification = ({data, websocket, success}) => {
 							href="#"
 							className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none"
 						>
-							Accepted !!!
+							accepted !!!
 						</Link>
 					)	
 					}

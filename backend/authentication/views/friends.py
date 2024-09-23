@@ -9,43 +9,110 @@ from .allusers import CustomUserPagination
 from django.db.models import Q
 
 # ***************** Friendship List View ***************** #
+
 class FriendshipListView(generics.ListAPIView):
-	queryset = Friendship.objects.all()
 	serializer_class = FriendsSerializer
 	pagination_class = CustomUserPagination
 
 	def get_queryset(self):
-		user = self.request.customUser
-		return Friendship.objects.filter(Q(sender=user) | Q(receiver=user), status='accepted')
+		# Get the current user from the request
+		custom_user = self.request.customUser
+		
+		# Filter for friendships where the user is either the sender or receiver
+		# and the status is 'accepted'
+		friendships = Friendship.objects.filter(
+			Q(sender=custom_user) | Q(receiver=custom_user),
+			status='accepted'
+		)
+		
+		# Extract unique friends (either the receiver or sender)
+		unique_friends = []
+		for friendship in friendships:
+			if friendship.sender == custom_user:
+					unique_friends.append(friendship.receiver)
+			else:
+					unique_friends.append(friendship.sender)
+
+		unique_friends = set(unique_friends)
+
+		# Convert the set back to a list for pagination
+		unique_friends = list(unique_friends)
+
+		return unique_friends
 
 	def list(self, request, *args, **kwargs):
-		friendships = self.get_queryset()
-		friends = set()
-		for friendship in friendships:
-			if friendship.sender == request.customUser:
-					friends.add(friendship.receiver)
-			else:
-					friends.add(friendship.sender)
-		# Serialize the data
-		serializer = FriendsSerializer(friendships, many=True)
+		# Get the unique friends queryset
+		friends_queryset = self.get_queryset()
+		paginator = self.pagination_class()
+		paginated_users = paginator.paginate_queryset(friends_queryset, request)
+			# Serialize the paginated data
+		serializer = UserSerializer(paginated_users, many=True)
 		
-		# Custom data structure to avoid duplicates
-		unique_friends = []
-		added_usernames = set()
+		
+		# Return paginated response
+		return paginator.get_paginated_response(serializer.data)
+	
 
-		for item in serializer.data:
-			friend = item['sender'] if item['sender']['username'] != request.customUser.username else item['receiver']
-			if friend['username'] not in added_usernames:
-					unique_friends.append({
-						'username': friend['username'],
-						'avatar': friend['avatar'],
-						'status': item['status'],
-						'created_at': item['created_at']
-					})
-					added_usernames.add(friend['username'])
+	# def get(self, request, *args, **kwargs):
+	# 	users = self.get_queryset()
+	# 	paginator = self.pagination_class()
+	# 	paginated_users = paginator.paginate_queryset(users, request)
+	# 	serializer = UserSerializer(paginated_users, many=True)
+	# 	return paginator.get_paginated_response(serializer.data)
+
+
+
+# class FriendshipListView(generics.ListAPIView):
+# 	serializer_class = FriendsSerializer
+# 	pagination_class = CustomUserPagination
+
+# 	def get_queryset(self):
+# 		# Get the current user from the request
+# 		custom_user = self.request.customUser
+# 		print(f"custom_user :: {custom_user}\n")
+		
+# 		# Filter for friendships where the user is either the sender or receiver
+# 		# and the status is 'accepted'
+# 		queryy = Friendship.objects.filter(
+# 			Q(sender=custom_user) | Q(receiver=custom_user),
+# 			status='Accepted'
+# 		)
+# 		print(f"queryy :: {queryy}\n")
+# 		return queryy
+
+	# def get_queryset(self):
+	# 	user = self.request.customUser
+	# 	return Friendship.objects.(Q(sender=user) | Q(receiver=user), status='accepted')
+
+	# def list(self, request, *args, **kwargs):
+	# 	friendships = self.get_queryset()
+	# 	print(f"friendships :: {friendships}\n")
+		# friends = set()
+		# for friendship in friendships:
+		# 	if friendship.sender == request.customUser:
+		# 			friends.add(friendship.receiver)
+		# 	else:
+		# 			friends.add(friendship.sender)
+		# # Serialize the data
+		# serializer = FriendsSerializer(friendships, many=True)
+		
+		# # Custom data structure to avoid duplicates
+		# unique_friends = []
+		# added_usernames = set()
+
+		# for item in serializer.data:
+		# 	friend = item['sender'] if item['sender']['username'] != request.customUser.username else item['receiver']
+		# 	if friend['username'] not in added_usernames:
+		# 			unique_friends.append({
+		# 				'username': friend['username'],
+		# 				'avatar': friend['avatar'],
+		# 				'status': item['status'],
+		# 				'created_at': item['created_at']
+		# 			})
+		# 			added_usernames.add(friend['username'])
 		# Paginate the unique friends list
-		users = self.paginate_queryset(unique_friends)
-		return self.get_paginated_response(users)
+		# users = self.paginate_queryset(unique_friends)
+		# return Response(status=status.HTTP_200_OK)
 # end friendship list view ***************** #
 
 class FriendshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

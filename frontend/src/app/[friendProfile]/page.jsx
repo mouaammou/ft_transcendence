@@ -15,7 +15,6 @@ export default function FriendProfile({ params }) {
 	const [userNotFound, setUserNotFound] = useState(false);
 	const {websocket, isConnected} = useWebSocketContext();
 	const [userStatus, setUserStatus] = useState('offline');
-	const [isOpen, setIsOpen] = useState(false);
 	// const {isAuth, profileData:authenticatedUser} = useAuth();
 
 	const sendFriendRequest = () => {
@@ -71,80 +70,21 @@ export default function FriendProfile({ params }) {
 	return (
 		<div className="profile container max-md:p-3 overflow-hidden">
 			{/* user avatar and infos */}
-			<div className="profile-top-infos flex justify-center items-center gap-[20rem] max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
+			<div className="profile-top-infos flex justify-evenly items-center gap-1 max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
 				<div className="profile-pic-name flex justify-center flex-col gap-4 items-center">
 					{/* avatar */}
 					<div className="flex items-start gap-4 max-md:items-center max-md:flex-col max-md:justify-center max-md:gap-1">
 						{/* the avatar */}
-						<div className="w-52 h-52 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
-						<img className="w-full h-full object-cover" src={profile?.avatar} alt="profile picture" />
+						<div className="w-40 h-40 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
+							{/* avatar */}
+							<img className="w-full h-full object-cover" src={profile?.avatar} alt="profile picture" />
+							{/* username */}
 						</div>
-
-						{/* username & nickname */}
-						{/* drop down menu */}
-						<div className="relative inline-block text-left">
-							<button
-							onClick={() => setIsOpen(!isOpen)}
-							className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 text-center inline-flex items-center"
-							type="button"
-							>
-								<span className='text-lg'>{profile?.username}
-									<svg
-										className="w-2.5 h-2.5 ms-3 inline"
-										aria-hidden="true"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 10 6"
-									>
-										<path
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										d="m1 1 4 4 4-4"
-										/>
-									</svg>
-								</span>
-							</button>
-
-							{/* {isOpen && ( */}
-								<div
-									onMouseLeave={() => setIsOpen(false)}
-									className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg"
-								>
-									<ul className="py-0 text-sm text-gray-700 w-full">
-										<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
-											<FaTrophy className="mr-2 size-5" /> Invite to Tournament
-										</li>
-										<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
-											<FaGamepad className="mr-2 size-5" /> Invite to Game
-										</li>
-										{(profile.friend === 'no' || profile.friend === 'Pending') && (
-											<li
-												onClick={sendFriendRequest}
-												className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
-												<FaUserPlus className="mr-2 size-5" /> Add to Friend List
-											</li>
-											)}
-											
-											{profile.friend === 'Accepted' && (
-												<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
-													<FaBan className="mr-2 size-5" /> Block
-												</li>
-											)}
-
-											{/* for blocked and pending , just display the status */}
-											{(profile.friend === 'Blocked' || profile.friend === 'Pending') && (
-												<li className="w-full py-3 px-4 bg-gray-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-gray-600 transition flex items-center justify-center">
-													{profile.friend}
-												</li>
-											)}
-									</ul>
-								</div>
-
-							{/* // )} */}
+						<div
+						className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-1 text-center inline-flex items-center"
+						>
+							{profile?.username}
 						</div>
-
 					</div>
 
 					<div className="profile-update-button w-full">
@@ -157,6 +97,39 @@ export default function FriendProfile({ params }) {
 					</div>
 				</div>
 
+				{/* send friend request, invite to game, invite to tournament, block    */}
+				<div
+					className="mt-2 divide-y rounded-lg"
+				>
+					<ul className="py-0 text-sm text-gray-700 w-full">
+						<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
+							<FaTrophy className="mr-2 size-5" /> Invite to Tournament
+						</li>
+						<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
+							<FaGamepad className="mr-2 size-5" /> Invite to Game
+						</li>
+						{(profile.friend === 'no' || profile.friend === 'pending') && (
+							<li
+								onClick={sendFriendRequest}
+								className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
+								<FaUserPlus className="mr-2 size-5" /> Add to Friend List
+							</li>
+							)}
+							
+							{profile.friend === 'accepted' && (
+								<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
+									<FaBan className="mr-2 size-5" /> Block
+								</li>
+							)}
+
+							{/* for blocked and pending , just display the status */}
+							{(profile.friend === 'blocked' || profile.friend === 'pending') && (
+								<li className="w-full py-3 px-4 bg-gray-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-gray-600 transition flex items-center justify-center">
+									{profile.friend}
+								</li>
+							)}
+					</ul>
+				</div>
 				{/* display user infos */}
 				<div className="user-infos">
 					<div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-60">

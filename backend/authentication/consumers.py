@@ -274,7 +274,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	def save_friend_request(self, to_user_id):
 		try:
 			to_user = User.objects.get(id=to_user_id)
-			friend_request, created = Friendship.objects.get_or_create(sender=self.user, receiver=to_user)
+			friend_request, created = Friendship.objects.get_or_create(sender=self.user, receiver=to_user, status='pending')
 			if created:
 				NotificationModel.objects.create(
 					sender=self.user,
@@ -282,7 +282,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 					message=f"{self.user} send to you friend request"
 				)
 				return True, "Friend request sent successfully"
-			elif friend_request.status == 'Pending':
+			elif friend_request.status == 'pending':
 				logger.error(f"\nFriend request already sent\n")
 				return False, "Friend request already sent"
 			else:
@@ -294,33 +294,77 @@ class NotificationConsumer(OnlineStatusConsumer):
 	@database_sync_to_async
 	def accept_friend_request(self, user_id):
 		try:
-			print(f"\n Accepting friend request: {user_id}\n")
+			print(f"\nAccepting friend request: {user_id}\n")
 			sender = User.objects.get(id=user_id)
-			print(f"\n sender: {sender}, receiver: {self.user}\n")
-			friend_request = Friendship.objects.get(
-				Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
-			)
-			if friend_request.status == 'Pending':
-				friend_request.status = 'Accepted'
-				friend_request.save()
-				# also create a reverse friendship
-				try:
-					Friendship.objects.get(sender=self.user, receiver=sender, status='Accepted')
-					Friendship.objects.create(sender=sender, receiver=self.user, status='Accepted')
-				except Friendship.DoesNotExist:
-					Friendship.objects.create(sender=self.user, receiver=sender, status='Accepted')
+			print(f"\nsender: {sender}, receiver: {self.user}\n")
 
-				NotificationModel.objects.create(
-					sender=self.user,
-					receiver=sender,
-					message=f"{self.user} accepted your friend request."
-				)
-				return True, "Friend request accepted"
+			# Fetch the friend request (either direction)
+			friend_request = Friendship.objects.get(
+					Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
+			)
+
+			# Check if the friend request is still pending
+			if friend_request.status == 'pending':
+					friend_request.status = 'accepted'
+					friend_request.save()
+
+					# Check if the reverse friendship exists and avoid duplicate creation
+					try:
+						reverse_friendship = Friendship.objects.get(sender=self.user, receiver=sender)
+					except Friendship.DoesNotExist:
+						# Create reverse friendship only if it doesn't exist
+						Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
+
+					# Send a notification to the sender
+					NotificationModel.objects.create(
+						sender=self.user,
+						receiver=sender,
+						message=f"{self.user} accepted your friend request."
+					)
+
+					return True, "Friend request accepted"
 			else:
-				return False, "Friend request already processed"
+					return False, "Friend request already processed"
+
+		except Friendship.DoesNotExist:
+			return False, "Friend request not found."
 		except Exception as e:
 			logger.error(f"\nError Accepting friend request: {e}\n")
 			return False, f"Error Accepting Friend request, reason :: {str(e)}"
+
+
+	# @database_sync_to_async
+	# def accept_friend_request(self, user_id):
+	# 	try:
+	# 		print(f"\n Accepting friend request: {user_id}\n")
+	# 		sender = User.objects.get(id=user_id)
+	# 		print(f"\n sender: {sender}, receiver: {self.user}\n")
+	# 		friend_request = Friendship.objects.get(
+	# 			Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
+	# 		)
+	# 		if friend_request.status == 'pending':
+	# 			friend_request.status = 'accepted'
+	# 			friend_request.save()
+	# 			# also create a reverse friendship
+	# 			try:
+	# 				reverse_friendship = Friendship.objects.get(sender=self.user, receiver=sender)
+	# 				reverse_friendship.status = 'accepted'
+	# 				reverse_friendship.save()
+
+	# 			except Friendship.DoesNotExist:
+	# 				Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
+
+	# 			NotificationModel.objects.create(
+	# 				sender=self.user,
+	# 				receiver=sender,
+	# 				message=f"{self.user} accepted your friend request."
+	# 			)
+	# 			return True, "Friend request accepted"
+	# 		else:
+	# 			return False, "Friend request already processed"
+	# 	except Exception as e:
+	# 		logger.error(f"\nError Accepting friend request: {e}\n")
+	# 		return False, f"Error Accepting Friend request, reason :: {str(e)}"
 	
 	@database_sync_to_async
 	def reject_friend_request(self, rejected):
@@ -328,7 +372,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 			friend_request = Friendship.objects.get(
 				Q(sender=rejected, receiver=self.user) | Q(sender=self.user, receiver=rejected)
 			)
-			if friend_request.status == 'Pending':
+			if friend_request.status == 'pending':
 				friend_request.delete()
 				logger.info(f"\nFriend request rejected\n")
 		except Exception as e:
