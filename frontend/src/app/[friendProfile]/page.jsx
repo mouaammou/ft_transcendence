@@ -7,6 +7,7 @@ import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
+import { useAuth } from '@/components/auth/loginContext';
 
 
 export default function FriendProfile({ params }) {
@@ -15,16 +16,17 @@ export default function FriendProfile({ params }) {
 	const {websocket, isConnected} = useWebSocketContext();
 	const [userStatus, setUserStatus] = useState('offline');
 	const [isOpen, setIsOpen] = useState(false);
+	// const {isAuth, profileData:authenticatedUser} = useAuth();
 
 	const sendFriendRequest = () => {
-		if (isConnected) {
-				console.log('sending friend request to: ', profile.id);
-				websocket.current.send(JSON.stringify({
-					type: 'send_friend_request',
-					to_user_id: profile.id
-				}));
-			}
+		if (isConnected && profile?.id) {
+			console.log('sending friend request to: ', profile.id);
+			websocket.current.send(JSON.stringify({
+				type: 'send_friend_request',
+				to_user_id: profile.id,
+			}));
 		}
+	}
 
 	useEffect(() => {
 		const fetchProfile = async () => {
@@ -105,7 +107,7 @@ export default function FriendProfile({ params }) {
 								</span>
 							</button>
 
-							{isOpen && (
+							{/* {isOpen && ( */}
 								<div
 									onMouseLeave={() => setIsOpen(false)}
 									className="z-10 absolute left-0 mt-2 w-72 divide-y rounded-lg"
@@ -117,7 +119,7 @@ export default function FriendProfile({ params }) {
 										<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
 											<FaGamepad className="mr-2 size-5" /> Invite to Game
 										</li>
-										{profile.friend === 'no' && (
+										{(profile.friend === 'no' || profile.friend === 'Pending') && (
 											<li
 												onClick={sendFriendRequest}
 												className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
@@ -140,7 +142,7 @@ export default function FriendProfile({ params }) {
 									</ul>
 								</div>
 
-							)}
+							{/* // )} */}
 						</div>
 
 					</div>
