@@ -10,6 +10,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from .models import LocalTournament
 from .serializers import LocalTournamentSerializer
+from django.utils import timezone
 
 from .local_game.tournament.manager import TrournamentManager
 import asyncio
@@ -19,6 +20,9 @@ class LocalTournamentViewSet(viewsets.ModelViewSet):
     serializer_class = LocalTournamentSerializer
 
     def create(self, request, *args, **kwargs):
+        # request.data['user'] = request.user.username
+        # print(request.data)
+        # request.data['start_at'] = timezone.now() + timezone.timedelta(seconds=10)
         many = isinstance(request.data, list)
         serializer = self.get_serializer(data=request.data, many=many)
         serializer.is_valid(raise_exception=True)
@@ -34,7 +38,7 @@ class LocalTournamentViewSet(viewsets.ModelViewSet):
             instance = self.get_object()
             serializer = self.get_serializer(instance, data=request.data, partial=False)
         
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True) 
         self.perform_update(serializer)
         return Response(serializer.data)
 

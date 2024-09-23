@@ -26,19 +26,6 @@ class LocalGame(models.Model):
     tournament = models.ForeignKey('LocalTournament', on_delete=models.CASCADE, null=True, blank=True)
 
 
-
-
-class TimeChoices(models.IntegerChoices):
-    BETWEEN_MATCHES = timedelta(minutes=3).total_seconds()
-
-    FIVE_MINUTES = timedelta(minutes=5).total_seconds()
-    FIFTEEN_MINUTES = timedelta(minutes=15).total_seconds()
-    THIRTY_MINUTES = timedelta(minutes=30).total_seconds()
-    ONE_HOUR = timedelta(hours=1).total_seconds()
-    ONE_DAY = timedelta(days=1).total_seconds()
-    ONE_WEEK = timedelta(weeks=1).total_seconds()
-    ONE_MONTH = timedelta(weeks=4).total_seconds()
-
 class LocalTournament(models.Model):
 
     MATCHES = {
