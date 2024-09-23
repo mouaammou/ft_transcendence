@@ -28,3 +28,5 @@ and there is one for him stored, give it back to that user
 
 
 dont forget, Add a class to Logic game to identify who is playing against whom.
+
+moha: if a user go directly to the game page, i will check for his opponent if not found, i will direct him to play page

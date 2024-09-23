@@ -40,6 +40,7 @@ class LocalGameDisconnection:
     ################## public interface #####################
     @property
     def disconnected(self):
+        print("disconnect getter called ")
         return self._disconnected
     
     @disconnected.setter

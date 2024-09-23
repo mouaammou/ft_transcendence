@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState} from 'react';
+import { useEffect, player_1ef, useState, useRef} from 'react';
 import socket from '@/utils/WebSocketManager';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
@@ -8,7 +8,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		const context = canvas.getContext('2d');
+		var start = true;
 
+		if (start) {
+			socket.sendMessage(JSON.stringify({launch: start}));
+			start = false;
+		}
 		// ball object
 		const ball = {
 			x: canvas.width / 2,
@@ -21,7 +26,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		}
 
 		// paddle object
-		const user = {
+		const player_1 = {
 			x: 0,
 			y: canvas.height / 2 - 100 / 2,
 			width: 10,
@@ -38,7 +43,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			score: 0
 		}
 		// paddle object
-		const computer = {
+		const player_2 = {
 			x: canvas.width - 10,
 			y: canvas.height / 2 - 100 / 2,
 			width: 10,
@@ -55,8 +60,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			color: 'gray'
 		}
 
-		let num = 0;
-		let number = 1;
 		const drawNet = () => {
 			for (let y = 0; y < canvas.height; y += 45) {
 				drawRect(net.x, y, net.width, net.height, net.color);
@@ -87,24 +90,23 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			context.fill();
 		}
 
+		// handle the page visibility for later:
 		let conectionOn = false;
 		function sendVisibilityStatus() {
 			console.log("Visibility: ")
-			if (conectionOn === true) {
 				console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
-				socket.send(JSON.stringify({ tabFocused: isTabFocused }));
-			}
+				socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
 		}
 
-		// if (socket.readyState === WebSocket.OPEN) {
-		// 	console.log('WebSocket connection is open');
-		// 	conectionOn = true;
-		// 	// create new game EVENT
-		// } else {
-		// 	console.log('WebSocket connection is not open');
-		// 	conectionOn = false;
-		//   }
+		if (socket.readyState === WebSocket.OPEN) {
+			console.log('WebSocket connection is open');
+			conectionOn = true;
+			// create new game EVENT
+		} else {
+			console.log('WebSocket connection is not open');
+			conectionOn = false;
+		  }
 		// socket.addEventListener('open', (event) => {
 		// 	// console.log(socketState);
 		// 	console.log('Connected to WS Server');
@@ -128,13 +130,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			{
 				if (data.update.left_paddle_pos)
 				{
-					user.x = data.update.left_paddle_pos[0];
-					user.y = data.update.left_paddle_pos[1];
+					player_1.x = data.update.left_paddle_pos[0];
+					player_1.y = data.update.left_paddle_pos[1];
 				}
 				if (data.update.right_paddle_pos)
 				{
-					computer.x = data.update.right_paddle_pos[0];
-					computer.y = data.update.right_paddle_pos[1];
+					player_2.x = data.update.right_paddle_pos[0];
+					player_2.y = data.update.right_paddle_pos[1];
 				}
 				// ball.radius = gameConfig.ball_size[0] / 2;
 				ball.x = data.update.ball_pos[0] + ball.radius;
@@ -145,15 +147,15 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				// console.log(rectBall.y);
 				if (data.update.left_player_score)
 				{
-					user.score = data.update.left_player_score;
+					player_1.score = data.update.left_player_score;
 					setScore2(score2 => data.update.left_player_score);
 				}
 				if (data.update.right_player_score)
-					{
-						computer.score = data.update.right_player_score;
-						setScore1(score1 => data.update.right_player_score);
-					}
-					drawGame();
+				{
+					player_2.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
+				}
+				drawGame();
 				}
 				else if (data.config)
 				{
@@ -164,14 +166,14 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					canvas.height = gameConfig.window_size[1];
 					// console.log(canvas.height);
 					net.x = canvas.width / 2 - 2;
-					computer.width = gameConfig.paddles_size[0];
-					computer.height = gameConfig.paddles_size[1];
-					user.width = gameConfig.paddles_size[0];
-					user.height = gameConfig.paddles_size[1];
-					user.x = gameConfig.left_paddle_pos[0];
-					user.y = gameConfig.left_paddle_pos[1];
-					computer.x = gameConfig.right_paddle_pos[0];
-					computer.y = gameConfig.right_paddle_pos[1];
+					player_2.width = gameConfig.paddles_size[0];
+					player_2.height = gameConfig.paddles_size[1];
+					player_1.width = gameConfig.paddles_size[0];
+					player_1.height = gameConfig.paddles_size[1];
+					player_1.x = gameConfig.left_paddle_pos[0];
+					player_1.y = gameConfig.left_paddle_pos[1];
+					player_2.x = gameConfig.right_paddle_pos[0];
+					player_2.y = gameConfig.right_paddle_pos[1];
 					ball.radius = gameConfig.ball_size[0] / 2;
 					ball.x = gameConfig.ball_pos[0] + ball.radius;
 					ball.y = gameConfig.ball_pos[1] + ball.radius;
@@ -180,9 +182,9 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					// rectBall.y = gameConfig.ball_pos[1];
 					// rectBall.width = gameConfig.ball_size[0];
 					// rectBall.height = gameConfig.ball_size[1];
-					user.score = gameConfig.left_player_score;
+					player_1.score = gameConfig.left_player_score;
 					setScore2(score2 => gameConfig.left_player_score);
-					computer.score = gameConfig.right_player_score;
+					player_2.score = gameConfig.right_player_score;
 					setScore1(score1 => gameConfig.right_player_score);
 					drawGame();
 				}
@@ -207,8 +209,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			drawNet();
 
 			// Draw paddles
-			drawRect(user.x, user.y, user.width, user.height, user.color);
-			drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
+			drawRect(player_1.x, player_1.y, player_1.width, player_1.height, player_1.color);
+			drawRect(player_2.x, player_2.y, player_2.width, player_2.height, player_2.color);
 			// drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
 
 			// Draw the ball
@@ -251,18 +253,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
 		// 	// how to get the window width and height
 		// 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
-		// 		user.y = event.clientY - rect.top - user.height / 2;
-		// 		if (user.y <= 0)
-		// 			user.y = 0
-		// 		else if (user.y + user.height >= canvas.height)
-		// 			user.y = canvas.height - user.height;
+		// 		player_1.y = event.clientY - rect.top - player_1.height / 2;
+		// 		if (player_1.y <= 0)
+		// 			player_1.y = 0
+		// 		else if (player_1.y + player_1.height >= canvas.height)
+		// 			player_1.y = canvas.height - player_1.height;
 		// 	}
 		// 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
-		// 		computer.y = event.clientY - rect.top - computer.height / 2;
-		// 		if (computer.y <= 0)
-		// 			computer.y = 0
-		// 		else if (computer.y + computer.height >= canvas.height)
-		// 			computer.y = canvas.height - computer.height;
+		// 		player_2.y = event.clientY - rect.top - player_2.height / 2;
+		// 		if (player_2.y <= 0)
+		// 			player_2.y = 0
+		// 		else if (player_2.y + player_2.height >= canvas.height)
+		// 			player_2.y = canvas.height - player_2.height;
 		// 	}
 		// 	// handle the paddle going out of the canvas
 		// }
@@ -277,7 +279,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// Animation loop
 		// const animate = () => {
 		// 	updateGame();
-		// 	drawGame();
+			// drawGame();
 
 		// 	requestAnimationFrame(animate);
 		// };
@@ -293,7 +295,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef} >
+		<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
+			
 			
 		</canvas>
 	);

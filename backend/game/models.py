@@ -48,7 +48,8 @@ class GameHistory(models.Model):
      
     player_2 = models.ForeignKey(
         CustomUser,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='as_player_2'
     )
     
     game_type = models.CharField(max_length=20, choices=[

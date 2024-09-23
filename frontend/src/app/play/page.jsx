@@ -2,7 +2,7 @@
 import "./style.css"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import mysocket from "@/utils/WebSocketManager";
 
 const PlayMode = () => {
     const router = useRouter();
@@ -29,7 +29,9 @@ const PlayMode = () => {
             .then(response => response.json())
             .then(data => console.log(data));
     }
- 
+    mysocket.sendMessage(
+        JSON.stringify({"init": "game"})
+    )
     return (
         <div className="main-page">
             {/* {choose &&

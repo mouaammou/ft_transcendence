@@ -1,15 +1,17 @@
 "use client";
-import PongGame from "./PongGame";
-import { useState, useEffect } from "react";
+import PongBot from "./BotGame";
+import { useState } from "react";
 import '@/styles/game/game.css';
 import CountdownTimer from "@/components/countDown/CountDown.jsx";
 import Image from 'next/image';
+import { useAuth } from "@/components/auth/loginContext.jsx";
+
 
 const GamePage = () => {
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);
 
-
+	const {profileData: data, fetch_profile} = useAuth()
 	// const changeScore1 = () => {
 	// 	setScore1(score1 + 1);
 	// }
@@ -31,16 +33,17 @@ const GamePage = () => {
 			</div>
 			<div className="down-section">
 				<div className="left-user">
-					<Image className="left-user-img" src="/oredoine.webp" alt="user1" width={100} height={100}  priority/>
-					<div className="left-user-name">Oussama</div>
+					<Image className="left-user-img" src={data?.avatar} alt="user1" width={100} height={100}/>
+					<div className="left-user-name">{data?.unsername}</div>
+					{/* user auth does is not working here */}
 				</div>
 				<div className="self-game">
-					<PongGame  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2}/>
+					<PongBot  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2}/>
 					
 				</div>
 				<div className="right-user">
-					<Image className="right-user-img" src="/mouad.jpeg" alt="user1" width={100} height={100}  priority />
-					<div className="right-user-name">Mouad</div>
+					<Image className="right-user-img" src="/bot.png" alt="user1" width={100} height={100}/>
+					<div className="right-user-name">Bot</div>
 				</div>
 			</div>
 		</div>

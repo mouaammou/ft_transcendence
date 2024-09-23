@@ -35,9 +35,7 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             return await self.close()
         await self.accept()
         
-        ret = self.game_engine.connect(self.channel_name, self)
-        if ret == False: 
-            self.close()
+        self.game_engine.connect(self.channel_name, self)
         # dont forget to set timout callback
 
     async def disconnect(self, *arg, **kwrags):
@@ -45,11 +43,14 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data, *args, **kwargs):
         data = {}
-        try:
+        try: 
             data = json.loads(text_data)
-        except:
+        except:      
             print('EXCEPTION: received invaled data from the socket')
-        self.game_engine.recieve(self.player_id, data)
+        print(f"dict data ---->  {data}  user --> {self.user.id}")
+        self.is_focused = data.get('tabFocused', True) 
+        print(f"tab is focused --->  {self.is_focused}")
+        self.game_engine.recieve(self.player_id, data, self)
     
     def send_game_message(self, event):
         try:

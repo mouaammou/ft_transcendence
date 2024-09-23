@@ -1,22 +1,18 @@
 "use client";
 import Selector from "@app/mode/selecor"
 import {RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg} from "@components/modeSvgs/ModeSvgs.jsx"
-import socket from "@/utils/WebSocketManager"
 import { useRouter } from 'next/navigation'
 
 const Mode = () => {
     const router = useRouter();
 
     const handleClick = () => {
-        const randomGame = {
-            "remote" : {
-                        mode : 'random'
-                        }
-            }
-            socket.sendMessage(JSON.stringify(randomGame))
             router.push('waiting')
     }
 
+    const botGame = () => {
+        router.push('/game_bot')
+    }
     // socket.registerMessageHandler(redirect_to_game);
     // const redirect_to_game = (message) => {
     //     if (!message) {
@@ -42,7 +38,8 @@ const Mode = () => {
             </div>
             <div className="flex flex-col">
                 <Selector title='PLAY VS BOT' description='Challenge a bot in an exciting ping pong game' 
-                    Svgvar={VsbotSvg} >
+                    Svgvar={VsbotSvg}
+                    onclick={botGame} >
 
                 </Selector>
                 <Selector title='GO BACK' description={<br></br>} 

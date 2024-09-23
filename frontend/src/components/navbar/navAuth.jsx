@@ -12,7 +12,7 @@ const Navbar = () => {
 	return (
 		<nav className={styles.container}>
 			<div className={styles.logo}>
-				<Image src="/new-logo.svg" width={100} height={100} alt="logo" priority={true}/>
+				<Image src="/new-logo.svg" width={100} height={100} alt="logo" priority/>
 			</div>
 			<div className={styles.signIn}>
 				{isAuth ? (

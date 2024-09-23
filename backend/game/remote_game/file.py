@@ -9,15 +9,15 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     """
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        #i have to add a type of the game : random, vsfriend, vsbot
         self.game_id = str(uuid.uuid4())
+        #i have to add a type of the game : random, vsfriend, vsbot
         self._player_1 = None
         self._player_2 = None
+        self._notify_players = None
         self._consumer_1 = None
         self._consumer_2 = None
-        self.fulfilled = False
-        self._notify_players = False 
-    
+        self.fulfilled = False  # Initialize fulfilled status
+
     @property
     def player_1(self):
         return self._player_1 
@@ -43,6 +43,7 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         return self.fulfilled
 
     def clean_up(self): 
+        # Implement cleanup logic if needed
         pass
 
     @property
@@ -53,12 +54,11 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     def notify_players(self, value):
         self._notify_players = value
 
-
     @property
     def consumer_1(self):
         return self._consumer_1 
 
-    @consumer_1.setter
+    @consumer_1.setter 
     def consumer_1(self, value):
         self._consumer_1 = value
  
