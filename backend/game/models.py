@@ -1,12 +1,14 @@
+from typing import Iterable
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
+import asyncio
 
 User = get_user_model()
 
 def teen_minutes_ahead():
-    return timezone.now() + timedelta(minutes=10)
+    return timezone.now() + timedelta(seconds=5)
 
 class LocalGame(models.Model):
     user = models.ForeignKey(User, on_delete= models.CASCADE)
@@ -25,83 +27,72 @@ class LocalGame(models.Model):
 
 
 
+
+class TimeChoices(models.IntegerChoices):
+    BETWEEN_MATCHES = timedelta(minutes=3).total_seconds()
+
+    FIVE_MINUTES = timedelta(minutes=5).total_seconds()
+    FIFTEEN_MINUTES = timedelta(minutes=15).total_seconds()
+    THIRTY_MINUTES = timedelta(minutes=30).total_seconds()
+    ONE_HOUR = timedelta(hours=1).total_seconds()
+    ONE_DAY = timedelta(days=1).total_seconds()
+    ONE_WEEK = timedelta(weeks=1).total_seconds()
+    ONE_MONTH = timedelta(weeks=4).total_seconds()
+
 class LocalTournament(models.Model):
-    user = models.ForeignKey(User, on_delete= models.CASCADE)
-    unique_key = models.CharField(max_length=250, null=True, blank=True)
+
+    MATCHES = {
+        1: ('match1_nickname1', 'match1_nickname2', 'match1_winner'),
+        2: ('match2_nickname1', 'match2_nickname2', 'match2_winner'),
+        3: ('match3_nickname1', 'match3_nickname2', 'match3_winner'),
+        4: ('match4_nickname1', 'match4_nickname2', 'match4_winner'),
+        5: ('match1_winner', 'match2_winner', 'match5_winner'),
+        6: ('match3_winner', 'match4_winner', 'match6_winner'),
+        7: ('match5_winner', 'match6_winner', 'match7_winner'),
+    }
+
+    user = models.ForeignKey(User, on_delete= models.CASCADE, )
 
     title = models.CharField(max_length=250)
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+    start_at = models.DateTimeField(default=teen_minutes_ahead)
+    finished = models.BooleanField(default=False, editable=False)
 
     # round `1` players
-    match1_nickname1 = models.CharField(max_length=250)
-    match1_nickname2 = models.CharField(max_length=250)
-
-    match2_nickname1 = models.CharField(max_length=250)
-    match2_nickname2 = models.CharField(max_length=250)
-
-    match3_nickname1 = models.CharField(max_length=250)
-    match3_nickname2 = models.CharField(max_length=250)
-
-    match4_nickname1 = models.CharField(max_length=250)
-    match4_nickname2 = models.CharField(max_length=250)
+    match1_nickname1 = models.CharField(max_length=250,)
+    match1_nickname2 = models.CharField(max_length=250,)
+    match2_nickname1 = models.CharField(max_length=250,)
+    match2_nickname2 = models.CharField(max_length=250,)
+    match3_nickname1 = models.CharField(max_length=250,)
+    match3_nickname2 = models.CharField(max_length=250,)
+    match4_nickname1 = models.CharField(max_length=250,)
+    match4_nickname2 = models.CharField(max_length=250,)
 
     #2` players
-    match5_nickname1 = models.CharField(max_length=250, null=True, blank=True)
-    match5_nickname2 = models.CharField(max_length=250, null=True, blank=True)
+    match2_winner = models.CharField(max_length=250, null=True, editable=False)
+    match1_winner = models.CharField(max_length=250, null=True, editable=False)
+    match3_winner = models.CharField(max_length=250, null=True, editable=False)
+    match4_winner = models.CharField(max_length=250, null=True, editable=False)
+    match5_winner = models.CharField(max_length=250, null=True, editable=False)
+    match6_winner = models.CharField(max_length=250, null=True, editable=False)
+    match7_winner = models.CharField(max_length=250, null=True, editable=False)
+    
+    match_index = models.IntegerField(default=1, editable=False)
 
-    match6_nickname1 = models.CharField(max_length=250, null=True, blank=True)
-    match6_nickname2 = models.CharField(max_length=250, null=True, blank=True)
-
-    #3` players
-    match7_nickname1 = models.CharField(max_length=250, null=True, blank=True)
-    match7_nickname2 = models.CharField(max_length=250, null=True, blank=True)
-
-    #round `4` players
-    winner_nickname = models.CharField(max_length=250, null=True, blank=True)
-
-    # Date Time
-    created_at = models.DateTimeField(editable=False, auto_now_add=True)
-    finished = models.BooleanField(default=False)
-
-
-    # round 0 means the tournament is not started yet
-    # we have Four rounds in total
-    match_index = models.IntegerField(default=1)
-    next_match_should_start_at_most = models.DateTimeField(default=teen_minutes_ahead)
-    # match1_finished_at = models.DateTimeField(null=True, blank=True)
-    # match2_finished_at = models.DateTimeField(null=True, blank=True)
-    # match3_finished_at = models.DateTimeField(null=True, blank=True)
-    # match4_finished_at = models.DateTimeField(null=True, blank=True)
-    # match5_finished_at = models.DateTimeField(null=True, blank=True)
-    # match6_finished_at = models.DateTimeField(null=True, blank=True)
-    # match7_finished_at = models.DateTimeField(null=True, blank=True)
-    # p1_vs_p2, p3_vs_p4, p5_vs_p6, p7_vs_p8
-
-    def get_next_match(self):
-        """
-        Note: Once you fetch next match you can't get the same match again.
-        it is automaticaly considered as finished, and moves to next one.
-        """
-        if self.match_index > 7:
-            return None
-        next_match = {
-            'index': self.match_index,
-            'should_start_at_most': self.next_match_should_start_at_most,
-            'title': self.title,
-            'nickname1': getattr(self, f"match{self.match_index}_nickname1"),
-            'nickname2': getattr(self, f"match{self.match_index}_nickname2"),
-        }
-        return next_match
-
-    def set_current_match_as_finished(self, winner_nickname):
-        if self.match_index > 7:
+    def get_match_players(self, index):
+        if index > 7:
+            return ValueError("Invalid Match Index")
+        left, right, winner = self.MATCHES[index]
+        return getattr(self, left), getattr(self, right)
+    
+    def set_match_winner(self, index, winner) -> None:
+        if index > 7:
+            return ValueError("Invalid Match Index")
+        left, right, match_winner = self.MATCHES[index]
+        setattr(self, match_winner, winner)
+        self.match_index = index + 1
+        if index == 7:
             self.finished = True
-            self.save()
-            return
-        setattr(self, f"match{self.match_index}_finished_at", timezone.now()) # i may remove this
-        setattr(self, f"match{self.match_index}_nickname{self.match_index % 2 + 1}", winner_nickname)
-        setattr(self, f"next_match_should_start_at_most", teen_minutes_ahead())
-        self.match_index += 1
-        self.save()
     
     def __str__(self) -> str:
-        return f"[Local Tournament] - {self.title} - {self.created_at}"
+        return f"[{self.id}] Local Tournament - {self.title} - {self.match7_winner}"

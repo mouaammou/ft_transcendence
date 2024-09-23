@@ -28,6 +28,7 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
     game_engine = EventLoopManager
     
     async def connect(self):
+        self.unique_name = None
         self.user = self.scope['user']
         if self.user.is_anonymous:
             return await self.close()

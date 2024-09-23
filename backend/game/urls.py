@@ -1,7 +1,10 @@
-from django.urls import path
-from .views import index
+from rest_framework.routers import DefaultRouter
+from django.urls import path, include
+from .views import LocalTournamentViewSet
 
+router = DefaultRouter()
+router.register(r'local-tournaments', LocalTournamentViewSet)
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', include(router.urls)),
 ]

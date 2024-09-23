@@ -55,6 +55,7 @@ class LocalGameOutputMiddleware:
             for consumer in group:
                 if consumer.user.id == id:
                     consumer.send_game_message(data)
+                    print('sent to user')
     
     @classmethod
     def userid_to_uniquekey(cls, id) -> str:

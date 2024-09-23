@@ -1,7 +1,8 @@
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState} from 'react';
+import GamePage from './page';
 
-export default function PongGame({ score1, score2, setScore1, setScore2 }) {
+export default function PongGame({ score1, score2, setScore1, setScore2, setLeftUser, setRightUser}) {
 	const canvasRef = useRef(null);
 	const [socketState, setSocketState] = useState(false);
 
@@ -183,6 +184,22 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				computer.score = gameConfig.right_player_score;
 				setScore1(score1 => gameConfig.right_player_score);
 				drawGame();
+			}
+			else if (data.tournament)
+			{
+				if (data.tournament.left)
+				{
+					setLeftUser(data.tournament.left);
+				}
+				if (data.tournament.right)
+				{
+					setRightUser(data.tournament.right);
+				}
+				console.log(data);
+			}
+			else
+			{
+				console.log(data);
 			}
 		}
 		// Game state

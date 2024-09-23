@@ -21,7 +21,7 @@ class TokenVerificationMiddleWare:
             "/token", "/token/refresh",
         ]
 
-        if request.path.startswith("/admin") or request.path in unrestricted_paths:
+        if request.path.startswith("/admin") or request.path in unrestricted_paths or request.path.startswith("/game/local-tournaments"):
             return self.get_response(request)  # Proceed with the request
 
         refresh_token = request.COOKIES.get("refresh_token")

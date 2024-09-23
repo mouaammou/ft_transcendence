@@ -72,3 +72,53 @@ body {
 .footer {
 	height: 0px;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* styles/globals.css */
+.tournament-container {
+	text-align: center;
+	margin: 0 auto;
+	padding: 20px;
+  }
+  
+  .round {
+	margin: 40px 0;
+  }
+  
+  .match {
+	background-color: #090909;
+	border-radius: 10px;
+	padding: 10px;
+	margin: 10px 0;
+	display: inline-block;
+	width: 300px;
+	font-weight: bold;
+  }
+  
+  .round-1 .match {
+	border: 2px solid #4b4429;
+  }
+  
+  .round-2 .match {
+	border: 2px solid #00ccff;
+  }
+  
+  .final-round .match {
+	border: 2px solid #ff0000;
+  }
+  
+  .champion {
+	margin-top: 50px;
+	font-size: 24px;
+	font-weight: bold;
+  }
+  
