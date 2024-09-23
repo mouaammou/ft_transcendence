@@ -109,7 +109,7 @@ const AllUsers = () => {
 					<div className="div-for-two-users flex justify-center items-center flex-wrap gap-4 max-sm:gap-1 p-2 md:p-10 mx-auto">
 						{users && users.map((user, index) => (
 							/* USER Profile status online in game */
-							<Link href={`/${user.username}`} className="text-xs text-blue-500">
+							<Link href={`/${user.username}`} className="text-xs text-blue-500" key={index}>
 								<div className="flex items-center justify-center space-x-5 p-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition" key={user.id}>
 									{/* Profile Picture */}
 									<div className="relative">

@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-export const LoginContext = createContext({});
+export const LoginContext = createContext(true);
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
@@ -69,13 +69,15 @@ export const LoginProvider = ({ children }) => {
 		console.log(`websocket: ${websocket}`);
 		if (isConnected) {
 			//send a message to the server that the user is logging out
-			websocket.current.send(JSON.stringify({ logout: 'logout' }));
+			websocket.current.send(JSON.stringify({ logout: 'logout'
+				, 'user': profileData.username
+			}));
 		}
 		setIsAuth(false);
 		Cookies.remove('isAuth');
 		postData('/logout').then(res => {
 			if (res && res.status === 205) {
-			router.push('/login');
+				router.push('/login');
 			}
 		});
 	};
@@ -102,6 +104,7 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
+		if (isAuth) fetch_profile();
 		setErrors({});
 		if (
 			isAuth &&

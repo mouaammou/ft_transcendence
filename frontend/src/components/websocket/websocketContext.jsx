@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, createContext, useContext } from 'react';
 
-export const WebSocketContext = createContext({});
+export const WebSocketContext = createContext(true);
 
 export const WebSocketProvider = ({url, children}) => {
 
@@ -14,19 +14,19 @@ export const WebSocketProvider = ({url, children}) => {
 			websocket.current = new WebSocket(url);
 
 			websocket.current.onopen = () => {
-			console.log('WebSocket connected');
+				console.log('WebSocket connected');
 				setIsConnected(true);
 			};
-
-			websocket.current.onclose = () => {
-				console.log('WebSocket disconnected');
-				setIsConnected(false);
-			};
-
-			websocket.current.onerror = (error) => {
-				console.error('WebSocket error:', error);
-			};
 		}
+
+		websocket.current.onclose = () => {
+			console.log('WebSocket disconnected');
+			setIsConnected(false);
+		};
+
+		websocket.current.onerror = (error) => {
+			console.error('WebSocket error:', error);
+		};
 
 		return () => {
 			if (websocket.current) {

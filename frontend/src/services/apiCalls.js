@@ -5,7 +5,6 @@ try {
 	const response = await axiosInstance.get(endPoint, {
 		withCredentials: true,
 	});
-	console.log('endpoint   ==> ', endPoint);
 	return response;
 } catch (error) {
 	return error;

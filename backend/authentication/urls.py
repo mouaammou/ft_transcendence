@@ -18,7 +18,7 @@ urlpatterns = [
 
 	path('auth/login/42', views.OAuth42Login.as_view(), name='42_login'),
 	path('auth/callback/42', views.OAuth42Callback.as_view() , name='42_callback'),
-
+	
 	#user profile, get and update, delete
 	path("profile/data", views.UserProfile.as_view(), name="profile"),
 	path("profile/update",views.UpdateProfile.as_view(), name="update profile"),
