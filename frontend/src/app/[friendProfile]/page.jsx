@@ -14,11 +14,14 @@ export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [userNotFound, setUserNotFound] = useState(false);
 	const {websocket, isConnected} = useWebSocketContext();
-	const [userStatus, setUserStatus] = useState('offline');
+	const [userStatus, setUserStatus] = useState();
+	//add friend request, blocked, pending
+	const [friendStatus, setFriendStatus] = useState('add friend');
 	// const {isAuth, profileData:authenticatedUser} = useAuth();
 
 	const sendFriendRequest = () => {
 		if (isConnected && profile?.id) {
+			setFriendStatus('pending');
 			console.log('sending friend request to: ', profile.id);
 			websocket.current.send(JSON.stringify({
 				type: 'send_friend_request',

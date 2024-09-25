@@ -87,7 +87,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
-			print(f"user_data in onlinestatus: {self.user_data}\n")
 
 		# Handle logout event
 		if logout and self.user.is_authenticated:
@@ -99,12 +98,11 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 0:
-						print(f"\n {self.user} is offline due to logout\n")
-						await self.update_user_status("offline")
-						print(f"\n broadcasting offline when logout : {self.user}\n")
-						await self.broadcast_online_status(self.user_data, "offline")
-						# Remove user from the connections
-						del self.user_connections[self.user.id]
+					await self.update_user_status("offline")
+					print(f"\n broadcasting offline when logout : {self.user}\n")
+					await self.broadcast_online_status(self.user_data, "offline")
+					# Remove user from the connections
+					del self.user_connections[self.user.id]
 
 			await self.channel_layer.group_discard(
 				self.USER_STATUS_GROUP,
@@ -127,7 +125,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
 			number_of_connections = len(self.user_connections[self.user.id])
 			if number_of_connections == 1:
-				print(f"\n {self.user} is online due to profile page access\n")
 				await self.update_user_status("online")
 				print(f"\n broadcasting online when login: {self.user}\n")
 				await self.broadcast_online_status(self.user_data, "online")
@@ -294,10 +291,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	@database_sync_to_async
 	def accept_friend_request(self, user_id):
 		try:
-			print(f"\nAccepting friend request: {user_id}\n")
 			sender = User.objects.get(id=user_id)
-			print(f"\nsender: {sender}, receiver: {self.user}\n")
-
 			# Fetch the friend request (either direction)
 			friend_request = Friendship.objects.get(
 					Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
@@ -305,26 +299,26 @@ class NotificationConsumer(OnlineStatusConsumer):
 
 			# Check if the friend request is still pending
 			if friend_request.status == 'pending':
-					friend_request.status = 'accepted'
-					friend_request.save()
+				friend_request.status = 'accepted'
+				friend_request.save()
 
-					# Check if the reverse friendship exists and avoid duplicate creation
-					try:
-						reverse_friendship = Friendship.objects.get(sender=self.user, receiver=sender)
-					except Friendship.DoesNotExist:
-						# Create reverse friendship only if it doesn't exist
-						Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
+				# Check if the reverse friendship exists and avoid duplicate creation
+				try:
+					Friendship.objects.get(sender=self.user, receiver=sender)
+				except Friendship.DoesNotExist:
+					# Create reverse friendship only if it doesn't exist
+					Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
 
-					# Send a notification to the sender
-					NotificationModel.objects.create(
-						sender=self.user,
-						receiver=sender,
-						message=f"{self.user} accepted your friend request."
-					)
-
-					return True, "Friend request accepted"
+				# Send a notification to the sender
+				NotificationModel.objects.create(
+					sender=self.user,
+					receiver=sender,
+					message=f"{self.user} accepted your friend request."
+				)
+				logger.info(f"\nFriend request accepted 🍸\n")
+				return True, "Friend request accepted"
 			else:
-					return False, "Friend request already processed"
+				return False, "Friend request already processed"
 
 		except Friendship.DoesNotExist:
 			return False, "Friend request not found."
