@@ -99,7 +99,7 @@ class RemoteGameInput:
         # print(f"\n{side}\n")
         print(f"{side} ----> {dict_text_data}\n")
         if press is not None:
-            game_obj.on_press(side, press.strip())
+            game_obj.on_press(side, press.strip()) 
         elif release is not None:
             game_obj.on_release(side, release.strip())
 

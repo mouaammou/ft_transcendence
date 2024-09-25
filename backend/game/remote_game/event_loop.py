@@ -54,6 +54,7 @@ class EventLoopManager:
         print("in the _reconnect methode")
         # """used to run new game instance in the event loop"""
         game_obj = cls.active_players.get(player_id)
+        print(f"----> player id {player_id} in the game {game_obj}")
         if game_obj is None:
             return False 
         game_obj.play() 
@@ -93,15 +94,21 @@ class EventLoopManager:
             if game.is_fulfilled() == False : #or game.disconnected()  
                 continue
             if not game.notify_players:
-                print('######## you can start #########')
                 cls.notify_players(game) 
                 #send config
                 game.notify_players = True
             frame :dict = game.update()
-            if game.is_finished(): 
-                # cls._save_finished(game)
-                cls.save_history(game)      
-                # print("go in finished_players\n")
+
+            if game.is_finished() and not game.saved : 
+                print("game is finished\n")
+                # print(f"game saved -----> {game.saved()}")   
+                try:
+                    game.saved = True
+                    asyncio.create_task(cls.save_history(game))
+                    print(f"game saved -----> {game.saved}")   
+                except Exception as e:
+                    print(f"Error saving game history: {e}")      
+                print("after save finished game\n")
             cls._dispatch_send_event(game.player_1, game, frame) 
             cls._dispatch_send_event(game.player_2, game, frame) 
             # print("3\n") 
@@ -111,34 +118,38 @@ class EventLoopManager:
         print("in the notify_players methode")
         print('######## you can start #########')
         data = {'status' : 'start'}
-        # RemoteGameOutput._add_and_send()
-        print("consumer 1 _> ", game.consumer_1)
         RemoteGameOutput.add_callback(game.player_1, game.consumer_1, sendConfig=False)  
-        print("consumer 2 _> ", game.consumer_2)
         RemoteGameOutput.add_callback(game.player_2, game.consumer_2, sendConfig=False) 
-        print('im waiting')
         RemoteGameOutput._send_to_consumer_group(game.player_1, data)
         RemoteGameOutput._send_to_consumer_group(game.player_2, data)
-        print('im waiting 2 ')        
+       
 
 
     @classmethod
-    def pause(cls, game): 
+    def pause(cls, game):  
         print("in the pause methode")
         game.pause()
  
 
+    @classmethod
+    def determine_winner(cls, game):
+        print("in the determine winner methode ")
+        game.determine_winner_loser()
+        data = {'status':'win'}
+        RemoteGameOutput.send(game.winner, data)
+        data = {'status':'lose'}
+        RemoteGameOutput.send(game.loser, data)
 
     @classmethod 
-    def _save_finished(cls, game_obj): 
-        print("in the  _save_finished methode")
-        print("before saving\n")
-        asyncio.create_task(cls.save_history(game_obj))
-        print("after saving\n")
+    def _save_finished(cls, game_obj):
+        print("in the  _save_finished methode") 
         print(game_obj)
+        # print("before saving\n")
+        # asyncio.create_task(cls.save_history(game_obj))
+        # print("after saving\n")
         cls.finished_players.append(game_obj.player_1)
         cls.finished_players.append(game_obj.player_2)
-        cls.finished_games.append(game_obj)
+        cls.finished_games.append(game_obj)   
         cls.channel_per_player.clear()
         # pass
         
@@ -147,9 +158,11 @@ class EventLoopManager:
         # print("in the _clean methode")
         # print(f"im in clean func \n")
         for player_id in cls.finished_players:
+            print("A PLAYER CLEANED")
             print(len(cls.finished_players))
             cls.active_players.pop(player_id)
         for game in cls.finished_games:
+            print("A GAME CLEANED")
             cls.running_games.pop(game)  
         cls.finished_players.clear()
         cls.finished_games.clear()
@@ -174,6 +187,7 @@ class EventLoopManager:
         game_obj = cls.pending_game()
         if  game_obj is None:
             game_obj = cls.game_class()
+            game_obj.pause()
             game_obj.set_game_mode(game_mode)
         else:
             cls.disconnected = False
@@ -229,7 +243,8 @@ class EventLoopManager:
         print("in the disconnect methode")
         game_obj = cls.active_players.get(player_id)
         # channel = cls.channel_per_player.get(player_id)
-        if game_obj and game_obj.is_fulfilled() and RemoteGameOutput.is_disconnection(player_id): 
+        if game_obj and game_obj.is_fulfilled() and not game_obj.is_finished() \
+            and RemoteGameOutput.is_disconnection(player_id): 
             game_obj.pause()
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, cls, player_id)
@@ -247,7 +262,7 @@ class EventLoopManager:
                 return False
         elif game is not None:
             if game.consumer_1 and game.consumer_1.is_focused \
-                and game.consumer_2 and game.consumer_2.is_focused:
+                and game.consumer_2 and game.consumer_2.is_focused and not game.finished: 
                 game.play()
         return True
         
@@ -347,7 +362,7 @@ class EventLoopManager:
     @classmethod
     async def save_history(cls, game_obj):
         print("on saving func\n")
-
+        cls.determine_winner(game_obj)
         # Fetch player instances asynchronously
         player_1_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_1)
         player_2_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_2)
@@ -356,8 +371,15 @@ class EventLoopManager:
         await database_sync_to_async(GameHistory.objects.create)(
             player_1=player_1_instance,
             player_2=player_2_instance,
+            player_1_score=game_obj.left_player.score,
+            player_2_score=game_obj.right_player.score,
+            winner_id=game_obj.winner,
+            loser_id=game_obj.loser,
             game_type='Remote'
         )
+        # gamehist = GameHistory(user= fgh, fghfg) // an other way to save Gamehistory object in the database
+        # await sync_to_async(gamehist.save)()
 
         print("saved successfully\n")
-           
+        cls._save_finished(game_obj)  
+            

@@ -32,7 +32,7 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         self.player_id = self.scope['user'].id
         if self.user.is_anonymous:
-            return await self.close()
+            return await self.close() 
         await self.accept()
         
         self.game_engine.connect(self.channel_name, self)

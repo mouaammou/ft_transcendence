@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, player_1ef, useState, useRef} from 'react';
+import confetti from 'canvas-confetti';
 import socket from '@/utils/WebSocketManager';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
@@ -128,6 +129,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
+				console.log(data);
 				if (data.update.left_paddle_pos)
 				{
 					player_1.x = data.update.left_paddle_pos[0];
@@ -139,8 +141,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					player_2.y = data.update.right_paddle_pos[1];
 				}
 				// ball.radius = gameConfig.ball_size[0] / 2;
-				ball.x = data.update.ball_pos[0] + ball.radius;
-				ball.y = data.update.ball_pos[1] + ball.radius;
+				if (data.update.ball_pos) 
+				{
+					ball.x = data.update.ball_pos[0] + ball.radius;
+					ball.y = data.update.ball_pos[1] + ball.radius;
+				}
 				// rectBall.x = data.update.ball_pos[0];
 				// rectBall.y = data.update.ball_pos[1];
 				// console.log(rectBall.x);
@@ -155,10 +160,20 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					player_2.score = data.update.right_player_score;
 					setScore1(score1 => data.update.right_player_score);
 				}
-				drawGame();
+				if (data.update.status) {
+					if (data.update.status  === 'win') {
+						winner_celebration()
+						console.log('Congratulations, you win');
+					}
+					else if (data.update.status  === 'lose')
+						console.log('Unfortunately, you lost');
 				}
-				else if (data.config)
-				{
+				drawGame();
+			}
+			else if (data.config)
+			{
+				console.log(data);
+
 					// setScore1(score1 => data.config.right_player_score);
 					// setScore2(score2 => data.config.left_player_score);
 					gameConfig = data.config;
@@ -199,7 +214,28 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		const updateGame = () => {
 		}
 
-		
+		function winner_celebration (){	
+			let duration = 10 * 1000;
+			let animationEnd = Date.now() + duration;
+			let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+			function randomInRange(min, max) {
+			return Math.random() * (max - min) + min;
+			}
+
+			let interval = setInterval(function() {
+			let timeLeft = animationEnd - Date.now();
+
+			if (timeLeft <= 0) {
+				return clearInterval(interval);
+			}
+
+			let particleCount = 100 * (timeLeft / duration);
+			// since particles fall down, start a bit higher than random
+			confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+			confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+			}, 250);
+		}
 
 		// Draw game elements
 		const drawGame = () => {

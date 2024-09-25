@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, playeref, useState, useRef} from 'react';
-import socket from '@/utils/WebSocketManager';
 
 export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 	const canvasRef = useRef(null);
@@ -25,10 +24,10 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			x: 0,
 			y: canvas.height / 2 - 100 / 2,
 			width: 10,
-			height: 100,
+			height: 500,
 			color: 'white',
 			score: 0,
-			speed: 5
+			speed: 15
 		}
 		const rectBall = {
 			x: 0,
@@ -87,7 +86,6 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			context.closePath();
 			context.fill();
 		}
-
 		// handle the page visibility for later:
 		let gameOn = true;
 
@@ -102,23 +100,42 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 		// Keyboard state
 		const keys = {};
 		// Update game logic
+		let lastY = ball.y;
 		const updateGame = () => {
 			ball.x += ball.velocityX * ball.speed;
 			ball.y += ball.velocityY * ball.speed;
-			computer.y = (ball.y - computer.height/2) * computer.level
-			if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= canvas.height) 
-				ball.velocityY = -ball.velocityY;
-			if (ball.x <= 0 || ball.x > canvas.width) {
-				player.score += 1;
-				setScore1(score2 => player.score);
-				resetBall()
+			computer.y = ball.y - computer.height / 2
+		    // Check for collision with the top edge of the table
+			if (ball.y - ball.radius <= 0) {
+				// Only reverse if the ball was moving up
+				if (lastY > ball.y) 
+					ball.velocityY = -ball.velocityY; // Reverse direction
+				ball.y = ball.radius; // Prevent sticking to the edge
 			}
-				
+		
+			// Check for collision with the bottom edge of the table
+			if (ball.y + ball.radius >= canvas.height) {
+				// Only reverse if the ball was moving down
+				if (lastY < ball.y) 
+					ball.velocityY = -ball.velocityY; // Reverse direction
+				ball.y = canvas.height - ball.radius; // Prevent sticking to the edge
+			}
+		
+			// Update last position
+			lastY = ball.y;
+			if (ball.x <= 0) {
+				player.score += 1;
+				setScore1(prevScore1 => prevScore1 + 1); // Increment player score
+				resetBall();
+			}
+			
 			if (ball.x >= canvas.width) {
 				computer.score += 1;
-				setScore2(score1 => computer.score);//score makhddamch
-				resetBall()
+				setScore2(prevScore2 => prevScore2 + 1); // Increment computer score
+				resetBall();
 			}
+
+
 			if (keys['ArrowUp'] && player.y > 0 )
 				player.y -= player.speed
 			else if (keys['ArrowDown'] && (player.y + player.height <= canvas.height))
@@ -127,11 +144,27 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 				computer.y = 0;
 			else if (computer.y + computer.height > canvas.height)
 				computer.y  = canvas.height - computer.height; 
-			if ((ball.x - ball.radius < player.x + player.width && ball.y < player.y + player.height && ball.y > player.y) || //collision makhddamch 100% 
-					(ball.x >= computer.x - computer.width - 1 && ball.y < computer.y + computer.height && ball.y > computer.y)) {
-						ball.velocityX = -ball.velocityX;
-						// computer.level += 0.2;computer level makhddamch
-					}
+			
+			if (isBallCollidingWithPaddle(ball, player)) {
+				ball.velocityX = -ball.velocityX; // Reverse direction
+				// Optional: Adjust ball's vertical direction based on where it hits the paddle
+				const collisionPoint = ball.y - (player.y + player.height / 2);
+				ball.velocityY += collisionPoint / (player.height / 2); // Adjust bounce angle
+				console.log("here -->");
+				console.log(ball.velocityY);
+				if (ball.speed <= 10)
+					ball.speed += 0.5; // Increase speed slightly on collision
+			}
+			
+			if (isBallCollidingWithPaddle(ball, computer)) {
+				ball.velocityX = -ball.velocityX; // Reverse direction
+				const collisionPoint = ball.y - (computer.y + computer.height / 2);
+				ball.velocityY += collisionPoint / (computer.height / 2); // Adjust bounce angle
+				console.log("here -->");
+				console.log(ball.velocityY);
+				if (ball.speed <= 10)
+					ball.speed += 0.5; // Increase speed slightly on collision
+			}
 
 			if (player.score >= 7 || computer.score >= 7) {
 				resetBall()
@@ -139,7 +172,12 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			}
 		}
 
-		
+		const isBallCollidingWithPaddle = (ball, paddle) => {
+			return ball.x + ball.radius > paddle.x &&
+				   ball.x - ball.radius < paddle.x + paddle.width &&
+				   ball.y + ball.radius > paddle.y &&
+				   ball.y - ball.radius < paddle.y + paddle.height;
+		};
 
 		// Draw game elements
 		const drawGame = () => {
@@ -156,6 +194,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			// Draw the ball
 			drawCircle(ball.x, ball.y, ball.radius, ball.color);
 			context.closePath();
+		console.log(ball.speed);
+
 		};
 		
 		// Keyboard event handlers  // ArrowUp ArrowDown q s

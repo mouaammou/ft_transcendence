@@ -11,7 +11,7 @@ const Mode = () => {
     }
 
     const botGame = () => {
-        router.push('/game_bot')
+        router.push('/bot')
     }
     // socket.registerMessageHandler(redirect_to_game);
     // const redirect_to_game = (message) => {

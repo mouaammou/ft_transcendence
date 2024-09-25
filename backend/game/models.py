@@ -52,20 +52,18 @@ class GameHistory(models.Model):
         related_name='as_player_2'
     )
     
+    player_1_score = models.IntegerField(null=True)
+    player_2_score = models.IntegerField(null=True)
+
+    winner_id = models.IntegerField(null=True) 
+    loser_id = models.IntegerField(null=True)
+
     game_type = models.CharField(max_length=20, choices=[
             ('local', 'Local'),
             ('remote', 'Remote'),
             ('tournament', 'Tournament'),
         ], default='local')
     
-    @property
-    def game_result(self):
-        if self.score_player_1 > self.score_player_2:
-            return "win"
-        elif self.score_player_1 < self.score_player_2:
-            return "lose"
-        else:
-            return "draw"
     
     
     # def save(self, *args, **kwargs):

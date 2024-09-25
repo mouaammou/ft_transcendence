@@ -16,7 +16,10 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         self._consumer_1 = None
         self._consumer_2 = None
         self.fulfilled = False
-        self._notify_players = False 
+        self._notify_players = False
+        self._winner = None 
+        self._loser = None 
+        self._saved = False
     
     @property
     def player_1(self):
@@ -69,3 +72,38 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     @consumer_2.setter
     def consumer_2(self, value):
         self._consumer_2 = value
+   
+   
+    @property
+    def winner(self):
+        return self._winner 
+
+    @winner.setter
+    def winner(self, value):
+        self._winner = value
+
+
+    @property
+    def loser(self):
+        return self._loser 
+
+    @loser.setter
+    def loser(self, value):
+        self._loser = value
+
+    @property
+    def saved(self):
+        return self._saved 
+
+    @saved.setter
+    def saved(self, value):
+        self._saved = value
+
+    def determine_winner_loser(self):
+        if (self.left_player.score > self.right_player.score):
+            self.winner = self._player_1
+            self.loser = self._player_2
+        else:
+            self.winner = self._player_2
+            self.loser = self._player_1
+        print(f"winner is ----> {self._winner} and loser is ---> {self._loser}")

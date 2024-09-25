@@ -36,7 +36,6 @@ const GamePage = () => {
 				</div>
 				<div className="self-game">
 					<PongGame  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2}/>
-					
 				</div>
 				<div className="right-user">
 					<Image className="right-user-img" src="/mouad.jpeg" alt="user1" width={100} height={100}  priority />
