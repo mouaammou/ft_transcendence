@@ -1,12 +1,17 @@
 "use client";
 import { useEffect, useState, useRef, createContext, useContext } from 'react';
 
-export const WebSocketContext = createContext(true);
+export const WebSocketContext = createContext({
+	value: 'true',
+});
 
 export const WebSocketProvider = ({url, children}) => {
 
 	const [isConnected, setIsConnected] = useState(false);
+	const [users, setUsers] = useState([]);
+	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
+	const [friendshipStatus, setFriendshipStatus] = useState(null);
 
 	useEffect(() => {
 		// Create WebSocket instance when the component mounts
@@ -35,8 +40,46 @@ export const WebSocketProvider = ({url, children}) => {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (isConnected) {
+			websocket.current.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				console.log("WebSocket message received:", data);
+
+				if (data.type === 'user_status_change') {
+					setUsers(prevUsers => {
+						const userIndex = prevUsers.findIndex(user => user.username === data.username);
+						if (userIndex !== -1) {
+								// User exists, update their status
+								const updatedUsers = [...prevUsers];
+								updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
+								return updatedUsers;
+						} else {
+								// User doesn't exist, add them to the list
+								return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
+						}
+					});
+				}
+				else if (data.type === 'friend_request_received' || data.type === 'accept_friend_request') {
+					data.type === 'accept_friend_request' && data.success && setFriendshipStatus('accepted');
+					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
+				}
+			};
+		}
+
+	}, [isConnected]);
+
 	return (
-		<WebSocketContext.Provider value={{isConnected, websocket, setIsConnected}}>
+		<WebSocketContext.Provider
+			value={{
+				isConnected,
+				websocket,
+				users,
+				setUsers,
+				notifications,
+				setNotifications,
+				friendshipStatus,
+				}}>
 			{children}
 		</WebSocketContext.Provider>
 	)

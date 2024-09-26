@@ -21,4 +21,6 @@ class AllUser(generics.GenericAPIView):
 		paginator = self.pagination_class()
 		paginated_users = paginator.paginate_queryset(users, request)
 		serializer = UserSerializer(paginated_users, many=True)
-		return paginator.get_paginated_response(serializer.data)
+		# remove the current use from serializer data
+		serializer_data = [user for user in serializer.data if user['id'] != request.customUser.id]
+		return paginator.get_paginated_response(serializer_data)
