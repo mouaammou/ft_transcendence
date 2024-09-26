@@ -4,7 +4,7 @@ import { IoIosNotificationsOutline } from 'react-icons/io';
 import Link from 'next/link';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-const FriendRequestNotification = ({data, websocket, onRemove}) => {
+const FriendRequestNotification = ({data, websocket, onRemove, friendshipStatus}) => {
 	const [status, setStatus] = useState(()=> {
 		if (data.type === 'friend_request_received') {
 			return 'Pending';
@@ -28,41 +28,48 @@ const FriendRequestNotification = ({data, websocket, onRemove}) => {
 	};
 
 	return (
-		<div className="flex p-4 w-96 border-b border-gray-700">
+		<div className="flex p-4 w-96 border-b border-gray-700"
+			onMouseEnter={() => 
+				friendshipStatus && setTimeout(() => {
+					onRemove(data.id);
+				}
+				, 3000)
+			}
+		>
 			<img
 			className="w-8 h-8 rounded-full"
 			src={data.avatar}
 			alt="avatar"
 			/>
 			<div className="ml-3 text-sm font-normal">
-			<span className="mb-1 text-sm font-semibold text-white">
-				<Link href={`/${data.username}`}>
-					{data.username}
-				</Link>
-			</span>
-			<div className="mb-2 text-sm font-normal">
-				{data.message}
-			</div>
-			{status === 'Pending' ? (
-				<>
-					<button
-					className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
-					onClick={() => handleAction('Accepted')}
-					>
-					Accept
-					</button>
-					<button
-					className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
-					onClick={() => handleAction('Rejected')}
-					>
-					Reject
-					</button>
-				</>
-			) : (
-				<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${status === 'Accepted' ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
-					{status}
+				<span className="mb-1 text-sm font-semibold text-white">
+					<Link href={`/${data.username}`}>
+						{data.username}
+					</Link>
 				</span>
-			)}
+				<div className="mb-2 text-sm font-normal">
+					{data.message}
+				</div>
+				{status === 'Pending' ? (
+					<>
+						<button
+						className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
+						onClick={() => handleAction('Accepted')}
+						>
+						Accept
+						</button>
+						<button
+						className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
+						onClick={() => handleAction('Rejected')}
+						>
+						Reject
+						</button>
+					</>
+					) : (
+					<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${status === 'Accepted' ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
+						{status}
+					</span>
+				)}
 			</div>
 		</div>
 	)
@@ -70,30 +77,11 @@ const FriendRequestNotification = ({data, websocket, onRemove}) => {
 
 const NotificationBell = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const { isConnected, websocket } = useWebSocketContext();
-	const [notifications, setNotifications] = useState([]);
-
-	useEffect(() => {
-		if (isConnected && websocket.current) {
-			const handleMessage = (event) => {
-				const data = JSON.parse(event.data);
-				console.log('Message received:: handle message:: ', data);
-				if (data.type === 'friend_request_received' || data.type === 'accept_friend_request') {
-					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
-				}
-			};
-
-			websocket.current.addEventListener('message', handleMessage);
-			return () => {
-				websocket.current.removeEventListener('message', handleMessage);
-			};
-		}
-	}, [isConnected, websocket]);
+	const {websocket, notifications, setNotifications, friendshipStatus} = useWebSocketContext();
 
 	const removeNotification = (id) => {
 		setNotifications((prev) => prev.filter(notif => notif.id !== id));
 	};
-
 
 	return (
 		<div className="">
@@ -120,9 +108,10 @@ const NotificationBell = () => {
 					role="alert"
 				>
 					{notifications.map((notification) => (
-						<FriendRequestNotification 
+						<FriendRequestNotification
+							friendshipStatus={friendshipStatus}
 							key={notification.id} 
-							data={notification} 
+							data={notification}
 							websocket={websocket} 
 							onRemove={removeNotification}
 						/>

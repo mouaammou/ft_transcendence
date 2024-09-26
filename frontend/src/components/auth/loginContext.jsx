@@ -6,7 +6,9 @@ import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-export const LoginContext = createContext(true);
+export const LoginContext = createContext({
+	value: 'true'
+});
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
@@ -60,7 +62,7 @@ export const LoginProvider = ({ children }) => {
 			}
 			})
 			.catch(error => {
-			console.log('error happens==> ', error);
+				console.log('error happens==> ', error);
 			});
 	};
 
@@ -90,11 +92,8 @@ export const LoginProvider = ({ children }) => {
 				setProfileData(res.data.user);
 				if (isConnected) {
 					// Ensure the WebSocket connection is open before sending the message
-					function sendOnlineStatus() {
-						console.log("user name: ", res.data.user.username);
-						websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.user.username }));
-					}
-					sendOnlineStatus();
+					console.log("user name: ", res.data.user.username);
+					websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.user.username }));
 				}
 			}
 		} catch (error) {
