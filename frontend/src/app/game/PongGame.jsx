@@ -2,9 +2,13 @@
 import { useEffect, player_1ef, useState, useRef} from 'react';
 import confetti from 'canvas-confetti';
 import socket from '@/utils/WebSocketManager';
+import YouLose from '@/components/modals/YouLose';
+import YouWin from '@/components/modals/YouWin';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 	const canvasRef = useRef(null);
+	const [showWinModal, setShowWinModal] = useState(false);
+	const [showLoseModal, setShowLoseModal] = useState(false);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -164,9 +168,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					if (data.update.status  === 'win') {
 						winner_celebration()
 						console.log('Congratulations, you win');
+						setShowWinModal(true);
 					}
-					else if (data.update.status  === 'lose')
+					else if (data.update.status  === 'lose') {
+						// <YouLose/>
 						console.log('Unfortunately, you lost');
+						setShowLoseModal(true);
+					}
 				}
 				drawGame();
 			}
@@ -331,9 +339,23 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
-			
-			
-		</canvas>
+		<>
+			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
+
+			</canvas>
+				{showWinModal && (
+					<YouWin 
+						onClose={() => setShowWinModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+				
+				{showLoseModal && (
+					<YouLose 
+						onClose={() => setShowLoseModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+		</>
 	);
 }

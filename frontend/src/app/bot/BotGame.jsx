@@ -73,7 +73,7 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 		const resetBall = () => {
 			ball.x = canvas.width / 2;
 			ball.y = canvas.height / 2;
-			ball.speed = 2;
+			ball.speed = 4;
 			ball.velocityX = 2;
 			ball.velocityY = 2;
 			ball.velocityX = -ball.velocityX;
@@ -104,6 +104,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 		const updateGame = () => {
 			ball.x += ball.velocityX * ball.speed;
 			ball.y += ball.velocityY * ball.speed;
+			console.log("ball.velocityX * ball.speed --> ",ball.velocityX * ball.speed);
+			console.log("ball.velocityX * ball.speed --> ",ball.velocityY * ball.speed);
 			computer.y = ball.y - computer.height / 2
 		    // Check for collision with the top edge of the table
 			if (ball.y - ball.radius <= 0) {
