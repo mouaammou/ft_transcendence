@@ -50,11 +50,12 @@ class Paddle(Base):
     
     def handle_score(self):
         self.score += 1
+        self.root_obj.scope[self.direction+'_player_score'] = self.score
         if self.score >= self.max_score:
             print(f'{self.direction}_player win!')
             self.root_obj.scope['finished'] = self.direction+'_'+'player'
+            # self.root_obj.start_game = False
             self.root_obj.reset_to_default_state() # reset the game but keep the scope
-        self.root_obj.scope[self.direction+'_player_score'] = self.score
     
     def update_scope(self):
         # on paddle move only
