@@ -1,0 +1,109 @@
+from pong.pong_root import PingPongGameLogic
+from game.local_game.disconnection import LocalGameDisconnection 
+
+import uuid
+
+class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
+    """
+    Use this to create game instances.
+    """
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        #i have to add a type of the game : random, vsfriend, vsbot
+        self.game_id = str(uuid.uuid4())
+        self._player_1 = None
+        self._player_2 = None
+        self._consumer_1 = None
+        self._consumer_2 = None
+        self.fulfilled = False
+        self._notify_players = False
+        self._winner = None 
+        self._loser = None 
+        self._saved = False
+    
+    @property
+    def player_1(self):
+        return self._player_1 
+
+    @player_1.setter
+    def player_1(self, value):
+        self._player_1 = value
+        self.update_fulfilled()
+ 
+    @property
+    def player_2(self):
+        return self._player_2
+
+    @player_2.setter
+    def player_2(self, value):
+        self._player_2 = value
+        self.update_fulfilled()
+
+    def update_fulfilled(self):
+        self.fulfilled = (self._player_1 is not None) and (self._player_2 is not None)
+        
+    def is_fulfilled(self):
+        return self.fulfilled
+
+    def clean_up(self): 
+        pass
+
+    @property
+    def notify_players(self):
+        return self._notify_players
+    
+    @notify_players.setter
+    def notify_players(self, value):
+        self._notify_players = value
+
+
+    @property
+    def consumer_1(self):
+        return self._consumer_1 
+
+    @consumer_1.setter
+    def consumer_1(self, value):
+        self._consumer_1 = value
+ 
+    @property
+    def consumer_2(self):
+        return self._consumer_2 
+
+    @consumer_2.setter
+    def consumer_2(self, value):
+        self._consumer_2 = value
+   
+   
+    @property
+    def winner(self):
+        return self._winner 
+
+    @winner.setter
+    def winner(self, value):
+        self._winner = value
+
+
+    @property
+    def loser(self):
+        return self._loser 
+
+    @loser.setter
+    def loser(self, value):
+        self._loser = value
+
+    @property
+    def saved(self):
+        return self._saved 
+
+    @saved.setter
+    def saved(self, value):
+        self._saved = value
+
+    def determine_winner_loser(self):
+        if (self.left_player.score > self.right_player.score):
+            self.winner = self._player_1
+            self.loser = self._player_2
+        else:
+            self.winner = self._player_2
+            self.loser = self._player_1
+        print(f"winner is ----> {self._winner} and loser is ---> {self._loser}")

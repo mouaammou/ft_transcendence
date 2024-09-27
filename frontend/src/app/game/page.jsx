@@ -9,6 +9,10 @@ const GamePage = () => {
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
 
+	// const changeScore1 = () => {
+	// 	setScore1(score1 + 1);
+	// }
+
   // const changeScore1 = () => {
   // 	setScore1(score1 + 1);
   // }

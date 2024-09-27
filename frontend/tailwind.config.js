@@ -22,7 +22,11 @@ module.exports = {
 				my_blue: '#46CCDA',
 				darkgreen: '#16486b',
 				btnColor: '#164465',
-				topBackground: '#16486b78'
+				topBackground: '#16486b78',
+				'customfill' : 'rgba(13, 40, 69, 1)',
+				'whitetrspnt' : 'rgba(219, 219, 219, 0.2)',
+				'bluetrspnt' : 'rgba(219, 219, 219, 0.3)',
+				'hrcolor': 'rgba(217, 217, 217, 0.6)'
 			},
 			fontFamily: {
 				// sans: ['Inter', 'SUSE', 'Roboto', 'Lato', 'sans-serif'],
@@ -32,10 +36,18 @@ module.exports = {
 				// roboto: ['Roboto', 'sans-serif'],
 				// lato: ['Lato', 'sans-serif'],
 				// poppins: ['Poppins', 'sans-serif'],
+				custom: ['sans-serif'],
+				open:['Open Sans'],
+				balsamiq: ['Balsamiq Sans'],
 			},
 			fontSize: {
 				unset: 'unset',
-			},
+			},  
+			backgroundImage: {
+				"gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+				"gradient-conic":
+				"conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+			  },
 		},
 	},
 	plugins: [

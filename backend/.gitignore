@@ -2,7 +2,14 @@
 venv/
 __pycache__
 migrations
+migrations/
 settings.py
 *.pyc
+<<<<<<< HEAD
+__pycache__/
+__pycache__
+
+=======
 db.sqlite3
+>>>>>>> origin/main
 media/avatars/

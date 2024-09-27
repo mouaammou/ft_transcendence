@@ -27,10 +27,18 @@
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
 
+<<<<<<< HEAD
+
+
+=======
 # bandwidth: means what
     what means bandwidth ?
+<<<<<<< HEAD
 
 		############################################ from 18/09 ############################################
 # Promise in javascript
 	 what is the promise in javascript ??
 	 explain : await new Promise((resolve) => setTimeout(resolve, 1000));// 1 second delay, to simulate a real-world API call
+=======
+>>>>>>> origin/main
+>>>>>>> remoteGame
