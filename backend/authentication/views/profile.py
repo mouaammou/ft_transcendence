@@ -33,21 +33,15 @@ class UpdateProfile(APIView):
 			return Response({"success":"updated sucessfully", "avatar": serializer.data['avatar']}, status=status.HTTP_200_OK)
 		return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  # Use 400 for validation errors
 
+class GetUserById(APIView):
+	def get (self, request, id):
+		try:
+			user = User.objects.get(id=id)
+			serializer = UserSerializer(user)
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		except User.DoesNotExist:
+			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-# class FriendProfile(generics.GenericAPIView):
-
-# 	def get(self, request, *args, **kwargs):
-# 		#get theusername from the url
-# 		if 'username' not in kwargs:
-# 			logger.error("\nError: Username not provided\n")
-# 			return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
-# 		try:
-# 			user = User.objects.get(username=kwargs['username'])
-# 			serializer = UserSerializer(user, partial=True)
-# 		except User.DoesNotExist:
-# 			logger.error("\nError: User not found\n")
-# 			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-# 		return Response(serializer.data, status=status.HTTP_200_OK)
 
 class FriendProfile(generics.GenericAPIView):
 
@@ -56,7 +50,9 @@ class FriendProfile(generics.GenericAPIView):
 		if 'username' not in kwargs:
 			logger.error("\nError: Username not provided\n")
 			return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
-		
+		if (request.customUser.username == kwargs['username']):
+			logger.error("\nError: User cannot be friend of himself\n")
+			return Response({"Error": "User cannot be friend of himself"}, status=status.HTTP_200_OK)
 		try:
 			user = User.objects.get(username=kwargs['username'])
 			serializer = UserSerializer(user, partial=True)

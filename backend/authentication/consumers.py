@@ -39,7 +39,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				# Add the user to the global status group
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 1:
-					print(f"\n {self.user} is ONLINE\n")
 					await self.update_user_status("online")
 					print(f"\n broadcasting online : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "online")
@@ -59,7 +58,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				if self.user.id in self.user_connections:
 					number_of_connections = len(self.user_connections[self.user.id])
 					if number_of_connections == 0:
-						print(f"\n {self.user} is offline\n")
 						await self.update_user_status("offline")
 						print(f"\n broadcasting offline : {self.user}\n")
 						await self.broadcast_online_status(self.user_data, "offline")
@@ -82,19 +80,16 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		logout = text_data_json.get('logout')
 		online = text_data_json.get('online')
 
-		# Handle user data, if sent
-		print(f"\n USER IN ONLINE STATUS: 🍀 {text_data_json}\n")
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
-
 		# Handle logout event
 		if logout and self.user.is_authenticated:
 			
 			# Ensure the user is removed from the active connections
 			if self.user.id in self.user_connections:
 				if self.channel_name in self.user_connections[self.user.id]:
-						self.user_connections[self.user.id].remove(self.channel_name)
+					self.user_connections[self.user.id].remove(self.channel_name)
 
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 0:
@@ -215,6 +210,16 @@ class NotificationConsumer(OnlineStatusConsumer):
 		}))
 # enf of accepting friend request *********************************************
 
+# ************************ for rejecting friend request ************************
+	async def reject_request_notif(self, event):
+		print(f"\n REJECT FRIEND REQUEST: {event}\n")
+		await self.send(text_data=json.dumps({
+			'type': 'reject_friend_request',
+			'success': event.get('success'),
+			'user_id': event.get('user_id'),
+		}))
+# end of rejecting friend request *********************************************
+
 	async def receive(self, text_data):
 		await super().receive(text_data)
 		data = json.loads(text_data)
@@ -243,7 +248,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 				logger.info(f"\nFriend request sent to {to_user_id}\n")
 			except Exception as e:
 				logger.error(f"\nError in send to_user_channels group :: {e}\n")
-		elif message_type == 'accept_friend_request':	
+		if message_type == 'accept_friend_request':	
 			to_user_id = data.get('to_user_id')
 			success, message = await self.accept_friend_request(to_user_id)
 			print(f"\n accept_friend_request !!:\n")
@@ -263,9 +268,24 @@ class NotificationConsumer(OnlineStatusConsumer):
 				logger.info(f"\nFriend request sent to {to_user_id}\n")
 			except Exception as e:
 				logger.error(f"\nError in accept to_user_channels group :: {e}\n")
-		elif message_type == 'reject_friend_request':
-			rejected = data.get('rejected')
-			await self.reject_friend_request(rejected)
+		
+		if message_type == 'reject_friend_request':
+			rejected_user_id = data.get('to_user_id')
+			reject_status = await self.reject_friend_request(rejected_user_id)
+			if (reject_status):
+				try:
+					to_user_channels = self.user_connections.get(rejected_user_id)
+					if not to_user_channels:
+						logger.error(f"\nUser {rejected_user_id} is offline\n")
+						return
+					await self.send_accept_request_notif(to_user_channels, {
+						'type': 'reject_request_notif',
+						'success': reject_status,
+						'user_id': self.user.id,
+					})
+					logger.info(f"\nFriend request sent to {rejected_user_id}\n")
+				except Exception as e:
+					logger.error(f"\nError in reject to_user_channels group :: {e}\n")
 
 	@database_sync_to_async
 	def save_friend_request(self, to_user_id):
@@ -326,49 +346,27 @@ class NotificationConsumer(OnlineStatusConsumer):
 			logger.error(f"\nError Accepting friend request: {e}\n")
 			return False, f"Error Accepting Friend request, reason :: {str(e)}"
 
-
-	# @database_sync_to_async
-	# def accept_friend_request(self, user_id):
-	# 	try:
-	# 		print(f"\n Accepting friend request: {user_id}\n")
-	# 		sender = User.objects.get(id=user_id)
-	# 		print(f"\n sender: {sender}, receiver: {self.user}\n")
-	# 		friend_request = Friendship.objects.get(
-	# 			Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
-	# 		)
-	# 		if friend_request.status == 'pending':
-	# 			friend_request.status = 'accepted'
-	# 			friend_request.save()
-	# 			# also create a reverse friendship
-	# 			try:
-	# 				reverse_friendship = Friendship.objects.get(sender=self.user, receiver=sender)
-	# 				reverse_friendship.status = 'accepted'
-	# 				reverse_friendship.save()
-
-	# 			except Friendship.DoesNotExist:
-	# 				Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
-
-	# 			NotificationModel.objects.create(
-	# 				sender=self.user,
-	# 				receiver=sender,
-	# 				message=f"{self.user} accepted your friend request."
-	# 			)
-	# 			return True, "Friend request accepted"
-	# 		else:
-	# 			return False, "Friend request already processed"
-	# 	except Exception as e:
-	# 		logger.error(f"\nError Accepting friend request: {e}\n")
-	# 		return False, f"Error Accepting Friend request, reason :: {str(e)}"
-	
 	@database_sync_to_async
-	def reject_friend_request(self, rejected):
+	def reject_friend_request(self, rejected_user_id):
 		try:
-			friend_request = Friendship.objects.get(
-				Q(sender=rejected, receiver=self.user) | Q(sender=self.user, receiver=rejected)
-			)
-			if friend_request.status == 'pending':
+			rejected_user = User.objects.get(id=rejected_user_id)
+			friend_request = Friendship.objects.filter(
+					Q(sender=rejected_user, receiver=self.user) | 
+					Q(sender=self.user, receiver=rejected_user),
+					status='pending'
+			).first()
+
+			if friend_request:
 				friend_request.delete()
 				logger.info(f"\nFriend request rejected\n")
+				return True
+			else:
+				logger.warning(f"No pending friend request found between {self.user.username} and {rejected_user_id}")
+				return False
+
+		except User.DoesNotExist:
+			logger.error(f"User with id {rejected_user_id} does not exist")
+			return False
 		except Exception as e:
-			logger.error(f"\nError rejecting friend request: {e}\n")
-			return f"Friend request not found or already processed, reason :: {str(e)}"
+			logger.error(f"Error rejecting friend request: {e}")
+			return False

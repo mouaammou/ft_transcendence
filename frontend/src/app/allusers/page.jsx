@@ -20,7 +20,7 @@ const AllUsers = () => {
 	const fetchAllUsers = async (pageNumber) => {
 		router.push(`/allusers?page=${pageNumber}`);
 		try {
-			const response = await getData(`/allusers?page=${pageNumber}`);			
+			const response = await getData(`/allusers?page=${pageNumber}`);
 			if (response.status === 200) {
 				setUsers(response.data.results);
 				setPrevPage(() => {

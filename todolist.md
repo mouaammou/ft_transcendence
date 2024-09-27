@@ -34,3 +34,15 @@
 # Promise in javascript
 	 what is the promise in javascript ??
 	 explain : await new Promise((resolve) => setTimeout(resolve, 1000));// 1 second delay, to simulate a real-world API call
+
+# why slice() works in the array
+	 why slice() works in the array ??
+	 {notifications.slice().reverse().map((notification) => (
+				<FriendRequestNotification
+					friendshipStatus={friendshipStatus}
+					key={notification.id}
+					data={notification}
+					websocket={websocket}
+					onMarkAsRead={markAsRead}
+				/>
+				))}

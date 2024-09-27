@@ -5,13 +5,14 @@ export const WebSocketContext = createContext({
 	value: 'true',
 });
 
+
 export const WebSocketProvider = ({url, children}) => {
 
 	const [isConnected, setIsConnected] = useState(false);
 	const [users, setUsers] = useState([]);
 	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
-	const [friendshipStatus, setFriendshipStatus] = useState(null);
+	const [notificationType, setnotificationType] = useState({});
 
 	useEffect(() => {
 		// Create WebSocket instance when the component mounts
@@ -45,7 +46,7 @@ export const WebSocketProvider = ({url, children}) => {
 			websocket.current.onmessage = (event) => {
 				const data = JSON.parse(event.data);
 				console.log("WebSocket message received:", data);
-
+				setnotificationType({});
 				if (data.type === 'user_status_change') {
 					setUsers(prevUsers => {
 						const userIndex = prevUsers.findIndex(user => user.username === data.username);
@@ -60,8 +61,11 @@ export const WebSocketProvider = ({url, children}) => {
 						}
 					});
 				}
-				else if (data.type === 'friend_request_received' || data.type === 'accept_friend_request') {
-					data.type === 'accept_friend_request' && data.success && setFriendshipStatus('accepted');
+				setnotificationType({
+					type: data.type,
+					status: data.success,
+				});
+				if (data.type === 'friend_request_received' || data.type === 'accept_friend_request') {
 					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
 				}
 			};
@@ -78,7 +82,7 @@ export const WebSocketProvider = ({url, children}) => {
 				setUsers,
 				notifications,
 				setNotifications,
-				friendshipStatus,
+				notificationType,
 				}}>
 			{children}
 		</WebSocketContext.Provider>

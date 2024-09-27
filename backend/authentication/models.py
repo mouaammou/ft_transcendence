@@ -31,8 +31,7 @@ class NotificationModel(models.Model):
 		return f'Notification for {self.user.username}'
 #---------------- # Notifications model ===================#
 
-
-# class of the model FriendRequest ---
+# ----------------- model Frienship -----------------#
 class Friendship(models.Model):
 	STATUS_CHOICES = (
 		('pending', 'pending'),
@@ -88,7 +87,7 @@ class Friendship(models.Model):
 
 	def __str__(self):
 		return f"{self.sender} is friend with {self.receiver}, friend status: {self.status}"
-# +++++++++ done model FriendRequest ++++++++++++#
+# ----------------- # model Frienship -----------------#
 
 
 def validate_image_size(image):

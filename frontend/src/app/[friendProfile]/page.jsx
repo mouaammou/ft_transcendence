@@ -7,25 +7,26 @@ import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
-import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
 
 
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, users, friendshipStatus} = useWebSocketContext();
+	const {websocket, isConnected, users, notificationType} = useWebSocketContext();
 	const [userStatus, setUserStatus] = useState();
 	const pathname = usePathname();
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-	const {profileData} = useAuth()
 	const router = useRouter();
 
-	useEffect(() => {//for the websocket, if the friendRequest get accepted, the friendStatusRequest will be updated
-		if (friendshipStatus) {
-			setFriendStatusRequest(friendshipStatus);
+	useEffect(() => {
+		if (notificationType.type === 'accept_friend_request' && notificationType.status === true) {
+			setFriendStatusRequest('accepted');
 		}
-	}, [friendshipStatus]);
+		if (notificationType.type === 'reject_friend_request' && notificationType.status === true) {
+			setFriendStatusRequest('no');
+		}
+	}, [notificationType]);
 
 	const sendFriendRequest = () => {
 		if (isConnected && profile?.id) {
@@ -49,7 +50,7 @@ export default function FriendProfile({ params }) {
 				if (response.status === 200) {
 					const fetchedProfile = response.data;
 
-					if (profileData && profileData.id === response.data.id) {
+					if (response.data.Error) {
 						setProfile({});
 						router.push('/profile');
 					}
@@ -128,7 +129,7 @@ export default function FriendProfile({ params }) {
 							<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
 								<FaGamepad className="mr-2 size-5" /> Invite to Game
 							</li>	
-							{(friendStatusRequest === 'no' || friendStatusRequest === 'add') && (
+							{(friendStatusRequest === 'no') && (
 								<li
 									onClick={() => {
 										sendFriendRequest();
