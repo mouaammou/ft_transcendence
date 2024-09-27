@@ -44,7 +44,7 @@ export const WebSocketProvider = ({url, children}) => {
 		if (isConnected) {
 			websocket.current.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-				console.log("WebSocket message received:", data);
+				// console.log("WebSocket message received:", data);
 
 				if (data.type === 'user_status_change') {
 					setUsers(prevUsers => {

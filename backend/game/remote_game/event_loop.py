@@ -117,11 +117,18 @@ class EventLoopManager:
     def notify_players(cls, game):
         print("in the notify_players methode")
         print('######## you can start #########')
-        data = {'status' : 'start'}
+        data_1 = {
+                'status' : 'start',
+                'opponent' : game.player_2
+            }
+        data_2 = {
+                'status' : 'start',
+                'opponent' : game.player_1
+            }
         RemoteGameOutput.add_callback(game.player_1, game.consumer_1, sendConfig=False)  
         RemoteGameOutput.add_callback(game.player_2, game.consumer_2, sendConfig=False) 
-        RemoteGameOutput._send_to_consumer_group(game.player_1, data)
-        RemoteGameOutput._send_to_consumer_group(game.player_2, data)
+        RemoteGameOutput._send_to_consumer_group(game.player_1, data_1)
+        RemoteGameOutput._send_to_consumer_group(game.player_2, data_2)
        
 
 
@@ -144,6 +151,9 @@ class EventLoopManager:
     def _save_finished(cls, game_obj):
         print("in the  _save_finished methode") 
         print(game_obj)
+        if (not game_obj.saved):
+            cls.determine_winner(game_obj)
+            game_obj.saved = True
         # print("before saving\n")
         # asyncio.create_task(cls.save_history(game_obj))
         # print("after saving\n")
@@ -194,9 +204,11 @@ class EventLoopManager:
         if (game_obj.player_1 is None):
             game_obj.player_1 = player_id
             game_obj.consumer_1 = consumer
+            game_obj.pause()
         elif(game_obj.player_2 is None):
             game_obj.player_2 = player_id
             game_obj.consumer_2 = consumer
+            game_obj.pause()
         cls.active_players[player_id] = game_obj #waht would happen if i save the game and then add the players.
         cls.unique_game_mapping()
         # else:
@@ -213,7 +225,7 @@ class EventLoopManager:
         if not is_remote:  # Check if remote data exists
             return False
         is_random = is_remote.get('mode')
-        if is_random and game.is_fulfilled():# i can check also for the player location, if it is not the '/game', 
+        if is_random and game.is_fulfilled() and game.islaunched:# i can check also for the player location, if it is not the '/game', 
             data = {'status': 'already_in_game'}
             RemoteGameOutput._send_to_consumer_group(player_id, data)
             return True
@@ -244,7 +256,7 @@ class EventLoopManager:
         game_obj = cls.active_players.get(player_id)
         # channel = cls.channel_per_player.get(player_id)
         if game_obj and game_obj.is_fulfilled() and not game_obj.is_finished() \
-            and RemoteGameOutput.is_disconnection(player_id): 
+            and RemoteGameOutput.is_disconnected(player_id): 
             game_obj.pause()
             game_obj.disconnected = True # and disconnetion class also used here
             game_obj.set_disconnection_timeout_callback(cls.remove, cls, player_id)
@@ -258,11 +270,13 @@ class EventLoopManager:
         player_id = consumer.user.id
         game = cls.active_players.get(player_id)
         if game is not None and not consumer.is_focused:
-            if cls.disconnect(player_id):
-                return False
+            game.unfocused = player_id
+            game.pause()
+            game.disconnected = True # and disconnetion class also used here
+            game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
         elif game is not None:
-            if game.consumer_1 and game.consumer_1.is_focused \
-                and game.consumer_2 and game.consumer_2.is_focused and not game.finished: 
+            if game.islaunched and game.consumer_1 and game.consumer_1.is_focused  \
+                and game.consumer_2 and game.consumer_2.is_focused and not game.finished:  
                 game.play()
         return True
         
@@ -371,7 +385,7 @@ class EventLoopManager:
         await database_sync_to_async(GameHistory.objects.create)(
             player_1=player_1_instance,
             player_2=player_2_instance,
-            player_1_score=game_obj.left_player.score,
+            player_1_score=game_obj.left_player.score, 
             player_2_score=game_obj.right_player.score,
             winner_id=game_obj.winner,
             loser_id=game_obj.loser,

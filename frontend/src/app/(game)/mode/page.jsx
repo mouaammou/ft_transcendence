@@ -1,5 +1,5 @@
 "use client";
-import Selector from "@app/mode/selecor"
+import Selector from "@/app/(game)/mode/selecor"
 import {RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg} from "@components/modeSvgs/ModeSvgs.jsx"
 import { useRouter } from 'next/navigation'
 

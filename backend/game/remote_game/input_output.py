@@ -33,6 +33,7 @@ class RemoteGameOutput:
 
     @classmethod
     def add_callback(cls, player_id, consumer, game_obj=None, sendConfig=True) -> None:
+        print("add_callback method")
         """
         game_obj is None on connect, But a game instance on reconnect.
         """
@@ -45,16 +46,19 @@ class RemoteGameOutput:
 
     @classmethod
     def send(cls, player_id, frame) -> None:
+        print("send method of remoteGameOutput class")
         data = {'update': frame}
         cls._send_to_consumer_group(player_id, data) 
     
     @classmethod
     def send_config(cls, player_id, game_obj) -> None:
+        print("send_config method")
         data = {'config': game_obj.get_game_config}
         cls._send_to_consumer_group(player_id, data)
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
+        print("_send_to_consumer_group method")
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return
@@ -62,13 +66,15 @@ class RemoteGameOutput:
             consumer.send_game_message(data)
     
     @classmethod
-    def is_disconnection(cls, player_id):
+    def is_disconnected(cls, player_id):
+        print("is_disconnected method")
         if cls.consumer_group.get(player_id) is None:
             return True
         return len(cls.consumer_group.get(player_id)) <= 1
     
     @classmethod
     def there_is_focus(cls, unique_key):
+        print("there_is_focus method")
         group = cls.consumer_group.get(unique_key)
         if group is None: 
             return False
@@ -79,6 +85,7 @@ class RemoteGameInput:
 
     @classmethod
     def recieved_dict_text_data(cls, game_obj, side, dict_text_data):
+        print("recieved_dict_text_data method")
         """
         dict_text_data: is the recieved text data as dict. as it is recieved
         """
@@ -90,6 +97,7 @@ class RemoteGameInput:
             RemoteGameOutput.send_config(game_obj.player_1, game_obj)
             RemoteGameOutput.send_config(game_obj.player_2, game_obj)
             game_obj.play()
+            game_obj.islaunched = True
         # if press is not None and press.strip() == 'p':
         #     game_obj.start_game = not game_obj.start_game
         #     return
@@ -105,6 +113,7 @@ class RemoteGameInput:
 
     @classmethod 
     def try_create(cls, event_loop_cls, player_id, event_dict, consumer):
+        print("try_create method")
         data = event_dict.get('remote')
         if data:
             print(data.get('mode'))

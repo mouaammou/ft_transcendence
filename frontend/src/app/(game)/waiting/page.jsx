@@ -5,27 +5,47 @@ import mysocket from '@/utils/WebSocketManager'; // Adjust the path as needed
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from "@/components/auth/loginContext.jsx";
+import { getData } from '@/services/apiCalls';
+
 
 const WaitingPage = () => {
     const [waiting, setWaiting] = useState(true);
     const router = useRouter(); // Use Next.js router
-	const {profileData: user_data} = useAuth()
+	const {profileData: user_data} = useAuth();
+    const [myuser, setMyuser] = useState(null);
+
+
+
     const Skeleton = () => (
-        <div className="animate-pulse bg-gray-100 rounded-full w-16 h-16 ml-2" />
+        <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />
     );
 
     useEffect(() => {
         // Register message handler for WebSocket messages
-        const handleMessage = (message) => {
+        let timer;
+        const handleMessage = async (message) => {
             const data = JSON.parse(message.data);
+
             if (data.status === 'start') {
-                setWaiting(false);
-               
-                    router.push('/game'); // Adjust the game route as needed
-  
+                const opponent_id = data.opponent;
+
+                // Fetch user data based on opponent ID
+                console.log("The player id you will play with is ", opponent_id);
+                const fetchedUser = await getData(`/friendProfileId/${opponent_id}`);
+                if (fetchedUser.status === 200) {
+                    setMyuser(fetchedUser.data); // Assuming data structure contains user data
+                    console.log("You can start, this is the player you will play with ------> ", fetchedUser.data);
+                    timer = setTimeout(() => {
+                        router.push('/game');
+                    }, 3000); // 5000 milliseconds = 5 seconds
+            
+                } else {
+                    console.error('Failed to fetch opponent data');
+                }
             }
             else if (data.status === 'already_in_game')
-                router.push('/game');
+                // router.push('/game');
+            console.log("hi blablo\n")
         };
         mysocket.registerMessageHandler(handleMessage);
         // Notify backend that the player is waiting
@@ -33,9 +53,12 @@ const WaitingPage = () => {
  
         // Cleanup on unmount
         return () => {
+            clearTimeout(timer);
             mysocket.unregisterMessageHandler(handleMessage);
         };
     }, []);
+
+
 
     const sent = mysocket.sendMessage(JSON.stringify(
         {
@@ -55,16 +78,13 @@ const WaitingPage = () => {
         <div className="flex items-center justify-center min-h-screen  p-4">
         <div className="bg-gray-400 rounded-lg  max-w-md w-full p-6">
             <div className="flex items-center justify-center mb-4">
-                {waiting ? (
+                {waiting &&
                     <>
                         <img src={user_data?.avatar} alt="" className="w-16 h-16 rounded-full mr-2  bg-gray-700" />
                         <span className="text-2xl font-bold">VS</span>
-                        <Skeleton/>
-                        {/* <img src="" alt="" className="w-16 h-16 rounded-full ml-2 bg-gray-900" /> */}
+                        {(myuser &&  <img src={myuser?.avatar} alt="" className="w-16 h-16 rounded-full mx-2 bg-gray-700" /> ) || <Skeleton/>}
                     </>
-                ) : (
-                    <h2 className="text-lg text-center">Redirecting to the game...</h2>
-                )}
+                }
             </div>
             {waiting && (
                 <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>

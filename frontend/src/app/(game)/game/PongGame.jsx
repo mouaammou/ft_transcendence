@@ -223,7 +223,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		}
 
 		function winner_celebration (){	
-			let duration = 10 * 1000;
+			let duration = 7 * 1000;
 			let animationEnd = Date.now() + duration;
 			let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 

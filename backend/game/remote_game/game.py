@@ -11,6 +11,8 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         super().__init__(*args, **kwargs)
         #i have to add a type of the game : random, vsfriend, vsbot
         self.game_id = str(uuid.uuid4())
+        self._unfocused = None  
+        self._islaunched = False  
         self._player_1 = None
         self._player_2 = None
         self._consumer_1 = None
@@ -20,6 +22,22 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         self._winner = None 
         self._loser = None 
         self._saved = False
+    
+    @property
+    def islaunched(self):
+        return self._islaunched 
+
+    @islaunched.setter
+    def islaunched(self, value):
+        self._islaunched = value
+
+    @property
+    def unfocused(self):
+        return self._unfocused 
+
+    @unfocused.setter
+    def unfocused(self, value):
+        self._unfocused = value
     
     @property
     def player_1(self):
@@ -100,6 +118,11 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         self._saved = value
 
     def determine_winner_loser(self):
+        if (self.unfocused is not None):
+            print("here is where the winner determined")
+            self.loser = self.unfocused
+            self.winner = self.player_2 if self.loser == self.player_1 else self.player_1
+            return
         if (self.left_player.score > self.right_player.score):
             self.winner = self._player_1
             self.loser = self._player_2

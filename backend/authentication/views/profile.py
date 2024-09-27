@@ -83,3 +83,14 @@ class FriendProfile(generics.GenericAPIView):
 
 		return Response(response_data, status=status.HTTP_200_OK)
 
+
+class FriendProfileId(generics.GenericAPIView):
+
+	def get (self, request, id):
+		try:
+			user = User.objects.get(id=id)
+			serializer = UserSerializer(user)
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		except User.DoesNotExist:
+			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
