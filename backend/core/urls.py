@@ -7,4 +7,5 @@ urlpatterns = [
     # path('play/', include('tournament.urls')),
     path('', include("authentication.urls")),
     path('admin/', admin.site.urls),
+    # path('chat/', include("chat.urls")),
 ]
