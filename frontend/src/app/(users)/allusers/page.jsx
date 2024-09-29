@@ -10,25 +10,45 @@ import { useRouter } from 'next/navigation';
 import NotFound_404 from "@/components/error_pages/404";
 
 const AllUsers = () => {
-	const {users, setUsers}  = useWebSocketContext();
+	const {users, isConnected}  = useWebSocketContext();
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
 	const router = useRouter();
 	const query_params = useSearchParams();
 	const [pageNotFound, setPageNotFound] = useState(false);
-	const [isFetching, setIsFetching] = useState(false);
+	const [pageNumber, setPageNumber] = useState(1);
+	const [fetchedUsers, setFetchedUsers] = useState([]);
 	
+	// useEffect(() => {
+	// 	// will change this localStorage to something more efficient ?????
+	// 	if (users.length > 0){
+	// 		const storedUsers = users.map(user => ({ username: user.username, status: user.status }));
+	// 		localStorage.setItem('users', JSON.stringify(storedUsers));
+	// 	}
+	// }, [users]);
+
 	const fetchAllUsers = async (pageNumber) => {
 
-		
-		router.push(`/allusers?page=${pageNumber}`);
 		// Prevent multiple requests
-		if (isFetching) return;
-		setIsFetching(true);
 		try {
 			const response = await getData(`/allusers?page=${pageNumber}`);
 			if (response.status === 200) {
-				setUsers(response.data.results);
+
+				setFetchedUsers(() => {
+					const fetchedUsers = response.data.results;
+					const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+					console.log('storedUsers :: ', storedUsers);
+					const mergedUsers = fetchedUsers.map((user) => {
+						const newUser = storedUsers.find((newUser) => newUser.username === user.username);
+						console.log('newUser :: ', newUser);
+						if (newUser) {
+							return { ...user, status: newUser.status || "offline" };
+						}
+						return user;
+					});
+					return mergedUsers;
+				});
+
 				setPrevPage(() => {
 					if (response.data.previous) 
 						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
@@ -50,17 +70,34 @@ const AllUsers = () => {
 			console.error("Error fetching users in friends page:", error);
 			setPageNotFound(true)
 		}
+		router.replace(`/allusers?page=${pageNumber}`);
 	};
+
+	useEffect(() => {
+		//save the users in localstorage
+		setFetchedUsers((prevUsers) => {
+			console.log('users :: ', users);
+			// Merge the existing users with the new users and update the status
+			const mergedUsers = prevUsers.map((user) => {
+				const newUser = users.find((newUser) => newUser.username === user.username);
+				if (newUser) {
+					return { ...user, status: newUser.status || "offline" };
+				}
+				return user;
+			});
+			return mergedUsers;
+		});
+	}, [users, isConnected]);
 
 	// Fetch users on the initial render
 	useEffect(() => {
 		const page = query_params.get('page') || 1;
 		fetchAllUsers(page);
-	
+		setPageNumber(page);
 		return () => {
 			setPageNotFound(false);
 		}
-	}, [query_params.get('page')]);
+	}, [pageNumber]);
 
 	return (
 	(pageNotFound) ?
@@ -86,7 +123,7 @@ const AllUsers = () => {
 
 						{/* DIV TWO users */}
 						<div className="div-for-two-users flex justify-center items-center flex-wrap gap-4 max-sm:gap-1 p-2 md:p-10 mx-auto">
-							{users && users.map((user, index) => (
+							{fetchedUsers && fetchedUsers.map((user, index) => (
 								/* USER Profile status online in game */
 								<Link href={`/${user.username}`} className="text-xs text-blue-500" key={index}>
 									<div className="flex items-center justify-center space-x-5 p-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition" key={user.id}>

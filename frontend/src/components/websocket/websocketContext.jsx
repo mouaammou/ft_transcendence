@@ -57,6 +57,11 @@ export const WebSocketProvider = ({url, children}) => {
 				console.log("WebSocket message received:", data);
 				setnotificationType({});
 				if (data.type === 'user_status_change') {
+					// const storedUsers = new Array({
+					// 	username: data.username,
+					// 	status: data.status,
+					// })
+					// localStorage.setItem('users', JSON.stringify(storedUsers));
 					setUsers(prevUsers => {
 						const userIndex = prevUsers.findIndex(user => user.username === data.username);
 						if (userIndex !== -1) {
@@ -81,6 +86,14 @@ export const WebSocketProvider = ({url, children}) => {
 		}
 
 	}, [isConnected]);
+
+	useEffect(() => {
+		// will change this localStorage to something more efficient ?????
+		if (users.length > 0){
+			const storedUsers = users.map(user => ({ username: user.username, status: user.status }));
+			localStorage.setItem('users', JSON.stringify(storedUsers));
+		}
+	}, [users]);
 
 	return (
 		<WebSocketContext.Provider

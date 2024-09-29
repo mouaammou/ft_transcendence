@@ -40,7 +40,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				# Add the user to the global status group
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 1:
-					await self.update_user_status("online")
 					print(f"\n broadcasting online : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "online")
 			except Exception as e:
@@ -60,7 +59,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				if self.user.id in self.user_connections:
 					number_of_connections = len(self.user_connections[self.user.id])
 					if number_of_connections == 0:
-						await self.update_user_status("offline")
 						print(f"\n broadcasting offline : {self.user}\n")
 						await self.broadcast_online_status(self.user_data, "offline")
 						del self.user_connections[self.user.id]
@@ -96,7 +94,6 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 0:
-					await self.update_user_status("offline")
 					print(f"\n broadcasting offline when logout : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "offline")
 					# Remove user from the connections
@@ -123,24 +120,16 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
 			number_of_connections = len(self.user_connections[self.user.id])
 			if number_of_connections == 1:
-				await self.update_user_status("online")
 				print(f"\n broadcasting online when login: {self.user}\n")
 				await self.broadcast_online_status(self.user_data, "online")
-
-	@database_sync_to_async
-	def update_user_status(self, status):
-		try:
-				User.objects.filter(id=self.user.id).update(status=status)
-		except Exception as e:
-				logger.error(f"\nError updating user status in database: {e}\n")
 
 	async def broadcast_online_status(self, user_data, status):
 		try:
 			await self.channel_layer.group_send(
 				self.USER_STATUS_GROUP,
 				{
-					'id': user_data['id'],
 					"type": "user_status_change",
+					'id': user_data['id'],
 					"username": user_data['username'],
 					"avatar": user_data['avatar'],
 					"status": status,

@@ -10,37 +10,33 @@ import { useRouter } from 'next/navigation';
 import NotFound_404 from "@/components/error_pages/404";
 
 const Friends = () => {
-	const { isConnected, websocket}  = useWebSocketContext();
-	const [users, setUsers] = useState([]);
+	const {users, setUsers}  = useWebSocketContext();
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
 	const router = useRouter();
 	const query_params = useSearchParams();
 	const [pageNotFound, setPageNotFound] = useState(false);
+	const [pageNumber, setPageNumber] = useState(1);
 	
 	const fetchAllUsers = async (pageNumber) => {
+
 		router.push(`/friends?page=${pageNumber}`);
+
 		try {
-			const response = await getData(`/friends?page=${pageNumber}`);	
-			console.log('friends response', response.data);
+			const response = await getData(`/friends?page=${pageNumber}`);
 			if (response.status === 200) {
-				setUsers(response.data.results);
+				setUsers(response.data.results.map(user => ({ ...user, status: "offline" })));
 				setPrevPage(() => {
-					if (response.data.previous) {
+					if (response.data.previous) 
+						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
 						// Extract the page number from the previous URL
-						const pageNumber = response.data.previous.split("page=")[1];
-						return pageNumber || 1; // If there's no page number, return null
-					}
 					return null; // No previous page
 				});
 
 				// Update nextPage
 				setNextPage(() => {
-					if (response.data.next) {
-						// Extract the page number from the next URL
-						const pageNumber = response.data.next.split("page=")[1];
-						return pageNumber || null; // If there's no page number, return null
-					}
+					if (response.data.next)
+						return response.data.next.split("page=")[1] || null; // If there's no page number, return null
 					return null; // No next page
 				});
 			}
@@ -57,36 +53,12 @@ const Friends = () => {
 	useEffect(() => {
 		const page = query_params.get('page') || 1;
 		fetchAllUsers(page);
-
+		setPageNumber(page);
+	
 		return () => {
 			setPageNotFound(false);
 		}
-	}, [query_params.get('page')]);
-
-	// WebSocket message handler to update the friends list when new status is received
-	// useEffect(() => {
-	// 	if (isConnected) {
-	// 		websocket.current.onmessage = (event) => {
-	// 				const data = JSON.parse(event.data);
-	// 				console.log("WebSocket message received:", data);
-
-	// 				if (data.type === 'user_status_change') {
-	// 					setUsers(prevUsers => {
-	// 						const userIndex = prevUsers.findIndex(user => user.username === data.username);
-	// 						if (userIndex !== -1) {
-	// 								// User exists, update their status
-	// 								const updatedUsers = [...prevUsers];
-	// 								updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
-	// 								return updatedUsers;
-	// 						} else {
-	// 								// User doesn't exist, add them to the list
-	// 								return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
-	// 						}
-	// 					});
-	// 				}
-	// 		};
-	// 	}
-	// }, [isConnected]); // Depend on isConnected instead of websocket
+	}, [pageNumber]);
 
 	return (
 	(pageNotFound) ? 
