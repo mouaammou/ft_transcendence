@@ -6,14 +6,38 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
+from django.db.models import Q
+
+#---------------- Notifications model ===================#
+class NotificationModel(models.Model):
+	sender = models.ForeignKey(
+			settings.AUTH_USER_MODEL, 
+			related_name="notifications_sent",  # Custom reverse accessor for sender
+			on_delete=models.CASCADE
+		)
+	receiver = models.ForeignKey(
+		settings.AUTH_USER_MODEL, 
+		related_name="notifications_received",  # Custom reverse accessor for receiver
+		on_delete=models.CASCADE
+	)
+	message = models.CharField(max_length=70, blank=False, null=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+	is_read = models.BooleanField(default=False)
+
+	class Meta:
+		ordering = ['-created_at']
+
+	def __str__(self):
+		return f'Notification for {self.user.username}'
+#---------------- # Notifications model ===================#
 
 
 # class of the model FriendRequest ---
 class Friendship(models.Model):
 	STATUS_CHOICES = (
-		('pending', 'Pending'),
-		('accepted', 'Accepted'),
-		('blocked', 'Blocked'),
+		('pending', 'pending'),
+		('accepted', 'accepted'),
+		('blocked', 'blocked'),
 	)
 
 	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
@@ -68,9 +92,9 @@ class Friendship(models.Model):
 
 
 def validate_image_size(image):
-    max_size = 50 * 1024 * 1024  # 50MB
-    if image.size > max_size:
-        raise ValidationError("Image size should not exceed 50MB")
+	max_size = 50 * 1024 * 1024  # 50MB
+	if image.size > max_size:
+		raise ValidationError("Image size should not exceed 50MB")
 
 def upload_location(instance, filename):
 	filename = instance.username +"."+ filename.split(".")[-1]
@@ -87,7 +111,7 @@ class CustomUser(AbstractUser):
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
-	is_online = models.BooleanField(default=False)
+	# status = models.CharField(default="offline", max_length=10, null=False, blank=False)
 
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 

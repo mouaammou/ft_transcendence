@@ -17,6 +17,7 @@ from authentication.routing import websocket_urlpatterns
 from game.middlewares import CookiesJWTAuthMiddleware
 from authentication.middleware import UserOnlineStatusMiddleware
 from chat import routing
+from game.routing import websocket_urlpatterns as game_urls
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django_asgi_app = get_asgi_application()
@@ -24,8 +25,9 @@ django_asgi_app = get_asgi_application()
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
     'websocket': UserOnlineStatusMiddleware(
-            URLRouter(websocket_urlpatterns),
+            # URLRouter(websocket_urlpatterns),
             # URLRouter(websocket_urlpatterns + routing.websocket_urlpatterns),
+            URLRouter(websocket_urlpatterns + game_urls),
         ),
 })
 

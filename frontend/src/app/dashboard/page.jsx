@@ -1,8 +1,8 @@
-"use client";
+'use client';
 export default function Dash() {
-	return (
-		<div>
-			<h1>Dashboard</h1>
-		</div>
-	);
+  return (
+    <div>
+      <h1>Dashboard</h1>
+    </div>
+  );
 }

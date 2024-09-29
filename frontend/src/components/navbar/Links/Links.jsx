@@ -15,10 +15,6 @@ const links =  [
 		path: "/profile",
 	},
 	{
-		title: "Game",
-		path: "/game",
-	},
-	{
 		title: "play",
 		path: "/play",
 	},
@@ -31,9 +27,9 @@ const links =  [
 const Links = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const pathName = usePathname();
-	const { logout } = useAuth();
+	const { Logout } = useAuth();
 	return (
-		<>
+		<div>
 			<div className={styles.navbarLinks}>
 				{
 					links.map(link => (
@@ -49,7 +45,8 @@ const Links = () => {
 				width={30} 
 				height={30}
 				className={styles.menubtn} 
-				onClick={() => {setIsOpen(prev => !prev)}} />
+				onClick={() => {setIsOpen(prev => !prev)}} 
+			/>
 			{isOpen && (
 				<div className={styles.mobileLinks}>
 					{links.map(link => (
@@ -59,12 +56,12 @@ const Links = () => {
 								{link.title}
 						</Link>
 					))}
-					<div className={styles.logoutTextt} onClick={logout}>
+					<div className={styles.logoutTextt} onClick={Logout}>
 							Logout
 					</div>
 				</div>
 			)} 
-		</>
+		</div>
 	 );
 }
 
