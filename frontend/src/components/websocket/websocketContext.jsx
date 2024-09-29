@@ -13,6 +13,15 @@ export const WebSocketProvider = ({url, children}) => {
 	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
 	const [notificationType, setnotificationType] = useState({});
+	const [listOfNotifications, setListOfNotifications] = useState({
+		friendship: 'friend_request',
+		acceptFriend: 'accept_friend',
+		inviteToGame: 'invite_to_game',
+		acceptGame: 'accept_game',
+		inviteToTournament: 'invite_to_tournament',
+		rejectFriend: 'reject_friend',
+	});
+	// const 
 
 	useEffect(() => {
 		// Create WebSocket instance when the component mounts
@@ -65,7 +74,7 @@ export const WebSocketProvider = ({url, children}) => {
 					type: data.type,
 					status: data.success,
 				});
-				if (data.type === 'friend_request_received' || data.type === 'accept_friend_request') {
+				if (data.type === 'friend_request' || data.type === 'accept_friend') {
 					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
 				}
 			};
@@ -83,6 +92,7 @@ export const WebSocketProvider = ({url, children}) => {
 				notifications,
 				setNotifications,
 				notificationType,
+				listOfNotifications
 				}}>
 			{children}
 		</WebSocketContext.Provider>

@@ -16,9 +16,15 @@ const AllUsers = () => {
 	const router = useRouter();
 	const query_params = useSearchParams();
 	const [pageNotFound, setPageNotFound] = useState(false);
+	const [isFetching, setIsFetching] = useState(false);
 	
 	const fetchAllUsers = async (pageNumber) => {
+
+		
 		router.push(`/allusers?page=${pageNumber}`);
+		// Prevent multiple requests
+		if (isFetching) return;
+		setIsFetching(true);
 		try {
 			const response = await getData(`/allusers?page=${pageNumber}`);
 			if (response.status === 200) {

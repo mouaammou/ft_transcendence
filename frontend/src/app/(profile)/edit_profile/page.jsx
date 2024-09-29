@@ -16,11 +16,8 @@ const EditProfile = () => {
 		password: '',
 	});
 
-	const { profileData: data, fetch_profile, setProfileData } = useAuth();
-	useEffect(() => {
-		fetch_profile();
-	}, []);
-
+	const { profileData: data, setProfileData } = useAuth();
+	
 	const handleChange = e => {
 		setUserData({ ...userData, [e.target.name]: e.target.value });
 	};
@@ -33,7 +30,7 @@ const EditProfile = () => {
 		const reader = new FileReader();
 
 		reader.onloadend = () => {
-			setProfileData({ avatar: reader.result });
+			setProfileData({...data, avatar: reader.result });
 		};
 		reader.readAsDataURL(file); // Convert the file to a base64 string for preview
 
@@ -46,12 +43,12 @@ const EditProfile = () => {
 		e.preventDefault();
 
 		const updatedData = {
-		username: userData.username,
-		email: userData.email,
-		first_name: userData.first_name,
-		last_name: userData.last_name,
-		avatar: userData.avatar,
-		password: userData.password,
+			username: userData.username,
+			email: userData.email,
+			first_name: userData.first_name,
+			last_name: userData.last_name,
+			avatar: userData.avatar,
+			password: userData.password,
 		};
 
 		console.log(updatedData.avatar);
@@ -69,7 +66,7 @@ const EditProfile = () => {
 			headers: { 'Content-Type': 'multipart/form-data' },
 		});
 		if (res.status == 200 && res.data.success) {
-			if (res.data.avatar) setProfileData({ avatar: res.data.avatar });
+			if (res.data.avatar) setProfileData({ ...data, avatar: res.data.avatar });
 			setErrors({ success: res.data.success });
 		} else if (res.response?.status == 400) {
 			// console.log(erro);

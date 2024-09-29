@@ -27,7 +27,7 @@ export const LoginProvider = ({ children }) => {
 		if (isAuthValue) setIsAuth(JSON.parse(isAuthValue));
 		else {
 			setIsAuth(false);
-			Cookies.set('isAuth', false, { path: '/' });
+			Cookies.set('isAuth', false, { path: '/' , sameSite: 'strict'});
 			router.push('/login');
 		}
 		setMounted(true);
@@ -43,7 +43,13 @@ export const LoginProvider = ({ children }) => {
 			.then(res => {
 			if (res.status == 200 || res.status == 201) {
 				setIsAuth(true);
-				Cookies.set('isAuth', true, { path: '/' });
+				Cookies.set('isAuth', true, { path: '/' , sameSite: 'strict'});
+				
+				console.log('res.data: ', res);
+
+				if (isConnected) {
+					websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.username }));
+				}
 				router.push('/profile');
 			} else {
 				if (res.response && res.response.status === 500) {
@@ -85,16 +91,11 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	const fetch_profile = async () => {
-		
+		console.log('fetching profile data');
 		try {
 			const res = await postData('profile/data');
 			if (res?.status === 200) {
 				setProfileData(res.data.user);
-				if (isConnected) {
-					// Ensure the WebSocket connection is open before sending the message
-					console.log("user name: ", res.data.user.username);
-					websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.user.username }));
-				}
 			}
 		} catch (error) {
 			console.error('Failed to fetch profile data:', error);
@@ -103,7 +104,12 @@ export const LoginProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
-		if (isAuth) fetch_profile();
+		if (isAuth) {
+			fetch_profile();
+		}
+	}, [isAuth]);
+
+	useEffect(() => {
 		setErrors({});
 		if (
 			isAuth &&

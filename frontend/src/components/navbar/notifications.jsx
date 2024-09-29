@@ -5,14 +5,18 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType }) => {
+const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, listOfNotifications }) => {
 	// Retrieve status from localStorage or default to 'Pending'
 	const getStatusFromLocalStorage = () => {
 		const storedStatus = localStorage.getItem(`notification_status_${data.id}`);
-		return storedStatus ? storedStatus : 'Pending';
+		// Check if the notification type is a friendship request or if local storage doesn't have a status
+		return (notificationType.type === listOfNotifications.friendship && !storedStatus) 
+			? 'Pending'
+			: storedStatus;
 	};
 
 	const [status, setStatus] = useState(() => getStatusFromLocalStorage());
+
 	console.log('notificationType', notificationType);
 
 	// Save status to localStorage whenever it changes
@@ -22,31 +26,23 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType })
 	}, [status, data.id]);
 
 	const handleAction = (action) => {
-		setStatus(false);
-		if (websocket.current && action === 'Accepted') {
-			console.log('SEND Accept friend request');
-			websocket.current.send(
-			JSON.stringify({
-				type: 'accept_friend_request',
+		setStatus(action); // Update local state
+		if (websocket.current) {
+			const messageType = action === 'Accepted' ? 'accept_friend_request' : 'reject_friend_request';
+			websocket.current.send(JSON.stringify({
+				type: messageType,
 				to_user_id: data.to_user_id,
-			})
-			);
-		}
-		else if (websocket.current && action === 'Rejected') {
-			console.log('SEND Reject friend request');
-			websocket.current.send(
-			JSON.stringify({
-				type: 'reject_friend_request',
-				to_user_id: data.to_user_id,
-			})
-			);
+			}));
+			console.log(`SEND ${action} friend request`);
 		}
 	};
 
 	const handleMarkAsRead = () => {
 		setTimeout(() => {
-			onMarkAsRead(data.id); // Decrement the notification counter
-		}, 500);
+			onMarkAsRead(data.id);
+			//remove from local storage
+			localStorage.removeItem(`notification_status_${data.id}`);
+		}, 300);
 	};
 
 	return (
@@ -61,7 +57,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType })
 			<div className="mb-2 text-sm font-normal max-w-52">
 				{data.message}
 			</div>
-			{(status === 'Pending' && notificationType.type == 'friend_request_received')
+			{(status === 'Pending') //
 			&&
 				<>
 					<button
@@ -84,19 +80,19 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType })
 					</button>	
 				</>
 			}
-			{(notificationType.type == 'accept_friend_request') && 
+			{(notificationType.type == listOfNotifications.acceptFriend) && 
 				<>
 				<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${notificationType.status ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
 					{notificationType.status ? 'Accepted' : 'Rejected'}
 				</span>
-				<button
-					className="ml-2 inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:ring-4 outline-none absolute right-4 top-8"
-					onClick={handleMarkAsRead}
-				>
-					<IoCheckmarkOutline className="text-[1.2rem] mr-1" />
-				</button>
 				</>
 			}
+			<button
+				className="ml-2 inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:ring-4 outline-none absolute right-4 top-8"
+				onClick={handleMarkAsRead}
+			>
+				<IoCheckmarkOutline className="text-[1.2rem] mr-1" />
+			</button>
 			</div>
 		</div>
 	);
@@ -104,16 +100,16 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType })
 
 const NotificationBell = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const { websocket, notifications, setNotifications, notificationType } = useWebSocketContext();
+	const { websocket, notifications, setNotifications, notificationType, listOfNotifications } = useWebSocketContext();
 
-	const markAsRead = (id) => {
+	const markAsRead = (id) => {//i need  to add post the isread to notification
 		setNotifications((prev) =>
 			prev.filter((notif) => notif.id !== id)
 		);
 	};
 
 	return (
-		<div className="">
+		<div>
 			{/* Notification Bell Icon */}
 			<div className="notifications absolute right-40 top-4">
 				<div className="relative">
@@ -149,6 +145,7 @@ const NotificationBell = () => {
 							data={notification}
 							websocket={websocket}
 							onMarkAsRead={markAsRead}
+							listOfNotifications={listOfNotifications}
 						/>
 					))}
 					{notifications.length === 0 && (

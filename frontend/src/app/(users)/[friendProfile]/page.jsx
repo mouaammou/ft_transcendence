@@ -13,17 +13,19 @@ import { useRouter } from 'next/navigation';
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, users, notificationType} = useWebSocketContext();
+	const {websocket, isConnected, users, notificationType, listOfNotifications} = useWebSocketContext();
 	const [userStatus, setUserStatus] = useState();
 	const pathname = usePathname();
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const router = useRouter();
 
 	useEffect(() => {
-		if (notificationType.type === 'accept_friend_request' && notificationType.status === true) {
+		if (notificationType.type === listOfNotifications.acceptFriend
+		&& notificationType.status === true) {
 			setFriendStatusRequest('accepted');
 		}
-		if (notificationType.type === 'reject_friend_request' && notificationType.status === true) {
+		if (notificationType.type === listOfNotifications.rejectFriend 
+		&& notificationType.status === true) {
 			setFriendStatusRequest('no');
 		}
 	}, [notificationType]);

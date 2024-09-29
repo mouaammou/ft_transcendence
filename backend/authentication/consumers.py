@@ -17,6 +17,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 	user_connections = {}
 
 	async def connect(self):
+		print("\n CONNECTED\n")
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
 			self.user_data =  UserSerializer(self.user).data 
@@ -48,6 +49,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 
 	async def disconnect(self, close_code):
+		print("\n DISCONNECT\n")
 		if self.user and self.user.is_authenticated:
 			try:
 				# Remove the user from their own connection group
@@ -75,6 +77,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				logger.error(f"\nError during disconnection: {e}\n")
 
 	async def receive(self, text_data):
+		print("\n RECEIVED\n")
 		text_data_json = json.loads(text_data)
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
@@ -179,7 +182,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 		try:
 			print(f"\n SEND FRIEND REQUEST: {event}\n")
 			await self.send(text_data=json.dumps({
-				'type': 'friend_request_received',
+				'type': 'friend_request',
 				'to_user_id': event.get('to_user_id'),
 				'username': event.get('username'),
 				'success': event.get('success'),
@@ -201,7 +204,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	async def accept_request_notif(self, event):
 		print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
-			'type': 'accept_friend_request',
+			'type': 'accept_friend',
 			'success': event.get('success'),
 			'message': event.get('message'),
 			'username': event.get('username'),
@@ -214,7 +217,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	async def reject_request_notif(self, event):
 		print(f"\n REJECT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
-			'type': 'reject_friend_request',
+			'type': 'reject_friend',
 			'success': event.get('success'),
 			'user_id': event.get('user_id'),
 		}))
@@ -363,7 +366,6 @@ class NotificationConsumer(OnlineStatusConsumer):
 			else:
 				logger.warning(f"No pending friend request found between {self.user.username} and {rejected_user_id}")
 				return False
-
 		except User.DoesNotExist:
 			logger.error(f"User with id {rejected_user_id} does not exist")
 			return False
