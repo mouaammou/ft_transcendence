@@ -51,7 +51,7 @@ export default function FriendProfile({ params }) {
 	}
 
 	useEffect(() => {
-		const fetchProfile = async () => {
+		const fetchProfile = async () => {	
 			if (!params.friendProfile) {
 				setUserNotFound(true);
 				return ;

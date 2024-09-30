@@ -12,9 +12,9 @@ User = get_user_model()
 def set_jwt_cookies(response, refresh):
 	if refresh.get('channel_name') is None:
 		refresh['channel_name'] = str(uuid.uuid4())
-	print('+L'*20)
-	print(refresh.payload)
-	print('L+'*20)
+	# print('+L'*20)
+	# print(refresh.payload)
+	# print('L+'*20)
 	response.set_cookie(
 		key="refresh_token",
 		value=str(refresh),
@@ -35,9 +35,9 @@ def set_jwt_cookies(response, refresh):
 
 
 def save_image_from_url(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        content = ContentFile(response.content)
-        file_name = "downloaÍded_image.jpg"
-        my_model_instance = CustomUser(image_file=content, image_name=file_name)
-        my_model_instance.save()
+	response = requests.get(url)
+	if response.status_code == 200:
+		content = ContentFile(response.content)
+		file_name = "downloaÍded_image.jpg"
+		my_model_instance = CustomUser(image_file=content, image_name=file_name)
+		my_model_instance.save()

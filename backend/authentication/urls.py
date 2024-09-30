@@ -30,7 +30,7 @@ urlpatterns = [
 	path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
 	
 	# for notificaions
-	path('sendFriendshipRequest/', views.CreateFriendshipRequest.as_view(), name="send friendship request"),
+	path('notifs', views.ListNotifications.as_view(), name="notifications"),
 	path("allusers", views.AllUser.as_view(), name="all users"),
 
 	# for Friend profile

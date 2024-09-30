@@ -134,9 +134,10 @@ const NotificationBell = () => {
 						<button className="text-blue-500 text-xs font-semibold capitalize hover:text-blue-200 transition-all float-start">
 							<IoCheckmarkDoneOutline className="text-[1.2rem] mr-1" />
 						</button>
-						<button className="text-green-500 text-xs font-semibold  capitalize float-end">
+						<Link href="/notifications"
+							className="text-green-500 text-xs font-semibold  capitalize float-end hover:text-green-300 transition-all">
 							see all
-						</button>
+						</Link>
 					</div>
 					{notifications.slice().reverse().map((notification) => (
 						<NotificationLayout
