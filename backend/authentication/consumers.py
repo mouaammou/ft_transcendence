@@ -126,7 +126,7 @@ class NotificationConsumer(BaseConsumer):
 	#handler for friend_request_received event
 	async def friend_request_notif(self, event):
 		try:
-			print(f"\n SEND FRIEND REQUEST: {event}\n")
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
 			await self.send(text_data=json.dumps({
 				'type': 'friend_request',
 				'to_user_id': event.get('to_user_id'),
@@ -140,7 +140,7 @@ class NotificationConsumer(BaseConsumer):
 
 	# handler for accept_friend_request event
 	async def accept_request_notif(self, event):
-		print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
+		# print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend',
 			'success': event.get('success'),

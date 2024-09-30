@@ -9,7 +9,7 @@ const YouLose = ({onClose}) => {
                     Better luck next time! 👍
                 </h1>
                 <p className="text-white font-normal font-open text-lg mt-4">
-                Every game is a chance to improve!
+                Remember every game is a step to improve!
                 </p>
             </div>
         </div>

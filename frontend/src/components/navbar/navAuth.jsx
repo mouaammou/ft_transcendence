@@ -74,7 +74,7 @@ const Navbar = () => {
 												</Link>
 											</li>
 											<li>
-												<Link href="/game" className="block px-4 py-2 text-sm text-white hover:text-gray-700 hover:bg-gray-100 ">
+												<Link href="/play" className="block px-4 py-2 text-sm text-white hover:text-gray-700 hover:bg-gray-100 ">
 													Start Game
 												</Link>
 											</li>

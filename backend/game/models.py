@@ -64,6 +64,11 @@ class GameHistory(models.Model):
             ('tournament', 'Tournament'),
         ], default='local')
     
+    finish_type = models.CharField(max_length=20, choices=[
+        ('defeat', 'Defeat'),
+        ('disconnect', 'Disconnect')
+    ], default='defeat')
+    
     
     
     # def save(self, *args, **kwargs):
