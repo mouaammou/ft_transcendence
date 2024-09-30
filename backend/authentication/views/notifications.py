@@ -1,27 +1,18 @@
-from authentication.models import Friendship, NotificationModel
-from authentication.serializers import FriendsSerializer
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status, generics
-from django.conf import settings
+from authentication.models import NotificationModel
+from rest_framework import  generics
+from authentication.serializers import NotificationSerializer
+from .allusers import CustomUserPagination
 
-class CreateFriendshipRequest(generics.GenericAPIView):
-    queryset = Friendship.objects.all()
-    serializer_class = FriendsSerializer
+class ListNotifications(generics.GenericAPIView):
+	serializer_class = NotificationSerializer
+	pagination_class = CustomUserPagination
 
-    def post(self, request):
-        user = request.customUser
-        receiver_id = request.data.get('receiver')
-        message = f"{user} send to you a friend request."
+	def get_queryset(self):
+		return NotificationModel.objects.filter(receiver_id=self.request.customUser.id)	
 
-        receiver = get_object_or_404(settings.AUTH_USER_MODEL, pk=receiver_id)
-
-        try:
-            friendship, created = Friendship.objects.get_or_create(sender=user, receiver=receiver)
-            if created:
-                NotificationModel.objects.create(user=receiver.id, message=message)
-                return Response(status=status.HTTP_201_CREATED)
-            else:
-                return Response({"error": "Friendship request already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+	def get(self, request):
+		queryset = self.get_queryset()
+		paginator = self.pagination_class()
+		paginated_notifications = paginator.paginate_queryset(queryset, request)
+		serializer = self.get_serializer(paginated_notifications, many=True)
+		return paginator.get_paginated_response(serializer.data)

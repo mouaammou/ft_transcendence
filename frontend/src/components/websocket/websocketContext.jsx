@@ -122,7 +122,6 @@ export const WebSocketProvider = ({url, children}) => {
 				listOfNotifications,
 				hasGetMessage,
 				setHasGetMessage,
-				// friendshipStatus,
 				opponent,
 				setOpponent
 				}}>

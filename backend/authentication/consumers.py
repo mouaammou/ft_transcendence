@@ -164,11 +164,11 @@ class NotificationConsumer(BaseConsumer):
 	async def handle_event(self, data):
 		message_type = data.get('type')
 		if message_type == 'send_friend_request':
-				await self.handle_friend_request(data)
+			await self.handle_friend_request(data)
 		elif message_type == 'accept_friend_request':
-				await self.handle_accept_request(data)
+			await self.handle_accept_request(data)
 		elif message_type == 'reject_friend_request':
-				await self.handle_reject_request(data)
+			await self.handle_reject_request(data)
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')
@@ -231,7 +231,9 @@ class NotificationConsumer(BaseConsumer):
 				NotificationModel.objects.create(
 					sender=self.user,
 					receiver=to_user,
-					message=f"{self.user} send to you friend request"
+					message=f"{self.user} send to you friend request",
+					notif_type='friend',
+					notif_status='pending'
 				)
 				return True, "Friend request sent successfully"
 			elif friend_request.status == 'pending':
@@ -268,7 +270,9 @@ class NotificationConsumer(BaseConsumer):
 				NotificationModel.objects.create(
 					sender=self.user,
 					receiver=sender,
-					message=f"{self.user} accepted your friend request."
+					message=f"{sender} accepted your friend request",
+					notif_type='friend',
+					notif_status='accepted'
 				)
 				logger.info(f"\nFriend request accepted 🍸\n")
 				return True, "Friend request accepted"

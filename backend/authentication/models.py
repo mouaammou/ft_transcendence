@@ -10,25 +10,37 @@ from django.db.models import Q
 
 #---------------- Notifications model ===================#
 class NotificationModel(models.Model):
+
+	NOTIFICATION_TYPES = (
+		('friend', 'friend'),
+		('game', 'game'),
+		('tournament', 'tournament'),
+	)
+	NOTIFICATION_STATUS = (
+		('pending', 'pending'),
+		('accepted', 'accepted'),
+	)
 	sender = models.ForeignKey(
 			settings.AUTH_USER_MODEL, 
 			related_name="notifications_sent",  # Custom reverse accessor for sender
 			on_delete=models.CASCADE
 		)
 	receiver = models.ForeignKey(
-		settings.AUTH_USER_MODEL, 
+		settings.AUTH_USER_MODEL,
 		related_name="notifications_received",  # Custom reverse accessor for receiver
 		on_delete=models.CASCADE
 	)
 	message = models.CharField(max_length=70, blank=False, null=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_read = models.BooleanField(default=False)
+	notif_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='friend')
+	notif_status = models.CharField(max_length=10, choices=NOTIFICATION_STATUS, default='pending')
 
 	class Meta:
 		ordering = ['-created_at']
 
 	def __str__(self):
-		return f'Notification for {self.user.username}'
+		return f'Notification for {self.receiver.username}'
 #---------------- # Notifications model ===================#
 
 # ----------------- model Frienship -----------------#
