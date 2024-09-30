@@ -28,10 +28,10 @@ export default function RootLayout({ children }) {
 								{children}
 							</div>
 						) : (
-							<>
+							<div>
 								<Navbar />
-								{children}
-							</>
+								{children} 
+							</div>
 						)}
 					</LoginProvider>
 				</WebSocketProvider>

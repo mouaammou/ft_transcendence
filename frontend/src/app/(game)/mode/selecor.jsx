@@ -3,10 +3,10 @@ import React from "react";
 const Selector = ({ title, description, Svgvar, onclick }) => {
     return (
         //   React.createElement("div", [], React.createElement("h1", [], "Hello World!"))
-        <div onClick={onclick} className="group flex flex-row flex-1 bg-whitetrspnt w-5/6 p-5 pr-0 max-w-[715px]  rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150">
+        <div onClick={onclick} className="group flex flex-row  bg-whitetrspnt  p-5 pr-0 lg:max-w-[504px]  rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150">
             <div className="w-5/6">
-                <div className="text-[35px] font-balsamiq">{title}</div>
-                <div className="text-[20px] font-open font-thin">{description}</div>
+                <div className="text-[24px] sm:text-[35px] font-balsamiq">{title}</div>
+                <div className="text-[14px] sm:text-[20px] font-open font-thin">{description}</div>
             </div>
             <div className="flex-1">
                 <svg

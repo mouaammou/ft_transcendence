@@ -69,7 +69,6 @@ class EventLoopManager:
     @classmethod
     def run_event_loop(cls) -> None:
         print("in the run_event_loop methode")
-        print
         if cls._event_loop_task is not None:
             return
         print("================== EVENT LOOP CREATED ================")
