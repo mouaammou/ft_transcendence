@@ -138,12 +138,16 @@ export default function FriendProfile({ params }) {
 						className="mt-2 divide-y rounded-lg"
 					>
 						<ul className="py-0 text-sm text-gray-700 w-full">
-							<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
-								<FaTrophy className="mr-2 size-5" /> Invite to Tournament
-							</li>
-							<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
-								<FaGamepad className="mr-2 size-5" /> Invite to Game
-							</li>	
+							{friendStatusRequest === 'accepted' && 
+								<>
+									<li className="w-full py-3 px-4 bg-emerald-500 text-white text-sm text-center rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition flex items-center justify-center">
+										<FaTrophy className="mr-2 size-5" /> Invite to Tournament
+									</li>
+									<li className="w-full py-3 px-4 bg-sky-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-sky-600 transition flex items-center justify-center">
+										<FaGamepad className="mr-2 size-5" /> Invite to Game
+									</li>
+								</>
+							}
 							{(friendStatusRequest === 'no') && (
 								<li
 									onClick={() => {

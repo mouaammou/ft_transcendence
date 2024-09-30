@@ -54,27 +54,27 @@ const EditProfile = () => {
 		console.log(updatedData.avatar);
 		// Check if all fields are empty
 		const isEmpty = Object.values(updatedData).every(
-		value => !value || (typeof value === 'object' && !value.name)
+			value => !value || (typeof value === 'object' && !value.name)
 		);
 
 		if (isEmpty) {
-		setErrors({ Error: 'At least one field must be provided.' });
-		return;
+			setErrors({ Error: 'At least one field must be provided.' });
+			return;
 		}
 		try {
-		const res = await postData('profile/update', updatedData, {
-			headers: { 'Content-Type': 'multipart/form-data' },
-		});
-		if (res.status == 200 && res.data.success) {
-			if (res.data.avatar) setProfileData({ ...data, avatar: res.data.avatar });
-			setErrors({ success: res.data.success });
-		} else if (res.response?.status == 400) {
-			// console.log(erro);
-			setErrors(res.response.data.errors);
-		}
+			const res = await postData('profile/update', updatedData, {
+				headers: { 'Content-Type': 'multipart/form-data' },
+			});
+			if (res.status == 200) {
+				if (res.data.avatar) setProfileData(res.data);
+				setErrors({ success: "updated successfully" });
+			} else if (res.response?.status == 400) {
+				// console.log(erro);
+				setErrors(res.response.data.errors);
+			}
 		} catch (err) {
-		// console.log("catch block : ",err.response.data?.errors);
-		setErrors(err.response.data.errors)
+			// console.log("catch block : ",err.response.data?.errors);
+			setErrors(err.response.data.errors)
 		}
 	};
 
