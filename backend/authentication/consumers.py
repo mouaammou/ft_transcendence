@@ -83,7 +83,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		online = text_data_json.get('online')
 
 		# Handle user data, if sent
-		print(f"\n USER IN ONLINE STATUS: 🍀 {text_data_json}\n")
+		# print(f"\n USER IN ONLINE STATUS: 🍀 {text_data_json}\n")
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
@@ -99,7 +99,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 				number_of_connections = len(self.user_connections[self.user.id])
 				if number_of_connections == 0:
 					await self.update_user_status("offline")
-					print(f"\n broadcasting offline when logout : {self.user}\n")
+					# print(f"\n broadcasting offline when logout : {self.user}\n")
 					await self.broadcast_online_status(self.user_data, "offline")
 					# Remove user from the connections
 					del self.user_connections[self.user.id]
@@ -126,7 +126,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 			number_of_connections = len(self.user_connections[self.user.id])
 			if number_of_connections == 1:
 				await self.update_user_status("online")
-				print(f"\n broadcasting online when login: {self.user}\n")
+				# print(f"\n broadcasting online when login: {self.user}\n")
 				await self.broadcast_online_status(self.user_data, "online")
 
 	@database_sync_to_async
@@ -182,7 +182,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	#handler for friend_request_received event
 	async def friend_request_notif(self, event):
 		try:
-			print(f"\n SEND FRIEND REQUEST: {event}\n")
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
 			await self.send(text_data=json.dumps({
 				'type': 'friend_request_received',
 				'to_user_id': event.get('to_user_id'),
@@ -204,7 +204,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 			})
 
 	async def accept_request_notif(self, event):
-		print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
+		# print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend_request',
 			'success': event.get('success'),
@@ -220,8 +220,8 @@ class NotificationConsumer(OnlineStatusConsumer):
 		data = json.loads(text_data)
 		message_type = data.get('type')
 
-		print(f"\nmessage_type notif:: {data}")
-		print(f"currnet user: {self.user.id}\n")
+		# print(f"\nmessage_type notif:: {data}")
+		# print(f"currnet user: {self.user.id}\n")
 	
 		if message_type == 'send_friend_request':
 			to_user_id = data.get('to_user_id')
@@ -246,7 +246,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 		elif message_type == 'accept_friend_request':	
 			to_user_id = data.get('to_user_id')
 			success, message = await self.accept_friend_request(to_user_id)
-			print(f"\n accept_friend_request !!:\n")
+			# print(f"\n accept_friend_request !!:\n")
 			try:
 				to_user_channels = self.user_connections.get(to_user_id)
 				if not to_user_channels:
@@ -330,7 +330,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 	# @database_sync_to_async
 	# def accept_friend_request(self, user_id):
 	# 	try:
-	# 		print(f"\n Accepting friend request: {user_id}\n")
+	#		print(f"\n Accepting friend request: {user_id}\n")
 	# 		sender = User.objects.get(id=user_id)
 	# 		print(f"\n sender: {sender}, receiver: {self.user}\n")
 	# 		friend_request = Friendship.objects.get(

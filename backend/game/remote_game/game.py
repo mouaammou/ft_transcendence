@@ -22,7 +22,12 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         self._winner = None 
         self._loser = None 
         self._saved = False
-    
+        self.joined = 0
+
+
+    def increment_joined(self):
+        self.joined += 1
+
     @property
     def islaunched(self):
         return self._islaunched 
@@ -126,7 +131,8 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         if (self.left_player.score > self.right_player.score):
             self.winner = self._player_1
             self.loser = self._player_2
+            print(f"winner is --> {self._winner} score: {self.left_player.score} and loser is ---> {self._loser} score: {self.right_player.score}")
         else:
             self.winner = self._player_2
             self.loser = self._player_1
-        print(f"winner is ----> {self._winner} and loser is ---> {self._loser}")
+            print(f"winner is --> {self._winner} score: {self.right_player.score} and loser is ---> {self._loser} score: {self.left_player.score}")
