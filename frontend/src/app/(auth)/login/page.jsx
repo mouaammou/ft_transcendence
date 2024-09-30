@@ -20,6 +20,7 @@ export default function LoginPage() {
 
 	const LoginTo = async e => {
 		e.preventDefault();
+		console.log('formData: in login::  ', formData);
 		await AuthenticateTo('/login', formData);
 	};
 

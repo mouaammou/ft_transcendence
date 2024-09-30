@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation';
 
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState(() => {
-		console.log('params.friendProfile:', params);
 		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
 	});
 	const [userNotFound, setUserNotFound] = useState(false);
@@ -69,7 +68,6 @@ export default function FriendProfile({ params }) {
 					else {
 						localStorage.setItem(`profile_${fetchProfile.username}`, JSON.stringify(fetchedProfile));
 						setProfile(fetchedProfile);
-						console.log('fetched profile:', fetchedProfile);
 						setFriendStatusRequest(fetchedProfile.friend);
 					}
 
@@ -91,18 +89,11 @@ export default function FriendProfile({ params }) {
 	useEffect(() => {
 			if (profile.id) {
 				const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-				console.log('storedUsers in friend :: ', storedUsers);
-				console.log('profile in friend :: ', profile);
-
 				const foundUser = storedUsers.find((user) => (user.username == profile.username || user.username == params.friendProfile));
-				
-				if (foundUser) {
-					console.log('Found user status in friend :: ', foundUser.status);
+				if (foundUser)
 					setUserStatus(foundUser.status);  // Update the userStatus with the found user's status
-				} else {
-					console.log('No user found in localStorage matching profile.username');
+				else
 					setUserStatus('offline');  // Default to offline if the user isn't found
-				}
 				setHasGetMessage(false);
 		}
 	}, [hasGetMessage]);

@@ -45,7 +45,7 @@ export const LoginProvider = ({ children }) => {
 				setIsAuth(true);
 				Cookies.set('isAuth', true, { path: '/' , sameSite: 'strict'});
 				
-				console.log('res.data: ', res);
+				console.log('res.data: ', res.data);
 
 				if (isConnected) {
 					websocket.current.send(JSON.stringify({ online: 'online', 'user': res.data.username }));

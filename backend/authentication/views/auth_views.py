@@ -20,7 +20,7 @@ class SignUp(APIView):
 				user = serializer.save()
 				refresh = RefreshToken.for_user(user)
 				response = set_jwt_cookies(Response(), refresh)
-				response.data = {"message":"singup success"}
+				response.data = UserSerializer(user).data
 				response.status_code = status.HTTP_201_CREATED
 				logger.info(f"User {user.username} signed up")
 				return response
@@ -48,6 +48,7 @@ class Login(APIView):
 			refresh = RefreshToken.for_user(user)
 			response = set_jwt_cookies(Response(), refresh)
 			response.status_code = status.HTTP_200_OK
+			response.data = UserSerializer(user).data
 			return response
 		return Response({"Error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 

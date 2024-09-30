@@ -11,16 +11,11 @@ import { GrHistory } from "react-icons/gr";
 
 const Profile = () => {
 
-	const { profileData: data, isConnected, websocket  } = useAuth();
-	// console.log('profileData', data);
+	const { profileData: data } = useAuth();
+
 	useEffect(() => {
 		console.log('data', data);
 	}, [data]);
-	// useEffect(() => {
-	// 	if (isConnected) {
-	// 		websocket.current.send(JSON.stringify({ online: 'online', 'user': data.username }));
-	// 	}
-	// }, [websocket]);
 
 	return (
 		<div className="profile container max-md:p-3 overflow-hidden">
@@ -388,6 +383,6 @@ const Profile = () => {
 			</div>
 		</div>
 	);
-	};
+};
 
-	export default Profile;
+export default Profile;
