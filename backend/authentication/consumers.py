@@ -12,7 +12,7 @@ import json
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
-class OnlineStatusConsumer(AsyncWebsocketConsumer):
+class BaseConsumer(AsyncWebsocketConsumer):
 	USER_STATUS_GROUP = 'users_status'
 	user_connections = {}
 
@@ -20,59 +20,15 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		print("\n CONNECTED\n")
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
-			self.user_data =  UserSerializer(self.user).data 
-			self.room_notifications = f"notifications_{self.user.id}"
-			try:
-				await self.channel_layer.group_add(
-					self.room_notifications,
-					self.channel_name
-				)
-				await self.channel_layer.group_add(
-					self.USER_STATUS_GROUP,
-					self.channel_name
-				)
-				# Add the user to their own connection group
-				if self.user.id not in self.user_connections:
-					self.user_connections[self.user.id] = []
-				#add the current channel to the user's connection group
-				if self.channel_name not in self.user_connections[self.user.id]:
-					self.user_connections[self.user.id].append(self.channel_name)
-				# Add the user to the global status group
-				number_of_connections = len(self.user_connections[self.user.id])
-				if number_of_connections == 1:
-					print(f"\n broadcasting online : {self.user}\n")
-					await self.broadcast_online_status(self.user_data, "online")
-			except Exception as e:
-				logger.error(f"\nError during connection: {e}\n")
-				await self.close()
+				self.user_data = UserSerializer(self.user).data
+				self.room_notifications = f"notifications_{self.user.id}"
+				await self.add_user_to_groups()
 		await self.accept()
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
 		if self.user and self.user.is_authenticated:
-			try:
-				# Remove the user from their own connection group
-				if self.user.id in self.user_connections:
-					if self.channel_name in self.user_connections[self.user.id]:
-						self.user_connections[self.user.id].remove(self.channel_name)
-				# If the user has no connections, update their status to offline
-				if self.user.id in self.user_connections:
-					number_of_connections = len(self.user_connections[self.user.id])
-					if number_of_connections == 0:
-						print(f"\n broadcasting offline : {self.user}\n")
-						await self.broadcast_online_status(self.user_data, "offline")
-						del self.user_connections[self.user.id]
-
-				await self.channel_layer.group_discard(
-					self.room_notifications,
-					self.channel_name
-				)
-				await self.channel_layer.group_discard(
-					self.USER_STATUS_GROUP,
-					self.channel_name
-				)
-			except Exception as e:
-				logger.error(f"\nError during disconnection: {e}\n")
+			await self.remove_user_from_groups()
 
 	async def receive(self, text_data):
 		print("\n RECEIVED\n")
@@ -80,53 +36,54 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
 		online = text_data_json.get('online')
-
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
 		# Handle logout event
 		if logout and self.user.is_authenticated:
-			
-			# Ensure the user is removed from the active connections
-			if self.user.id in self.user_connections:
-				if self.channel_name in self.user_connections[self.user.id]:
-					self.user_connections[self.user.id].remove(self.channel_name)
-
-				number_of_connections = len(self.user_connections[self.user.id])
-				if number_of_connections == 0:
-					print(f"\n broadcasting offline when logout : {self.user}\n")
-					await self.broadcast_online_status(self.user_data, "offline")
-					# Remove user from the connections
-					del self.user_connections[self.user.id]
-
-			await self.channel_layer.group_discard(
-				self.USER_STATUS_GROUP,
-				self.channel_name
-			)
-			return  # Exit after handling logout to avoid conflicting operations
+			await self.untrack_user_connection()
 
 		# Handle online event
-		if online and self.user.is_authenticated:
-			await self.channel_layer.group_add(
-				self.USER_STATUS_GROUP,
-				self.channel_name
-			)
-			# If the user is not in connections, add them
-			if self.user.id not in self.user_connections:
-				self.user_connections[self.user.id] = []
-			# Add the channel name to track their connection
-			if self.channel_name not in self.user_connections[self.user.id]:
-				self.user_connections[self.user.id].append(self.channel_name)
+		elif online and self.user.is_authenticated:
+			await self.track_user_connection()
 
-			number_of_connections = len(self.user_connections[self.user.id])
-			if number_of_connections == 1:
-				print(f"\n broadcasting online when login: {self.user}\n")
-				await self.broadcast_online_status(self.user_data, "online")
+	async def add_user_to_groups(self):
+		try:
+			await self.channel_layer.group_add(self.room_notifications, self.channel_name)
+			await self.channel_layer.group_add(self.USER_STATUS_GROUP, self.channel_name)
+			await self.track_user_connection()
+		except Exception as e:
+			logger.error(f"\nError during connection: {e}\n")
+
+	async def track_user_connection(self):
+		if self.user.id not in self.user_connections:
+			self.user_connections[self.user.id] = []
+		if self.channel_name not in self.user_connections[self.user.id]:
+			self.user_connections[self.user.id].append(self.channel_name)
+		if len(self.user_connections[self.user.id]) == 1:
+			print(f"\n broadcasting online when login: {self.user}\n")
+			await self.broadcast_online_status(self.user_data, "online")
+
+	async def untrack_user_connection(self):
+		if self.user.id in self.user_connections:
+			if self.channel_name in self.user_connections[self.user.id]:
+				self.user_connections[self.user.id].remove(self.channel_name)
+			if len(self.user_connections[self.user.id]) == 0:
+				print(f"\n broadcasting offline when logout: {self.user}\n")
+				await self.broadcast_online_status(self.user_data, "offline")
+				del self.user_connections[self.user.id]
+
+	async def remove_user_from_groups(self):
+		try:
+			await self.channel_layer.group_discard(self.room_notifications, self.channel_name)
+			await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
+			await self.untrack_user_connection()
+		except Exception as e:
+			logger.error(f"\nError during disconnection: {e}\n")
 
 	async def broadcast_online_status(self, user_data, status):
 		try:
-			await self.channel_layer.group_send(
-				self.USER_STATUS_GROUP,
+			await self.channel_layer.group_send(self.USER_STATUS_GROUP,
 				{
 					"type": "user_status_change",
 					'id': user_data['id'],
@@ -142,24 +99,24 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 		try:
 			# if event['id'] != self.user.id:
 			await self.send(text_data=json.dumps({
-					"type": "user_status_change",
-					"username": event['username'],
-					"avatar": event['avatar'],
-					"status": event['status'],
+				"type": "user_status_change",
+				"username": event['username'],
+				"avatar": event['avatar'],
+				"status": event['status'],
 			}))
 		except Exception as e:
 			logger.error(f"\nError sending user status change: {e}\n")
 
 
-class NotificationConsumer(OnlineStatusConsumer):
+class NotificationConsumer(BaseConsumer):
 	async def connect(self):
 		await super().connect()
 
 	async def disconnect(self, close_code):
 		await super().disconnect(close_code)
 
-# ************************ for sending friend request ************************
-	async def send_friend_request_notif(self, channels, notification):
+# ************************ for friend request ************************
+	async def send_notification_notif(self, channels, notification):
 		"""Send the notification to all the user's channels."""
 		for channel in channels:
 			await self.channel_layer.send(channel, {
@@ -180,16 +137,8 @@ class NotificationConsumer(OnlineStatusConsumer):
 			}))
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
-# end of sending friend request ************************************************
 
-# ************************ for accepting friend request ************************
-	async def send_accept_request_notif(self, channels, notification):
-		"""Send the notification to all the user's channels."""
-		for channel in channels:
-			await self.channel_layer.send(channel, {
-					**notification
-			})
-
+	# handler for accept_friend_request event
 	async def accept_request_notif(self, event):
 		print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
@@ -200,7 +149,7 @@ class NotificationConsumer(OnlineStatusConsumer):
 			'user_id': event.get('user_id'),
 			'avatar': event.get('avatar')
 		}))
-# enf of accepting friend request *********************************************
+# enf of friend request *********************************************
 
 # ************************ for rejecting friend request ************************
 	async def reject_request_notif(self, event):
@@ -212,72 +161,66 @@ class NotificationConsumer(OnlineStatusConsumer):
 		}))
 # end of rejecting friend request *********************************************
 
+	async def handle_event(self, data):
+		message_type = data.get('type')
+		if message_type == 'send_friend_request':
+				await self.handle_friend_request(data)
+		elif message_type == 'accept_friend_request':
+				await self.handle_accept_request(data)
+		elif message_type == 'reject_friend_request':
+				await self.handle_reject_request(data)
+
+	async def handle_friend_request(self, data):
+		to_user_id = data.get('to_user_id')
+		success, message = await self.save_friend_request(to_user_id)
+		to_user_channels = self.user_connections.get(to_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {to_user_id} is offline\n")
+			return
+		await self.send_notification_notif(to_user_channels, {
+			'type': 'friend_request_notif',
+			'success': success,
+			'message': message,
+			'to_user_id': self.user.id,
+			'username': self.user_data['username'],
+			'avatar': self.user_data['avatar']
+		})
+
+	async def handle_accept_request(self, data):
+		to_user_id = data.get('to_user_id')
+		success, message = await self.accept_friend_request(to_user_id)
+		to_user_channels = self.user_connections.get(to_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {to_user_id} is offline\n")
+			return
+		await self.send_notification_notif(to_user_channels, {
+			'type': 'accept_request_notif',
+			'success': success,
+			'message': message,
+			'username': self.user_data['username'],
+			'user_id': self.user.id,
+			'avatar': self.user_data['avatar']
+		})
+
+	async def handle_reject_request(self, data):
+		rejected_user_id = data.get('to_user_id')
+		reject_status = await self.reject_friend_request(rejected_user_id)
+		to_user_channels = self.user_connections.get(rejected_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {rejected_user_id} is offline\n")
+			return
+		await self.send_notification_notif(to_user_channels, {
+			'type': 'reject_request_notif',
+			'success': reject_status,
+			'user_id': self.user.id,
+		})
+
 	async def receive(self, text_data):
 		await super().receive(text_data)
 		data = json.loads(text_data)
-		message_type = data.get('type')
-
 		print(f"\nmessage_type notif:: {data}")
 		print(f"currnet user: {self.user.id}\n")
-	
-		if message_type == 'send_friend_request':
-			to_user_id = data.get('to_user_id')
-			success, message = await self.save_friend_request(to_user_id)
-			try:
-				# get the channel name of the user=to_user_id
-				to_user_channels = self.user_connections.get(to_user_id)
-				if not to_user_channels:
-					logger.error(f"\nUser {to_user_id} is offline\n")
-					return
-				await self.send_friend_request_notif(to_user_channels, {
-					'type': 'friend_request_notif',
-					'success': success,
-					'message': message,
-					'to_user_id': self.user.id,
-					'username': self.user_data['username'],
-					'avatar': self.user_data['avatar']
-				})
-				logger.info(f"\nFriend request sent to {to_user_id}\n")
-			except Exception as e:
-				logger.error(f"\nError in send to_user_channels group :: {e}\n")
-		if message_type == 'accept_friend_request':	
-			to_user_id = data.get('to_user_id')
-			success, message = await self.accept_friend_request(to_user_id)
-			print(f"\n accept_friend_request !!:\n")
-			try:
-				to_user_channels = self.user_connections.get(to_user_id)
-				if not to_user_channels:
-					logger.error(f"\nUser {to_user_id} is offline\n")
-					return
-				await self.send_accept_request_notif(to_user_channels, {
-					'type': 'accept_request_notif',
-					'success': success,
-					'message': message,
-					'username': self.user_data['username'],
-					'user_id': self.user.id,
-					'avatar': self.user_data['avatar']
-				})
-				logger.info(f"\nFriend request sent to {to_user_id}\n")
-			except Exception as e:
-				logger.error(f"\nError in accept to_user_channels group :: {e}\n")
-		
-		if message_type == 'reject_friend_request':
-			rejected_user_id = data.get('to_user_id')
-			reject_status = await self.reject_friend_request(rejected_user_id)
-			if (reject_status):
-				try:
-					to_user_channels = self.user_connections.get(rejected_user_id)
-					if not to_user_channels:
-						logger.error(f"\nUser {rejected_user_id} is offline\n")
-						return
-					await self.send_accept_request_notif(to_user_channels, {
-						'type': 'reject_request_notif',
-						'success': reject_status,
-						'user_id': self.user.id,
-					})
-					logger.info(f"\nFriend request sent to {rejected_user_id}\n")
-				except Exception as e:
-					logger.error(f"\nError in reject to_user_channels group :: {e}\n")
+		await self.handle_event(data)
 
 	@database_sync_to_async
 	def save_friend_request(self, to_user_id):
@@ -361,3 +304,4 @@ class NotificationConsumer(OnlineStatusConsumer):
 		except Exception as e:
 			logger.error(f"Error rejecting friend request: {e}")
 			return False
+

@@ -13,10 +13,6 @@ const Profile = () => {
 
 	const { profileData: data } = useAuth();
 
-	useEffect(() => {
-		console.log('data', data);
-	}, [data]);
-
 	return (
 		<div className="profile container max-md:p-3 overflow-hidden">
 			{/* user avatar and infos */}
