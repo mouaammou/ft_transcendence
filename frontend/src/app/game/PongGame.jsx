@@ -1,261 +1,361 @@
-import { useClient } from 'next/client';
-import { useEffect, useRef, useState } from 'react';
+"use client";
+import { useEffect, player_1ef, useState, useRef} from 'react';
+import confetti from 'canvas-confetti';
+import socket from '@/utils/WebSocketManager';
+import YouLose from '@/components/modals/YouLose';
+import YouWin from '@/components/modals/YouWin';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
-  const canvasRef = useRef(null);
-  const [socketState, setSocketState] = useState(false);
+	const canvasRef = useRef(null);
+	const [showWinModal, setShowWinModal] = useState(false);
+	const [showLoseModal, setShowLoseModal] = useState(false);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		const context = canvas.getContext('2d');
+		var start = true;
 
-    // ball object
-    const ball = {
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      radius: 10,
-      speed: 8,
-      velocityX: 5,
-      velocityY: 5,
-      color: 'white',
-    };
+		if (start) {
+			socket.sendMessage(JSON.stringify({launch: start}));
+			start = false;
+		}
+		// ball object
+		const ball = {
+			x: canvas.width / 2,
+			y: canvas.height / 2,
+			radius: 10,
+			speed: 8,
+			velocityX: 5,
+			velocityY: 5,
+			color: 'white'
+		}
 
-    // paddle object
-    const user = {
-      x: 0,
-      y: canvas.height / 2 - 100 / 2,
-      width: 10,
-      height: 100,
-      color: 'white',
-      score: 0,
-    };
-    const rectBall = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      color: 'white',
-      score: 0,
-    };
-    // paddle object
-    const computer = {
-      x: canvas.width - 10,
-      y: canvas.height / 2 - 100 / 2,
-      width: 10,
-      height: 100,
-      color: '#E9C46A',
-      score: 0,
-    };
+		// paddle object
+		const player_1 = {
+			x: 0,
+			y: canvas.height / 2 - 100 / 2,
+			width: 10,
+			height: 100,
+			color: 'white',
+			score: 0
+		}
+		const rectBall = {
+			x: 0,
+			y: 0,
+			width: 0,
+			height: 0,
+			color: 'white',
+			score: 0
+		}
+		// paddle object
+		const player_2 = {
+			x: canvas.width - 10,
+			y: canvas.height / 2 - 100 / 2,
+			width: 10,
+			height: 100,
+			color: '#E9C46A',
+			score: 0
+		}
 
-    const net = {
-      x: canvas.width / 2 - 2,
-      y: 0,
-      width: 4,
-      height: 30,
-      color: 'gray',
-    };
+		const net = {
+			x: canvas.width / 2 - 2,
+			y: 0,
+			width: 4,
+			height: 30,
+			color: 'gray'
+		}
 
-    let num = 0;
-    let number = 1;
-    const drawNet = () => {
-      for (let y = 0; y < canvas.height; y += 45) {
-        drawRect(net.x, y, net.width, net.height, net.color);
-      }
-    };
+		const drawNet = () => {
+			for (let y = 0; y < canvas.height; y += 45) {
+				drawRect(net.x, y, net.width, net.height, net.color);
+			}
+		}
 
-    // const drawEllipse = () => {
-    // }
-    const drawRect = (x, y, width, height, color) => {
-      context.fillStyle = color;
-      context.fillRect(x, y, width, height);
-    };
+		// const drawEllipse = () => {
+		// }
+		const drawRect = (x, y, width, height, color) => {
+			context.fillStyle = color;
+			context.fillRect(x, y, width, height);
+		}
 
-    // const resetBall = () => {
-    // 	ball.x = canvas.width / 2;
-    // 	ball.y = canvas.height / 2;
-    // 	ball.speed = 8;
-    // 	ball.velocityX = 5;
-    // 	ball.velocityY = 5;
-    // 	ball.velocityX = -ball.velocityX;
-    // }
+		// const resetBall = () => {
+		// 	ball.x = canvas.width / 2;
+		// 	ball.y = canvas.height / 2;
+		// 	ball.speed = 8;
+		// 	ball.velocityX = 5;
+		// 	ball.velocityY = 5;
+		// 	ball.velocityX = -ball.velocityX;
+		// }
+		
+		const drawCircle = (x, y, radius, color) => {
+			context.fillStyle = color;
+			context.beginPath();
+			context.arc(x, y, radius, 0, Math.PI * 2, false);
+			context.closePath();
+			context.fill();
+		}
 
-    const drawCircle = (x, y, radius, color) => {
-      context.fillStyle = color;
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2, false);
-      context.closePath();
-      context.fill();
-    };
+		// handle the page visibility for later:
+		let conectionOn = false;
+		function sendVisibilityStatus() {
+			console.log("Visibility: ")
+				console.log(document.visibilityState)
+				let isTabFocused = document.visibilityState === 'visible';
+				socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
+		}
 
-    // Constants
-    // create new websocket client
-    let token = '';
-    const socket = new WebSocket(
-      'ws://' + '127.0.0.1:8000' + '/ws/pong/game/?access_token=' + token
-    );
-    let conectionOn;
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log('WebSocket connection is open');
-      conectionOn = true;
-    } else {
-      console.log('WebSocket connection is not open');
-      conectionOn = false;
-    }
-    socket.addEventListener('open', event => {
-      // console.log(socketState);
-      console.log('Connected to WS Server');
-    });
-    // function resizeCanvas() {
-    // 	canvas.width = window.innerWidth/2;
-    // 	canvas.height = window.innerHeight/3;
-    //   }
+		if (socket.readyState === WebSocket.OPEN) {
+			console.log('WebSocket connection is open');
+			conectionOn = true;
+			// create new game EVENT
+		} else {
+			console.log('WebSocket connection is not open');
+			conectionOn = false;
+		  }
+		// socket.addEventListener('open', (event) => {
+		// 	// console.log(socketState);
+		// 	console.log('Connected to WS Server');
+		// });
+		// function resizeCanvas() {
+		// 	canvas.width = window.innerWidth/2;
+		// 	canvas.height = window.innerHeight/3;
+		//   }
+		  
+		//   window.addEventListener('resize', resizeCanvas);
+		//   resizeCanvas();
+		let gameConfig = {};
 
-    //   window.addEventListener('resize', resizeCanvas);
-    //   resizeCanvas();
-    let gameConfig = {};
+		const handleMessage = (message) => {
+			if (!message) {
+				console.error('Received an undefined message or data:', message);
+				return; // Exit early if message is invalid
+			}
+			const data = JSON.parse(message.data);
+			if (data.update)
+			{
+				console.log(data);
+				if (data.update.left_paddle_pos)
+				{
+					player_1.x = data.update.left_paddle_pos[0];
+					player_1.y = data.update.left_paddle_pos[1];
+				}
+				if (data.update.right_paddle_pos)
+				{
+					player_2.x = data.update.right_paddle_pos[0];
+					player_2.y = data.update.right_paddle_pos[1];
+				}
+				// ball.radius = gameConfig.ball_size[0] / 2;
+				if (data.update.ball_pos) 
+				{
+					ball.x = data.update.ball_pos[0] + ball.radius;
+					ball.y = data.update.ball_pos[1] + ball.radius;
+				}
+				// rectBall.x = data.update.ball_pos[0];
+				// rectBall.y = data.update.ball_pos[1];
+				// console.log(rectBall.x);
+				// console.log(rectBall.y);
+				if (data.update.left_player_score)
+				{
+					player_1.score = data.update.left_player_score;
+					setScore2(score2 => data.update.left_player_score);
+				}
+				if (data.update.right_player_score)
+				{
+					player_2.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
+				}
+				if (data.update.status) {
+					if (data.update.status  === 'win') {
+						winner_celebration()
+						console.log('Congratulations, you win');
+						setShowWinModal(true);
+					}
+					else if (data.update.status  === 'lose') {
+						// <YouLose/>
+						console.log('Unfortunately, you lost');
+						setShowLoseModal(true);
+					}
+				}
+				drawGame();
+			}
+			else if (data.config)
+			{
+				console.log(data);
 
-    socket.onmessage = function (message) {
-      const data = JSON.parse(message.data);
-      if (data.update) {
-        if (data.update.left_paddle_pos) {
-          user.x = data.update.left_paddle_pos[0];
-          user.y = data.update.left_paddle_pos[1];
-        }
-        if (data.update.right_paddle_pos) {
-          computer.x = data.update.right_paddle_pos[0];
-          computer.y = data.update.right_paddle_pos[1];
-        }
-        ball.radius = gameConfig.ball_size[0] / 2;
-        ball.x = data.update.ball_pos[0] + ball.radius;
-        ball.y = data.update.ball_pos[1] + ball.radius;
-        // rectBall.x = data.update.ball_pos[0];
-        // rectBall.y = data.update.ball_pos[1];
-        // console.log(rectBall.x);
-        // console.log(rectBall.y);
-        if (data.update.left_player_score) {
-          user.score = data.update.left_player_score;
-          setScore2(score2 => data.update.left_player_score);
-        }
-        if (data.update.right_player_score) {
-          computer.score = data.update.right_player_score;
-          setScore1(score1 => data.update.right_player_score);
-        }
-        drawGame();
-      } else if (data.config) {
-        // setScore1(score1 => data.config.right_player_score);
-        // setScore2(score2 => data.config.left_player_score);
-        // console.log(data.config);
-        gameConfig = data.config;
-        canvas.width = gameConfig.window_size[0];
-        canvas.height = gameConfig.window_size[1];
-        // console.log(canvas.height);
-        net.x = canvas.width / 2 - 2;
-        computer.width = gameConfig.paddles_size[0];
-        computer.height = gameConfig.paddles_size[1];
-        user.width = gameConfig.paddles_size[0];
-        user.height = gameConfig.paddles_size[1];
-        user.x = gameConfig.left_paddle_pos[0];
-        user.y = gameConfig.left_paddle_pos[1];
-        computer.x = gameConfig.right_paddle_pos[0];
-        computer.y = gameConfig.right_paddle_pos[1];
-        ball.x = gameConfig.ball_pos[0];
-        ball.y = gameConfig.ball_pos[1];
-        ball.radius = gameConfig.ball_size[0] / 2;
-        // rectBall.x = gameConfig.ball_pos[0];
-        // rectBall.y = gameConfig.ball_pos[1];
-        // rectBall.width = gameConfig.ball_size[0];
-        // rectBall.height = gameConfig.ball_size[1];
-        drawGame();
-      }
-    };
-    // Game state
-    // Keyboard state
-    const keys = {};
-    // Update game logic
-    let setconfig = false;
-    // socket.onmessage
-    const updateGame = () => {};
+					// setScore1(score1 => data.config.right_player_score);
+					// setScore2(score2 => data.config.left_player_score);
+					gameConfig = data.config;
+					canvas.width = gameConfig.window_size[0];
+					canvas.height = gameConfig.window_size[1];
+					// console.log(canvas.height);
+					net.x = canvas.width / 2 - 2;
+					player_2.width = gameConfig.paddles_size[0];
+					player_2.height = gameConfig.paddles_size[1];
+					player_1.width = gameConfig.paddles_size[0];
+					player_1.height = gameConfig.paddles_size[1];
+					player_1.x = gameConfig.left_paddle_pos[0];
+					player_1.y = gameConfig.left_paddle_pos[1];
+					player_2.x = gameConfig.right_paddle_pos[0];
+					player_2.y = gameConfig.right_paddle_pos[1];
+					ball.radius = gameConfig.ball_size[0] / 2;
+					ball.x = gameConfig.ball_pos[0] + ball.radius;
+					ball.y = gameConfig.ball_pos[1] + ball.radius;
+					ball.radius = gameConfig.ball_size[0] / 2;
+					// rectBall.x = gameConfig.ball_pos[0];
+					// rectBall.y = gameConfig.ball_pos[1];
+					// rectBall.width = gameConfig.ball_size[0];
+					// rectBall.height = gameConfig.ball_size[1];
+					player_1.score = gameConfig.left_player_score;
+					setScore2(score2 => gameConfig.left_player_score);
+					player_2.score = gameConfig.right_player_score;
+					setScore1(score1 => gameConfig.right_player_score);
+					drawGame();
+				}
+		}
+		socket.registerMessageHandler(handleMessage);
+		// Game state
+		// Keyboard state
+		const keys = {};
+		// Update game logic
+		let setconfig = false;
+		// socket.onmessage
+		const updateGame = () => {
+		}
 
-    // Draw game elements
-    const drawGame = () => {
-      // Clear the canvas
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      // draw net
-      drawNet();
+		function winner_celebration (){	
+			let duration = 10 * 1000;
+			let animationEnd = Date.now() + duration;
+			let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-      // Draw paddles
-      drawRect(user.x, user.y, user.width, user.height, user.color);
-      drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
-      // drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
+			function randomInRange(min, max) {
+			return Math.random() * (max - min) + min;
+			}
 
-      // Draw the ball
-      drawCircle(ball.x, ball.y, ball.radius, ball.color);
-      context.closePath();
-    };
+			let interval = setInterval(function() {
+			let timeLeft = animationEnd - Date.now();
 
-    if (!conectionOn) {
-      drawGame();
-    }
-    // Keyboard event handlers  // ArrowUp ArrowDown q s
-    // add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
-    const handleKeyDown = event => {
-      console.log('hi');
-      console.log(event.key);
-      socket.send(JSON.stringify({ onPress: event.key.trim() }));
-      keys[event.key] = true;
-    };
+			if (timeLeft <= 0) {
+				return clearInterval(interval);
+			}
 
-    // set the key to false when the key is released
-    const handleKeyUp = event => {
-      socket.send(JSON.stringify({ onRelease: event.key.trim() }));
-      console.log(event.key);
-      keys[event.key] = false;
-    };
+			let particleCount = 100 * (timeLeft / duration);
+			// since particles fall down, start a bit higher than random
+			confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+			confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+			}, 250);
+		}
 
-    // Mouse event handlers
-    // const handleMouseMove = (event) => {
-    // 	const rect = canvas.getBoundingClientRect();
-    // 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
-    // 	// how to get the window width and height
-    // 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
-    // 		user.y = event.clientY - rect.top - user.height / 2;
-    // 		if (user.y <= 0)
-    // 			user.y = 0
-    // 		else if (user.y + user.height >= canvas.height)
-    // 			user.y = canvas.height - user.height;
-    // 	}
-    // 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
-    // 		computer.y = event.clientY - rect.top - computer.height / 2;
-    // 		if (computer.y <= 0)
-    // 			computer.y = 0
-    // 		else if (computer.y + computer.height >= canvas.height)
-    // 			computer.y = canvas.height - computer.height;
-    // 	}
-    // 	// handle the paddle going out of the canvas
-    // }
+		// Draw game elements
+		const drawGame = () => {
+			// Clear the canvas
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			// draw net
+			drawNet();
 
-    // Move the paddle2 with the mouse too
-    // Attach event listeners
-    // document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
-    document.addEventListener('keydown', handleKeyDown); // add event listener to the document object when a key is pressed
-    document.addEventListener('keyup', handleKeyUp);
+			// Draw paddles
+			drawRect(player_1.x, player_1.y, player_1.width, player_1.height, player_1.color);
+			drawRect(player_2.x, player_2.y, player_2.width, player_2.height, player_2.color);
+			// drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
 
-    // Animation loop
-    // const animate = () => {
-    // 	updateGame();
-    // 	drawGame();
+			// Draw the ball
+			drawCircle(ball.x, ball.y, ball.radius, ball.color);
+			context.closePath();
+		};
+		
+		if (!conectionOn)
+		{
+			drawGame()
+		}
+		// Keyboard event handlers  // ArrowUp ArrowDown q s
+		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
+		const handleKeyDown = (event) => {
+			socket.sendMessage(JSON.stringify({"onPress" : event.key.trim()}));
+			keys[event.key] = true;
+			// if (event.key === ' ')
+			// {
+			// 	// create new game if space key is created
+			// 	socket.sendMessage(JSON.stringify(
+			// 		{
+			// 			"create":
+			// 			{
+			// 				mode:'remote'
+			// 			}
+			// 		}
+			// 	));
+			// }
+		};
 
-    // 	requestAnimationFrame(animate);
-    // };
+		// set the key to false when the key is released
+		const handleKeyUp = (event) => {
+			socket.sendMessage(JSON.stringify({"onRelease" : event.key.trim()}));
+			keys[event.key] = false;
+		};
 
-    // animate();
-    // setInterval(animate, 1000 / 60);
+		// Mouse event handlers
+		// const handleMouseMove = (event) => {
+		// 	const rect = canvas.getBoundingClientRect();
+		// 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
+		// 	// how to get the window width and height
+		// 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
+		// 		player_1.y = event.clientY - rect.top - player_1.height / 2;
+		// 		if (player_1.y <= 0)
+		// 			player_1.y = 0
+		// 		else if (player_1.y + player_1.height >= canvas.height)
+		// 			player_1.y = canvas.height - player_1.height;
+		// 	}
+		// 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
+		// 		player_2.y = event.clientY - rect.top - player_2.height / 2;
+		// 		if (player_2.y <= 0)
+		// 			player_2.y = 0
+		// 		else if (player_2.y + player_2.height >= canvas.height)
+		// 			player_2.y = canvas.height - player_2.height;
+		// 	}
+		// 	// handle the paddle going out of the canvas
+		// }
 
-    // Cleanup event listeners
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-  return <canvas className="play-ground" ref={canvasRef}></canvas>;
+		// Move the paddle2 with the mouse too
+		// Attach event listeners
+		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
+		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
+		document.addEventListener('keyup', handleKeyUp);
+		document.addEventListener('visibilitychange', sendVisibilityStatus);
+
+		// Animation loop
+		// const animate = () => {
+		// 	updateGame();
+			// drawGame();
+
+		// 	requestAnimationFrame(animate);
+		// };
+
+		// animate();
+		// setInterval(animate, 1000 / 60);
+
+		// Cleanup event listeners
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
+			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+		};
+	}, []);
+	return (
+		<>
+			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
+
+			</canvas>
+				{showWinModal && (
+					<YouWin 
+						onClose={() => setShowWinModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+				
+				{showLoseModal && (
+					<YouLose 
+						onClose={() => setShowLoseModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+		</>
+	);
 }

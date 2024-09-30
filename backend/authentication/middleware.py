@@ -39,6 +39,9 @@ class TokenVerificationMiddleWare:
 
         try:
             refresh_token_obj = RefreshToken(refresh_token)
+            # print('x'*15)
+            # print(refresh_token_obj.payload)
+            # print('x'*15)
             if not access_token:
                 # Generate a new access token if none exists or is invalid
                 new_access_token = refresh_token_obj.access_token
@@ -60,6 +63,7 @@ class TokenVerificationMiddleWare:
             try:
                 user_id = AccessToken(access_token).get("user_id")
                 request.customUser = User.objects.get(id=user_id)
+                return self.get_response(request)
             except (TokenError, User.DoesNotExist):
                 # If access token is invalid, create a new one
                 new_access_token = refresh_token_obj.access_token
@@ -76,7 +80,6 @@ class TokenVerificationMiddleWare:
                     max_age= api_settings.ACCESS_TOKEN_LIFETIME,  # 7 days
                 )
                 return response
-
         except TokenError:
             response = JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
             response.delete_cookie("refresh_token")

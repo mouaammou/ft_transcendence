@@ -14,4 +14,4 @@ const Login42 = () => {
   return <img src="/g3.svg" alt="" className="_42-logo" onClick={handleLogin} />;
 };
 
-export default Login42;
+export default Login42; 

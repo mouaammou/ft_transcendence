@@ -76,3 +76,6 @@ scope={
     'root_path': '',
     'app': <ASGI app instance>
 }
+
+
+#send to the users to go to the game page

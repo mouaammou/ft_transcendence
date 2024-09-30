@@ -60,17 +60,17 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-	"AUTH_COOKIE": "jwt",
-	"AUTH_COOKIE_SECURE": False,  # Change to True in production
-	"AUTH_COOKIE_HTTP_ONLY": True,
-	"AUTH_COOKIE_PATH": "/",
-	"AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
-	"ROTATE_REFRESH_TOKENS": True,
-	'BLACKLIST_AFTER_ROTATION': True,
-	'SIGNING_KEY': SECRET_KEY,
-	"ALGORITHM": "HS256",
-	"ACCESS_TOKEN_LIFETIME": timedelta(hours=24),  # 1 hour
-	"REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
+    "AUTH_COOKIE": "jwt",
+    "AUTH_COOKIE_SECURE": False,  # Change to True in production
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
+    "ROTATE_REFRESH_TOKENS": True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'SIGNING_KEY': SECRET_KEY,
+    "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 hour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
 }
 
 # Set your 42 OAuth credentials

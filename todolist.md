@@ -27,13 +27,19 @@
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
 
+<<<<<<< HEAD
+
+
+=======
 # bandwidth: means what
     what means bandwidth ?
+<<<<<<< HEAD
 
 		############################################ from 18/09 ############################################
 # Promise in javascript
 	 what is the promise in javascript ??
 	 explain : await new Promise((resolve) => setTimeout(resolve, 1000));// 1 second delay, to simulate a real-world API call
+<<<<<<< HEAD
 
 # why slice() works in the array
 	 why slice() works in the array ??
@@ -46,3 +52,8 @@
 					onMarkAsRead={markAsRead}
 				/>
 				))}
+=======
+=======
+>>>>>>> origin/main
+>>>>>>> remoteGame
+>>>>>>> 096a94b1fba256c2b4982b500caa34d47b0ef0f9
