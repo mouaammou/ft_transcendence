@@ -9,6 +9,7 @@ export const WebSocketProvider = ({url, children}) => {
 
 	const [isConnected, setIsConnected] = useState(false);
 	const [users, setUsers] = useState([]);
+	const [opponent, setOpponent] = useState(null);
 	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
 	const [friendshipStatus, setFriendshipStatus] = useState(null);
@@ -79,6 +80,8 @@ export const WebSocketProvider = ({url, children}) => {
 				notifications,
 				setNotifications,
 				friendshipStatus,
+				opponent,
+				setOpponent
 				}}>
 			{children}
 		</WebSocketContext.Provider>
