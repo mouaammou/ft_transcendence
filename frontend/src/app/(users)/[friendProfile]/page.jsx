@@ -11,10 +11,20 @@ import { useRouter } from 'next/navigation';
 
 
 export default function FriendProfile({ params }) {
-	const [profile, setProfile] = useState({});
+	const [profile, setProfile] = useState(() => {
+		console.log('params.friendProfile:', params);
+		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
+	});
 	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, users, notificationType, listOfNotifications} = useWebSocketContext();
-	const [userStatus, setUserStatus] = useState();
+	const {websocket, isConnected, users, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
+	const [userStatus, setUserStatus] = useState(() => {
+		const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+		const foundUser = storedUsers.find((user) => user.username == params.friendProfile);
+		if (foundUser) {
+			return foundUser.status;
+		}
+		return 'offline';
+	});
 	const pathname = usePathname();
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const router = useRouter();
@@ -48,17 +58,17 @@ export default function FriendProfile({ params }) {
 				return ;
 			}
 			try {
+				console.log("FETCHING PROFILE");
 				const response = await getData(`/friendProfile/${params.friendProfile}`);
 				if (response.status === 200) {
 					const fetchedProfile = response.data;
-
 					if (response.data.Error) {
 						setProfile({});
 						router.push('/profile');
 					}
 					else {
+						localStorage.setItem(`profile_${fetchProfile.username}`, JSON.stringify(fetchedProfile));
 						setProfile(fetchedProfile);
-						setUserStatus(fetchedProfile.status);
 						console.log('fetched profile:', fetchedProfile);
 						setFriendStatusRequest(fetchedProfile.friend);
 					}
@@ -74,16 +84,28 @@ export default function FriendProfile({ params }) {
 		fetchProfile();
 
 		return () => {
-			setProfile({});
 			setUserNotFound(false);
 		};
 	}, [pathname]);
 
 	useEffect(() => {
-		if (isConnected) {
-			setUserStatus(users.find(user => user.username === profile.username)?.status);
+			if (profile.id) {
+				const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+				console.log('storedUsers in friend :: ', storedUsers);
+				console.log('profile in friend :: ', profile);
+
+				const foundUser = storedUsers.find((user) => (user.username == profile.username || user.username == params.friendProfile));
+				
+				if (foundUser) {
+					console.log('Found user status in friend :: ', foundUser.status);
+					setUserStatus(foundUser.status);  // Update the userStatus with the found user's status
+				} else {
+					console.log('No user found in localStorage matching profile.username');
+					setUserStatus('offline');  // Default to offline if the user isn't found
+				}
+				setHasGetMessage(false);
 		}
-	}, [users]);
+	}, [hasGetMessage]);
 
 	if (userNotFound) {
 		notFound();
@@ -114,8 +136,8 @@ export default function FriendProfile({ params }) {
 							<button 
 								className="edit-btn flex items-center space-x-2 rounded-md bg-white px-6 py-3 text-[1rem] shadow-md"
 							>
-								<span className="text-gray-700">{userStatus === 'online' ? 'Online' : 'Offline'}</span>
-								<span className={`h-3 w-3 rounded-full ${userStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`}/>
+								<span className="text-gray-700">{userStatus}</span>
+								<span className={`h-3 w-3 rounded-full ${userStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
 							</button>
 						</div>
 					</div>

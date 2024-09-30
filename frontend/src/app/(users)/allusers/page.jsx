@@ -18,15 +18,6 @@ const AllUsers = () => {
 	const [pageNotFound, setPageNotFound] = useState(false);
 	const [pageNumber, setPageNumber] = useState(1);
 	const [fetchedUsers, setFetchedUsers] = useState([]);
-	
-	// useEffect(() => {
-	// 	// will change this localStorage to something more efficient ?????
-	// 	if (users.length > 0){
-	// 		const storedUsers = users.map(user => ({ username: user.username, status: user.status }));
-	// 		localStorage.setItem('users', JSON.stringify(storedUsers));
-	// 	}
-	// }, [users]);
-
 	const fetchAllUsers = async (pageNumber) => {
 
 		// Prevent multiple requests

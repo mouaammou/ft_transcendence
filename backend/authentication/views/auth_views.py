@@ -5,7 +5,9 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from authentication.utils import set_jwt_cookies
 from rest_framework.views import APIView
+import logging
 
+logger = logging.getLogger(__name__)
 
 class SignUp(APIView):
 
@@ -18,11 +20,14 @@ class SignUp(APIView):
 				user = serializer.save()
 				refresh = RefreshToken.for_user(user)
 				response = set_jwt_cookies(Response(), refresh)
-				response.data = UserSerializer(user).data
+				response.data = {"message":"singup success"}
 				response.status_code = status.HTTP_201_CREATED
+				logger.info(f"User {user.username} signed up")
 				return response
 			except Exception as error:
-				return Response({"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+				logger.error(f"Error while signing up: {error}")
+				return Response({"Error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
+		logger.error(f"Error while signing up: {serializer.errors}")
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
@@ -43,7 +48,6 @@ class Login(APIView):
 			refresh = RefreshToken.for_user(user)
 			response = set_jwt_cookies(Response(), refresh)
 			response.status_code = status.HTTP_200_OK
-			response.data = UserSerializer(user).data
 			return response
 		return Response({"Error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
