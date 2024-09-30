@@ -7,12 +7,12 @@ class WebSocketManager {
             this.messageHandlers = [];
             this.isConnected = false;
             this.socket.onopen = () => {
-                console.log('WebSocket connection opened');
+                // console.log('WebSocket connection opened');
                 this.isConnected = true;
             }
             
             this.socket.onclose = () => {
-                console.log('WebSocket connection closed');
+                // console.log('WebSocket connection closed');
                 this.isConnected = false;
             }
 
@@ -29,7 +29,7 @@ class WebSocketManager {
     sendMessage(message) {
         if (this.isConnected) {
             this.socket.send(message);
-            console.log("send a request to start remote random game");
+            // console.log("send a request to start remote random game");
             return true;
         } else {
             console.error('websocket is not initialized');
@@ -39,19 +39,19 @@ class WebSocketManager {
 
     close() {
         if (this.socket) {
-            console.log('websocket closed');
+            // console.log('websocket closed');
             this.socket.close();
             this.isConnected = false; 
         }
     }
 
     registerMessageHandler(handler) {
-        console.log('the message handler is registred');
+        // console.log('the message handler is registred');
         this.messageHandlers.push(handler);
     }
 
     unregisterMessageHandler(method) {
-        console.log('the handler deleted');
+        // console.log('the handler deleted');
         this.messageHandlers = this.messageHandlers.filter(handler => handler !== method)
     }
 

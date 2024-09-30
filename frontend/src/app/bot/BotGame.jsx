@@ -1,8 +1,12 @@
 "use client";
 import { useEffect, playeref, useState, useRef} from 'react';
+import YouWin from '@/components/modals/YouWin';
+import YouLose from '@/components/modals/YouLose';
 
 export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 	const canvasRef = useRef(null);
+	const [showWinModal, setShowWinModal] = useState(false);
+	const [showLoseModal, setShowLoseModal] = useState(false);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -24,7 +28,7 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			x: 0,
 			y: canvas.height / 2 - 100 / 2,
 			width: 10,
-			height: 500,
+			height: 100,
 			color: 'white',
 			score: 0,
 			speed: 15
@@ -74,9 +78,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			ball.x = canvas.width / 2;
 			ball.y = canvas.height / 2;
 			ball.speed = 4;
-			ball.velocityX = 2;
-			ball.velocityY = 2;
-			ball.velocityX = -ball.velocityX;
+			ball.velocityX = -1;
+			ball.velocityY = 1;
 		}
 		
 		const drawCircle = (x, y, radius, color) => {
@@ -138,9 +141,9 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 			}
 
 
-			if (keys['ArrowUp'] && player.y > 0 )
+			if ((keys['ArrowUp'] || keys['w'] )&& player.y > 0 )
 				player.y -= player.speed
-			else if (keys['ArrowDown'] && (player.y + player.height <= canvas.height))
+			else if ((keys['ArrowDown'] || keys['s']) && (player.y + player.height <= canvas.height))
 				player.y += player.speed;
 			if (computer.y <= 0)
 				computer.y = 0;
@@ -152,25 +155,31 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 				// Optional: Adjust ball's vertical direction based on where it hits the paddle
 				const collisionPoint = ball.y - (player.y + player.height / 2);
 				ball.velocityY += collisionPoint / (player.height / 2); // Adjust bounce angle
-				console.log("here -->");
-				console.log(ball.velocityY);
+				// console.log("why ?? here -->"); 
+				// console.log(ball.velocityY);
 				if (ball.speed <= 10)
-					ball.speed += 0.5; // Increase speed slightly on collision
+					ball.speed += 0.4; // Increase speed slightly on collision
 			}
 			
 			if (isBallCollidingWithPaddle(ball, computer)) {
 				ball.velocityX = -ball.velocityX; // Reverse direction
 				const collisionPoint = ball.y - (computer.y + computer.height / 2);
 				ball.velocityY += collisionPoint / (computer.height / 2); // Adjust bounce angle
-				console.log("here -->");
-				console.log(ball.velocityY);
+				// console.log("here -->");
+				// console.log(ball.velocityY);
 				if (ball.speed <= 10)
 					ball.speed += 0.5; // Increase speed slightly on collision
 			}
 
-			if (player.score >= 7 || computer.score >= 7) {
+			if (player.score >= 7) {
 				resetBall()
 				gameOn = false;
+				setShowLoseModal(true)
+			}
+			else if (computer.score >= 7) {
+				resetBall()
+				gameOn = false;
+				setShowWinModal(true);
 			}
 		}
 
@@ -263,10 +272,24 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
-			
-			
-		</canvas>
+		<>
+			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
+
+			</canvas>
+				{showWinModal && (
+					<YouWin 
+						onClose={() => setShowWinModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+				
+				{showLoseModal && (
+					<YouLose 
+						onClose={() => setShowLoseModal(false)}
+						// stats={{ score1, score2 }} // Pass stats as needed
+					/>
+				)}
+		</>
 	);
 }
 
