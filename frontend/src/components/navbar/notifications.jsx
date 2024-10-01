@@ -135,7 +135,7 @@ const NotificationBell = () => {
 							<IoCheckmarkDoneOutline className="text-[1.2rem] mr-1" />
 						</button>
 						<Link href="/notifications"
-							className="text-green-500 text-xs font-semibold  capitalize float-end hover:text-green-300 transition-all">
+							className="text-green-500 text-xs font-semibold  capitalize float-end hover:text-green-700 transition-all">
 							see all
 						</Link>
 					</div>
