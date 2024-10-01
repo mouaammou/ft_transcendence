@@ -26,7 +26,7 @@ export default function FriendProfile({ params }) {
 	});
 
 	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, users, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
+	const {websocket, isConnected, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
 	const pathname = usePathname();
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const router = useRouter();

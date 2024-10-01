@@ -106,7 +106,7 @@ export const WebSocketProvider = ({url, children}) => {
 			// Set the merged result back to localStorage
 			localStorage.setItem('users', JSON.stringify(updatedUsers));
 		}
-	}, [users, isConnected, websocket]);
+	}, [users, isConnected, websocket]);// Save users to localStorage whenever the users change
 
 
 	return (
