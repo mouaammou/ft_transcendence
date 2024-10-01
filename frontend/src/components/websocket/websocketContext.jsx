@@ -105,7 +105,7 @@ export const WebSocketProvider = ({url, children}) => {
 			// Set the merged result back to localStorage
 			localStorage.setItem('users', JSON.stringify(updatedUsers));
 		}
-	}, [users]);
+	}, [users, isConnected, websocket]);
 
 
 	return (
