@@ -121,7 +121,7 @@ class CustomUser(AbstractUser):
 	phone = models.CharField(max_length=255, blank=True)
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
-	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default")
+	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
 
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 

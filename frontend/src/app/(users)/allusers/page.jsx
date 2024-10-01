@@ -18,6 +18,7 @@ const AllUsers = () => {
 	const [pageNotFound, setPageNotFound] = useState(false);
 	const [pageNumber, setPageNumber] = useState(1);
 	const [fetchedUsers, setFetchedUsers] = useState([]);
+
 	const fetchAllUsers = async (pageNumber) => {
 
 		// Prevent multiple requests
