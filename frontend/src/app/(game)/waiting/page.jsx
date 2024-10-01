@@ -33,7 +33,7 @@ const WaitingPage = () => {
             
                 // Fetch user data based on opponent ID
                 console.log("The player id you will play with is ", opponent_id);
-                const fetchedUser = await getData(`/friendProfileId/${opponent_id}`);
+                const fetchedUser = await getData(`/userById/${opponent_id}`);
             
                 if (fetchedUser.status === 200) {
                     setMyuser(fetchedUser.data); // Assuming data structure contains user data

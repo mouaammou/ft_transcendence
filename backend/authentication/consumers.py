@@ -61,7 +61,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		if self.channel_name not in self.user_connections[self.user.id]:
 			self.user_connections[self.user.id].append(self.channel_name)
 		if len(self.user_connections[self.user.id]) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
+			# print(f"\n broadcasting online when login: {self.user}\n")
 			await self.broadcast_online_status(self.user_data, "online")
 
 	async def untrack_user_connection(self):

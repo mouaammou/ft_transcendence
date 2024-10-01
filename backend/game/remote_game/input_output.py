@@ -96,7 +96,7 @@ class RemoteGameInput:
             release = dict_text_data.get('onRelease') 
             launch = dict_text_data.get('launch')
         if launch is not None:
-            RemoteGameOutput.send_config(game_obj.player_1, game_obj)
+            RemoteGameOutput.send_config(consumer.player_id, game_obj)
             game_obj.increment_joined()
             if (game_obj.joined == 2):
                 game_obj.play()
