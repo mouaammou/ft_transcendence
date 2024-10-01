@@ -61,7 +61,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		if self.channel_name not in self.user_connections[self.user.id]:
 			self.user_connections[self.user.id].append(self.channel_name)
 		if len(self.user_connections[self.user.id]) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
+			# print(f"\n broadcasting online when login: {self.user}\n")
 			await self.broadcast_online_status(self.user_data, "online")
 
 	async def untrack_user_connection(self):
@@ -126,7 +126,7 @@ class NotificationConsumer(BaseConsumer):
 	#handler for friend_request_received event
 	async def friend_request_notif(self, event):
 		try:
-			print(f"\n SEND FRIEND REQUEST: {event}\n")
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
 			await self.send(text_data=json.dumps({
 				'type': 'friend_request',
 				'to_user_id': event.get('to_user_id'),
@@ -140,7 +140,7 @@ class NotificationConsumer(BaseConsumer):
 
 	# handler for accept_friend_request event
 	async def accept_request_notif(self, event):
-		print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
+		# print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend',
 			'success': event.get('success'),

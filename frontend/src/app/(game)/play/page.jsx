@@ -26,8 +26,8 @@ const PlayMode = () => {
                     name: name,
                 })
             })
-            .then(response => response.json())
-            .then(data => console.log(data));
+            .then(response => response.json());
+            // .then(data => console.log(data));
     }
     mysocket.sendMessage(
         JSON.stringify({"init": "game"})

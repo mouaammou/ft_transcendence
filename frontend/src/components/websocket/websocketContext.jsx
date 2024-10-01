@@ -10,6 +10,7 @@ export const WebSocketProvider = ({url, children}) => {
 
 	const [isConnected, setIsConnected] = useState(false);
 	const [users, setUsers] = useState([]);
+	const [opponent, setOpponent] = useState(null);
 	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
 	const [notificationType, setnotificationType] = useState({});
@@ -54,8 +55,8 @@ export const WebSocketProvider = ({url, children}) => {
 		if (isConnected) {
 			websocket.current.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-				console.log("WebSocket message received:", data);
-				setnotificationType({});
+				// console.log("WebSocket message received:", data);
+
 				if (data.type === 'user_status_change') {
 					setHasGetMessage(true);
 					setUsers(prevUsers => {
@@ -121,6 +122,8 @@ export const WebSocketProvider = ({url, children}) => {
 				listOfNotifications,
 				hasGetMessage,
 				setHasGetMessage,
+				opponent,
+				setOpponent
 				}}>
 			{children}
 		</WebSocketContext.Provider>

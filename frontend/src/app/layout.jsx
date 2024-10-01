@@ -6,6 +6,7 @@ import Navbar from '@/components/navbar/navAuth';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar/sidebar';
 import { WebSocketProvider } from '@/components/websocket/websocketContext';
+import SkeletonTheme from 'react-loading-skeleton';
 
 import '@/styles/globals.css';
 import '@/styles/globalsTailwind.css';
@@ -27,10 +28,10 @@ export default function RootLayout({ children }) {
 								{children}
 							</div>
 						) : (
-							<>
+							<div>
 								<Navbar />
-								{children}
-							</>
+								{children} 
+							</div>
 						)}
 					</LoginProvider>
 				</WebSocketProvider>
