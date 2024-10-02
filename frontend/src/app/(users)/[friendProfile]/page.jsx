@@ -9,13 +9,8 @@ import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
-
 export default function FriendProfile({ params }) {
-	const [profile, setProfile] = useState(() => {
-		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
-	});
-	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, users, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
+
 	const [userStatus, setUserStatus] = useState(() => {
 		const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
 		const foundUser = storedUsers.find((user) => user.username == params.friendProfile);
@@ -24,6 +19,14 @@ export default function FriendProfile({ params }) {
 		}
 		return 'offline';
 	});
+
+	const [profile, setProfile] = useState(() => {
+		console.log('fetching profile from local storage ', params.friendProfile);
+		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
+	});
+
+	const [userNotFound, setUserNotFound] = useState(false);
+	const {websocket, isConnected, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
 	const pathname = usePathname();
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const router = useRouter();
@@ -51,7 +54,7 @@ export default function FriendProfile({ params }) {
 	}
 
 	useEffect(() => {
-		const fetchProfile = async () => {	
+		const fetchProfile = async () => {
 			if (!params.friendProfile) {
 				setUserNotFound(true);
 				return ;
@@ -66,7 +69,8 @@ export default function FriendProfile({ params }) {
 						router.push('/profile');
 					}
 					else {
-						localStorage.setItem(`profile_${fetchProfile.username}`, JSON.stringify(fetchedProfile));
+						console.log('set in local storage friend when fetch:: ', fetchedProfile.username);
+						localStorage.setItem(`profile_${fetchedProfile.username}`, JSON.stringify(fetchedProfile));
 						setProfile(fetchedProfile);
 						setFriendStatusRequest(fetchedProfile.friend);
 					}
@@ -81,8 +85,9 @@ export default function FriendProfile({ params }) {
 		};
 		fetchProfile();
 
-		return () => {
+		return () => {//cleanup when component unmount
 			setUserNotFound(false);
+			localStorage.removeItem(`profile_${params.friendProfile}`);
 		};
 	}, [pathname]);
 
@@ -152,7 +157,6 @@ export default function FriendProfile({ params }) {
 								<li
 									onClick={() => {
 										sendFriendRequest();
-										setFriendStatusRequest('pending');
 									}}
 									className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
 									<FaUserPlus className="mr-2 size-5" /> Add to Friend List

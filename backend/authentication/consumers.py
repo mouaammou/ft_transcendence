@@ -61,7 +61,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		if self.channel_name not in self.user_connections[self.user.id]:
 			self.user_connections[self.user.id].append(self.channel_name)
 		if len(self.user_connections[self.user.id]) == 1:
-			# print(f"\n broadcasting online when login: {self.user}\n")
+			print(f"\n broadcasting online when login: {self.user}\n")
 			await self.broadcast_online_status(self.user_data, "online")
 
 	async def untrack_user_connection(self):
@@ -116,7 +116,7 @@ class NotificationConsumer(BaseConsumer):
 		await super().disconnect(close_code)
 
 # ************************ for friend request ************************
-	async def send_notification_notif(self, channels, notification):
+	async def send_notification_alert(self, channels, notification):
 		"""Send the notification to all the user's channels."""
 		for channel in channels:
 			await self.channel_layer.send(channel, {
@@ -177,7 +177,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {to_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'friend_request_notif',
 			'success': success,
 			'message': message,
@@ -193,7 +193,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {to_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'accept_request_notif',
 			'success': success,
 			'message': message,
@@ -209,7 +209,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {rejected_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'reject_request_notif',
 			'success': reject_status,
 			'user_id': self.user.id,

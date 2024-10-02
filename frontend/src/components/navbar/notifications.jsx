@@ -10,7 +10,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 	const getStatusFromLocalStorage = () => {
 		const storedStatus = localStorage.getItem(`notification_status_${data.id}`);
 		// Check if the notification type is a friendship request or if local storage doesn't have a status
-		return (notificationType.type === listOfNotifications.friendship && !storedStatus) 
+		return (notificationType.type === listOfNotifications.friendship && !storedStatus)
 			? 'Pending'
 			: storedStatus;
 	};
@@ -135,7 +135,7 @@ const NotificationBell = () => {
 							<IoCheckmarkDoneOutline className="text-[1.2rem] mr-1" />
 						</button>
 						<Link href="/notifications"
-							className="text-green-500 text-xs font-semibold  capitalize float-end hover:text-green-300 transition-all">
+							className="text-green-500 text-xs font-semibold  capitalize float-end hover:text-green-700 transition-all">
 							see all
 						</Link>
 					</div>

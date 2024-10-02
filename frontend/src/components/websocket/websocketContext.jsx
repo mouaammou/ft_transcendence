@@ -55,7 +55,7 @@ export const WebSocketProvider = ({url, children}) => {
 		if (isConnected) {
 			websocket.current.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-				// console.log("WebSocket message received:", data);
+				console.log("WebSocket message received:", data);
 
 				if (data.type === 'user_status_change') {
 					setHasGetMessage(true);
@@ -76,7 +76,7 @@ export const WebSocketProvider = ({url, children}) => {
 					type: data.type,
 					status: data.success,
 				});
-				if (data.type === 'friend_request' || data.type === 'accept_friend') {
+				if (data.type === 'friend_request' || data.type === 'accept_friend') {//still type game and tournament
 					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
 				}
 			};
@@ -106,7 +106,7 @@ export const WebSocketProvider = ({url, children}) => {
 			// Set the merged result back to localStorage
 			localStorage.setItem('users', JSON.stringify(updatedUsers));
 		}
-	}, [users]);
+	}, [users, isConnected, websocket]);// Save users to localStorage whenever the users change
 
 
 	return (
