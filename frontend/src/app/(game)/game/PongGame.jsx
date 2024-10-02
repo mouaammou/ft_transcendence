@@ -97,8 +97,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// handle the page visibility for later:
 		let conectionOn = false;
 		function sendVisibilityStatus() {
-			console.log("Visibility: ")
-				console.log(document.visibilityState)
+			// console.log("Visibility: ")
+				// console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
 				socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
 		}
@@ -132,7 +132,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
-				console.log(data);
+				// console.log(data);
 				if (data.update.left_paddle_pos)
 				{
 					player_1.x = data.update.left_paddle_pos[0];
@@ -177,7 +177,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			}
 			else if (data.config)
 			{
-				console.log(data);
+				// console.log(data);
 
 					// setScore1(score1 => data.config.right_player_score);
 					// setScore2(score2 => data.config.left_player_score);

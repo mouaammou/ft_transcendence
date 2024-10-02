@@ -24,7 +24,7 @@ from .event_loop import EventLoopManager
 
 
 
-class remoteGameConsumer(AsyncWebsocketConsumer):
+class RemoteGameConsumer(AsyncWebsocketConsumer):
     
     game_engine = EventLoopManager
     
@@ -47,9 +47,9 @@ class remoteGameConsumer(AsyncWebsocketConsumer):
             data = json.loads(text_data)
         except:      
             print('EXCEPTION: received invaled data from the socket')
-        print(f"dict data ---->  {data}  user --> {self.user.id}")
+        # print(f"dict data ---->  {data}  user --> {self.user.id}")
         self.is_focused = data.get('tabFocused', True) 
-        print(f"tab is focused --->  {self.is_focused}")
+        # print(f"tab is focused --->  {self.is_focused}")
         self.game_engine.recieve(self.player_id, data, self)
     
     def send_game_message(self, event):

@@ -6,6 +6,7 @@ from  game.models import GameHistory
 from channels.db import database_sync_to_async
 from authentication.models import CustomUser
 from asgiref.sync import sync_to_async
+from .game_vs_friend import VsFriendGame
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -25,6 +26,7 @@ class EventLoopManager:
         remote: # set a class to resolve channel names to a game key
             or use channel name as layer group name
     """ 
+    player_consumers = {} # player_id as the key and the consumer as the value
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
     channel_per_player = {} # channel per player, it is a list of player_id and an associated channel_name
@@ -41,6 +43,7 @@ class EventLoopManager:
         player_id = consumer.scope['user'].id
         cls.run_event_loop()
         cls._reconnect(player_id, consumer)
+        cls.player_consumers[player_id] = consumer
         # if not cls._reconnect(player_id, consumer):
         #    RemoteGameOutput.add_callback(player_id, consumer)
         # always on connect set send callback
@@ -108,8 +111,8 @@ class EventLoopManager:
                 except Exception as e:
                     print(f"Error saving game history: {e}")      
                 print("after save finished game\n")
-            cls._dispatch_send_event(game.player_1, game, frame) 
-            cls._dispatch_send_event(game.player_2, game, frame) 
+            cls.send_frame_to_player(game.player_1, game, frame) 
+            cls.send_frame_to_player(game.player_2, game, frame) 
             # print("3\n") 
 
     @classmethod
@@ -200,7 +203,7 @@ class EventLoopManager:
         if (game_obj.player_1 is None):
             game_obj.player_1 = player_id
             game_obj.consumer_1 = consumer
-            game_obj.pause()
+            game_obj.pause()# just making sure the game is not running
         elif(game_obj.player_2 is None):
             game_obj.player_2 = player_id
             game_obj.consumer_2 = consumer
@@ -262,20 +265,19 @@ class EventLoopManager:
     
 
     @classmethod
-    def game_focus(cls, consumer):#add return value
+    def game_focus(cls, player_id):#add return value
         print("in the game_focus methode")
-        player_id = consumer.user.id
         game = cls.active_players.get(player_id)
-        if game is not None and not consumer.is_focused:
+        if game is not None and not RemoteGameOutput.there_is_focus(player_id):
             game.unfocused = player_id
             game.pause()
             game.disconnected = True # and disconnetion class also used here
             game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
         elif game is not None:
-            if game.islaunched and game.consumer_1 and game.consumer_1.is_focused  \
-                and game.consumer_2 and game.consumer_2.is_focused and not game.finished:  
-                game.disconnected = False
-                game.play()
+            # if game.islaunched and game.consumer_1 and game.consumer_1.is_focused  \
+            #     and game.consumer_2 and game.consumer_2.is_focused and not game.finished:  
+            game.disconnected = False
+            game.play()
         return True
         
         
@@ -289,7 +291,10 @@ class EventLoopManager:
         as the key for revieved events.
         """
         # print("******** RECIEVE ********", cls.active_players)
-        if not cls.game_focus(consumer):
+        if 'event_type' in event_dict and event_dict['event_type'] == 'FRIEND_GAME_REQUEST':
+            cls.handle_friend_game_request(event_dict)
+            return None
+        if not cls.game_focus(player_id):
             return None
         game_obj = cls.active_players.get(player_id)
         if game_obj is None:
@@ -304,12 +309,30 @@ class EventLoopManager:
             game_obj.disconnected = False
             return
         if game_obj.game_mode == 'remote':
-            if (game_obj.player_1 == player_id):
-                RemoteGameInput.recieved_dict_text_data(game_obj, 'left', event_dict, consumer)
-            elif(game_obj.player_2 == player_id):
-                RemoteGameInput.recieved_dict_text_data(game_obj, 'right', event_dict, consumer)
-            # add middleware for remote game here
+            cls.handle_remote_game_input(game_obj, player_id, event_dict, consumer)
+
+
+
     # end used
+    @classmethod
+    def handle_remote_game_input(cls, game_obj, player_id, event_dict, consumer):
+        if (game_obj.player_1 == player_id):
+            RemoteGameInput.recieved_dict_text_data(game_obj, 'left', event_dict, consumer)
+        elif(game_obj.player_2 == player_id):
+            RemoteGameInput.recieved_dict_text_data(game_obj, 'right', event_dict, consumer)
+                # add middleware for remote game here
+
+
+
+    @classmethod
+    def handle_friend_game_request(cls, event_dict):
+        player_1_id = event_dict['player_1_id']
+        player_2_id = event_dict['player_2_id']
+        player_1_consumer = cls.player_consumers.get(player_1_id)
+        player_2_consumer = cls.player_consumers.get(player_2_id)
+        if player_1_consumer is not None and player_2_consumer is not None:
+            game = VsFriendGame(player_1_id, player_2_id)
+            cls.active_games.append(game)
 
     @classmethod
     def play(cls, game_obj):#player_id
@@ -330,8 +353,8 @@ class EventLoopManager:
     #     return bool(cls.active_players.get(player_id))
     
     @classmethod
-    def _dispatch_send_event(cls, player_id, game_obj, frame):
-        # print("in the _dispatch_send_event methode")
+    def send_frame_to_player(cls, player_id, game_obj, frame):
+        # print("in the send_frame_to_player methode")
         if game_obj is None:
             return
         if game_obj.game_mode == 'remote':

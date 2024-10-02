@@ -7,9 +7,13 @@ const Mode = () => {
     const router = useRouter();
 
     const handleClick = () => {
-            router.push('waiting')
+        router.push('waiting_random_game');
     }
 
+    const friendsGame = () => {
+        router.push('waiting_friends_game');
+    }
+    
     const botGame = () => {
         router.push('/bot')
     }
@@ -31,7 +35,8 @@ const Mode = () => {
                     onclick={handleClick} >
                 </Selector>
                 <Selector title='PLAY VS FRIEND' description='Online ping pong game with a friend!' 
-                    Svgvar={VsfriendSvg} >
+                    Svgvar={VsfriendSvg}
+                    onclick={friendsGame} >
                 </Selector>
             </div>
             <div className="flex flex-col w-fit mx-2">

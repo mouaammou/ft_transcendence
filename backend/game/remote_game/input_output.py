@@ -71,12 +71,13 @@ class RemoteGameOutput:
         print("is_disconnected method")
         if cls.consumer_group.get(player_id) is None:
             return True
+        print(f"the number of connections is ***********>>>>>>>>  {len(cls.consumer_group.get(player_id))}")
         return len(cls.consumer_group.get(player_id)) <= 1
     
     @classmethod
-    def there_is_focus(cls, unique_key):
+    def there_is_focus(cls, player_id):
         print("there_is_focus method")
-        group = cls.consumer_group.get(unique_key)
+        group = cls.consumer_group.get(player_id)
         if group is None: 
             return False
         return any(cons.is_focused for cons in group)
