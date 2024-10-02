@@ -157,7 +157,6 @@ export default function FriendProfile({ params }) {
 								<li
 									onClick={() => {
 										sendFriendRequest();
-										setFriendStatusRequest('pending');
 									}}
 									className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
 									<FaUserPlus className="mr-2 size-5" /> Add to Friend List

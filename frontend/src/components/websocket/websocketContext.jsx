@@ -76,7 +76,7 @@ export const WebSocketProvider = ({url, children}) => {
 					type: data.type,
 					status: data.success,
 				});
-				if (data.type === 'friend_request' || data.type === 'accept_friend') {
+				if (data.type === 'friend_request' || data.type === 'accept_friend') {//still type game and tournament
 					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
 				}
 			};
