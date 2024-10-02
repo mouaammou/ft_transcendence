@@ -116,7 +116,7 @@ class NotificationConsumer(BaseConsumer):
 		await super().disconnect(close_code)
 
 # ************************ for friend request ************************
-	async def send_notification_notif(self, channels, notification):
+	async def send_notification_alert(self, channels, notification):
 		"""Send the notification to all the user's channels."""
 		for channel in channels:
 			await self.channel_layer.send(channel, {
@@ -177,7 +177,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {to_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'friend_request_notif',
 			'success': success,
 			'message': message,
@@ -193,7 +193,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {to_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'accept_request_notif',
 			'success': success,
 			'message': message,
@@ -209,7 +209,7 @@ class NotificationConsumer(BaseConsumer):
 		if not to_user_channels:
 			logger.error(f"\nUser {rejected_user_id} is offline\n")
 			return
-		await self.send_notification_notif(to_user_channels, {
+		await self.send_notification_alert(to_user_channels, {
 			'type': 'reject_request_notif',
 			'success': reject_status,
 			'user_id': self.user.id,

@@ -10,7 +10,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 	const getStatusFromLocalStorage = () => {
 		const storedStatus = localStorage.getItem(`notification_status_${data.id}`);
 		// Check if the notification type is a friendship request or if local storage doesn't have a status
-		return (notificationType.type === listOfNotifications.friendship && !storedStatus) 
+		return (notificationType.type === listOfNotifications.friendship && !storedStatus)
 			? 'Pending'
 			: storedStatus;
 	};
