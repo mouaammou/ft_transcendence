@@ -11,7 +11,7 @@ const Mode = () => {
     }
 
     const friendsGame = () => {
-        router.push('waiting_friends_game');
+        router.push('/list_of_friends');
     }
     
     const botGame = () => {

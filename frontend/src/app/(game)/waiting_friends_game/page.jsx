@@ -1,4 +1,4 @@
-// src/components/WaitingPage.jsx
+// src/components/WaitingFriendPage.jsx
 "use client"
 import React from 'react'
 import mysocket from '@/utils/WebSocketManager'; // Adjust the path as needed
@@ -7,20 +7,16 @@ import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from "@/components/auth/loginContext.jsx";
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import '@/styles/game/waitingFriendPage.css';
 
-const WaitingPage = () => {
-    const {setOpponent} = useWebSocketContext();
-    const [waiting, setWaiting] = useState(true);
-    
-	const {profileData: user_data} = useAuth();
-    const [myuser, setMyuser] = useState(null);
-    
+const WaitingFriendPage = () => {
+
+    const { profileData: user_data } = useAuth();
+    const [myfriend, setMyfriend] = useState(null);
+
     const router = useRouter(); // Use Next.js router
+    const { websocket, invitationResponse, setInvitationResponse, setOpponent } = useWebSocketContext();
 
-
-    const Skeleton = () => (
-        <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />
-    );
 
     useEffect(() => {
         // Register message handler for WebSocket messages
@@ -29,87 +25,68 @@ const WaitingPage = () => {
             const data = JSON.parse(message.data);
 
             if (data.status === 'start') {
-                const opponent_id = data.opponent;
-            
-                // Fetch user data based on opponent ID
-                console.log("The player id you will play with is ", opponent_id);
-                const fetchedUser = await getData(`/userById/${opponent_id}`);
-            
-                if (fetchedUser.status === 200) {
-                    setMyuser(fetchedUser.data); // Assuming data structure contains user data
-            
-                    // Ensure fetchedUser.data is valid
-                    if (fetchedUser.data) {
-                        const sentData = {
-                            username: String(fetchedUser.data.username), // Assuming this is a string
-                            avatar: String(fetchedUser.data.avatar),     // Assuming this is a string
-                            side: String(data.side)                       // This should also be a string or number
-                        };
-                        
-                        setOpponent(sentData);
-                        console.log("You can start, this is the player you will play with ------> ", fetchedUser.data);
-            
-                        timer = setTimeout(() => {
-                            router.push('/game'); // This must be a flat object with only strings/numbersrouter.push('/dashboard', { scroll: false })}
-                        }, 1000); // 2000 milliseconds = 2 seconds
-            
-                    } else {
-                        console.error('Fetched user data is invalid');
-                    }
-                } else {
-                    console.error('Failed to fetch opponent data');
-                }
-            }
-            else if (data.status === 'already_in_game') {
+                // Redirect to the game page
                 router.push('/game');
-                console.log("hi blablo,  ")
             }
         };
         mysocket.registerMessageHandler(handleMessage);
-        // Notify backend that the player is waiting
-        // mysocket.sendMessage(JSON.stringify({ action: 'join_waiting_room' }));
- 
-        // Cleanup on unmount
+
+
+        let asdf = localStorage.getItem('selectedFriend');
+        console.log('my selected friend is  : ', asdf);
+        if (asdf) {
+            asdf = JSON.parse(asdf);
+            setMyfriend(asdf);
+        } else {
+            // router.push('/friends');
+        }
         return () => {
-            clearTimeout(timer);
             mysocket.unregisterMessageHandler(handleMessage);
         };
     }, []);
 
-
-
-    const sent = mysocket.sendMessage(JSON.stringify(
-        {
-            "remote":
-            {
-                mode:'random'
+    useEffect(() => {
+        console.log('333333333333333######     invitationResponse', invitationResponse);
+        if (invitationResponse) {
+            if (invitationResponse === 'acceptGame') {
+                console.log('invitation accepted');
+                setOpponent(myfriend);
+                localStorage.setItem('opponent', JSON.stringify(myfriend));
+                setInvitationResponse(null);
+                mysocket.sendMessage(JSON.stringify({ 
+                    type: 'FRIEND_GAME_REQUEST',
+                    player_1_id: user_data.id,
+                    player_2_id: myfriend.id,
+                 }));
+                router.push('/game');
+            } else if (invitationResponse === 'rejectGame') {
+                console.log('invitation rejected');
+                router.push('/list_of_friends');
+                setInvitationResponse(null);
             }
         }
-    ));
-    console.log("Here is sent ---> ",sent)
-    // if (!sent) {
-    //     //alert the user that he must reconnect to the backend
-    //     router.replace('/play');
-    // }
-    
+    }, [invitationResponse]);
+
+
+    // const sent = mysocket.sendMessage(JSON.stringify());
     return (
-        <div className="flex items-center justify-center min-h-screen  p-4">
-        <div className="bg-gray-400 rounded-lg  max-w-md w-full p-6">
-            <div className="flex items-center justify-center mb-4">
-                {waiting &&
-                    <>
-                        <img src={user_data?.avatar} alt="" className="w-16 h-16 rounded-full mr-2  bg-gray-700" />
-                        <span className="text-2xl font-bold">VS</span>
-                        {(myuser &&  <img src={myuser?.avatar} alt="" className="w-16 h-16 rounded-full mx-2 bg-gray-700" /> ) || <Skeleton/>}
-                    </>
-                }
+        <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="bg-gray-500 rounded-lg max-w-md w-full p-6">
+                <h1 className="text-2xl text-center font-balsamiq mb-12">Waiting for {myfriend?.username} to join</h1>
+                <div className="flex items-center justify-center mb-4">
+                    <img src={user_data?.avatar} alt="" className="w-[80] h-[80] rounded-full  bg-gray-700" />
+                    <span className="text-2xl font-balsamiq mx-14 ">VS</span>
+                    <div className="relative loader">
+                        <img src={myfriend?.avatar} alt="" className="w-[80] h-[80] rounded-full  bg-gray-700" />
+                    </div>
+                </div>
             </div>
-            {waiting && (
-                <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
-            )}
         </div>
-    </div>
     );
+    // the second image pulsing effect is not working
+    /* HTML: <div class="loader"></div> */
 };
 
-export default WaitingPage;
+
+
+export default WaitingFriendPage;

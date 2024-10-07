@@ -26,10 +26,8 @@ class EventLoopManager:
         remote: # set a class to resolve channel names to a game key
             or use channel name as layer group name
     """ 
-    player_consumers = {} # player_id as the key and the consumer as the value
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
-    channel_per_player = {} # channel per player, it is a list of player_id and an associated channel_name
     finished_players = [] # players who fininshed their games
     finished_games = [] # finished games
     _event_loop_task = None
@@ -43,7 +41,7 @@ class EventLoopManager:
         player_id = consumer.scope['user'].id
         cls.run_event_loop()
         cls._reconnect(player_id, consumer)
-        cls.player_consumers[player_id] = consumer
+        RemoteGameOutput.add_callback(player_id, consumer)
         # if not cls._reconnect(player_id, consumer):
         #    RemoteGameOutput.add_callback(player_id, consumer)
         # always on connect set send callback
@@ -91,9 +89,9 @@ class EventLoopManager:
 
     @classmethod
     def _update(cls):
-        # print("in the _update methode")
+        # print("number of games ----> ", len(cls.running_games))
         for game, player_ids in cls.running_games.items():
-            if game.is_fulfilled() == False : #or game.disconnected()  
+            if game.is_fulfilled() == False: #or game.disconnected()  
                 continue
             if not game.notify_players:
                 cls.notify_players(game) 
@@ -129,8 +127,6 @@ class EventLoopManager:
                 'opponent' : game.player_1,
                 'side' : 'right'
             }
-        RemoteGameOutput.add_callback(game.player_1, game.consumer_1, sendConfig=False)  
-        RemoteGameOutput.add_callback(game.player_2, game.consumer_2, sendConfig=False) 
         RemoteGameOutput._send_to_consumer_group(game.player_1, data_1)
         RemoteGameOutput._send_to_consumer_group(game.player_2, data_2)
        
@@ -148,10 +144,10 @@ class EventLoopManager:
         game.determine_winner_loser()
         data_1 = {'status':'win'}
         print(f"send winner state {data_1} to {game.winner} ")
-        RemoteGameOutput.send(game.winner, data_1)
+        RemoteGameOutput.send_update(game.winner, data_1)
         data_2 = {'status':'lose'}
         print(f"send loser state {data_2} to {game.loser} ")
-        RemoteGameOutput.send(game.loser, data_2)
+        RemoteGameOutput.send_update(game.loser, data_2)
 
     @classmethod 
     def _save_finished(cls, game_obj):
@@ -160,7 +156,6 @@ class EventLoopManager:
         cls.finished_players.append(game_obj.player_1)
         cls.finished_players.append(game_obj.player_2)
         cls.finished_games.append(game_obj)   
-        cls.channel_per_player.clear()
         # pass
         
     @classmethod
@@ -170,7 +165,7 @@ class EventLoopManager:
         for player_id in cls.finished_players:
             print(f"A PLAYER CLEANED --> {player_id}")
             cls.active_players.pop(player_id)
-        for game in cls.finished_games:
+        for game in cls.finished_games: 
             print("A GAME CLEANED")
             cls.running_games.pop(game)  
         cls.finished_players.clear()
@@ -179,8 +174,16 @@ class EventLoopManager:
         # wait(10000000000000000000)
         # print("yaaaawww\n")
 
+    # @classmethod
+    # def add_vs_friend_game(cls, player_id, consumer, game_mode='remote'):
+    #     print("in the add_vs_friend_game methode")
+    #     game = VsFriendGame(player_id, consumer)
+    #     cls.running_games.append(game )
+        #RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
+
+
     @classmethod
-    def add_remote_game(cls, player_id, consumer, game_mode='remote'):
+    def add_random_game(cls, player_id, game_mode='remote'):
         print("in the add methode")
         """
         This method is handled by input middlware.
@@ -196,17 +199,16 @@ class EventLoopManager:
         game_obj = cls.pending_game()
         if  game_obj is None:
             game_obj = cls.game_class()
-            game_obj.pause()
+            game_obj.remote_type = 'random'
+            game_obj.pause()# just making sure the game is not running
             game_obj.set_game_mode(game_mode)
         else:
             cls.disconnected = False
         if (game_obj.player_1 is None):
             game_obj.player_1 = player_id
-            game_obj.consumer_1 = consumer
             game_obj.pause()# just making sure the game is not running
         elif(game_obj.player_2 is None):
             game_obj.player_2 = player_id
-            game_obj.consumer_2 = consumer
             game_obj.pause()
         cls.active_players[player_id] = game_obj #waht would happen if i save the game and then add the players.
         cls.unique_game_mapping()
@@ -254,7 +256,6 @@ class EventLoopManager:
     def disconnect(cls, player_id):
         print("in the disconnect methode")
         game_obj = cls.active_players.get(player_id)
-        # channel = cls.channel_per_player.get(player_id)
         if game_obj and game_obj.is_fulfilled() and not game_obj.is_finished() \
             and RemoteGameOutput.is_disconnected(player_id): 
             game_obj.pause()
@@ -263,21 +264,47 @@ class EventLoopManager:
             return True 
         return False
     
+    @classmethod
+    def in_game_page(cls, player_id):
+        print("in the in_game_page methode")
+        game = cls.active_players.get(player_id)
+   
+        if game is not None and not RemoteGameOutput.there_is_game_page(player_id):
+            print(f"player_id {player_id} is not in the game page")
+            game.unfocused = player_id
+            game.pause()
+            game.disconnected = True
+            game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
+            return False
+        elif game is not None:
+            player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
+            print(f"all players are in the game page, always run the game {player_id}")
+            if RemoteGameOutput.there_is_game_page(player_id_2):
+                game.play()
+                game.disconnected = False
+                return True
+        return True
+
 
     @classmethod
-    def game_focus(cls, player_id):#add return value
+    def game_focus(cls, player_id):
+        if not cls.in_game_page(player_id):
+            return False
         print("in the game_focus methode")
         game = cls.active_players.get(player_id)
         if game is not None and not RemoteGameOutput.there_is_focus(player_id):
             game.unfocused = player_id
             game.pause()
-            game.disconnected = True # and disconnetion class also used here
+            game.disconnected = True 
             game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
+            return False
         elif game is not None:
-            # if game.islaunched and game.consumer_1 and game.consumer_1.is_focused  \
-            #     and game.consumer_2 and game.consumer_2.is_focused and not game.finished:  
-            game.disconnected = False
-            game.play()
+            player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
+            if RemoteGameOutput.there_is_focus(player_id_2):
+                game.unfocused = None
+                game.disconnected = False
+                game.play()
+                return True
         return True
         
         
@@ -291,7 +318,9 @@ class EventLoopManager:
         as the key for revieved events.
         """
         # print("******** RECIEVE ********", cls.active_players)
-        if 'event_type' in event_dict and event_dict['event_type'] == 'FRIEND_GAME_REQUEST':
+        print(f"player_id ----> {player_id}")
+        print(f"event_dict ----> {event_dict}")
+        if 'type' in event_dict and event_dict['type'] == 'FRIEND_GAME_REQUEST':
             cls.handle_friend_game_request(event_dict)
             return None
         if not cls.game_focus(player_id):
@@ -303,12 +332,12 @@ class EventLoopManager:
             So check if recieved event is CREATE
             """
             print("create new game instance")
-            RemoteGameInput.try_create(cls, player_id, event_dict, consumer)  
+            RemoteGameInput.try_create(cls, player_id, event_dict)  
             return None
         if cls.already_in_game(player_id, event_dict):
             game_obj.disconnected = False
             return
-        if game_obj.game_mode == 'remote':
+        if game_obj.game_mode == 'remote' and game_obj.unfocused is None:
             cls.handle_remote_game_input(game_obj, player_id, event_dict, consumer)
 
 
@@ -326,13 +355,17 @@ class EventLoopManager:
 
     @classmethod
     def handle_friend_game_request(cls, event_dict):
+        print("in the handle_friend_game_request methode")
         player_1_id = event_dict['player_1_id']
         player_2_id = event_dict['player_2_id']
-        player_1_consumer = cls.player_consumers.get(player_1_id)
-        player_2_consumer = cls.player_consumers.get(player_2_id)
-        if player_1_consumer is not None and player_2_consumer is not None:
-            game = VsFriendGame(player_1_id, player_2_id)
-            cls.active_games.append(game)
+        if (player_2_id in cls.active_players) or (player_1_id in cls.active_players):
+            RemoteGameOutput._send_to_consumer_group(player_1_id, {'status': 'friend_in_game'})
+            return None
+        game = VsFriendGame(player_1=player_1_id,player_2=player_2_id)
+        cls.running_games[game] = [player_1_id, player_2_id]
+        cls.active_players[player_1_id] = game
+        cls.active_players[player_2_id] = game
+        game.play()
 
     @classmethod
     def play(cls, game_obj):#player_id
@@ -358,7 +391,7 @@ class EventLoopManager:
         if game_obj is None:
             return
         if game_obj.game_mode == 'remote':
-           RemoteGameOutput.send(player_id, frame)
+           RemoteGameOutput.send_update(player_id, frame)
             # add middleware for remote game here
 
     @classmethod
@@ -399,11 +432,26 @@ class EventLoopManager:
         print("on saving func\n")
         cls.determine_winner(game_obj)
         # Fetch player instances asynchronously
-        player_1_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_1)
-        player_2_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_2)
+        try:
+            player_1_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_1)
+            player_2_instance = await sync_to_async(CustomUser.objects.get)(id=game_obj.player_2)
+        except CustomUser.DoesNotExist:
+            print("A player does not exist.")# this is a problem, because the player should always exist
+            print("A player does not exist.")# since i imported the player from the custom user model ---> ask mouad about this
+            print("A player does not exist.")
+            print("A player does not exist.")
+            print("A player does not exist.")
+            print("A player does not exist.")
+            print("A player does not exist.")
+            return
 
         reason = 'defeat' if not disconnect else 'disconnect'
-
+        if game_obj.remote_type == 'vsfriend':
+            l_game_type = 'vs_friend'
+        elif game_obj.remote_type == 'random':
+            l_game_type = 'random'
+        elif game_obj.remote_type == 'tournament':
+            l_game_type = 'tournament'
         # Create GameHistory instance asynchronously
         await database_sync_to_async(GameHistory.objects.create)(
             player_1=player_1_instance,
@@ -412,7 +460,7 @@ class EventLoopManager:
             player_2_score=game_obj.right_player.score,
             winner_id=game_obj.winner,
             loser_id=game_obj.loser,
-            game_type='Remote',
+            game_type=l_game_type,
             finish_type=reason
         )
 

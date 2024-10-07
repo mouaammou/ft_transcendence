@@ -29,11 +29,11 @@ class LocalGameDisconnection:
     _timeout_in = 10 # seconds
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        # super().__init__(*args, **kwargs)
         self._disconnected = False
         self._disconnetion_task = None
 
-        self._outside_callback = None
+        self._outside_callback = None  
         self._outside_callback_args = list()
         self._outside_callback_kwargs = dict()
     

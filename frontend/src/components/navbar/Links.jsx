@@ -84,12 +84,16 @@ const Links = () => {
 						<div onMouseLeave={() => setIsOpenUsers(false)}
 							className="z-10 absolute left-0 mt-2 divide-y rounded-lg max-w-52">
 							<ul className="py-0 text-sm text-gray-700">
-								<li className="py-3 px-4 bg-emerald-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition">
-									<Link href="/allusers">All Users</Link>
-								</li>
-								<li className="py-3 px-4 bg-sky-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 hover:bg-sky-600 transition">
-									<Link href="/friends">Friends</Link>
-								</li>
+								<Link href="/allusers">
+									<li className="py-3 px-4 bg-emerald-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition">
+										All Users
+									</li>
+								</Link>
+								<Link href="/friends">
+									<li className="py-3 px-4 bg-sky-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 hover:bg-sky-600 transition">
+										Friends
+									</li>
+								</Link>
 							</ul>
 						</div>
 

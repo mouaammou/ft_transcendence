@@ -13,7 +13,7 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 class BaseConsumer(AsyncWebsocketConsumer):
-	USER_STATUS_GROUP = 'users_status'
+	USER_STATUS_GROUP = 'users_status'   
 	user_connections = {}
 
 	async def connect(self):
@@ -113,7 +113,7 @@ class NotificationConsumer(BaseConsumer):
 		await super().connect()
 
 	async def disconnect(self, close_code):
-		await super().disconnect(close_code)
+		await super().disconnect(close_code)  
 
 # ************************ for friend request ************************
 	async def send_notification_alert(self, channels, notification):
@@ -138,6 +138,44 @@ class NotificationConsumer(BaseConsumer):
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
 
+	#handler for friend_request_received event
+	async def game_invitation_notif(self, event):
+		try:
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
+			await self.send(text_data=json.dumps({
+				'type': 'game_invitation',
+				'to_user_id': event.get('to_user_id'),
+				'username': event.get('username'),
+				'avatar': event.get('avatar'),
+			}))
+		except Exception as e:
+			logger.error(f"Error handling game invitation: {e}")
+
+	async def accept_game_notif(self, event):
+		try:
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
+			await self.send(text_data=json.dumps({
+				'type': 'accept_game',
+				'to_user_id': event.get('to_user_id'),
+				'success': True,
+				'username': event.get('username'),
+				'avatar': event.get('avatar'),
+			}))
+		except Exception as e:
+			logger.error(f"Error handling accept game: {e}")
+	
+	async def reject_game_notif(self, event):
+		try:
+			# print(f"\n SEND FRIEND REQUEST: {event}\n")
+			await self.send(text_data=json.dumps({
+				'type': 'reject_game',
+				'to_user_id': event.get('to_user_id'),
+				'success': True,
+				'username': event.get('username'),
+				'avatar': event.get('avatar'),
+			}))
+		except Exception as e:
+			logger.error(f"Error handling reject game: {e}")
 	# handler for accept_friend_request event
 	async def accept_request_notif(self, event):
 		# print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
@@ -149,6 +187,8 @@ class NotificationConsumer(BaseConsumer):
 			'user_id': event.get('user_id'),
 			'avatar': event.get('avatar')
 		}))
+
+	
 # enf of friend request *********************************************
 
 # ************************ for rejecting friend request ************************
@@ -169,6 +209,54 @@ class NotificationConsumer(BaseConsumer):
 			await self.handle_accept_request(data)
 		elif message_type == 'reject_friend_request':
 			await self.handle_reject_request(data)
+		elif message_type == 'send_game_invitation':
+			await self.handle_game_invitation(data)
+		elif message_type == 'accept_game_invitation':
+			await self.handle_accept_game_invitation(data)
+		elif message_type == 'reject_game_invitation':
+			await self.handle_reject_game(data)
+
+
+	async def handle_reject_game(self, data):
+		rejected_user_id = data.get('to_user_id')
+		# reject_status = await self.reject_game_invitation(rejected_user_id)
+		to_user_channels = self.user_connections.get(rejected_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {rejected_user_id} is offline\n")
+			return
+		await self.send_notification_alert(to_user_channels, {
+			'type': 'reject_game_notif',
+			'success': True,
+			'user_id': self.user.id,
+			'avater': self.user_data['avatar'],
+			'username': self.user_data['username']
+		})
+
+	async def handle_accept_game_invitation(self, data):
+		to_user_id = data.get('to_user_id')
+		to_user_channels = self.user_connections.get(to_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {to_user_id} is offline\n")
+			return
+		await self.send_notification_alert(to_user_channels, {
+			'type': 'accept_game_notif',
+			'to_user_id': self.user.id,
+			'username': self.user_data['username'],
+			'avatar': self.user_data['avatar']
+		})
+
+	async def handle_game_invitation(self, data):
+		to_user_id = data.get('to_user_id')
+		to_user_channels = self.user_connections.get(to_user_id)
+		if not to_user_channels:
+			logger.error(f"\nUser {to_user_id} is offline\n")
+			return
+		await self.send_notification_alert(to_user_channels, {
+			'type': 'game_invitation_notif',
+			'to_user_id': self.user.id,
+			'username': self.user_data['username'],
+			'avatar': self.user_data['avatar']
+		})
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')

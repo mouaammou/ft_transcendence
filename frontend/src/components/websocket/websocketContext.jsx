@@ -11,16 +11,18 @@ export const WebSocketProvider = ({url, children}) => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [users, setUsers] = useState([]);
 	const [opponent, setOpponent] = useState(null);
+	const [invitationResponse, setInvitationResponse] = useState(null);
 	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
 	const [notificationType, setnotificationType] = useState({});
 	const [listOfNotifications, setListOfNotifications] = useState({
 		friendship: 'friend_request',
 		acceptFriend: 'accept_friend',
-		inviteToGame: 'invite_to_game',
+		inviteToGame: 'game_invitation',
 		acceptGame: 'accept_game',
+		rejectGame: 'reject_game',
 		inviteToTournament: 'invite_to_tournament',
-		rejectFriend: 'reject_friend',
+		rejectFriend: 'reject_friend', 
 	});
 	const [hasGetMessage, setHasGetMessage] = useState(false);
 
@@ -76,7 +78,13 @@ export const WebSocketProvider = ({url, children}) => {
 					type: data.type,
 					status: data.success,
 				});
-				if (data.type === 'friend_request' || data.type === 'accept_friend') {//still type game and tournament
+				if (data.type === 'friend_request' || data.type === 'accept_friend' || data.type === 'game_invitation' || data.type === 'accept_game' || data.type === 'reject_game') {//still type game and tournament
+					if (data.type === 'accept_game') {
+						setInvitationResponse('acceptGame');
+					} else if (data.type === 'reject_game') {
+						setInvitationResponse('rejectGame');
+					}
+					setOpponent(data.from_user_id);
 					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
 				}
 			};
@@ -123,7 +131,9 @@ export const WebSocketProvider = ({url, children}) => {
 				hasGetMessage,
 				setHasGetMessage,
 				opponent,
-				setOpponent
+				setOpponent,
+				invitationResponse,
+				setInvitationResponse
 				}}>
 			{children}
 		</WebSocketContext.Provider>
@@ -131,6 +141,10 @@ export const WebSocketProvider = ({url, children}) => {
 };
 
 export const useWebSocketContext = () => useContext(WebSocketContext);
+
+if (useWebSocketContext === undefined || useWebSocketContext === null) {
+	throw new Error('useWebSocketContext must be used within a WebSocketProvider');
+}
 
 
 

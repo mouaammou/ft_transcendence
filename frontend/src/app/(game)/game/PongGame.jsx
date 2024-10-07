@@ -3,11 +3,16 @@ import { useEffect, player_1ef, useState, useRef} from 'react';
 import socket from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
+import { useRouter , useSearchParams, usePathname } from 'next/navigation';
 
 export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 	const canvasRef = useRef(null);
 	const [showWinModal, setShowWinModal] = useState(false);
 	const [showLoseModal, setShowLoseModal] = useState(false);
+	const router = useRouter();
+	const pathname = usePathname();
+    const searchParams = useSearchParams();
+	const previousPathnameRef = useRef(pathname);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -313,6 +318,20 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
 		};
 	}, []);
+
+
+	useEffect(() => {
+		// This code will run when the component is mounted
+		console.log('Game page entered:', pathname);
+		socket.sendMessage(JSON.stringify({"inGamePage" : "true"}));
+	
+		return () => {
+			// This code will run when the component is unmounted
+			console.log('Game page left:', pathname);
+			socket.sendMessage(JSON.stringify({"inGamePage" : "false"}));
+		};
+	}, []);
+
 	return (
 		<>
 			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
@@ -320,14 +339,22 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			</canvas>
 				{showWinModal && (
 					<YouWin 
-						onClose={() => setShowWinModal(false)}
+						onClose={() => {
+							setShowWinModal(false);
+						    router.push('/play');
+						}
+						}
 						// stats={{ score1, score2 }} // Pass stats as needed
 					/>
 				)}
 				
 				{showLoseModal && (
 					<YouLose 
-						onClose={() => setShowLoseModal(false)}
+						onClose={() => {
+							setShowLoseModal(false);
+							router.push('/play');
+						}
+						}
 						// stats={{ score1, score2 }} // Pass stats as needed
 					/>
 				)}

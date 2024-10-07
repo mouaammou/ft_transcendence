@@ -4,17 +4,20 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import { useRouter } from 'next/navigation';
 
 const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, listOfNotifications }) => {
 	// Retrieve status from localStorage or default to 'Pending'
 	const getStatusFromLocalStorage = () => {
 		const storedStatus = localStorage.getItem(`notification_status_${data.id}`);
 		// Check if the notification type is a friendship request or if local storage doesn't have a status
-		return (notificationType.type === listOfNotifications.friendship && !storedStatus)
+		return ((notificationType.type === listOfNotifications.friendship || 
+			notificationType.type === listOfNotifications.inviteToGame) && !storedStatus)
 			? 'Pending'
 			: storedStatus;
 	};
 
+	const router = useRouter();
 	const [status, setStatus] = useState(() => getStatusFromLocalStorage());
 
 	console.log('notificationType', notificationType);
@@ -28,7 +31,15 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 	const handleAction = (action) => {
 		setStatus(action); // Update local state
 		if (websocket.current) {
-			const messageType = action === 'Accepted' ? 'accept_friend_request' : 'reject_friend_request';
+			let messageType;
+			if (action === 'AccepteGame') 
+				messageType = 'accept_game_invitation';
+			else if (action === 'RejectGame')
+				messageType = 'reject_game_invitation';
+			else if (action === 'Accepte_friend')
+				messageType = 'accept_friend_request';
+			else if (action === 'Reject_friend')
+				messageType = 'reject_friend_request';
 			websocket.current.send(JSON.stringify({
 				type: messageType,
 				to_user_id: data.to_user_id,
@@ -36,6 +47,13 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 			console.log(`SEND ${action} friend request`);
 		}
 	};
+
+	const pushToGamePage = (action) => {
+		if (action === 'AccepteGame') {
+			localStorage.setItem('opponent', JSON.stringify(data.from_user_id));
+			router.push('/game');
+		}
+	}
 
 	const handleMarkAsRead = () => {
 		setTimeout(() => {
@@ -63,8 +81,12 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 					<button
 					className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
 					onClick={() => {
-						handleAction('Accepted');
+						handleAction(
+							notificationType.type === listOfNotifications.friendship ? 'Accepte_friend' : 'AccepteGame'
+						);
+						pushToGamePage(notificationType.type === listOfNotifications.friendship ? 'Accepte_friend' : 'AccepteGame');
 						handleMarkAsRead();
+						// hadnle accept invitation for a game
 					}}
 					>
 					Accept
@@ -72,7 +94,9 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 					<button
 					className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
 					onClick={() => {
-						handleAction('Rejected');
+						handleAction(
+							notificationType.type === listOfNotifications.friendship ? 'Reject_friend' : 'RejectGame'
+						);
 						handleMarkAsRead();
 					}}
 					>
@@ -80,7 +104,9 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 					</button>	
 				</>
 			}
-			{(notificationType.type == listOfNotifications.acceptFriend) && 
+			{(notificationType.type == listOfNotifications.acceptFriend 
+				|| notificationType.type == listOfNotifications.acceptGame
+			) && 
 				<>
 				<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${notificationType.status ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
 					{notificationType.status ? 'Accepted' : 'Rejected'}

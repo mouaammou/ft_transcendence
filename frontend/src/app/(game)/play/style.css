@@ -16,21 +16,26 @@
     margin-top: 70px;
     border-radius: 25px;
     padding: 100px ;
+    width: 80%;
     max-width: 1530px;
 }
+.modes-container .left-mode,
+.modes-container .middle-mode,
+.modes-container .right-mode {
+  cursor: pointer;
+}
+
 
 .main-page .transparent .title {
   font-family: var(--principaleFont);
   font-size: 64px;
   font-weight: 700;
-  /* padding-top: 120px; */
-  width: fit-content;
-}
+   width: fit-content;
+} 
 
 .main-page .transparent .modes-container {
   display: flex;
   justify-content: space-evenly;
-  /* margin-top: 100px; */
   width: 100%;
 }
 

@@ -47,6 +47,7 @@ const WaitingPage = () => {
                         };
                         
                         setOpponent(sentData);
+                        localStorage.setItem(`opponent`, JSON.stringify(sentData));
                         console.log("You can start, this is the player you will play with ------> ", fetchedUser.data);
             
                         timer = setTimeout(() => {

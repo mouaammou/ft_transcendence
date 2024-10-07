@@ -45,7 +45,7 @@ class RemoteGameOutput:
             cls.send_config(player_id, game_obj or RemoteGameLogic())
 
     @classmethod
-    def send(cls, player_id, frame) -> None:
+    def send_update(cls, player_id, frame) -> None:
         # print(f"send method of remoteGameOutput class, frame --> {frame}")
         data = {'update': frame}
         cls._send_to_consumer_group(player_id, data) 
@@ -80,7 +80,25 @@ class RemoteGameOutput:
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return False
-        return any(cons.is_focused for cons in group)
+        return any(consumer.is_focused for consumer in group)
+    
+    @classmethod
+    def there_is_game_page(cls, player_id):
+        #print the length of the group
+        print("there_is_game_page method")
+        print(f"the number of connections is ***********>>>>>>>>  {len(cls.consumer_group.get(player_id))}")
+        group = cls.consumer_group.get(player_id)
+        if group is None: 
+            print("group is none")
+            return False
+        for consumer in group:
+            print(f"consumer {consumer} has the in_game_page attribute set to {consumer.in_game_page}")
+            if consumer.in_game_page is True:
+                return True
+        print("no consumer has the in_game_page attribute set to True")
+        return False
+    
+        # return any(consumer.in_game_page is False for consumer in group)
 
 
 class RemoteGameInput:
@@ -116,7 +134,7 @@ class RemoteGameInput:
             game_obj.on_release(side, release.strip())
 
     @classmethod 
-    def try_create(cls, event_loop_cls, player_id, event_dict, consumer):
+    def try_create(cls, event_loop_cls, player_id, event_dict):
         print("try_create method")
         data = event_dict.get('remote')
         if data:
@@ -125,10 +143,10 @@ class RemoteGameInput:
             return
         mode = data.get('mode')
         if mode is not None and mode == 'random':
-            event_loop_cls.add_remote_game(player_id, consumer, game_mode='remote')
+            event_loop_cls.add_random_game(player_id, game_mode='remote')
             return
-        elif mode is not None and mode == 'vs_friend':
-            event_loop_cls.add_vs_friend_game(player_id, consumer, game_mode='remote')
+        # elif mode is not None and mode == 'vs_friend':
+        #     event_loop_cls.add_vs_friend_game(player_id, consumer, game_mode='remote')
         # elif event_loop_cls.already_in_game(player_id):
         #     return
         # event_loop_cls.play(player_id)  

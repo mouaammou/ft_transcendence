@@ -6,19 +6,22 @@ import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import { useAuth } from "@/components/auth/loginContext.jsx";
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import { usePathname } from 'next/navigation';
 
 
 const GamePage = () => {
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
-	const {profileData: user_data} = useAuth();
+  const { opponent , setOpponent } = useWebSocketContext();
+  const { profileData: user_data } = useAuth();
+  // const pathname = usePathname();
+
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
 
-  const {opponent} = useWebSocketContext();
-	// const changeScore1 = () => {
-	// 	setScore1(score1 + 1);
-	// }
+  // const changeScore1 = () => {
+  // 	setScore1(score1 + 1);
+  // }
 
   // const changeScore1 = () => {
   // 	setScore1(score1 + 1);
@@ -29,7 +32,19 @@ const GamePage = () => {
 
   useEffect(() => {
     console.log("params : ", opponent);
-
+    if ( ! opponent) {
+      const myOpponent = localStorage.getItem('opponent');
+      if (myOpponent) {
+          try {
+              const objOpponent = JSON.parse(myOpponent);
+              setOpponent(objOpponent);
+          } catch (error) {
+              console.error("Failed to parse opponent from localStorage:", error);
+          }
+      } else {
+          console.warn("No opponent found in localStorage.");
+      }
+    }
     // Set players based on the side
     if (opponent && opponent.side === 'right') {
       setPlayer1(opponent);
@@ -38,7 +53,7 @@ const GamePage = () => {
       setPlayer1(user_data);
       setPlayer2(opponent);
     }
-  }, []);
+  }, [opponent, user_data]);
 
   return (
     <div className="game">
@@ -53,9 +68,9 @@ const GamePage = () => {
         <div className="right-score">{score1}</div>
       </div>
       <div className="down-section">
-         { player1 ? 
-         (<div className="left-user">
-       
+        {player1 ?
+          (<div className="left-user">
+
             <img // i have to resolve the issue with <Image/> 
               className="left-user-img"
               src={player1.avatar}
@@ -64,12 +79,12 @@ const GamePage = () => {
               height={100}
             />
             <div className="left-user-name">{player1.username}</div>
-          </div> ):(<div>still loading ....</div>) }
+          </div>) : (<div>still loading ....</div>)}
         <div className="self-game">
           <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} />
         </div>
-        { player1 ? 
-         (<div className="right-user">
+        {player2 ?
+          (<div className="right-user">
             <img // i have to resolve the issue with <Image/> 
               className="right-user-img"
               src={player2?.avatar}
@@ -78,7 +93,7 @@ const GamePage = () => {
               height={100}
             />
             <div className="right-user-name">{player2?.username}</div>
-          </div>):(<div>still loading ....</div>)}
+          </div>) : (<div>still loading ....</div>)}
       </div>
     </div>
   );
