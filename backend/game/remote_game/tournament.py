@@ -64,76 +64,210 @@
 
 
 import uuid
-from game.models import TournamentHistory
+from game.models import TournamentHistory, RoundHistroy
+from game.remote_game.game_vs_friend import VsFriendGame
 from authentication.models import CustomUser
 from asgiref.sync import sync_to_async
+import asyncio
+from channels.db import database_sync_to_async
+from django.core.exceptions import ObjectDoesNotExist
 
-class RemoteTournament:
-    def __init__(self, organizer_id):# i can use this to create a new tournament
+
+   
+
+class Round:
+    def __init__(self, tournament_id, status, players):
+        self.tournament_id = tournament_id
+        self.status = status # quarter, semi-final, final
+        self.players = players
+        self.winners = []
+        self.games = []
+        self.start = False
+        self.end = False
+
+    def get_games(self):
+        return self.games
+    
+    def set_games(self, games):
+        self.games = games
+
+    def update_round_results(self):
+        for game in self.games:
+            if game.is_finished() and game.winner not in self.winners:
+                self.winners.append(game.winner)
+        if len(self.winners) != len(self.players) // 2:
+            return False
+        self.end = True
+        return True
+
+    def get_winners(self):
+        return self.winners
+    
+    def set_winners(self, winners):
+        self.winners = winners
+
+    def get_players(self):
+        return self.players
+
+    def get_status(self):
+        return self.status
+
+    def get_tournament_id(self):
+        return self.tournament_id
+
+    def save_round_to_db(self):
+        pass
+
+    def get_next_round (self):
+        if self.status == 'quarter':
+            return 'semi-final'
+        elif self.status == 'semi-final':
+            return 'final'
+        else:
+            return None
+    def get_current_round(self):
+        return self.status
+    
+    def is_finished(self):
+        return self.end
+
+    
+
+class Tournament:
+    def __init__(self, organizer):
         self.id = uuid.uuid4()
-        self.organizer = organizer_id
         self.max_participants = 8
-        self.players = []# this is a list of player ids, or we can put them in a table
+        self.players =  {organizer}
         self.status = 'pending'
+        self.round = None
+        self.winner = None
+        self.games = []
+        self.organizer = organizer 
+        self.play = False
+        try:
+            print('saving tournament')
+            # asyncio.create_task(self.save_trounament_to_db())  # save the tournament to the database when it is created
+            print('tournament saved')
+        except Exception as e:
+            print(f"Error saving tournament to database: {e}")
 
-    def add_player(self, player):
-        if (self.register_for_tournament(player)):
-            self.players.append(player)
-            if (len(self.players) == self.max_participants):
+
+    def register_for_tournament(self, player):
+        if self.add_player(player):
+            self.players.add(player)
+            if len(self.players) == self.max_participants:
                 self.start()
             return True
         return False
 
+    def get_games(self):
+        return self.games
+
+    def start_game(self, player_1, player_2):
+        game = VsFriendGame(player_1=player_1, player_2=player_2)
+        game.pause()
+        game.remote_type = 'tournament'
+        self.games.append(game)
+        return True
+
+    def create_games(self):
+        players_list = list(self.players)
+        for i in range(0, len(players_list), 2):
+            self.start_game(players_list[i], players_list[i+1])
+
     def start(self):
-        self.status = 'in progress'
-        self.save_trounament_to_db()
+        self.round = Round(self.id, 'quarter', self.players)
+        self.games = []
+        self.create_games()
+        print('^_^ ^_^ All games are launched ^__^')
+        self.round.games = self.games
+        self.status = 'started'
+        print(f'Tournament saved for the status {self.status}')
+        # asyncio.create_task(self.save_trounament_to_db())
+
+    def pause(self):
+        self.play = False
+
+    def resume(self):
+        self.play = True
+
+    def cancel(self):
+        self.status = 'cancelled'
+        try:
+            asyncio.create_task(self.save_trounament_to_db())
+        except Exception as e:
+            print(f"Error saving tournament to database: {e}")
+
+    def get_next_round(self):
+        return self.round.get_next_round()
+    
+    def start_new_round(self):
+        next_round = self.get_next_round()
+        players = self.round.get_winners()
+        self.round = Round(self.id, next_round, players)
+        self.games = []
+        self.create_games()
+        self.round.games = self.games
+
+
+    def round_is_finished(self):
+        return self.round.update_round_results()
 
     def end(self):
         self.status = 'finished'
+        try:
+            asyncio.create_task(self.save_trounament_to_db())
+        except Exception as e:
+            print(f"Error saving tournament to database: {e}")
 
     def handle_disconnection(self, player):
         self.players.remove(player)
 
     def handle_reconnection(self, player):
-        self.players.append(player)
-
-    def handle_game_over(self, player):
-        pass
-
-    def handle_game_start(self, player):
-        pass
-
-    def handle_game_end(self, player):
-        pass
-
-    def handle_game_timeout(self, player):
-        pass
+        self.players.add(player)
 
     def get_status(self):
         return self.status
     
-    def register_for_tournament(self, player):
+    def add_player(self, player):
         if len(self.players) >= self.max_participants:
             print(f'This tournament has reached its maximum number of participants. {player} cannot be registered.')
             return False
-        self.players.append(player)
         print(f'You have been registered for the tournament, {player} .')   
         return True
     
     async def save_trounament_to_db(self):
         #list of players objects
+        print(f'tournament created for the satatus {self.status}')
         players = []
-        if self.status != 'in progress':
-            number_of_players = len(self.players)
-        for i in range(number_of_players):
+        if self.status in  ['pending', 'cancelled']:
+            new_organizer = await sync_to_async(CustomUser.objects.get) (id=self.organizer)
+            tournament = await sync_to_async(TournamentHistory.objects.create)(id=self.id, status=self.status, max_players=self.max_participants, organizer=new_organizer)
+            await sync_to_async(tournament.save)()
+            return
+        elif self.status == 'started':
             try:
-                player = await sync_to_async(CustomUser.objects.get)(id=self.players[i])
-                players.append(player)
-            except CustomUser.DoesNotExist:
-                print("A player does not exist.")#
-        tournament = TournamentHistory(id=self.id, status=self.status, max_players=self.max_participants, organizer=self.organizer)
-        tournament.save()
-        for player in self.players:
-            tournament.players.add(player)
-        tournament.save()
-        return tournament
+                tournament = await sync_to_async(TournamentHistory.objects.get)(id=self.id)
+                tournament.status = self.status
+                await sync_to_async(tournament.save)()
+                players_ids = self.round.get_players()
+                players = await sync_to_async(CustomUser.objects.filter)(id__in=players_ids)
+                tournament.players.set(players)
+                await sync_to_async(tournament.save)()
+                round = await sync_to_async(RoundHistroy.objects.create)(tournament=tournament, status=self.round.get_status()) # remember to set the status of the round
+                await sync_to_async(round.save)()
+                round.players.set(players)
+                await sync_to_async(round.save)() 
+                return
+            except ObjectDoesNotExist:
+                # Handle the case where no TournamentHistory object with the given id exists.
+                # This could involve creating a new TournamentHistory object, logging an error message, etc.
+                print(f"No TournamentHistory object with id {self.id} exists.")
+        elif self.status == 'finished':
+            tournament = await sync_to_async(TournamentHistory.objects.get)(id=self.id)
+            tournament.status = self.status
+            tournament.winner = self.winner
+            await sync_to_async(tournament.save)()
+            return
+        
+

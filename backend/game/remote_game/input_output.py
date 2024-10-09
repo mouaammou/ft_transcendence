@@ -86,19 +86,15 @@ class RemoteGameOutput:
     def there_is_game_page(cls, player_id):
         #print the length of the group
         print("there_is_game_page method")
-        print(f"the number of connections is ***********>>>>>>>>  {len(cls.consumer_group.get(player_id))}")
         group = cls.consumer_group.get(player_id)
         if group is None: 
-            print("group is none")
             return False
         for consumer in group:
-            print(f"consumer {consumer} has the in_game_page attribute set to {consumer.in_game_page}")
             if consumer.in_game_page is True:
                 return True
-        print("no consumer has the in_game_page attribute set to True")
+        # return any(consumer.in_game_page is True for consumer in group)
         return False
     
-        # return any(consumer.in_game_page is False for consumer in group)
 
 
 class RemoteGameInput:

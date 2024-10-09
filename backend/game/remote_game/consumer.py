@@ -50,10 +50,12 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
             print('EXCEPTION: received invaled data from the socket')
 
         self.is_focused = data.get('tabFocused', True) 
+
         #check if the user send the inGamePage attribute
         if data.get('inGamePage') is not None:
             self.in_game_page = data.get('inGamePage')
         print(f"dict data ---------->  {data}  user --------> {self.user.id}")
+        
         # print(f"tab is focused --->  {self.is_focused}")
         self.game_engine.recieve(self.player_id, data, self)
     

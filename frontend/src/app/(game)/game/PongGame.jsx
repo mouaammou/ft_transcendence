@@ -323,12 +323,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 	useEffect(() => {
 		// This code will run when the component is mounted
 		console.log('Game page entered:', pathname);
-		socket.sendMessage(JSON.stringify({"inGamePage" : "true"}));
+		socket.sendMessage(JSON.stringify({"inGamePage" : true}));
 	
 		return () => {
 			// This code will run when the component is unmounted
 			console.log('Game page left:', pathname);
-			socket.sendMessage(JSON.stringify({"inGamePage" : "false"}));
+			socket.sendMessage(JSON.stringify({"inGamePage" : false}));
 		};
 	}, []);
 

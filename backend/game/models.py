@@ -94,10 +94,10 @@ class TournamentHistory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-    # players = models.ManyToManyField(
-    #     CustomUser,
-    #     related_name='get_tournaments',
-    # )
+    players = models.ManyToManyField(
+        CustomUser,
+        related_name='get_tournaments',
+    )
     # how to save a list of players objects in the database
     # players_objects = models.ManyToManyField(
     #     CustomUser[max_players],
@@ -119,13 +119,13 @@ class TournamentHistory(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         related_name='get_tournaments_organized',
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
 
     status = models.CharField(max_length=255, choices=[
-        ('started', 'Started'),
-        ('in_progress', 'In_progress'),
+        ('pending', 'Waiting for players'),
+        ('started', 'Started and running the rounds'),
         ('ended', 'Ended')
     ])
 

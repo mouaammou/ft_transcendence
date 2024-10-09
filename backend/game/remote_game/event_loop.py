@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from authentication.models import CustomUser
 from asgiref.sync import sync_to_async
 from .game_vs_friend import VsFriendGame
+from .tournament import Tournament
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -26,6 +27,7 @@ class EventLoopManager:
         remote: # set a class to resolve channel names to a game key
             or use channel name as layer group name
     """ 
+    active_tournaments = {} # tournament id as the key for every game
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
     finished_players = [] # players who fininshed their games
@@ -89,8 +91,50 @@ class EventLoopManager:
 
     @classmethod
     def _update(cls):
-        # print("number of games ----> ", len(cls.running_games))
-        for game, player_ids in cls.running_games.items():
+        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^111")
+        if len(cls.active_tournaments) == 0:
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^222")
+            player_ids = [11, 12, 13, 14, 15, 16, 17, 18]
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6661")
+            tournament = Tournament(player_ids[0])
+            # asyncio.create_task(time.sleep(1)) # this sleep for 1 second to let the tournament object saved in the database
+            print(f"the tournament object {tournament}")
+            cls.active_tournaments[tournament.id] = tournament
+            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6663")
+            for player_id in player_ids[1:]:
+                print(f"length of active tournaments {len(cls.active_tournaments)}")
+                tournament.register_for_tournament(player_id)
+            print(f"length of active tournaments {len(cls.active_tournaments)}")    
+        for _, tournament in cls.active_tournaments.items():
+            print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^333 {len(tournament.games)}")
+            for game in tournament.games:
+                cls.running_games[game] = [game.player_1, game.player_2]
+                # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^444")
+                # if game.is_fulfilled() == False: #or game.disconnected()  
+                #     continue
+                # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^555") 
+                # if not game.notify_players:
+                #     cls.notify_players(game)  
+                #     #send config
+                #     game.notify_players = True
+                # frame :dict = game.update()
+                # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^666")
+                # if game.is_finished() and not game.saved : 
+                #     print("game is finished\n")
+                #     # print(f"game saved -----> {game.saved()}")   
+                #     try:
+                #         game.saved = True
+                #         asyncio.create_task(cls.save_history(game))
+                #         print(f"game saved -----> {game.saved}")   
+                #     except Exception as e:
+                #         print(f"Error saving game history: {e}")      
+                #     print("after save finished game\n")
+                # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^777")
+                # cls.send_frame_to_player(game.player_1, game, frame) 
+                # cls.send_frame_to_player(game.player_2, game, frame)
+
+
+        for game, _ in (cls.running_games.items()):
             if game.is_fulfilled() == False: #or game.disconnected()  
                 continue
             if not game.notify_players:
@@ -264,35 +308,35 @@ class EventLoopManager:
             return True 
         return False
     
-    @classmethod
-    def in_game_page(cls, player_id):
-        print("in the in_game_page methode")
-        game = cls.active_players.get(player_id)
+    # @classmethod
+    # def game_page(cls, player_id):
+    #     print("in the in_game_page methode")
+    #     game = cls.active_players.get(player_id)
    
-        if game is not None and not RemoteGameOutput.there_is_game_page(player_id):
-            print(f"player_id {player_id} is not in the game page")
-            game.unfocused = player_id
-            game.pause()
-            game.disconnected = True
-            game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
-            return False
-        elif game is not None:
-            player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
-            print(f"all players are in the game page, always run the game {player_id}")
-            if RemoteGameOutput.there_is_game_page(player_id_2):
-                game.play()
-                game.disconnected = False
-                return True
-        return True
+    #     if game is not None and not RemoteGameOutput.there_is_game_page(player_id):
+    #         print(f"player_id {player_id} is not in the game page")
+    #         game.unfocused = player_id
+    #         game.pause()
+    #         game.disconnected = True
+    #         game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
+    #         return False
+    #     elif game is not None:
+    #         player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
+    #         print(f"all players are in the game page, always run the game {player_id}")
+    #         if RemoteGameOutput.there_is_game_page(player_id_2) and game.unfocused is None:
+    #             game.play()
+    #             game.disconnected = False
+    #             return True
+    #         else:
+    #             return False
+    #     return True
 
 
     @classmethod
     def game_focus(cls, player_id):
-        if not cls.in_game_page(player_id):
-            return False
         print("in the game_focus methode")
         game = cls.active_players.get(player_id)
-        if game is not None and not RemoteGameOutput.there_is_focus(player_id):
+        if game is not None and (not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.there_is_game_page(player_id)):
             game.unfocused = player_id
             game.pause()
             game.disconnected = True 
@@ -300,7 +344,7 @@ class EventLoopManager:
             return False
         elif game is not None:
             player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
-            if RemoteGameOutput.there_is_focus(player_id_2):
+            if RemoteGameOutput.there_is_focus(player_id_2) and RemoteGameOutput.there_is_game_page(player_id_2):
                 game.unfocused = None
                 game.disconnected = False
                 game.play()
