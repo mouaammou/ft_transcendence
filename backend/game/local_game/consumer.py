@@ -59,6 +59,12 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
     def send_game_message(self, event):
         try:
             # dont await it
-            asyncio.create_task(self.send(text_data=json.dumps(event)))
+            asyncio.create_task(self.safe_send(event))
         except:
             print("Exception: send_game_message: Failed")
+    
+    async def safe_send(self, event):
+        try:
+            await self.send(text_data=json.dumps(event))
+        except:
+            print("Exception: safe_send: Failed [no problem it can function without it]")

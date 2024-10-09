@@ -1,10 +1,14 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from .views import LocalTournamentViewSet
-
-router = DefaultRouter()
-router.register(r'local-tournaments', LocalTournamentViewSet)
+from .views.tournament import LocalTournamentViewSet
+from .views.play import PlayTounament
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path(
+        'local-tournaments/',
+        LocalTournamentViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name='local-tournaments',
+    ),
+    path('play/', PlayTounament.as_view(), name='play'),
 ]
+

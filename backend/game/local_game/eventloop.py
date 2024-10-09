@@ -1,7 +1,7 @@
 import asyncio
 from .game import PingPongGame
 from .middleware import LocalGameInputMiddleware, LocalGameOutputMiddleware
-from .tournament.manager import TrournamentManager
+# from .tournament.manager import TournamentManager, Tournament
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -25,32 +25,39 @@ class EventLoopManager:
     finished = []
     _event_loop_task = None
     game_class = PingPongGame
-    trournament_manager_class = TrournamentManager
+    # trournament_manager_class = TournamentManager
     input_middleware_class =  LocalGameInputMiddleware
     output_middlware_class = LocalGameOutputMiddleware
 
     @classmethod
     async def _event_loop(cls):
         while True:
+            # print("******** UPDATE ********: ", cls.runing)
             cls._update()
             cls._clean()
+            # print("******** FINISHED ********: ")
             await asyncio.sleep(1/60)
 
     @classmethod
     def _update(cls):
         for channel_name, game in cls.runing.items():
             frame :dict = game.update()
+            # print('************frame************', frame)
             if game.is_finished():
                 cls.finished.append(channel_name)
-                cls._save_finished(game)
+                cls._save_finished(game, unique_key=channel_name)
             cls._dispatch_send_event(channel_name, game, frame)
 
     @classmethod
-    def _save_finished(cls, game_obj):
+    def _save_finished(cls, game_obj, unique_key=None):
         # finished games here
         # do your things here
         print(game_obj)
-        pass
+        # pass
+        # print('------winner--------: ', game_obj.winner)
+        # print('------unique_key--------: ', unique_key)
+        # if game_obj.game_mode == 'tournament':
+        # TournamentManager.match_finished(unique_key, game_obj.winner)
         
     @classmethod
     def _clean(cls):
@@ -59,7 +66,7 @@ class EventLoopManager:
         cls.finished.clear()
 
     @classmethod
-    def add(cls, channel_name, game_mode='local'):
+    def add(cls, channel_name, game_mode='local', game_type='regular', left_nickname=None, right_nickname=None):
         """
         This method is handled by input middlware.
         so when create event is recieved it uses it
@@ -71,9 +78,14 @@ class EventLoopManager:
         print("******** ATOMIC OPERATION ********: add new game")
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
-            game_obj = cls.game_class()
+            game_obj = cls.game_class(
+                game_type=game_type,
+                left_nickname=left_nickname,
+                right_nickname=right_nickname,
+            )
             game_obj.set_game_mode(game_mode)
             cls.runing[channel_name] = game_obj
+        return game_obj
         # else:
         #     game_obj.disconnected = False # disconnetion class used here
         # cls.output_middlware_class.add_callback(channel_name, send_callback, game_obj)
@@ -88,6 +100,8 @@ class EventLoopManager:
         print('************ RECONNECT *************')
         cls.output_middlware_class.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
+        print('********************* disco ****: ', game_obj.disconnected)
+        print('********************* start ****: ', game_obj.start_game)
         # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
@@ -95,6 +109,12 @@ class EventLoopManager:
 
     @classmethod
     def remove(cls, channel_name):
+        if channel_name is None:
+            return
+        game = cls.runing.get(channel_name)
+        if not game:
+            return
+        cls._save_finished(game, unique_key=channel_name)
         cls.runing.pop(channel_name)
         try:
             cls.finished.pop(channel_name)
@@ -184,6 +204,9 @@ class EventLoopManager:
         if cls._event_loop_task is not None:
             return
         print("================== EVENT LOOP CREATED ================")
+        # cls.trournament_manager_class.event_loop_cls = cls
+        # Tournament.send_to_user_callback = cls.output_middlware_class.send_to_userid
+        # Tournament.event_loop_cls = cls
         task = cls._event_loop()
         cls._event_loop_task = asyncio.create_task(task)
-        cls.trournament_manager_class.init_monitor(cls)
+        # cls.trournament_manager_class.init_monitor(cls)
