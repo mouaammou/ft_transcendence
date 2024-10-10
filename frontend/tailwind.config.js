@@ -24,7 +24,7 @@ module.exports = {
 				btnColor: '#164465',
 				topBackground: '#16486b78',
 				'customfill' : 'rgba(13, 40, 69, 1)',
-				'whitetrspnt' : 'rgba(219, 219, 219, 0.2)',
+				'whitetrspnt' : 'rgba(219, 219, 219, 0.1)',
 				'bluetrspnt' : 'rgba(219, 219, 219, 0.3)',
 				'hrcolor': 'rgba(217, 217, 217, 0.6)'
 			},
@@ -39,6 +39,8 @@ module.exports = {
 				custom: ['sans-serif'],
 				open:['Open Sans'],
 				balsamiq: ['Balsamiq Sans'],
+				ibm: ['IBM Plex Sans'],
+				doka: ['Fredoka']
 			},
 			fontSize: {
 				unset: 'unset',
