@@ -140,6 +140,11 @@ class Tournament:
         self.players =  {organizer}
         self.status = 'pending'
         self.round = None
+        self.rounds = {
+            'quarter': None,
+            'semi-final': None,
+            'final': None
+        }
         self.winner = None
         self.games = []
         self.organizer = organizer 
@@ -177,6 +182,7 @@ class Tournament:
 
     def start(self):
         self.round = Round(self.id, 'quarter', self.players)
+        self.rounds['quarter'] = self.round
         self.games = []
         self.create_games()
         print('^_^ ^_^ All games are launched ^__^')
