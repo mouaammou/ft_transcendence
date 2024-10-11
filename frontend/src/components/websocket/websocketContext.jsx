@@ -1,10 +1,9 @@
 "use client";
+import { getData } from '@/services/apiCalls';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef, createContext, useContext } from 'react';
 
-export const WebSocketContext = createContext({
-	value: 'true',
-});
-
+export const WebSocketContext = createContext(null);
 
 export const WebSocketProvider = ({url, children}) => {
 
@@ -23,7 +22,15 @@ export const WebSocketProvider = ({url, children}) => {
 		rejectFriend: 'reject_friend',
 	});
 	const [hasGetMessage, setHasGetMessage] = useState(false);
+	
+	//for friends page
+	const [fetchedUsers, setFetchedUsers] = useState([]);
+	const [nextPage, setNextPage] = useState(null);
+	const [prevPage, setPrevPage] = useState(null);
+	const [pageNotFound, setPageNotFound] = useState(false);
+	const router = useRouter()
 
+	//websocket initialization connection
 	useEffect(() => {
 		// Create WebSocket instance when the component mounts
 		if ( ! isConnected) {
@@ -108,6 +115,53 @@ export const WebSocketProvider = ({url, children}) => {
 		}
 	}, [users, isConnected, websocket]);// Save users to localStorage whenever the users change
 
+	// friends page
+	const fetchAllUsers = async (pageNumber, endpoint) => {
+
+		// Prevent multiple requests
+		try {
+			const response = await getData(`/${endpoint}?page=${pageNumber}`);
+			if (response.status === 200) {
+
+				setFetchedUsers(() => {
+					const fetchedUsers = response.data.results;
+					const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+					console.log('storedUsers :: ', storedUsers);
+					const mergedUsers = fetchedUsers.map((user) => {
+						const newUser = storedUsers.find((newUser) => newUser.username === user.username);
+						console.log('newUser :: ', newUser);
+						if (newUser) {
+							return { ...user, status: newUser.status || "offline" };
+						}
+						return user;
+					});
+					return mergedUsers;
+				});
+
+				setPrevPage(() => {
+					if (response.data.previous) 
+						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
+						// Extract the page number from the previous URL
+					return null; // No previous page
+				});
+
+				// Update nextPage
+				setNextPage(() => {
+					if (response.data.next)
+						return response.data.next.split("page=")[1] || null; // If there's no page number, return null
+					return null; // No next page
+				});
+			}
+			else {
+				setPageNotFound(true);
+			}
+		} catch (error) {
+			console.error("Error fetching users in friends page:", error);
+			setPageNotFound(true)
+		}
+		router.replace(`/${endpoint}?page=${pageNumber}`);
+	};
+
 
 	return (
 		<WebSocketContext.Provider
@@ -123,14 +177,21 @@ export const WebSocketProvider = ({url, children}) => {
 				hasGetMessage,
 				setHasGetMessage,
 				opponent,
-				setOpponent
+				setOpponent,
+				// friends page,
+				fetchedUsers,
+				setFetchedUsers,
+				nextPage,
+				prevPage,
+				setNextPage,
+				setPrevPage,
+				fetchAllUsers,
+				pageNotFound,
+				setPageNotFound,
 				}}>
 			{children}
 		</WebSocketContext.Provider>
 	)
 };
 
-export const useWebSocketContext = () => useContext(WebSocketContext);
-
-
-
+export const useWebSocketContext = () => useContext(WebSocketContext) || {};

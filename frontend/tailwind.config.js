@@ -8,6 +8,13 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			container: {
+				center: true, // Centers the container
+				padding: '2rem', // Adds padding on smaller screens
+				screens: {
+					'2xl': '2000px' // Custom width for larger screens
+				},
+			},
 			keyframes: {
 				'loading-dot': {
 					'0%, 80%, 100%': { opacity: 0, transform: 'scale(0.5)' },

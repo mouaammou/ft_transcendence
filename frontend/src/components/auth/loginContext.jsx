@@ -6,9 +6,7 @@ import Cookies from 'js-cookie';
 import { usePathname } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-export const LoginContext = createContext({
-	value: 'true'
-});
+export const LoginContext = createContext(null);
 
 export const LoginProvider = ({ children }) => {
 	const router = useRouter();
@@ -137,4 +135,4 @@ export const LoginProvider = ({ children }) => {
 	);
 };
 
-export const useAuth = () => useContext(LoginContext);
+export const useAuth = () => useContext(LoginContext) || {};
