@@ -134,9 +134,9 @@ class Round:
     
 
 class Tournament:
-    def __init__(self, organizer):
-        self.id = uuid.uuid4()
-        self.max_participants = 8
+    def __init__(self, organizer, tournament_id):
+        self.id = tournament_id
+        self.max_participants = 4
         self.players =  {organizer}
         self.status = 'pending'
         self.round = None

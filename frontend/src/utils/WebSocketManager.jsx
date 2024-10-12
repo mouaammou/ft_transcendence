@@ -20,6 +20,10 @@ class WebSocketManager {
                 // console.log('message from the server -->  ', event.data);
                 this.messageHandlers.forEach(handler => handler(event));// call all handlers
             };
+            
+            this.socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+              };
         }    
         return WebSocketManager.instance;
     }

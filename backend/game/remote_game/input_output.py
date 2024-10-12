@@ -60,6 +60,7 @@ class RemoteGameOutput:
     def _send_to_consumer_group(cls, player_id, data) -> None:
         # print("_send_to_consumer_group method")
         group = cls.consumer_group.get(player_id)
+        print(f"6666666666666>  the group is  {data}")
         if group is None: 
             print("zzzzzzzzzzzz ---> group is none")
             return
@@ -74,6 +75,14 @@ class RemoteGameOutput:
         print(f"the number of connections is ***********>>>>>>>>  {len(cls.consumer_group.get(player_id))}")
         return len(cls.consumer_group.get(player_id)) <= 1
     
+
+    @classmethod
+    def brodcast(cls, data):
+        print("brodcast method")
+        for group in cls.consumer_group.values():
+            for consumer in group:
+                consumer.send_game_message(data)
+
     @classmethod
     def there_is_focus(cls, player_id):
         print("there_is_focus method")

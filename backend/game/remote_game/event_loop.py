@@ -30,6 +30,7 @@ class EventLoopManager:
     active_tournaments = {} # tournament id as the key for every game
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
+    players_in_tournaments = {} # player id as the key and the tournament id as the value
     finished_players = [] # players who fininshed their games
     finished_games = [] # finished games
     _event_loop_task = None
@@ -91,24 +92,24 @@ class EventLoopManager:
 
     @classmethod
     def _update(cls):
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^111")
-        if len(cls.active_tournaments) == 0:
-            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^222")
-            player_ids = [11, 12, 13, 14, 15, 16, 17, 18]
-            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6661")
-            tournament = Tournament(player_ids[0])
-            # asyncio.create_task(time.sleep(1)) # this sleep for 1 second to let the tournament object saved in the database
-            print(f"the tournament object {tournament}")
-            cls.active_tournaments[tournament.id] = tournament
-            print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6663")
-            for player_id in player_ids[1:]:
-                print(f"length of active tournaments {len(cls.active_tournaments)}")
-                tournament.register_for_tournament(player_id)
-            print(f"length of active tournaments {len(cls.active_tournaments)}")    
-        for _, tournament in cls.active_tournaments.items():
-            print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^333 {len(tournament.games)}")
-            for game in tournament.games:
-                cls.running_games[game] = [game.player_1, game.player_2]
+        # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^111")
+        # if len(cls.active_tournaments) == 0:
+        #     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^222")
+        #     player_ids = [11, 12, 13, 14, 15, 16, 17, 18]
+        #     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6661")
+        #     tournament = Tournament(player_ids[0])
+        #     # asyncio.create_task(time.sleep(1)) # this sleep for 1 second to let the tournament object saved in the database
+        #     print(f"the tournament object {tournament}")
+        #     cls.active_tournaments[tournament.id] = tournament
+        #     print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^6663")
+        #     for player_id in player_ids[1:]:
+        #         print(f"length of active tournaments {len(cls.active_tournaments)}")
+        #         tournament.register_for_tournament(player_id)
+        #     print(f"length of active tournaments {len(cls.active_tournaments)}")    
+        # for _, tournament in cls.active_tournaments.items():
+        #     print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^333 {len(tournament.games)}")
+        #     for game in tournament.games:
+        #         cls.running_games[game] = [game.player_1, game.player_2]
                 # print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^444")
                 # if game.is_fulfilled() == False: #or game.disconnected()  
                 #     continue
@@ -350,9 +351,90 @@ class EventLoopManager:
                 game.play()
                 return True
         return True
-        
-        
-    
+
+# check if the tournament name is contain alphanumric characters
+    @classmethod
+    def check_tournament(cls, player_id, tournament_name):
+        print("in the check_tournament methode")
+        if not any(char.isdigit() for char in tournament_name) and any(char.isalpha() for char in tournament_name):
+            print("tournament name is ac")
+            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'is_not_alphanumeric'})
+            return False
+        if tournament_name in cls.active_tournaments:
+            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_exists'})
+            return False
+        return True
+         
+
+
+    @classmethod
+    def handle_tournament(cls, event_dict, player_id):
+        event_type = event_dict.get('type')
+
+        if event_type == 'GET_TOURNAMENTS':
+            cls.broadcast_tournaments()
+            return
+
+        if event_type == 'JOIN_TOURNAMENT': 
+            cls.handle_join_tournament(event_dict, player_id)
+            return
+        if event_type == 'GET_PLAYERS':
+            tournament_id = cls.players_in_tournaments.get(player_id)
+            print(f"tournament id {tournament_id}")
+            if tournament_id is not None:
+                tournament = cls.active_tournaments.get(tournament_id)
+                players = tournament.players
+                print(f"players in the tournament {players}")
+                RemoteGameOutput._send_to_consumer_group(player_id, { 'status': 'players', 'data': list(players) })
+                return
+        data = event_dict.get('data')
+        tournament_name = data.get('tournament_name')
+
+        if not cls.check_tournament(player_id, tournament_name):
+            return
+
+        if player_id in cls.players_in_tournaments:
+            cls.send_to_consumer_group(player_id, 'already_in_tournament')
+        else:
+            cls.create_tournament(player_id, tournament_name)
+
+    @classmethod
+    def broadcast_tournaments(cls):
+        tournament_names = list(cls.active_tournaments.keys())
+        RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': tournament_names })
+
+    @classmethod
+    def handle_join_tournament(cls, event_dict, player_id):
+        if player_id in cls.players_in_tournaments:
+            cls.send_to_consumer_group(player_id, 'already_in_tournament_join')
+            return
+
+        data = event_dict.get('data')
+        tournament_name = data.get('tournament_name')
+        tournament = cls.active_tournaments.get(tournament_name)
+
+        if tournament is None:
+            return
+
+        if tournament.register_for_tournament(player_id):
+            cls.players_in_tournaments[player_id] = tournament_name
+            cls.send_to_consumer_group(player_id, 'joined_successfully')
+        else:
+            cls.active_tournaments.pop(tournament_name)
+            cls.send_to_consumer_group(player_id, 'tournament_full')
+
+    @classmethod
+    def create_tournament(cls, player_id, tournament_name):
+        tournament = Tournament(player_id, tournament_name)
+        cls.active_tournaments[tournament.id] = tournament
+        cls.players_in_tournaments[player_id] = tournament.id
+        cls.send_to_consumer_group(player_id, 'created_successfully')
+        cls.broadcast_tournaments()
+
+    @classmethod
+    def send_to_consumer_group(cls, player_id, status):
+        RemoteGameOutput._send_to_consumer_group(player_id, { 'status': status })
+ 
     @classmethod 
     def recieve(cls, player_id, event_dict, consumer):
         print("in the  recieve methode")
@@ -362,10 +444,12 @@ class EventLoopManager:
         as the key for revieved events.
         """
         # print("******** RECIEVE ********", cls.active_players)
-        print(f"player_id ----> {player_id}")
-        print(f"event_dict ----> {event_dict}")
         if 'type' in event_dict and event_dict['type'] == 'FRIEND_GAME_REQUEST':
             cls.handle_friend_game_request(event_dict)
+            return None
+        if 'type' in event_dict and (event_dict['type'] == 'CREATE_TOURNAMENT' or event_dict['type'] == 'GET_PLAYERS'
+            or event_dict['type'] == 'GET_TOURNAMENTS'or event_dict['type'] == 'JOIN_TOURNAMENT') :
+            cls.handle_tournament(event_dict, player_id)
             return None
         if not cls.game_focus(player_id):
             return None

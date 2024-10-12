@@ -26,6 +26,7 @@ module.exports = {
 				'customfill' : 'rgba(13, 40, 69, 1)',
 				'whitetrspnt' : 'rgba(219, 219, 219, 0.1)',
 				'bluetrspnt' : 'rgba(219, 219, 219, 0.3)',
+				'buttoncolor' : 'rgba(38, 143, 208, 0.546)',
 				'hrcolor': 'rgba(217, 217, 217, 0.6)'
 			},
 			fontFamily: {

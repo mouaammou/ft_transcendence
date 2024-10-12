@@ -191,3 +191,13 @@
     font-size: 0.7rem;
   }
 }
+
+.custom-scrollbar{
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 80%;
+}
+
