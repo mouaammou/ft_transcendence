@@ -8,8 +8,8 @@ import Image from 'next/image';
 const GamePage = () => {
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);
-	const [leftUser, setLeftUser] = useState("Azziiizzz");	
-	const [rightUser, setRightUser] = useState("Mouad");
+	const [leftUser, setLeftUser] = useState("Hassan");	
+	const [rightUser, setRightUser] = useState("Mouaad");
 
 
 	// const changeScore1 = () => {
@@ -33,7 +33,7 @@ const GamePage = () => {
 			</div>
 			<div className="down-section">
 				<div className="left-user">
-					<Image className="left-user-img" src="/oredoine.webp" alt="user1" width={100} height={100}/>
+					<Image className="left-user-img" src="/med.jpeg" alt="user1" width={100} height={100}/>
 					<div className="left-user-name">{leftUser}</div>
 				</div>
 				<div className="self-game">

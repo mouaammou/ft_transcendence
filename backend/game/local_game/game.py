@@ -1,5 +1,7 @@
 from pong.pong_root import PingPongGameLogic
 from .disconnection import LocalGameDisconnection
+from game.models import LocalTournament
+import asyncio
 
 
 # class Players:
@@ -36,9 +38,27 @@ class PingPongGame(PingPongGameLogic, LocalGameDisconnection):
     """
     Use this to create game instances.
     """
-    def __init__(self, *args, game_type='regular', left_nickname=None, right_nickname=None, **kwargs) -> None:
+    def __init__(self, *args, tourn_obj=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.left_nickname = left_nickname
-        self.right_nickname = right_nickname
-        self.game_type = game_type
-        self.game_winner = None
+        self.tourn_obj = tourn_obj
+        self.left_nickname = None
+        self.right_nickname = None
+        # self.game_type = game_type
+        # self.game_winner = None
+        self.first_time = True
+        self.next_match()
+
+    def next_match(self):
+        if self.tourn_obj is None:
+            return
+        left, right = self.tourn_obj.get_match_players(self.tourn_obj.match_index)
+        self.left_nickname = left
+        self.right_nickname = right
+    
+    def save_match(self, direction):
+        if self.tourn_obj is None:
+            return
+        winner = getattr(self, direction+'_nickname')
+        self.tourn_obj.set_match_winner(self.tourn_obj.match_index, winner)
+        print('======== Match saved ======')
+        asyncio.create_task(self.tourn_obj.asave())

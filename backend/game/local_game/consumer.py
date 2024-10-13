@@ -60,8 +60,8 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
         try:
             # dont await it
             asyncio.create_task(self.safe_send(event))
-        except:
-            print("Exception: send_game_message: Failed")
+        except Exception as e:
+            print("Exception: send_game_message: Failed", e)
     
     async def safe_send(self, event):
         try:

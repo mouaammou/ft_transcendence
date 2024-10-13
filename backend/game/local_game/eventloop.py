@@ -41,6 +41,9 @@ class EventLoopManager:
     @classmethod
     def _update(cls):
         for channel_name, game in cls.runing.items():
+            if game.first_time:
+                LocalGameOutputMiddleware.send_config(channel_name, game)
+                game.first_time = False
             frame :dict = game.update()
             # print('************frame************', frame)
             if game.is_finished():
@@ -66,7 +69,7 @@ class EventLoopManager:
         cls.finished.clear()
 
     @classmethod
-    def add(cls, channel_name, game_mode='local', game_type='regular', left_nickname=None, right_nickname=None):
+    def add(cls, channel_name, game_mode='local', tourn_obj=None):
         """
         This method is handled by input middlware.
         so when create event is recieved it uses it
@@ -79,12 +82,12 @@ class EventLoopManager:
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             game_obj = cls.game_class(
-                game_type=game_type,
-                left_nickname=left_nickname,
-                right_nickname=right_nickname,
+                tourn_obj=tourn_obj,
             )
             game_obj.set_game_mode(game_mode)
             cls.runing[channel_name] = game_obj
+            # if left_nickname and right_nickname:
+            #     LocalGameOutputMiddleware.send_config(channel_name, game_obj)
         return game_obj
         # else:
         #     game_obj.disconnected = False # disconnetion class used here

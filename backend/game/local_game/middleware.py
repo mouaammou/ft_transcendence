@@ -76,6 +76,16 @@ class LocalGameOutputMiddleware:
         return cls._send_to_consumer_group(channel_name, data)
     
     @classmethod
+    def send_tournament(cls, channel_name, frame) -> None:
+        if frame is None:
+            return
+        # data = frame
+        # if frame.get('tournament') is None:
+        data = {'tournament': frame}
+        print(data)
+        return cls._send_to_consumer_group(channel_name, data)
+    
+    @classmethod
     def send_config(cls, channel_name, game_obj) -> None:
         """True if use """
         data = {'config': game_obj.get_game_config}

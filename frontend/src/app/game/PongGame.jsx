@@ -183,6 +183,16 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 				setScore2(score2 => gameConfig.left_player_score);
 				computer.score = gameConfig.right_player_score;
 				setScore1(score1 => gameConfig.right_player_score);
+
+
+				if (data.config.left_nickname)
+				{
+					setLeftUser(data.config.left_nickname);
+				}
+				if (data.config.right_nickname)
+				{
+					setRightUser(data.config.right_nickname);
+				}
 				drawGame();
 			}
 			else if (data.tournament)
@@ -248,7 +258,22 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 					{
 						"create":
 						{
-							mode:'local'
+							mode:'local',
+							type: 'single'
+						}
+					}
+				));
+			}
+			if (event.key === 't' || event.key === 'T')
+			{
+				// create new game if space key is created
+				socket.send(JSON.stringify(
+					{
+						"start-tournament":
+						{
+							mode:'local',
+							type: 'tournament',
+							id: 1,
 						}
 					}
 				));

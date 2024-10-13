@@ -4,35 +4,37 @@ from rest_framework.response import Response
 
 from game.local_game.eventloop import EventLoopManager
 
+
+from django.shortcuts import get_object_or_404
+
+from game.models import LocalTournament
+
 class PlayTounament(APIView):
     """used to paly next match in a tournament"""
     permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
-        left_nickname = 'Test left Nick'
-        right_nickname = 'Test Right Nick'
-        print("Unique_key: ", request.unique_key)
+
+        inst = get_object_or_404(LocalTournament, id=126)
+        if inst.finished:
+            return Response("Tournament is finished")
         EventLoopManager.add(
             request.unique_key,
-            game_type='tournament',
-            left_nickname=left_nickname,
-            right_nickname=right_nickname,
+            tourn_obj=inst
         )
-        print('|'*10)
         EventLoopManager.play(request.unique_key)
-        return Response("Hello, world!")
+        return Response("Tournamnet started")
     
     def post(self, request):
-        left_nickname = 'Test left Nick'
-        right_nickname = 'Test Right Nick'
+        inst = get_object_or_404(LocalTournament, id=126)
+        if inst.finished:
+            return Response("Tournament is finished")
         EventLoopManager.add(
             request.unique_key,
-            game_type='tournament',
-            left_nickname=left_nickname,
-            right_nickname=right_nickname,
+            tourn_obj=inst
         )
-        print('|'*10)
+        EventLoopManager.play(request.unique_key)
         return Response(f"Hello, world! {request.data}")
 
 
@@ -42,9 +44,17 @@ class PlayRegular(APIView):
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
+        EventLoopManager.add(
+            request.unique_key,
+        )
+        EventLoopManager.play(request.unique_key)
         return Response("Hello, world!")
     
     def post(self, request):
+        EventLoopManager.add(
+            request.unique_key,
+        )
+        EventLoopManager.play(request.unique_key)
         return Response(f"Hello, world! {request.data}")
 
 

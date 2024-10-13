@@ -1,6 +1,8 @@
 // app/tournament/create/page.jsx
 'use client';
 import { useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const CreateTournament = () => {
   const [tournament, setTournament] = useState({
@@ -27,22 +29,27 @@ const CreateTournament = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
-      const cookie = localStorage.getItem('cookie');
-      const response = await fetch('http://localhost:8000/game/local-tournaments/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // "Cookie": `access_token=${access_token?.value}; refresh_token=${refresh_token?.value}`,
-          'Cookie': cookie.toString(),
+      // Get JWT token from cookies
+      const token = Cookies.get('token'); // Assuming token is stored as 'token' in cookies
+  
+      // Make the POST request using Axios
+      const response = await axios.post(
+        'http://localhost:8000/game/local-tournaments/',
+        tournament, // tournament data you want to send
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true
         },
-        body: JSON.stringify(tournament),
-      });
+      );
+  
       console.log('Tournament:', tournament);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Tournament created:', data);
+  
+      if (response.status === 201) {
+        console.log('Tournament created:', response.data);
         // Optionally, redirect to the tournament details page or show a success message
       } else {
         console.error('Error creating tournament');
@@ -51,7 +58,6 @@ const CreateTournament = () => {
       console.error('Error:', error);
     }
   };
-
   return (
     <div className="create-tournament-container">
       <h1>Create Tournament</h1>
