@@ -60,50 +60,13 @@ const Msg_chat = () => {
 
           <div className="body-message-chat">
             <div className="center-chat">
-              {/* Dynamic message rendering */}
-              {/* {messages[selectedUser.id] ? (
-                messages[selectedUser.id].map((msg, index) => (
-                  <div
-                    key={index}
-                    className={msg.sender === data.username ? 'my-message' : 'message'}
-                  >
-                    {msg.sender !== data.username && (
-                      <img
-                        src={selectedUser.avatar}
-                        alt={selectedUser.username}
-                        className="img_msg"
-                        width={45}
-                        height={45}
-                        style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-                      />
-                    )}
-                    <p>{msg.message}</p>
-                    {msg.sender === data.username && (
-                      <img
-                        src={data.avatar}
-                        alt={data.username}
-                        className="img_my_message"
-                        width={45}
-                        height={45}
-                        style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-                      />
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="no-messages">
-                  <p>No messages yet. Start the conversation!</p>
-                </div>
-              )} */}
-
-                {/* {messages[selectedUser.username] ? (
-                    messages[selectedUser.username].map((msg, index) => ( */}
                 {messages[selectedUser.id] ? (
                 messages[selectedUser.id].map((msg, index) => (
                   <div
                     key={index}
                     className={msg.sender === data.username ? 'my-message' : 'message'}
                   >
+                
                     {msg.sender !== data.username && (
                       <img
                         src={selectedUser.avatar}

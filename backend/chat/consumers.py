@@ -11,6 +11,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .models import Message
 
+
 User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -50,14 +51,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_id': sender_id,
             'receiver': receiver_username,
             'receiver_id': receiver_id,
-            'message': message
+            'message': message,
         }
 
         # # Send message to sender's group
-        # await self.channel_layer.group_send(sender_group, {
-        #     'type': 'chat_message',
-        #     **message_data
-        # })
+        await self.channel_layer.group_send(sender_group, {
+            'type': 'chat_message',
+            **message_data
+        })
 
         # Send message to receiver's group only
         await self.channel_layer.group_send(receiver_group, {
@@ -71,7 +72,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_id': event['sender_id'],
             'receiver': event['receiver'],
             'receiver_id': event['receiver_id'],
-            'message': event['message']
+            'message': event['message'],
         }))
 
     @database_sync_to_async
