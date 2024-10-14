@@ -60,7 +60,7 @@ const Msg_chat = () => {
 
           <div className="body-message-chat">
             <div className="center-chat">
-                {messages[selectedUser.id] ? (
+            {messages[selectedUser?.id]?.length > 0 &&(
                 messages[selectedUser.id].map((msg, index) => (
                   <div
                     key={index}
@@ -90,10 +90,6 @@ const Msg_chat = () => {
                     )}
                   </div>
                 ))
-              ) : (
-                <div className="no-messages">
-                  <p>No messages yet. Start the conversation!</p>
-                </div>
               )}
 
               {/* Scroll to the bottom of the chat */}

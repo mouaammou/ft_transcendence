@@ -14,12 +14,32 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 const list_chat = () => {
   // const { isChatVisible, onlineUser, allUsers, handleSearch } = useContext(ChatContext);
-  const { isChatVisible, allUsers, handleSearch } = useContext(ChatContext);
+  const { isChatVisible, allUsers, handleSearch} = useContext(ChatContext);
   const onlineUser = allUsers.slice(0, 4);
 
   const { profileData: data} = useAuth();
 
+  // const scrollRef = useRef(null);
+
+  // useEffect(() => {
+  //   const handleScrollEvent = (e) => {
+  //     handleScroll(e);
+  //   };
+
+  //   if (scrollRef.current) {
+  //     scrollRef.current.addEventListener('scroll', handleScrollEvent);
+  //   }
+
+  //   // Cleanup the scroll event listener on component unmount
+  //   return () => {
+  //     if (scrollRef.current) {
+  //       scrollRef.current.removeEventListener('scroll', handleScrollEvent);
+  //     }
+  //   };
+  // }, [handleScroll]);
+
   return (
+    // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`} ref={scrollRef}>
     <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
       <div className="user-chat">
         <div className="info-user">

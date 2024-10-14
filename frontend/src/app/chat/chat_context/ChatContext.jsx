@@ -17,7 +17,7 @@ export const ChatContext = createContext({
 
 export const ChatProvider = ({ children }) => {
 
-  // All useState hooks
+  //  ************************ All useState hooks  ************************
   const [selectedUser, setSelectedUser] = useState(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
 
@@ -32,12 +32,11 @@ export const ChatProvider = ({ children }) => {
   const [socket, setSocket] = useState(null); // WebSocket connection
   const [userCount, setUserCount] = useState(0);
   const { profileData: currentUser } = useAuth(); // Current authenticated user
-
-
-
+  const [nextPage, setNextPage] = useState(null); // Store the next page URL
   const endRef = useRef(null); // Reference to scroll to bottom of chat
+  // ************************ end ***********************
 
-  // Handle search functionality
+  //  ************************  Handle search functionality  ************************
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
@@ -53,8 +52,9 @@ export const ChatProvider = ({ children }) => {
       setAllUsers(filtered);
     }
   };
+  // ************************ end ***********************
 
-  // Fetch chat history
+  //  ************************ Fetch chat history ************************
   const fetchChatHistory = async (receiver_id) => {
     try {
       console.log("Fetching chat history for user:", receiver_id);
@@ -71,8 +71,9 @@ export const ChatProvider = ({ children }) => {
       console.error('Error fetching chat history:', error);
     }
   };
+  // ************************ end ***********************
 
-  // Handle user click (select a chat)
+  //  ************************ Handle user click (select a chat) ************************
   const handleUserClick = (user) => {
     setSelectedUser(user);
     setIsChatVisible(true);
@@ -85,7 +86,9 @@ export const ChatProvider = ({ children }) => {
     // setIsChatVisible(true);
     fetchChatHistory(user.id); // Fetch chat history for selected user
   };
+  // ************************ end ***********************
 
+  //  ************************  ************************
   const handleSendMessage = () => {
     console.log('Sending message...');
   
@@ -145,18 +148,20 @@ export const ChatProvider = ({ children }) => {
     }
 
   };
-  
+  // ************************ end ***********************
   
 
-  // Handle keypress event (send message on "Enter" key)
+  // ************************  Handle keypress event (send message on "Enter" key) ************************
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       handleSendMessage();
     }
   };
+  // ************************ end ***********************
 
 
+  // ************************ Manage WebSocket connection ************************
   const connectWebSocket = () => {
     if (socket && socket.readyState === WebSocket.OPEN) {
       // If there's already an open WebSocket, close it before opening a new one
@@ -220,31 +225,72 @@ export const ChatProvider = ({ children }) => {
 
     setSocket(ws);
   };
-  // add
+  // ************************ end ***********************
 
 
-  // Function to handle emoji selection and append the selected emoji to the message text
+  //  ************************ Function to handle emoji selection and append the selected emoji to the message text ************************
     const handleEmojiClick = emoji => {
     setText(prev => prev + emoji.emoji);
     // if i want select just one emogi -> setOpen(false)
     // setOpen(false);
   };
+  // ************************ end ***********************
 
-
-  // Function to handle back button click, hide the chat component on smaller screens
+  //  ************************ Function to handle back button click, hide the chat component on smaller screens ************************
   const handleBackClick = () => {
     setIsChatVisible(false);
   };
+  // ************************ end ***********************
+
+  // // Fetch friends (users to chat with)
+  // const fetchFriends = async () => {
+  //   try {
+  //     const response = await getData("/chat-friends");
+  //     if (response.status === 200) {
+  //       const newUsers = response.data.results;
+  //       console.log('response.data => ',response.data)
+  //       setOriginalUsers(newUsers);
+  //       setAllUsers(newUsers);
+  //       setUserCount(newUsers.length);
+  //     } else {
+  //       console.error("Unexpected response status:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch friends:", error);
+  //   }
+  // };
 
   // Fetch friends (users to chat with)
-  const fetchFriends = async () => {
+  // const fetchFriends = async (url = '/chat-friends') => {
+  //   try {
+  //     const response = await getData(url);
+  //     if (response.status === 200) {
+  //       const newUsers = response.data.results;
+  //       console.log('response.data => ',response.data)
+  //       setOriginalUsers((prev) => [...prev, ...newUsers]);
+  //       setAllUsers((prev) => [...prev, ...newUsers]);
+  //       setUserCount((prev) => prev + newUsers.length);
+  //       setNextPage(response.data.next); // Set the next page URL
+  //     } else {
+  //       console.error("Unexpected response status:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch friends:", error);
+  //   }
+  // };
+
+  // ************************  Fetch friends (users to chat with) ************************
+  const fetchFriends = async (page = 1) => {
     try {
-      const response = await getData("/chat-friends");
+      const response = await getData(`/chat-friends?page=${page}`);
       if (response.status === 200) {
         const newUsers = response.data.results;
-        setOriginalUsers(newUsers);
-        setAllUsers(newUsers);
-        setUserCount(newUsers.length);
+  
+        // Append new users to the current list
+        setOriginalUsers((prev) => [...prev, ...newUsers]);
+        setAllUsers((prev) => [...prev, ...newUsers]);
+        setUserCount((prev) => prev + newUsers.length);
+        setNextPage(response.data.next); // Set the next page URL
       } else {
         console.error("Unexpected response status:", response.status);
       }
@@ -252,19 +298,31 @@ export const ChatProvider = ({ children }) => {
       console.error("Failed to fetch friends:", error);
     }
   };
-
+  // ************************ end ***********************
   
-  // Scroll to the end of the messages whenever messages or selectedUser changes
+  // ************************ Handle scrolling to fetch more users (Infinite scroll) ************************
+  const handleScroll = (event) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.target;
+    if (scrollHeight - scrollTop === clientHeight) {
+      // We're at the bottom of the list, so load the next page
+      if (nextPage) {
+        const page = new URL(nextPage).searchParams.get('page'); // Extract the next page number from the URL
+        fetchFriends(page);
+      }
+    }
+  };
+  // ************************ end ***********************
+
+  // ************************ Scroll to the end of the messages whenever messages or selectedUser changes ************************
   useEffect(() => {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, selectedUser]); // Trigger on messages or user change
+  // ************************ end ***********************
+
   
-
-
-  // add
-  // Manage WebSocket connection based on selected user
+  // ************************ Manage WebSocket connection based on selected user ************************
   useEffect(() => {
     connectWebSocket(); // Connect to WebSocket for general chat
     // Cleanup WebSocket on unmount
@@ -276,14 +334,17 @@ export const ChatProvider = ({ children }) => {
       }
     };
   }, []); // Runs once on component mount
-  // add
+  // ************************ end ***********************
 
   
-  // Fetch friends when component mounts and clean up WebSocket on unmount
+  // ************************ Fetch friends when component mounts and clean up WebSocket on unmount ************************
   useEffect(() => {
     fetchFriends();
   }, []);
+  // ************************ end ***********************
   
+
+
   return (
     <ChatContext.Provider
     value={{
@@ -304,6 +365,7 @@ export const ChatProvider = ({ children }) => {
       handleEmojiClick,
       handleKeyPress,
       endRef,
+      handleScroll, // Expose handleScroll
       // getChatId,
     }}
     >

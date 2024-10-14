@@ -90,8 +90,12 @@ input[type='text']:focus::placeholder {
   justify-content: center;
   /* add */
 
-  height: 700px;
+  /* height: 700px; */
   /* add */
+
+  /* for new test */
+  height: 500px;
+  /* for new test */
 
   /* overflow-y: auto;
     overflow-x: hidden;
