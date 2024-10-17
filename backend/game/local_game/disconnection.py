@@ -26,7 +26,7 @@ import asyncio
 class LocalGameDisconnection:
     # PING PONG Game will inherete this
 
-    _timeout_in = 10 # seconds
+    _timeout_in = 2 # seconds
 
     def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)

@@ -32,6 +32,7 @@ export default function CreateJoinTournamentPage() {
       setSelectedTournament('');
     }
   };
+  
   const handleCreateTournament = () => {
     if (tournament_name.trim() !== '') {
       mysocket.sendMessage(
@@ -66,8 +67,14 @@ export default function CreateJoinTournamentPage() {
         setInputError({ ...inputError, isNotNumeric: true });
       } else if (data.status === 'already_in_tournament') {
         setInputError({ ...inputError, alreadyInTournament: true });
+        setTimeout(() => {
+          router.push('/tournament_board')
+        }, 1000);
       } else if (data.status === 'already_in_tournament_join') {
         setInputError({ ...inputError, alreadyInTournamentJoin: true });
+        setTimeout(() => {
+          router.push('/tournament_board')
+        }, 1000);
       } else if (data.status === 'tournament_full') {
         setInputError({ ...inputError, tournamentFull: true });
       } else if (data.status === 'created_successfully' || data.status === 'joined_successfully') {
@@ -82,7 +89,7 @@ export default function CreateJoinTournamentPage() {
     return () => {
       mysocket.unregisterMessageHandler(messageHandler);
     };
-  }, []);
+  }, [inputError.tournamentFull]);
 
   const handleInputChange = e => {
     setTournamentName(e.target.value);
@@ -105,7 +112,7 @@ export default function CreateJoinTournamentPage() {
           className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
                         placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
         />
-        <ul className="list-disc list-inside my-6 lg:ml-10 lg:w-[399px]">
+        <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
           <li
             className={`text-[14px] font-sans font-light py-1 lg:text-[16px] ${inputError.isNotNumeric ? 'text-red-500' : ''}`}
           >

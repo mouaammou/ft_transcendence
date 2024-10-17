@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
 
-.main-page {
-  /* height: 80vh;
-	width: 100% */
-}
 
 .main-page .transparent {
     display: flex;
@@ -19,6 +15,8 @@
     width: 80%;
     max-width: 1530px;
 }
+
+
 .modes-container .left-mode,
 .modes-container .middle-mode,
 .modes-container .right-mode {
@@ -68,68 +66,42 @@
   cursor: pointer;
 }
 
-@media (max-width: 1285px) {
+@media (max-width: 1550px) {
+  .main-page .transparent {
+    padding: 50px;
+    gap:70px;
+  }
   .main-page .transparent .title {
-    display: flex;
-    margin: auto;
-    text-align: center;
-    font-family: var(--principaleFont);
     font-size: 44px;
-    font-weight: 600;
-    /* padding-top: 120px; */
-    width: fit-content;
   }
-
-  .main-page .transparent .modes-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 50px;
-    width: 100%;
-  }
-  .modes-container .left-mode,
-  .modes-container .middle-mode,
-  .modes-container .right-mode {
-    max-width: 300px;
-    max-height: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
   .modes-container p {
-    font-family: 'fredoka';
-    font-weight: 600;
-    font-size: 35px;
+    font-size: 22px;
     margin-top: -60px;
     margin-left: 0px;
-    cursor: pointer;
+    text-align: center;
+  }
+  .big-button {
+    font-size: 25px;
+    width: 200px;
+    height: 70px;
+  }
+  
 }
 
-.modes-container .images {
-    /* pointer-events: none; */
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    transition: background-color 0.3s ease;
-}
-
-
-.modes-container .images:hover {
-    background-color: rgba(255,255,255,255, 1);
-}
-}
-
-@media (max-width: 1285px) {
+@media (max-width: 900px) {
+    .main-page .transparent {
+        padding: 40px;
+        padding-bottom: 100px;
+        gap: 50px;
+    }
 
     .main-page .transparent .title {
         display: flex;
         margin: auto;
         text-align: center;
         font-family: var(--principaleFont);
-        font-size: 44px;
-        font-weight: 600;
+        font-size: 25px;
+        font-weight: 400;
         /* padding-top: 120px; */
         width: fit-content;
     }
@@ -142,8 +114,8 @@
         width: 100%;
     }
     .modes-container .left-mode, .modes-container .middle-mode, .modes-container .right-mode {
-        max-width: 300px;
-        max-height: 200px;
+        max-width: 200px;
+        max-height: 150px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -154,14 +126,16 @@
     .modes-container p {
         font-family: 'fredoka';
         font-weight: 600;
-        font-size: 35px;
+        font-size: 20px;
         margin-top: -60px;
         margin-left: 0px;
         cursor: pointer;
     }
-    .modes-container img {
-        pointer-events: none;
-        width: 90%;
-        height: 90%;
-    }
+    .modes-container .images {
+      /* pointer-events: none; */
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      transition: background-color 0.3s ease;
+  }
 }

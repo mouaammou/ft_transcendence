@@ -32,13 +32,13 @@ export const WebSocketProvider = ({url, children}) => {
 			websocket.current = new WebSocket(url);
 
 			websocket.current.onopen = () => {
-				console.log('WebSocket connected');
+				console.log('WebSocket /online connected');
 				setIsConnected(true);
 			};
 		}
 
 		websocket.current.onclose = () => {
-			console.log('WebSocket disconnected');
+			console.log('WebSocket /online disconnected');
 			setIsConnected(false);
 		};
 
@@ -57,7 +57,7 @@ export const WebSocketProvider = ({url, children}) => {
 		if (isConnected) {
 			websocket.current.onmessage = (event) => {
 				const data = JSON.parse(event.data);
-				console.log("WebSocket message received:", data);
+				// console.log("WebSocket message received:", data);
 
 				if (data.type === 'user_status_change') {
 					setHasGetMessage(true);

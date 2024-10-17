@@ -2,20 +2,35 @@ import Image from 'next/image';
 
 export default function Board({
   imageUrl1,
+  userName1,
   imageUrl2,
+  userName2,
   imageUrl3,
+  userName3,
   imageUrl4,
+  userName4,
   imageUrl5,
+  userName5,
   imageUrl6,
+  userName6,
   imageUrl7,
+  userName7,
   imageUrl8,
+  userName8,
   imageUrl9,
+  userName9,
   imageUrl10,
+  userName10,
   imageUrl11,
+  userName11,
   imageUrl12,
+  userName12,
   imageUrl13,
+  userName13,
   imageUrl14,
+  userName14,
   imageUrl15,
+  userName15,
 }) {
   const mobileImg = '/mobile_board_tournament.svg';
   return (
@@ -88,7 +103,7 @@ export default function Board({
         clipPath="url(#circleView1)"
       />
       <text x="98" y="32" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName1}
       </text>
 
       <rect
@@ -111,7 +126,7 @@ export default function Board({
         clipPath="url(#circleView2)"
       />
       <text x="463" y="78" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName9}
       </text>
 
       <rect
@@ -134,7 +149,7 @@ export default function Board({
         clipPath="url(#circleView3)"
       />
       <text x="819" y="170" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName13}
       </text>
 
       <rect
@@ -157,7 +172,7 @@ export default function Board({
         clipPath="url(#circleView4)"
       />
       <text x="98" y="420" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName5}
       </text>
 
       <rect
@@ -180,7 +195,7 @@ export default function Board({
         clipPath="url(#circleView5)"
       />
       <text x="98" y="226" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName3}
       </text>
 
       <rect
@@ -203,7 +218,7 @@ export default function Board({
         clipPath="url(#circleView6)"
       />
       <text x="463" y="465" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName11}
       </text>
 
       <rect
@@ -226,7 +241,7 @@ export default function Board({
         clipPath="url(#circleView7)"
       />
       <text x="98" y="614" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName7}
       </text>
 
       <rect
@@ -249,7 +264,7 @@ export default function Board({
         clipPath="url(#circleView8)"
       />
       <text x="98" y="129" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName2}
       </text>
 
       <rect
@@ -272,7 +287,7 @@ export default function Board({
         clipPath="url(#circleView9)"
       />
       <text x="463" y="275" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName10}
       </text>
 
       <rect
@@ -295,7 +310,7 @@ export default function Board({
         clipPath="url(#circleView10)"
       />
       <text x="1115" y="363" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName15}
       </text>
 
       <rect
@@ -318,7 +333,7 @@ export default function Board({
         clipPath="url(#circleView11)"
       />
       <text x="818" y="557" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName14}
       </text>
 
       <rect
@@ -341,7 +356,7 @@ export default function Board({
         clipPath="url(#circleView12)"
       />
       <text x="98" y="517" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName6}
       </text>
 
       <rect
@@ -364,7 +379,7 @@ export default function Board({
         clipPath="url(#circleView13)"
       />
       <text x="98" y="323" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName4}
       </text>
 
       <rect
@@ -387,7 +402,7 @@ export default function Board({
         clipPath="url(#circleView14)"
       />
       <text x="463" y="659" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName12}
       </text>
 
       <rect
@@ -410,7 +425,7 @@ export default function Board({
         clipPath="url(#circleView15)"
       />
       <text x="98" y="711" fill="white" alignmentBaseline="middle">
-        Players_name
+        {userName8}
       </text>
 
       <rect x="900" y="320" width="109" height="92" fill="url(#pattern0_2162_2103)" />

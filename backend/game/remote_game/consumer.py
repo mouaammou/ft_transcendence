@@ -62,6 +62,7 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
     def send_game_message(self, event):
         try:
             # dont await it
+            # print(f"send_game_message: {event}")
             asyncio.create_task(self.send(text_data=json.dumps(event)))
         except Exception as e:
             print(f"Exception: send_game_message: Failed {e}")

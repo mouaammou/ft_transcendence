@@ -17,18 +17,19 @@ const WaitingFriendPage = () => {
     const router = useRouter(); // Use Next.js router
     const { websocket, invitationResponse, setInvitationResponse, setOpponent } = useWebSocketContext();
 
+    
+    const handleMessage = async (message) => {
+        const data = JSON.parse(message.data);
+
+        if (data.status === 'start') {
+            // Redirect to the game page
+            router.push('/game');
+        }
+    };
 
     useEffect(() => {
         // Register message handler for WebSocket messages
         let timer;
-        const handleMessage = async (message) => {
-            const data = JSON.parse(message.data);
-
-            if (data.status === 'start') {
-                // Redirect to the game page
-                router.push('/game');
-            }
-        };
         mysocket.registerMessageHandler(handleMessage);
 
 
@@ -46,13 +47,15 @@ const WaitingFriendPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log('333333333333333######     invitationResponse', invitationResponse);
+        // console.log('333333333333333######     invitationResponse', invitationResponse);
         if (invitationResponse) {
             if (invitationResponse === 'acceptGame') {
                 console.log('invitation accepted');
                 setOpponent(myfriend);
                 localStorage.setItem('opponent', JSON.stringify(myfriend));
                 setInvitationResponse(null);
+                console.log("user_data ---> ", user_data);
+                console.log("myfriend ---> ", myfriend);
                 mysocket.sendMessage(JSON.stringify({ 
                     type: 'FRIEND_GAME_REQUEST',
                     player_1_id: user_data.id,

@@ -71,7 +71,7 @@ from asgiref.sync import sync_to_async
 import asyncio
 from channels.db import database_sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
-
+  
 
    
 
@@ -112,7 +112,7 @@ class Round:
     def get_status(self):
         return self.status
 
-    def get_tournament_id(self):
+    def get_tournament_id(self):   
         return self.tournament_id
 
     def save_round_to_db(self):
@@ -134,24 +134,26 @@ class Round:
     
 
 class Tournament:
-    def __init__(self, organizer, tournament_id):
+    def __init__(self, organizer, tournament_id):   
         self.id = tournament_id
         self.max_participants = 4
-        self.players =  {organizer}
+        self.players =  [organizer]
         self.status = 'pending'
         self.round = None
+        self.fulfilled = False
+        self.notified = False
         self.rounds = {
-            'quarter': None,
+            'quarter': None,   
             'semi-final': None,
-            'final': None
+            'final': None 
         }
         self.winner = None
         self.games = []
-        self.organizer = organizer 
+        self.organizer = organizer   
         self.play = False
         try:
             print('saving tournament')
-            # asyncio.create_task(self.save_trounament_to_db())  # save the tournament to the database when it is created
+            asyncio.create_task(self.save_trounament_to_db())  # save the tournament to the database when it is created
             print('tournament saved')
         except Exception as e:
             print(f"Error saving tournament to database: {e}")
@@ -159,14 +161,17 @@ class Tournament:
 
     def register_for_tournament(self, player):
         if self.add_player(player):
-            self.players.add(player)
+            self.players.append(player)
             if len(self.players) == self.max_participants:
-                self.start()
+                self.start_first_round()
             return True
         return False
 
     def get_games(self):
         return self.games
+    
+    def get_players(self):
+        return self.players
 
     def start_game(self, player_1, player_2):
         game = VsFriendGame(player_1=player_1, player_2=player_2)
@@ -180,7 +185,8 @@ class Tournament:
         for i in range(0, len(players_list), 2):
             self.start_game(players_list[i], players_list[i+1])
 
-    def start(self):
+    def start_first_round(self):
+        self.fulfilled = True
         self.round = Round(self.id, 'quarter', self.players)
         self.rounds['quarter'] = self.round
         self.games = []
@@ -189,7 +195,7 @@ class Tournament:
         self.round.games = self.games
         self.status = 'started'
         print(f'Tournament saved for the status {self.status}')
-        # asyncio.create_task(self.save_trounament_to_db())
+        asyncio.create_task(self.save_trounament_to_db())
 
     def pause(self):
         self.play = False
@@ -212,6 +218,7 @@ class Tournament:
         players = self.round.get_winners()
         self.round = Round(self.id, next_round, players)
         self.games = []
+        self.winners = []
         self.create_games()
         self.round.games = self.games
 
@@ -230,7 +237,7 @@ class Tournament:
         self.players.remove(player)
 
     def handle_reconnection(self, player):
-        self.players.add(player)
+        self.players.append(player)
 
     def get_status(self):
         return self.status
@@ -258,11 +265,11 @@ class Tournament:
                 await sync_to_async(tournament.save)()
                 players_ids = self.round.get_players()
                 players = await sync_to_async(CustomUser.objects.filter)(id__in=players_ids)
-                tournament.players.set(players)
+                await sync_to_async(tournament.players.set)(players)
                 await sync_to_async(tournament.save)()
                 round = await sync_to_async(RoundHistroy.objects.create)(tournament=tournament, status=self.round.get_status()) # remember to set the status of the round
                 await sync_to_async(round.save)()
-                round.players.set(players)
+                await sync_to_async(round.players.set)(players)
                 await sync_to_async(round.save)() 
                 return
             except ObjectDoesNotExist:

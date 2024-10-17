@@ -7,12 +7,12 @@ class WebSocketManager {
             this.messageHandlers = [];
             this.isConnected = false;
             this.socket.onopen = () => {
-                // console.log('WebSocket connection opened');
+                console.log('WebSocket /global connection opened');
                 this.isConnected = true;
             }
             
             this.socket.onclose = () => {
-                // console.log('WebSocket connection closed');
+                console.log('WebSocket /global connection closed');
                 this.isConnected = false;
             }
 

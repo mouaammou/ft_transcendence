@@ -10,7 +10,6 @@ class VsFriendGame(RemoteGameLogic):
         self._player_2 = player_2_id 
         self.joined = 2
         self.fulfilled = True
-        self._notify_players = False
         self.game_mode = 'remote' 
         self.remote_type = 'vsfriend' # vsfriend, tournament
 

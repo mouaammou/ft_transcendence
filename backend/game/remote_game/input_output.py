@@ -60,9 +60,7 @@ class RemoteGameOutput:
     def _send_to_consumer_group(cls, player_id, data) -> None:
         # print("_send_to_consumer_group method")
         group = cls.consumer_group.get(player_id)
-        print(f"6666666666666>  the group is  {data}")
         if group is None: 
-            print("zzzzzzzzzzzz ---> group is none")
             return
         for consumer in group: 
             consumer.send_game_message(data)
@@ -84,15 +82,27 @@ class RemoteGameOutput:
                 consumer.send_game_message(data)
 
     @classmethod
+    def send_tournament_players(cls, players, data):
+        for player_id in players:
+            if player_id == -1:
+                continue
+            group = cls.consumer_group.get(player_id) 
+            if group is None:
+                print("Error : group is none")
+                return
+            for consumer in group:
+                consumer.send_game_message(data)
+
+    @classmethod
     def there_is_focus(cls, player_id):
         print("there_is_focus method")
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return False
-        return any(consumer.is_focused for consumer in group)
+        return any(consumer.is_focused for consumer in group)   
     
     @classmethod
-    def there_is_game_page(cls, player_id):
+    def there_is_game_page(cls, player_id):  
         #print the length of the group
         print("there_is_game_page method")
         group = cls.consumer_group.get(player_id)

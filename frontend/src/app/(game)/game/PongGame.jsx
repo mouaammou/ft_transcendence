@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, player_1ef, useState, useRef} from 'react';
+import { useEffect, useState, useRef} from 'react';
 import socket from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter , useSearchParams, usePathname } from 'next/navigation';
 
-export default function PongGame({ score1, score2, setScore1, setScore2 }) {
+export default function PongGame({ score1, score2, setScore1, setScore2, gameType }) {
 	const canvasRef = useRef(null);
 	const [showWinModal, setShowWinModal] = useState(false);
 	const [showLoseModal, setShowLoseModal] = useState(false);
@@ -130,6 +130,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		let gameConfig = {};
 
 		const handleMessage = (message) => {
+			// console.log(message);
 			if (!message) {
 				console.error('Received an undefined message or data:', message);
 				return; // Exit early if message is invalid
@@ -322,7 +323,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 
 	useEffect(() => {
 		// This code will run when the component is mounted
-		console.log('Game page entered:', pathname);
+		// console.log('Game page entered:', pathname);
 		socket.sendMessage(JSON.stringify({"inGamePage" : true}));
 	
 		return () => {
@@ -341,7 +342,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					<YouWin 
 						onClose={() => {
 							setShowWinModal(false);
-						    router.push('/play');
+							if (gameType === 'tournament') {
+						    router.push('/tournament_board');
+							}else {
+								router.push('/play');
+							}
 						}
 						}
 						// stats={{ score1, score2 }} // Pass stats as needed
@@ -352,7 +357,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					<YouLose 
 						onClose={() => {
 							setShowLoseModal(false);
-							router.push('/play');
+							if (gameType === 'tournament') {
+								router.push('/tournament_board');
+								}else {
+									router.push('/play');
+								}
 						}
 						}
 						// stats={{ score1, score2 }} // Pass stats as needed

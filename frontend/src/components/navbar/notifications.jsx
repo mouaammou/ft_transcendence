@@ -20,7 +20,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 	const router = useRouter();
 	const [status, setStatus] = useState(() => getStatusFromLocalStorage());
 
-	console.log('notificationType', notificationType);
+	// console.log('notificationType', notificationType);
 
 	// Save status to localStorage whenever it changes
 	useEffect(() => {
