@@ -89,7 +89,8 @@ class GameHistory(models.Model):
     
 
 class TournamentHistory(models.Model):
-    id = models.CharField(primary_key=True,max_length=20, editable=False)
+    id = models.CharField(default=uuid.uuid4, primary_key=True, editable=False, max_length=255)
+    name = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

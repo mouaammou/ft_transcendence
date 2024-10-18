@@ -357,11 +357,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 					<YouLose 
 						onClose={() => {
 							setShowLoseModal(false);
-							if (gameType === 'tournament') {
-								router.push('/tournament_board');
-								}else {
+							// if (gameType === 'tournament') {
+							// 	router.push('/tournament_board');
+							// 	}else {
 									router.push('/play');
-								}
+								// }
 						}
 						}
 						// stats={{ score1, score2 }} // Pass stats as needed

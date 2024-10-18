@@ -5,9 +5,10 @@ from .input_output import RemoteGameInput, RemoteGameOutput
 from  game.models import GameHistory
 from channels.db import database_sync_to_async
 from authentication.models import CustomUser
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 from .game_vs_friend import VsFriendGame
 from .tournament import Tournament
+from game.models import TournamentHistory
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -181,6 +182,16 @@ class EventLoopManager:
         cls.finished_games.append(game_obj)   
         # pass
         
+        
+    def busy_wait(seconds):
+        start_time = time.time()
+        counter = 0
+        while time.time() - start_time < seconds:
+            print(f"waiting for players to join {counter}")
+            counter += 1
+        return counter
+    
+    
     @classmethod
     def _clean(cls):
         # print("in the _clean methode")
@@ -192,12 +203,15 @@ class EventLoopManager:
             print(f"A GAME CLEANED ")
             cls.running_games.pop(game)
             for _, tournament in cls.active_tournaments.items():
-                game_position = tournament.games.index(game)
-                print(f"game position ----?> {game_position}")
-                winner_position = game_position + 8
-                if winner_position >= len(tournament.players):
-                    tournament.players.extend([-1] * (winner_position - len(tournament.players) + 1))
-                tournament.players[winner_position] = game.winner
+                if game in tournament.games:
+                    tournament.games.remove(game)
+                    if len(tournament.games) == 0 :
+                        print(f"tournament  is finished s--> {tournament.id}")
+                        tournament.start_new_round()
+                        cls.busy_wait(10)  
+                        cls.start_tournament(tournament.organizer)
+                # cls.players_in_tournaments.pop(game.loser)
+                # cls.active_players.pop(game.loser)
                 # if game in tournament.games:
                 #     if (tournament.round.status == 'quarter' ):
                 #         tournament.round['quarter'].winners.append(game.winner)
@@ -205,7 +219,6 @@ class EventLoopManager:
                 #         tournament.round['semi-final'].winners.append(game.winner)
                 #     elif (tournament.round.status == 'final'):
                 #         tournament.round['final'].winners.append(game.winner)
-            tournament.games.remove(game)
         cls.finished_players.clear()
         cls.finished_games.clear()
         # print("out of clean func\n")
@@ -323,28 +336,30 @@ class EventLoopManager:
         return True
 
 # check if the tournament name is contain alphanumric characters
-    @classmethod
-    def check_tournament(cls, player_id, tournament_name):
-        print("in the check_tournament methode")
-        if not any(char.isdigit() for char in tournament_name) and any(char.isalpha() for char in tournament_name):
-            print("tournament name is ac")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'is_not_alphanumeric'})
-            return False
-        if tournament_name in cls.active_tournaments:
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_exists'})
-            return False
-        return True
+    # @classmethod
+    # def check_tournament(cls, player_id, tournament_name):
+    #     print("in the check_tournament methode")
+    #     if not any(char.isdigit() for char in tournament_name) and any(char.isalpha() for char in tournament_name):
+    #         print("tournament name is ac")
+    #         RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'is_not_alphanumeric'})
+    #         return False
+    #     if tournament_name in cls.active_tournaments:
+    #         RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_exists'})
+    #         return False
+    #     return True
          
     @classmethod
     def send_tournament_players(cls, player_id):
         tournament_id = cls.players_in_tournaments.get(player_id)
         print(f"tournament id {tournament_id}")
         if tournament_id is not None:
-            tournament = cls.active_tournaments.get(tournament_id)
+            tournament = cls.active_tournaments.get(tournament_id) 
             if tournament is not None:
-                players = tournament.players
+                players = {'round1' : tournament.rounds['quarter'].players if tournament.rounds['quarter'] is not None else None,
+                           'round2' : tournament.rounds['semi-final'].players if tournament.rounds['semi-final'] is not None else None,
+                           'round3' : tournament.rounds['final'].players if tournament.rounds['final'] is not None else None}
                 print(f"players in the tournament {players}") 
-                RemoteGameOutput.send_tournament_players( players, {'status': 'players', 'data': players })
+                RemoteGameOutput.send_tournament_players( tournament.players, {'status': 'players', 'data': players })
             else:
                 print(f"No active tournament found with id {tournament_id}")
         else:
@@ -357,21 +372,23 @@ class EventLoopManager:
         tournament_id = cls.players_in_tournaments.get(player_id)
         if tournament_id is not None:
             tournament = cls.active_tournaments.get(tournament_id)
-            for game in tournament.games: 
-                cls.running_games[game] = [game.player_1, game.player_2]
-                cls.active_players[game.player_1] = game
-                cls.active_players[game.player_2] = game
-            RemoteGameOutput.send_tournament_players(tournament.get_players(), {'status': 'PUSH_TO_GAME'})
             if tournament is not None:
+                for game in tournament.games: 
+                    cls.running_games[game] = [game.player_1, game.player_2]
+                    cls.active_players[game.player_1] = game
+                    cls.active_players[game.player_2] = game
+                RemoteGameOutput.send_tournament_players(tournament.get_players(), {'status': 'PUSH_TO_GAME'})
                 games = tournament.get_games()
                 for game in games:
                     game.play()
-
+        cls.send_tournament_players(player_id)
+                
+    
 
     @classmethod
     def handle_tournament(cls, event_dict, player_id):
         event_type = event_dict.get('type')
-
+        
         if event_type == 'GET_TOURNAMENTS':
             cls.broadcast_tournaments()
             return
@@ -392,41 +409,43 @@ class EventLoopManager:
             return 
         tournament_name = data.get('tournament_name')
 
-        if not cls.check_tournament(player_id, tournament_name):
-            return
-
         if player_id in cls.players_in_tournaments:
+            print("player is already in a tournament")
             cls.send_to_consumer_group(player_id, 'already_in_tournament')
         else:
+            print("player is not already in a tournament")
             cls.create_tournament(player_id, tournament_name)
 
     @classmethod
     def broadcast_tournaments(cls):
+        print("in the broadcast_tournaments methode")
+        tournament_names = []
         for tournament in cls.active_tournaments.values():
-            if len(tournament.players) < tournament.max_participants:
-                cls.pending_tournaments[tournament.id] = tournament
-            elif tournament.id in cls.pending_tournaments and \
-                    len(cls.pending_tournaments[tournament.id].players) == tournament.max_participants:
-                cls.pending_tournaments.pop(tournament.id)
-        tournament_names = list(cls.pending_tournaments.keys())
-        RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': tournament_names })
+            print(f"tournament name {tournament.name}")
+            if tournament.status == 'pending':
+                tournament_names.append({
+                    'id' : tournament.id,
+                    'name' : tournament.name})
+        print(f"tournament names {tournament_names}")
+        if tournament_names != []:
+            RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': tournament_names })
 
     @classmethod
     def handle_join_tournament(cls, event_dict, player_id):
         if player_id in cls.players_in_tournaments:
             cls.send_to_consumer_group(player_id, 'already_in_tournament_join')
             return
-
         data = event_dict.get('data')
-        tournament_name = data.get('tournament_name')
-        tournament = cls.active_tournaments.get(tournament_name) 
-
+        tournament_id = data.get('tournament_id')
+        tournament = cls.active_tournaments.get(tournament_id) 
         if tournament is None:
+            # print(f"tournament {tournament_id} not found")
             return
-
+        # print(f"player {player_id} joined the tournament 2{tournament_id}")
         if tournament.register_for_tournament(player_id):
-            cls.players_in_tournaments[player_id] = tournament_name
-            cls.send_to_consumer_group(player_id, 'joined_successfully')
+            # print(f"player {player_id} joined the tournament 1{tournament_id}")
+            cls.players_in_tournaments[player_id] = tournament_id
+            cls.send_to_consumer_group(player_id, 'joined_successfully')  
         else:
             # cls.active_tournaments.pop(tournament_name)
             cls.send_to_consumer_group(player_id, 'tournament_full')
@@ -434,6 +453,7 @@ class EventLoopManager:
     @classmethod
     def create_tournament(cls, player_id, tournament_name):
         tournament = Tournament(player_id, tournament_name)
+        print(f"tournament -------)))) >>>>> {tournament.id} created")
         cls.active_tournaments[tournament.id] = tournament
         cls.players_in_tournaments[player_id] = tournament.id
         cls.send_to_consumer_group(player_id, 'created_successfully')  

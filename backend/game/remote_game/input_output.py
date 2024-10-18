@@ -40,7 +40,7 @@ class RemoteGameOutput:
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
-        print(f"call back added for player --> {player_id}")
+        print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
         if sendConfig:   
             cls.send_config(player_id, game_obj or RemoteGameLogic())
 
@@ -83,12 +83,13 @@ class RemoteGameOutput:
 
     @classmethod
     def send_tournament_players(cls, players, data):
+        print(f"send_tournament_players method {players} --> {data}")
         for player_id in players:
             if player_id == -1:
                 continue
             group = cls.consumer_group.get(player_id) 
             if group is None:
-                print("Error : group is none")
+                print("Error : group is none ")
                 return
             for consumer in group:
                 consumer.send_game_message(data)

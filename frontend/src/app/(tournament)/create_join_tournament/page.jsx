@@ -10,29 +10,27 @@ export default function CreateJoinTournamentPage() {
   const router = useRouter();
 
   const [inputError, setInputError] = useState({
-    isNotNumeric: false,
-    isNotUnique: false,
     alreadyInTournament: false,
     alreadyInTournamentJoin: false,
     tournamentFull: false,
   });
   const [tab, setTab] = useState([]);
-  const [selectedTournament, setSelectedTournament] = useState('');
+  const [selectedTournamentId, setSelectedTournamentId] = useState('');
 
   const handleJoinTournament = () => {
-    if (selectedTournament !== '') {
+    if (selectedTournamentId !== '') {
       mysocket.sendMessage(
         JSON.stringify({
           type: 'JOIN_TOURNAMENT',
           data: {
-            tournament_name: selectedTournament,
+            tournament_id: selectedTournamentId,
           },
         })
       );
-      setSelectedTournament('');
+      setSelectedTournamentId('');
     }
   };
-  
+
   const handleCreateTournament = () => {
     if (tournament_name.trim() !== '') {
       mysocket.sendMessage(
@@ -43,12 +41,8 @@ export default function CreateJoinTournamentPage() {
           },
         })
       );
-      // setInputError({...inputError, alreadyInTournament: false});
-    } else {
-      setInputError({ isNotUnique: true, isNotNumeric: true });
     }
     setTournamentName('');
-    setInputError({ isNotUnique: false, isNotNumeric: false });
   };
 
   useEffect(() => {
@@ -61,19 +55,16 @@ export default function CreateJoinTournamentPage() {
 
     const messageHandler = e => {
       const data = JSON.parse(e.data);
-      if (data.status === 'already_exists') {
-        setInputError({ ...inputError, isNotUnique: true });
-      } else if (data.status === 'is_not_alphanumeric') {
-        setInputError({ ...inputError, isNotNumeric: true });
-      } else if (data.status === 'already_in_tournament') {
+      console.log(data);
+      if (data.status === 'already_in_tournament') {
         setInputError({ ...inputError, alreadyInTournament: true });
         setTimeout(() => {
-          router.push('/tournament_board')
+          router.push('/tournament_board');
         }, 1000);
       } else if (data.status === 'already_in_tournament_join') {
         setInputError({ ...inputError, alreadyInTournamentJoin: true });
         setTimeout(() => {
-          router.push('/tournament_board')
+          router.push('/tournament_board');
         }, 1000);
       } else if (data.status === 'tournament_full') {
         setInputError({ ...inputError, tournamentFull: true });
@@ -113,16 +104,6 @@ export default function CreateJoinTournamentPage() {
                         placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
-          <li
-            className={`text-[14px] font-sans font-light py-1 lg:text-[16px] ${inputError.isNotNumeric ? 'text-red-500' : ''}`}
-          >
-            the tournament name must contain alphanumeric characters.
-          </li>
-          <li
-            className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] ${inputError.isNotUnique ? 'text-red-500' : ''}`}
-          >
-            the tournament name must be unique, and not already exist in the database.
-          </li>
           {inputError.alreadyInTournament ? (
             <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
               You are already in a tournament
@@ -158,12 +139,12 @@ export default function CreateJoinTournamentPage() {
                   key={index}
                   className={`flex-shrink-0 text-[14px] font-mono bg-[#D6D6D6] text-black font-bold
                             rounded-md m-2 w-[120px] h-[30px] text-center lg:text-[16px] 
-                              lg:w-[210px] lg:h-[40px] ${tournament === selectedTournament ? 'bg-buttoncolor text-white' : ''}`}
+                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-buttoncolor text-white' : ''}`}
                   onClick={() => {
-                    setSelectedTournament(tournament);
+                    setSelectedTournamentId(tournament.id);
                   }}
                 >
-                  {tournament}
+                  {tournament.name}
                 </button>
               );
             })
@@ -192,25 +173,4 @@ export default function CreateJoinTournamentPage() {
       </div>
     </div>
   );
-}
-
-{
-  /* <button
-className="text-[14px] font-mono bg-[#D6D6D6] text-black font-bold
-          rounded-md m-2 w-[180px] h-[30px] text-center lg:text-[16px] lg:w-[210px] lg:h-[40px]"
->
-1337_ping_pong
-</button>
-<button
-className="text-[14px] font-mono bg-[#D6D6D6] text-black font-bold
-          rounded-md m-2 w-[180px] h-[30px] text-center lg:text-[16px] lg:w-[210px] lg:h-[40px]"
->
-Ultimate_pong2024
-</button>
-<button
-className="text-[14px] font-mono bg-[#D6D6D6] text-black font-bold
-          rounded-md m-2 w-[180px] h-[30px] text-center lg:text-[16px] lg:w-[210px] lg:h-[40px]"
->
-Pong_sumet01
-</button> */
 }
