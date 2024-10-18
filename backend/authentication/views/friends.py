@@ -17,8 +17,9 @@ class FriendshipListView(generics.ListAPIView):
 	def get_queryset(self):
 		# Get the current user from the request
 		custom_user = self.request.customUser
-		# add by mohammed
-		search_term = self.request.query_params.get('search', None)  # Get search term if present
+
+		# Get search term if present
+		search_term = self.request.query_params.get('search', None)
 
 		# Filter for friendships where the user is either the sender or receiver
 		# and the status is 'accepted'

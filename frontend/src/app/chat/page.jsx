@@ -11,9 +11,9 @@ const Chat = () => {
 	return (
 		<ChatProvider>
 			<div className="main-chat">
-			<Listchat />
-			<Msgchat />
-			<MobileSidebar />
+				<Listchat />
+				<Msgchat />
+				<MobileSidebar />
 			</div>
 		</ChatProvider>
 	);

@@ -12,28 +12,15 @@ const UserCard = ({ user, listType, onUserSelect }) => {
       className={`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}
       onClick={() => onUserSelect(user)}
     >
-      {/* <Image
-        // src={user.img}
-        // alt={user.name}
-        src={user.avatar}
-        alt="rere"
-        width={imageSize}
-        height={imageSize}
-        className="img-usercard"
-        style={{
-          borderRadius: '50%',
-          border: `2px solid #fff`,
-        }}
-      /> */}
       <img
-          src={user.avatar} // Use the avatar URL for the image source
-          alt={user.username } // Use the username for alt text, fallback to default
-          width={imageSize} // Set width dynamically
-          height={imageSize} // Set height dynamically
+          src={user.avatar}
+          alt={user.username }
+          width={imageSize}
+          height={imageSize}
           className="img-usercard"
           style={{
-            borderRadius: '50%', // Make the image circular
-            border: '2px solid #fff', // Add white border around the image
+            borderRadius: '50%',
+            border: '2px solid #fff',
           }}
         />
       <div
@@ -42,9 +29,9 @@ const UserCard = ({ user, listType, onUserSelect }) => {
       ></div>
       {listType === 'all' && (
         <>
-          {/* <p>{user.name}</p> */}
           <p>{user.username}</p>
-          {/* <p>Active: {user.active ? 'Yes' : 'No'}</p> */}
+          { /* display last message */}
+          { /* display the time of the message */}
         </>
       )}
     </div>

@@ -22,7 +22,7 @@ export const ChatProvider = ({ children }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [isChatVisible, setIsChatVisible] = useState(false);
 
-    const [onlineUser, setOnlineUser] = useState([]);  // we don't alredy use it  setOnlineUser
+    // const [onlineUser, setOnlineUser] = useState([]);  // we don't alredy use it  setOnlineUser
 
     const [searchTerm, setSearchTerm] = useState('');
     const [allUsers, setAllUsers] = useState([]);
@@ -31,7 +31,7 @@ export const ChatProvider = ({ children }) => {
     const [text, setText] = useState('');
     const [messages, setMessages] = useState({});
     const [socket, setSocket] = useState(null); // WebSocket connection
-    const [userCount, setUserCount] = useState(0);
+    // const [userCount, setUserCount] = useState(0);
     const { profileData: currentUser } = useAuth(); // Current authenticated user
     const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const endRef = useRef(null); // Reference to scroll to bottom of chat
@@ -51,23 +51,70 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
 
+
+     // ************************ Helper Functions ************************
+
+    // Helper to format time (e.g., "15:30")
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    // Helper to format date (e.g., "October 10, 2024")
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+    };
+
+    // Group messages by date
+    const groupMessagesByDate = (messagesList) => {
+        return messagesList.reduce((groups, message) => {
+        const messageDate = formatDate(message.timestamp);
+        if (!groups[messageDate]) {
+            groups[messageDate] = [];
+        }
+        groups[messageDate].push(message);
+        return groups;
+        }, {});
+    };
+
+    // ************************ end ***********************
+
+
     //  ************************ Fetch chat history ************************
+    // const fetchChatHistory = async (receiver_id) => {
+    //     try {
+    //     console.log("Fetching chat history for user:", receiver_id);
+    //     const response = await getData(`/chat-history/${receiver_id}`);
+    //     console.log('fetchChatHistory  response ->',response)
+    //     if (response.status === 200) {
+    //         // Update messages state with the fetched chat history
+    //         setMessages((prevMessages) => ({
+    //         ...prevMessages,
+    //         [receiver_id]: response.data, // Store chat history under the receiver's ID
+    //         }));
+    //     }
+    //     } catch (error) {
+    //     console.error('Error fetching chat history:', error);
+    //     }
+    // };
+
+
     const fetchChatHistory = async (receiver_id) => {
         try {
-        console.log("Fetching chat history for user:", receiver_id);
-        const response = await getData(`/chat-history/${receiver_id}`);
-        console.log('fetchChatHistory  response ->',response)
-        if (response.status === 200) {
-            // Update messages state with the fetched chat history
+          console.log("Fetching chat history for user:", receiver_id);
+          const response = await getData(`/chat-history/${receiver_id}`);
+          if (response.status === 200) {
+            const groupedMessages = groupMessagesByDate(response.data); // Grouping messages by date
             setMessages((prevMessages) => ({
-            ...prevMessages,
-            [receiver_id]: response.data, // Store chat history under the receiver's ID
+              ...prevMessages,
+              [receiver_id]: groupedMessages, // Store grouped chat history under the receiver's ID
             }));
-        }
+          }
         } catch (error) {
-        console.error('Error fetching chat history:', error);
+          console.error('Error fetching chat history:', error);
         }
-    };
+      };
     // ************************ end ***********************
 
 
@@ -93,7 +140,6 @@ export const ChatProvider = ({ children }) => {
     
     // Log the current state of each condition
     console.log('Text:', text.trim());
-    console.log('Selected User:', selectedUser);
     console.log('Socket:', socket);
     console.log('Socket Ready State:', socket ? socket.readyState : 'Socket is null');
 
@@ -106,7 +152,7 @@ export const ChatProvider = ({ children }) => {
 
     if (text.trim() && selectedUser && socket) {
         const messageData = {
-            sender: currentUser.username,  // Send the username, not ID
+            sender: currentUser.username,
             receiver: selectedUser.username,
             message: text.trim(),
         };
@@ -178,9 +224,6 @@ export const ChatProvider = ({ children }) => {
 
                 // Add the new message to the array
                 updatedMessages[userId].push(receivedData);
-
-                // console.log('updatedMessages => ', updatedMessages)
-
                 return updatedMessages;
             });
         };
@@ -301,7 +344,7 @@ export const ChatProvider = ({ children }) => {
         isChatVisible,
         handleUserClick,
         handleBackClick,
-        onlineUser,
+        // onlineUser,
         allUsers,
         searchTerm,
         handleSearch,
@@ -316,6 +359,10 @@ export const ChatProvider = ({ children }) => {
         endRef,
         handleScroll, // Expose handleScroll
         // getChatId,
+
+        formatTime,        // Expose formatTime function
+        formatDate,        // Expose formatDate function
+        groupMessagesByDate // Expose groupMessagesByDate function
         }}
         >
         {children}
