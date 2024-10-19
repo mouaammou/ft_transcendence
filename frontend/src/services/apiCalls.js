@@ -14,7 +14,7 @@ try {
 export const postData = async (endPoint, data, headers) => {
 try {
 	const response = await axiosInstance.post(endPoint, data, headers, {
-		withCredentials: true,
+		withCredentials: true, //send cookies
 	});
 	// console.log("postData ==> ", response)
 	if (response.status == 401) console.log('401 form axios');

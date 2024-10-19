@@ -17,13 +17,17 @@ class FriendshipListView(generics.ListAPIView):
 	def get_queryset(self):
 		# Get the current user from the request
 		custom_user = self.request.customUser
-		
+
+		# Get search term if present
+		search_term = self.request.query_params.get('search', None)
+
 		# Filter for friendships where the user is either the sender or receiver
 		# and the status is 'accepted'
 		friendships = Friendship.objects.filter(
 			Q(sender=custom_user) | Q(receiver=custom_user),
 			status='accepted'
 		)
+		
 		
 		# Extract unique friends (either the receiver or sender)
 		unique_friends = []
@@ -35,9 +39,21 @@ class FriendshipListView(generics.ListAPIView):
 
 		unique_friends = set(unique_friends)
 
-		# Convert the set back to a list for pagination	
+		# If a search term is provided, filter unique friends based on the search term
+		if search_term:
+			filtered_friends = []
+			
+			for user in unique_friends:
+				if search_term.lower() in user.username.lower():
+					# If a match is found, add the user to the filtered_friends list
+					filtered_friends.append(user)
+			# Update unique_friends to contain only the filtered results
+			unique_friends = filtered_friends
+
+		# Convert the set back to a list for pagination
 		unique_friends = list(unique_friends)
 
+		
 		return unique_friends
 
 	def list(self, request, *args, **kwargs):
