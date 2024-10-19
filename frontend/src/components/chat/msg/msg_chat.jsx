@@ -59,9 +59,9 @@ const Msg_chat = () => {
 				  <img
 					src={selectedUser.avatar}
 					alt={selectedUser.username}
-					width={65}
-					height={65}
-					style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
+					// width={65}
+					// height={65}
+					// style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
 					className="img-section-profile"
 				  />
 				</Link>
@@ -135,8 +135,8 @@ const Msg_chat = () => {
 							src={selectedUser.avatar}
 							alt={selectedUser.username}
 							className="img_msg"
-							width={45}
-							height={45}
+							// width={45}
+							// height={45}
 							style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
 						/>
 						)}
@@ -150,8 +150,8 @@ const Msg_chat = () => {
 							src={data.avatar}
 							alt={data.username}
 							className="img_my_message"
-							width={45}
-							height={45}
+							// width={45}
+							// height={45}
 							style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
 						/>
 						)}

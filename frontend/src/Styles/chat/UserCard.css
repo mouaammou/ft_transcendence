@@ -3,19 +3,21 @@
   flex-direction: row;
   /* justify-content: space-around; */
   align-items: center;
-  gap: 20%;
-  gap: 10%;
-  margin: 10px 30px 10px 30px;
+  /* gap: 20%; */
+  gap: 6%;
+  /* margin: 10px 30px 10px 30px; */
+  margin: 5px 30px;
   cursor: pointer;
   /* transition: border 0.3s, border-radius 0.3s; */
-  padding: 3px;
+  padding: 10px 5px;
   border: 1px solid transparent;
   /* border-radius: 24px; */
   border-radius: 10px;
   /* background: #060B16; */
   position: relative;
-  border-bottom: solid 1px;
+  /* border-bottom: solid 1px; */
   /* border: 1px solid; */
+
 }
 
 /* .img-usercard{
@@ -24,7 +26,8 @@
 
 .UserCardAll:hover {
   border: 1px solid #ffffff; /* Border on hover */
-  background-color: #041921;
+  background-color: #0c7ef0;
+  /* background-color: #041921; */
 }
 
 /* Styling for clicked card */
@@ -52,7 +55,7 @@
 }
 
 .UserCardAll .status {
-  bottom: 6px;
+  bottom: 11px;
   left: 40px;
 }
 

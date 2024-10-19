@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
 import { getData } from '@/services/apiCalls';
 // import usersData from '../data/users.json'
 import { useAuth } from '@/components/auth/loginContext.jsx';
@@ -106,6 +105,7 @@ export const ChatProvider = ({ children }) => {
           const response = await getData(`/chat-history/${receiver_id}`);
           if (response.status === 200) {
             const groupedMessages = groupMessagesByDate(response.data); // Grouping messages by date
+            console.log('groupedMessages => ', groupedMessages)
             setMessages((prevMessages) => ({
               ...prevMessages,
               [receiver_id]: groupedMessages, // Store grouped chat history under the receiver's ID
@@ -195,15 +195,17 @@ export const ChatProvider = ({ children }) => {
 
         ws.onmessage = (event) => {
             const receivedData = JSON.parse(event.data);
-            const { sender, receiver, message, receiver_id, sender_id} = receivedData;
 
-            console.log('receivedData => ', receivedData);
-
+            const { sender, receiver, message, receiver_id, sender_id, timestamp } = receivedData;
 
             // Update the local state with the received message
             setMessages((prevMessages) => {
                 const updatedMessages = { ...prevMessages };
                 
+                // // Check if the current user is the sender or receiver
+                // let userId = sender_id === currentUser.id ? receiver_id : sender_id;
+
+
                 // Check if the current user is the sender or receiver and set userId accordingly
                 let userId;
                 if (sender_id === currentUser.id) {
@@ -214,17 +216,21 @@ export const ChatProvider = ({ children }) => {
                     userId = sender_id;
                 }
 
-                // Alternatively, you can directly use selectedUser.id if it's already known:
-                // userId = selectedUser.id;
+                    // Initialize the message array for this user if it doesn't exist
+                    if (!updatedMessages[userId]) {
+                    updatedMessages[userId] = {};
+                    }
 
-                // Initialize the message array for this user if it doesn't exist
-                if (!updatedMessages[userId]) {
-                    updatedMessages[userId] = [];
-                }
+                    // const messageDate = timestamp;
+                    const messageDate = formatDate(timestamp);
+                    if (!updatedMessages[userId][messageDate]) {
+                    updatedMessages[userId][messageDate] = [];
+                    }
 
-                // Add the new message to the array
-                updatedMessages[userId].push(receivedData);
-                return updatedMessages;
+                    // Add the new message to the correct date group
+                    updatedMessages[userId][messageDate].push(receivedData);
+
+                    return updatedMessages;
             });
         };
 
@@ -360,9 +366,9 @@ export const ChatProvider = ({ children }) => {
         handleScroll, // Expose handleScroll
         // getChatId,
 
-        formatTime,        // Expose formatTime function
-        formatDate,        // Expose formatDate function
-        groupMessagesByDate // Expose groupMessagesByDate function
+        formatTime,
+        formatDate,
+        // groupMessagesByDate
         }}
         >
         {children}
