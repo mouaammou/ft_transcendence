@@ -35,7 +35,7 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
             return await self.close() 
         await self.accept()
         self.is_focused = True
-        self.in_game_page = True
+        self.in_game_page = False # if False the user loses when the game starts, if True the user may start the game with the other player
         self.game_engine.connect(self.channel_name, self)
         # dont forget to set timout callback
 

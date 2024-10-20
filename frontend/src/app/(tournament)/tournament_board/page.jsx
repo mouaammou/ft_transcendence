@@ -51,7 +51,8 @@ export default function TournamentBoardPage() {
       // console.log('bla',data);
       if (data.status === 'players') {
         console.log('bla bla bla bla', data.data);
-        setPlayers(parse_players(data.data));
+        // setPlayers(parse_players(data.data));
+        setPlayers(data.data);
       } else if (data.status === 'no_tournament_found') {
         console.log('the player does not exist in any tournament');
         router.push('/create_join_tournament');

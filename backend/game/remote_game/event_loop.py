@@ -42,7 +42,6 @@ class EventLoopManager:
             or use channel name as layer group name
     """ 
     active_tournaments = {} # tournament id as the key for every game
-    pending_tournaments = {} # tournament id as the key for every game
     active_players = {} # player id as the key for every game
     running_games = {} # game instance as the key and the two users in a list as value
     players_in_tournaments = {} # player id as the key and the tournament id as the value
@@ -50,8 +49,6 @@ class EventLoopManager:
     finished_games = [] # finished games
     _event_loop_task = None
     game_class = RemoteGameLogic
-    a_number = 0
-    flag = True
 
     @classmethod
     def connect(cls, channel, consumer):
@@ -76,10 +73,10 @@ class EventLoopManager:
         print(f"----> player id {player_id} in the game {game_obj}")
         if game_obj is None:
             return False 
-        game_obj.play() 
         print('************ RECONNECT *************')
         RemoteGameOutput.add_callback(player_id, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
+        game_obj.play() 
         # cls.play(player_id) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
         return True
@@ -102,35 +99,24 @@ class EventLoopManager:
             # print("updating\n")
             cls._update() 
             # print("cleaning\n")
-            cls._clean()
+            await cls._clean()
             await asyncio.sleep(1/60)
 
     @classmethod
     def _update(cls): 
-        for _, tournament in cls.active_tournaments.items():
-            # print(f"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^333 {len(tournament.games)}")
-            # print(f"--- tournamen {tournament.id} is fulfilled  {tournament.fulfilled}")
-            if tournament.fulfilled == True :
-                RemoteGameOutput.send_tournament_players(tournament.players, {'status' : 'fulfilled'})
-
-                #test
-                # data = {"key": "value"}
-                # RemoteGameOutput.send_tournament_players(data)
         for game, _ in (cls.running_games.items()):
             if game.is_fulfilled() == False: #or game.disconnected()  
                 continue
             frame :dict = game.update()
-
             if game.is_finished() and not game.saved : 
-                print("game is finished\n")
-                # print(f"game saved -----> {game.saved()}")   
+                print("game is finished") 
                 try:
                     game.saved = True
                     asyncio.create_task(cls.save_history(game))
                     print(f"game saved -----> {game.saved}")   
                 except Exception as e:
                     print(f"Error saving game history: {e}")         
-                print("after save finished game\n")
+                print("after save finished game")
                 return
             # print(f'game players {game.player_1} {game.player_2}, frame {frame}')
             cls.send_frame_to_player(game.player_1, game, frame) 
@@ -187,13 +173,58 @@ class EventLoopManager:
         start_time = time.time()
         counter = 0
         while time.time() - start_time < seconds:
-            print(f"waiting for players to join {counter}")
+            # print(f"waiting for players to join {counter}")
             counter += 1
         return counter
     
     
     @classmethod
-    def _clean(cls):
+    async def _tournament_clean(cls, game):
+        for _, tournament in cls.active_tournaments.items():
+            if game in tournament.games:
+                index_of_game = tournament.games.index(game)
+                if tournament.round.status == 'quarter':
+                    if index_of_game == 0:
+                        tournament.players[8] = game.winner
+                    elif index_of_game == 1:
+                        tournament.players[9] = game.winner
+                    elif index_of_game == 2:
+                        tournament.players[10] = game.winner
+                    elif index_of_game == 3:
+                        tournament.players[11] = game.winner
+                    print(f"index of game sdfg {index_of_game}")
+                elif tournament.round.status == 'semi-final':
+                    print(f"index of game sdfg {index_of_game}")
+                    if index_of_game == 0:
+                        tournament.players[12] = game.winner
+                    elif index_of_game == 1:
+                        tournament.players[13] = game.winner
+                elif tournament.round.status == 'final':
+                    tournament.players[14] = game.winner
+                    tournament.winner = game.winner
+                print(f"i stopped here 1")
+                # Collect games to be removed
+                tournament.finished_games.append(game)
+                print(f"i stopped here 2")
+                # Remove games after iteration
+            #print the result of torunament.round.update_round_results()
+            print(f"tournament.round.update_round_results()")
+            iisfinished = tournament.round.update_round_results(game)
+            print(f"tournament.round.update_round_results() {iisfinished}")
+            if iisfinished:
+                for game_to_remove in tournament.finished_games:
+                    tournament.games.remove(game_to_remove)
+                print(f" number of games in the tournament {len(tournament.games)}")
+                print(f"round in tournament is finished s--> {tournament.id}")
+                tournament.start_new_round()
+                print("new round started now sleeping ...")
+                await asyncio.sleep(30)
+                print("sleeping ends")
+                cls.active_tournaments[tournament.id] = tournament
+                cls.start_tournament(tournament.organizer)
+    
+    @classmethod
+    async def  _clean(cls):
         # print("in the _clean methode")
         # print(f"im in clean func \n")
         for player_id in cls.finished_players:
@@ -202,35 +233,9 @@ class EventLoopManager:
         for game in cls.finished_games: 
             print(f"A GAME CLEANED ")
             cls.running_games.pop(game)
-            for _, tournament in cls.active_tournaments.items():
-                if game in tournament.games:
-                    tournament.games.remove(game)
-                    if len(tournament.games) == 0 :
-                        print(f"tournament  is finished s--> {tournament.id}")
-                        tournament.start_new_round()
-                        cls.busy_wait(10)  
-                        cls.start_tournament(tournament.organizer)
-                # cls.players_in_tournaments.pop(game.loser)
-                # cls.active_players.pop(game.loser)
-                # if game in tournament.games:
-                #     if (tournament.round.status == 'quarter' ):
-                #         tournament.round['quarter'].winners.append(game.winner)
-                #     elif (tournament.round.status == 'semi-final'):
-                #         tournament.round['semi-final'].winners.append(game.winner)
-                #     elif (tournament.round.status == 'final'):
-                #         tournament.round['final'].winners.append(game.winner)
+            await cls._tournament_clean(game)
         cls.finished_players.clear()
         cls.finished_games.clear()
-        # print("out of clean func\n")
-        # wait(10000000000000000000)
-        # print("yaaaawww\n")
-
-    # @classmethod
-    # def add_vs_friend_game(cls, player_id, consumer, game_mode='remote'):
-    #     print("in the add_vs_friend_game methode")
-    #     game = VsFriendGame(player_id, consumer)
-    #     cls.running_games.append(game )
-        #RemoteGameOutput.add_callback(player_id, send_callback, game_obj)
 
 
     @classmethod
@@ -320,20 +325,41 @@ class EventLoopManager:
     def game_focus(cls, player_id):
         print("in the game_focus methode")
         game = cls.active_players.get(player_id)
-        if game is not None and (not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.there_is_game_page(player_id)):
-            game.unfocused = player_id
-            game.pause()
-            game.disconnected = True 
-            game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
+        
+        if game is None:
+            return True
+
+        if not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.there_is_game_page(player_id):
+            cls._handle_unfocused_game(game, player_id)
             return False
-        elif game is not None:
-            player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
-            if RemoteGameOutput.there_is_focus(player_id_2) and RemoteGameOutput.there_is_game_page(player_id_2):
-                game.unfocused = None
-                game.disconnected = False
-                game.play() 
-                return True
-        return True
+
+        cls._reset_game_focus(game)
+
+        player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
+        if RemoteGameOutput.there_is_focus(player_id_2) and RemoteGameOutput.there_is_game_page(player_id_2):
+            cls._resume_game(game)
+            return True
+        else:
+            cls._handle_unfocused_game(game, player_id_2)
+            return False
+
+    @classmethod
+    def _handle_unfocused_game(cls, game, player_id):
+        game.unfocused = player_id
+        game.pause()
+        game.disconnected = True
+        game.set_disconnection_timeout_callback(cls.remove, cls, player_id)
+
+    @classmethod
+    def _reset_game_focus(cls, game):
+        game.unfocused = None
+        game.disconnected = False
+
+    @classmethod
+    def _resume_game(cls, game):
+        game.unfocused = None
+        game.disconnected = False 
+        game.play()
 
 # check if the tournament name is contain alphanumric characters
     # @classmethod
@@ -355,9 +381,10 @@ class EventLoopManager:
         if tournament_id is not None:
             tournament = cls.active_tournaments.get(tournament_id) 
             if tournament is not None:
-                players = {'round1' : tournament.rounds['quarter'].players if tournament.rounds['quarter'] is not None else None,
-                           'round2' : tournament.rounds['semi-final'].players if tournament.rounds['semi-final'] is not None else None,
-                           'round3' : tournament.rounds['final'].players if tournament.rounds['final'] is not None else None}
+                players = tournament.players
+                # players = {'round1' : tournament.rounds['quarter'].players if tournament.rounds['quarter'] is not None else None,
+                #            'round2' : tournament.rounds['semi-final'].players if tournament.rounds['semi-final'] is not None else None,
+                #            'round3' : tournament.rounds['final'].players if tournament.rounds['final'] is not None else None}
                 print(f"players in the tournament {players}") 
                 RemoteGameOutput.send_tournament_players( tournament.players, {'status': 'players', 'data': players })
             else:
@@ -369,21 +396,21 @@ class EventLoopManager:
 
     @classmethod
     def start_tournament(cls, player_id):
+        # cls.send_tournament_players(player_id)
+        # cls.busy_wait(10)
         tournament_id = cls.players_in_tournaments.get(player_id)
         if tournament_id is not None:
             tournament = cls.active_tournaments.get(tournament_id)
-            if tournament is not None:
-                for game in tournament.games: 
+            if tournament is not None and tournament.round is not None:
+                print(f"this is the final test enchaalah {tournament.round.status} players {tournament.round.players}")
+                for game in tournament.round.games:    
                     cls.running_games[game] = [game.player_1, game.player_2]
                     cls.active_players[game.player_1] = game
                     cls.active_players[game.player_2] = game
-                RemoteGameOutput.send_tournament_players(tournament.get_players(), {'status': 'PUSH_TO_GAME'})
-                games = tournament.get_games()
-                for game in games:
-                    game.play()
-        cls.send_tournament_players(player_id)
+                    game.pause()
+                    print(f"game {game.player_1} {game.player_2} is created")
+                RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
                 
-    
 
     @classmethod
     def handle_tournament(cls, event_dict, player_id):
@@ -425,7 +452,8 @@ class EventLoopManager:
             if tournament.status == 'pending':
                 tournament_names.append({
                     'id' : tournament.id,
-                    'name' : tournament.name})
+                    'name' : tournament.name,
+                    'organizer' : tournament.organizer})
         print(f"tournament names {tournament_names}")
         if tournament_names != []:
             RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': tournament_names })
@@ -449,6 +477,9 @@ class EventLoopManager:
         else:
             # cls.active_tournaments.pop(tournament_name)
             cls.send_to_consumer_group(player_id, 'tournament_full')
+        if tournament.fulfilled == True:
+            RemoteGameOutput.send_tournament_players(tournament.players, {'status' : 'fulfilled'})
+            
 
     @classmethod
     def create_tournament(cls, player_id, tournament_name):
@@ -538,14 +569,6 @@ class EventLoopManager:
         cls.running_games[game] = [player_1_id, player_2_id]
         cls.active_players[player_1_id] = game
         cls.active_players[player_2_id] = game
-
-    @classmethod
-    def play(cls, game_obj):#player_id
-        print("in the play methode")
-        if game_obj.is_is_fulfilled():
-            game_obj.play()
-            return True
-        return False
     
     # @classmethod
     # def get_game_obj(cls, player_id):# not used

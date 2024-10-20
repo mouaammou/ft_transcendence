@@ -165,6 +165,13 @@ class RoundHistroy(models.Model):
         null=True,
         blank=True
     )
+    # it has to be a list of winners
+    # winners = models.ManyToManyField(
+    #     CustomUser,
+    #     related_name='get_winning_rounds',
+    #     null=True,
+    #     blank=True
+    # )
     
     status = models.CharField(max_length=255, choices=[
         ('quarter', 'Quarter'),

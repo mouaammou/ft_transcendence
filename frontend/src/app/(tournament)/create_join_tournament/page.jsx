@@ -4,6 +4,9 @@ import '@/Styles/game/game.css';
 import mysocket from '@/utils/WebSocketManager';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getData } from '@/services/apiCalls';
+
+// i have a repeted function here which is fetchPlayer
 
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
@@ -16,6 +19,22 @@ export default function CreateJoinTournamentPage() {
   });
   const [tab, setTab] = useState([]);
   const [selectedTournamentId, setSelectedTournamentId] = useState('');
+  const [players, setPlayers] = useState({})
+
+  const fetchPlayer = async playerId => {
+    try {
+      const response = await getData(`/userById/${playerId}`);
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        console.log(response);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Failed to fetch player with i ${playerId}: ${error}`);
+      return null;
+    }
+  };
 
   const handleJoinTournament = () => {
     if (selectedTournamentId !== '') {
@@ -53,7 +72,7 @@ export default function CreateJoinTournamentPage() {
       })
     );
 
-    const messageHandler = e => {
+    const messageHandler = async e => {
       const data = JSON.parse(e.data);
       console.log(data);
       if (data.status === 'already_in_tournament') {
@@ -72,8 +91,19 @@ export default function CreateJoinTournamentPage() {
         setTimeout(() => {
           router.push('/tournament_board');
         }, 1000);
-      } else if (data.tournaments !== undefined) {
+      }
+      else if (data.tournaments !== undefined) {
         setTab(data.tournaments);
+        const playersAvatar = {}
+        for (const tournauwa of data.tournaments) {
+          if (!(tournauwa.organizer in playersAvatar)) {
+            const player = await fetchPlayer(tournauwa.organizer)
+            if (player) {
+              playersAvatar[tournauwa.organizer] = player
+            }
+          }
+        }
+        setPlayers(playersAvatar);
       }
     };
     mysocket.registerMessageHandler(messageHandler);
@@ -134,17 +164,22 @@ export default function CreateJoinTournamentPage() {
         <div className="flex flex-col items-center overflow-y-auto custom-scrollbar max-h-32 lg:max-h-44">
           {tab.length > 0 ? (
             tab.map((tournament, index) => {
+
+              const player = players[tournament.organizer]
               return (
                 <button
                   key={index}
-                  className={`flex-shrink-0 text-[14px] font-mono bg-[#D6D6D6] text-black font-bold
+                  className={`flex-shrink-0 text-[14px]  font-mono bg-[#D6D6D6] text-black font-bold
                             rounded-md m-2 w-[120px] h-[30px] text-center lg:text-[16px] 
-                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-buttoncolor text-white' : ''}`}
+                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-buttoncolor text-white' : ''} flex justify-center items-center gap-3 `}
                   onClick={() => {
                     setSelectedTournamentId(tournament.id);
                   }}
                 >
-                  {tournament.name}
+                  {player && player.avatar && (
+                    <img src={player.avatar} alt={`${player.name}'s avatar`} className="w-8 h-8  rounded-full" />
+                  )}
+                  {tournament.name} 
                 </button>
               );
             })

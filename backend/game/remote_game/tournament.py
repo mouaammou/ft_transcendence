@@ -81,23 +81,39 @@ class Round:
         self.status = status # quarter, semi-final, final
         self.players = players
         self.winners = []
-        self.games = []
         self.start = False
         self.end = False
 
     def get_games(self):
         return self.games
     
+    def calculate_len(self, list):
+        count = 0
+        for i in list:
+            if i != -1:
+                count += 1
+        return count
+    
     def set_games(self, games):
         self.games = games
 
-    def update_round_results(self):
-        for game in self.games:
-            if game.is_finished() and game.winner not in self.winners:
-                self.winners.append(game.winner)
-        if len(self.winners) != len(self.players) // 2:
+    def update_round_results(self, game):
+        print(f'Entering update_round_results with game: {game}')
+        print(f'Game finished: {game.is_finished()}, Game winner: {game.winner}, Current winners: {self.winners}')
+        
+        if game.winner not in self.winners:
+            self.winners.append(game.winner)
+            print(f'Added winner: {game.winner}, Updated winners list: {self.winners}')
+        
+        expected_winners_count = self.calculate_len(self.players) // 2
+        print(f'Expected winners count: {expected_winners_count}, Current winners count: {len(self.winners)}')
+        
+        if len(self.winners) != expected_winners_count:
+            print(f'In round {self.status}, len of winners {len(self.winners)} and len of players {self.calculate_len(self.players)}')
             return False
+        
         self.end = True
+        print(f'Round {self.status} ended successfully.')
         return True
 
     def get_winners(self):
@@ -138,18 +154,21 @@ class Tournament:
         self.id = str(uuid.uuid4())
         self.name = name
         self.max_participants = 4
-        self.players =  [organizer]
+        #how to say that the tournament players list will have a size of 15
+        self.players = [-1] * 15
+        self.players[0] =  organizer
         self.status = 'pending'
         self.fulfilled = False
         self.notified = False
-        self.round = Round(self.id, 'quarter', self.players)
+        self.round = None
         self.rounds = {
-            'quarter': self.round,   
+            'quarter': None,   
             'semi-final': None,
             'final': None 
         }
         self.winner = None
-        self.games = []
+        self.games = []  
+        self.finished_games = [] # it is not doing anything because i set the games to games = [] when i start a new round
         self.organizer = organizer   
         self.play = False
         try:
@@ -159,11 +178,18 @@ class Tournament:
         except Exception as e:
             print(f"Error saving tournament to database: {e}")
 
+    def append_player(self, player):
+        for i in range(len(self.players)):
+            if self.players[i] == -1:
+                self.players[i] = player
+                return True
+        return False
+        
 
     def register_for_tournament(self, player):
         if self.add_player(player):
-            self.players.append(player)
-            if len(self.players) == self.max_participants:
+            self.append_player(player)
+            if self.claculate_len(self.players) == self.max_participants:
                 self.start_first_round()
             return True
         return False
@@ -182,12 +208,16 @@ class Tournament:
         return True
 
     def create_games(self):
-        players_list = list(self.players)
-        for i in range(0, len(players_list), 2):
-            self.start_game(players_list[i], players_list[i+1])
+        players_list = list(self.round.players)
+        # create games for players that are not -1
+        valid_players = [player for player in players_list if player != -1]
+        for i in range(0, self.claculate_len(valid_players), 2):
+            self.start_game(valid_players[i], valid_players[i+1])
 
     def start_first_round(self):
         self.fulfilled = True
+        self.round = Round(self.id, 'quarter', self.players[:self.max_participants]) # after change the number of players to the max number of players
+        print(f'in the start_first_round method {self.round.players}')
         self.rounds['quarter'] = self.round
         self.games = []
         self.create_games()
@@ -215,13 +245,25 @@ class Tournament:
     
     def start_new_round(self):
         next_round = self.get_next_round()
-        players = self.round.get_winners()
+        if next_round == 'semi-final':
+            players = self.players[8:10]  # suppose to be 8:12
+        elif next_round == 'final':
+            players = self.players[12:14]
+        
+        print(f'players of the new round those motherifers --> {players}')
         self.round = Round(self.id, next_round, players)
+        print(f'Starting a new round {next_round}')
+        print(f'players of the new round {players}')
+        print(f'players of the new round {self.round.players}')
         self.rounds[next_round] = self.round
         self.games = []
         self.winners = []
         self.create_games()
         self.round.games = self.games
+        try:
+            asyncio.create_task(self.save_trounament_to_db())
+        except Exception as e:
+            print(f"Error saving tournament to database: {e}")
 
 
     def round_is_finished(self):
@@ -238,13 +280,20 @@ class Tournament:
         self.players.remove(player)
 
     def handle_reconnection(self, player):
-        self.players.append(player)
+        self.append_player(player)
 
     def get_status(self):
         return self.status
     
+    def claculate_len(self, list):
+        count = 0
+        for i in list:
+            if i != -1:
+                count += 1
+        return count
+    
     def add_player(self, player):
-        if len(self.players) >= self.max_participants:
+        if self.claculate_len(self.players) >= self.max_participants:
             print(f'This tournament has reached its maximum number of participants. {player} cannot be registered.')
             return False
         print(f'You have been registered for the tournament, {player} .')   

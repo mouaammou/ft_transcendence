@@ -130,7 +130,7 @@ class RemoteGameInput:
             press = dict_text_data.get('onPress') 
             release = dict_text_data.get('onRelease') 
             launch = dict_text_data.get('launch')
-        if launch is not None:
+        if launch is not None :
             RemoteGameOutput.send_config(consumer.player_id, game_obj)
             game_obj.increment_joined()
             if (game_obj.joined == 2):
