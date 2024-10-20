@@ -4,10 +4,11 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from .models import Friendship, NotificationModel
-from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.utils import timezone
 import logging
 import json
+import asyncio
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -18,17 +19,19 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		print("\n CONNECTED\n")
+		await self.accept()
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
-				self.user_data = UserSerializer(self.user).data
-				self.room_notifications = f"notifications_{self.user.id}"
-				await self.add_user_to_groups()
-		await self.accept()
+			self.user_data = UserSerializer(self.user).data
+			self.room_notifications = f"notifications_{self.user.id}"
+			await self.add_user_to_groups()
+		
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
 		if self.user and self.user.is_authenticated:
 			await self.remove_user_from_groups()
+			# await self.close()
 
 	async def receive(self, text_data):
 		print("\n RECEIVED\n")
@@ -36,6 +39,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
 		online = text_data_json.get('online')
+
+		print(f"data Received :: {text_data_json}\n")
+
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
 			self.user_data = UserSerializer(self.user).data
@@ -62,7 +68,16 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			self.user_connections[self.user.id].append(self.channel_name)
 		if len(self.user_connections[self.user.id]) == 1:
 			print(f"\n broadcasting online when login: {self.user}\n")
+			print(f"user id: {self.user.id}\n")
+			# user_id = self.user.id
+			await self.save_user_status("online")
 			await self.broadcast_online_status(self.user_data, "online")
+
+	@database_sync_to_async
+	def save_user_status(self, status):
+		theuser = User.objects.get(id=self.user.id)
+		theuser.status = status
+		theuser.save()
 
 	async def untrack_user_connection(self):
 		if self.user.id in self.user_connections:
@@ -71,6 +86,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			if len(self.user_connections[self.user.id]) == 0:
 				print(f"\n broadcasting offline when logout: {self.user}\n")
 				await self.broadcast_online_status(self.user_data, "offline")
+				await self.save_user_status("offline")
 				del self.user_connections[self.user.id]
 
 	async def remove_user_from_groups(self):
@@ -169,6 +185,10 @@ class NotificationConsumer(BaseConsumer):
 			await self.handle_accept_request(data)
 		elif message_type == 'reject_friend_request':
 			await self.handle_reject_request(data)
+		elif message_type == 'user_status_online':
+			await self.track_user_connection()
+		elif message_type == 'user_status_offline':
+			await self.untrack_user_connection()
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')

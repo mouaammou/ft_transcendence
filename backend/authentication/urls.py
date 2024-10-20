@@ -36,6 +36,9 @@ urlpatterns = [
 	# for Friend profile
 	path("friendProfile/<str:username>", views.FriendProfile.as_view(), name="friend profile"),
 	path("userById/<int:id>", views.GetUserById.as_view(), name="friend profile"),
+
+	# for search
+	path("searchItems/<str:searchedQuery>", views.SearchClass.as_view(), name="search"),
 ]
 
 if settings.DEBUG:

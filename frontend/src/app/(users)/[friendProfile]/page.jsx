@@ -11,27 +11,12 @@ import { useRouter } from 'next/navigation';
 
 export default function FriendProfile({ params }) {
 
-	const [userStatus, setUserStatus] = useState(() => {
-		const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-		const foundUser = storedUsers.find((user) => user.username == params.friendProfile);
-		if (foundUser) {
-			return foundUser.status;
-		}
-		return 'offline';
-	});
+	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound} = useWebSocketContext();
 
-	const [profile, setProfile] = useState(() => {
-		console.log('fetching profile from local storage ', params.friendProfile);
-		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
-	});
-
-	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
-	const pathname = usePathname();
+	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-	const router = useRouter();
 
-	useEffect(() => {
+	useEffect(() => { // this for the notification type
 		if (notificationType.type === listOfNotifications.acceptFriend
 		&& notificationType.status === true) {
 			setFriendStatusRequest('accepted');
@@ -54,56 +39,52 @@ export default function FriendProfile({ params }) {
 	}
 
 	useEffect(() => {
-		const fetchProfile = async () => {
+		const fetchFriendProfile = async (params) => {
 			if (!params.friendProfile) {
-				setUserNotFound(true);
+				setPageNotFound(true);
 				return ;
 			}
 			try {
-				console.log("FETCHING PROFILE");
 				const response = await getData(`/friendProfile/${params.friendProfile}`);
 				if (response.status === 200) {
 					const fetchedProfile = response.data;
-					if (response.data.Error) {
-						setProfile({});
-						router.push('/profile');
-					}
-					else {
-						console.log('set in local storage friend when fetch:: ', fetchedProfile.username);
-						localStorage.setItem(`profile_${fetchedProfile.username}`, JSON.stringify(fetchedProfile));
-						setProfile(fetchedProfile);
-						setFriendStatusRequest(fetchedProfile.friend);
-					}
-
+					setFriendStatusRequest(fetchedProfile.friend);
+					setProfile(fetchedProfile);
 				}
 				else {
-					setUserNotFound(true);
+					setPageNotFound(true);
 				}
 			} catch (error) {
-				setUserNotFound(true);
+				setPageNotFound(true);
 			}
 		};
-		fetchProfile();
+		fetchFriendProfile(params);
 
 		return () => {//cleanup when component unmount
-			setUserNotFound(false);
-			localStorage.removeItem(`profile_${params.friendProfile}`);
+			setPageNotFound(false);
 		};
-	}, [pathname]);
+	}, []);//this will run when the component mounts
+
 
 	useEffect(() => {
-			if (profile.id) {
-				const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-				const foundUser = storedUsers.find((user) => (user.username == profile.username || user.username == params.friendProfile));
-				if (foundUser)
-					setUserStatus(foundUser.status);  // Update the userStatus with the found user's status
-				else
-					setUserStatus('offline');  // Default to offline if the user isn't found
-				setHasGetMessage(false);
+		if (isConnected) {
+			websocket.current.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				
+				if (data.type === 'user_status_change') {
+					setProfile(prevProfile => {
+						if (prevProfile.username === data.username) {
+							return { ...prevProfile, status: data.status };
+						}
+						return prevProfile;
+					});
+				}
+			};
 		}
-	}, [hasGetMessage]);
+	
+	}, [isConnected]);
 
-	if (userNotFound) {
+	if (pageNotFound) {
 		notFound();
 	}
 
@@ -132,8 +113,8 @@ export default function FriendProfile({ params }) {
 							<button 
 								className="edit-btn flex items-center space-x-2 rounded-md bg-white px-6 py-3 text-[1rem] shadow-md"
 							>
-								<span className="text-gray-700">{userStatus}</span>
-								<span className={`h-3 w-3 rounded-full ${userStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+								<span className="text-gray-700">{profile?.status}</span>
+								<span className={`h-3 w-3 rounded-full ${profile?.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
 							</button>
 						</div>
 					</div>

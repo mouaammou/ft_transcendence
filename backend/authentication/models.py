@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
 
 #---------------- Notifications model ===================#
 class NotificationModel(models.Model):
@@ -123,6 +124,8 @@ class CustomUser(AbstractUser):
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
 
+	status = models.CharField(max_length=255, default="offline")
+
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 
 	def get_friends(self):
@@ -137,7 +140,7 @@ class CustomUser(AbstractUser):
 			Q(received_friendships__sender=self, sent_friendships__status='blocked')
 		)
 
-	def download_and_save_image(self, image_url): # for 42 image
+	def download_and_save_image(self, image_url): # download 42 image
 		img_temp = NamedTemporaryFile(delete=True)
 		#download the image form the url
 		response = requests.get(url=image_url)

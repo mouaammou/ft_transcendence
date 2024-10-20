@@ -8,27 +8,11 @@ import {useSearchParams } from 'next/navigation';
 import NotFound_404 from "@/components/error_pages/404";
 
 const Friends = () => {
-	const {users, isConnected, fetchAllUsers, setFetchedUsers, fetchedUsers, nextPage, prevPage, pageNotFound, setPageNotFound, setNextPage, setPrevPage} = useWebSocketContext();
+	const {fetchAllUsers, users, nextPage, prevPage, pageNotFound, setPageNotFound, setNextPage, setPrevPage} = useWebSocketContext();
 	
 	const query_params = useSearchParams();
 	const [pageNumber, setPageNumber] = useState(1);
 	
-	useEffect(() => {
-		//save the users in localstorage
-		setFetchedUsers((prevUsers) => {
-			console.log('users :: ', users);
-			// Merge the existing users with the new users and update the status
-			const mergedUsers = prevUsers.map((user) => {
-				const newUser = users.find((newUser) => newUser.username === user.username);
-				if (newUser) {
-					return { ...user, status: newUser.status || "offline" };
-				}
-				return user;
-			});
-			return mergedUsers;
-		});
-	}, [users, isConnected]);
-
 	// Fetch users on the initial render
 	useEffect(() => {
 		const page = query_params.get('page') || 1;
@@ -67,7 +51,7 @@ const Friends = () => {
 
 					{/* DIV TWO users */}
 					<div className="div-for-two-users flex justify-center items-center flex-wrap gap-4 max-sm:gap-1 p-2 md:p-10 mx-auto">
-						{fetchedUsers && fetchedUsers.map((user, index) => (
+						{users && users.map((user, index) => (
 							/* USER Profile status online in game */
 							<Link href={`/${user.username}`} className="text-xs text-blue-500" key={index}>
 								<div className="flex items-center justify-center space-x-5 p-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition" key={user.id}>

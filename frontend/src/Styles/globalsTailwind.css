@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-
 	body {
 		overflow: visible !important;
 		padding: 0;

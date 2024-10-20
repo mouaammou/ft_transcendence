@@ -25,7 +25,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="login-main-container">
+		<div className="login-main-container mt-20">
 			<form
 			onSubmit={LoginTo}
 			className="main-login flex flex-col mr-20 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-4/5"

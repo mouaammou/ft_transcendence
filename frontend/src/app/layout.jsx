@@ -14,25 +14,17 @@ import '@/styles/globalsTailwind.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
-	const pathname = usePathname();
-	const isChatPage = pathname === '/chat';
 
 	return (
 		<html lang="en">
 			<body className={inter.className}>
 				<WebSocketProvider url="ws://localhost:8000/ws/online/">
 					<LoginProvider>
-						{isChatPage ? (
-							<div className="content">
-								<Sidebar />
-								{children}
-							</div>
-						) : (
-							<div>
-								<Navbar />
-								{children} 
-							</div>
-						)}
+						<div>
+							<Sidebar />
+							<Navbar />
+							{children}
+						</div>
 					</LoginProvider>
 				</WebSocketProvider>
 			</body>

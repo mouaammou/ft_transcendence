@@ -5,3 +5,4 @@ from .profile       import  UserProfile, UpdateProfile, FriendProfile, GetUserBy
 from .friends       import  FriendshipListView, FriendshipRetrieveUpdateDestroyView, AcceptFriendshipView, BlockFriendshipView
 from .notifications import  ListNotifications
 from .allusers      import  AllUser
+from .search        import  SearchClass

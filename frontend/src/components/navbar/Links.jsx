@@ -8,9 +8,9 @@ const Links = () => {
 	return (
 		<> 
 			<div className="flex justify-center gap-x-5 items-center text-[1.1rem] ">
-				<Link href='/chat' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Chat</Link>	
+				{/* <Link href='/chat' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Chat</Link> */}
 				{/* drop down menu for Users and game & tournament */}
-				<div className="relative">
+				{/* <div className="relative">
 					<button
 					onClick={() => setIsOpenGame(!isOpenGame)}
 					className="text-white hover:bg-black transition-all rounded-lg px-5 py-2.5 text-center inline-flex items-center"
@@ -48,11 +48,11 @@ const Links = () => {
 						</div>
 
 					)}
-				</div>
+				</div> */}
 				{/* end  drop down menu for Users and game & tournament */}
 
 				{/* drop down menu for Users and Friends */}
-				<div className="relative">
+				{/* <div className="relative">
 					<button
 					onClick={() => setIsOpenUsers(!isOpenUsers)}
 					className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 text-center inline-flex items-center"
@@ -90,7 +90,7 @@ const Links = () => {
 						</div>
 
 					)}
-				</div>
+				</div> */}
 				{/* end drop down menu for Users and Friends */}
 
 				{/* search bar ***************** */}

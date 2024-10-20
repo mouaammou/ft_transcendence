@@ -72,7 +72,6 @@ export const LoginProvider = ({ children }) => {
 
 	const Logout = () => {
 		console.log(`isConnected: ${isConnected}`);
-		console.log(`websocket: ${websocket}`);
 		if (isConnected) {
 			//send a message to the server that the user is logging out
 			websocket.current.send(JSON.stringify({ logout: 'logout'
@@ -119,15 +118,15 @@ export const LoginProvider = ({ children }) => {
 	return (
 		<LoginContext.Provider
 			value={{
-			errors,
-			setErrors,
-			AuthenticateTo,
-			Logout,
-			isAuth,
-			setIsAuth,
-			fetch_profile,
-			profileData,
-			setProfileData,
+				errors,
+				setErrors,
+				AuthenticateTo,
+				Logout,
+				isAuth,
+				setIsAuth,
+				fetch_profile,
+				profileData,
+				setProfileData,
 			}}
 		>
 			{mounted && children}
@@ -135,4 +134,7 @@ export const LoginProvider = ({ children }) => {
 	);
 };
 
-export const useAuth = () => useContext(LoginContext) || {};
+export const useAuth = () => useContext(LoginContext || {});
+if (useAuth == undefined || useAuth == null) {
+   throw new Error('UseAuth must be used within a LoginProvider');
+}
