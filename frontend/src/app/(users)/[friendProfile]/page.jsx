@@ -7,11 +7,10 @@ import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
 
 export default function FriendProfile({ params }) {
 
-	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound} = useWebSocketContext();
+	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound, friendStatusChange, setFriendStatusChange } = useWebSocketContext();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
@@ -69,8 +68,9 @@ export default function FriendProfile({ params }) {
 	useEffect(() => {
 		if (isConnected) {
 			websocket.current.onmessage = (event) => {
+				setFriendStatusChange(false);
 				const data = JSON.parse(event.data);
-				
+				console.log("user status in friend profile:", data);
 				if (data.type === 'user_status_change') {
 					setProfile(prevProfile => {
 						if (prevProfile.username === data.username) {
@@ -82,7 +82,7 @@ export default function FriendProfile({ params }) {
 			};
 		}
 	
-	}, [isConnected]);
+	}, [friendStatusChange]);
 
 	if (pageNotFound) {
 		notFound();

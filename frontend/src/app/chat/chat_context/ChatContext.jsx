@@ -1,9 +1,7 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 // import usersData from '../data/users.json'
 
-export const ChatContext = createContext({
-	value: 'true',
-});
+export const ChatContext = createContext(null);
 
 export const ChatProvider = ({ children }) => {
   // all useState

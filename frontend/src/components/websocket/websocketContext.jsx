@@ -33,34 +33,45 @@ export const WebSocketProvider = ({url, children}) => {
 	const [reconnectAttempts, setReconnectAttempts] = useState(0);
 	const maxReconnectAttempts = 5;
 	const reconnectInterval = 3000; // 3 seconds
+	// for friend page status: online or offline
+	const [friendStatusChange, setFriendStatusChange] = useState(false);
 
-	//websocket initialization connection
+//websocket initialization connection
 	useEffect(() => {
-		// Create WebSocket instance when the component mounts
-		if ( ! isConnected) {
+		const connectWebSocket = () => {
 			websocket.current = new WebSocket(url);
 
 			websocket.current.onopen = () => {
-				console.log('WebSocket connected');
-				setIsConnected(true);
+					console.log('WebSocket connected');
+					setIsConnected(true);
+					setReconnectAttempts(0); // Reset reconnection attempts on successful connection
 			};
+
+			websocket.current.onclose = () => {
+					console.log('WebSocket disconnected');
+					setIsConnected(false);
+					if (reconnectAttempts < maxReconnectAttempts) {
+						setTimeout(() => {
+							setReconnectAttempts(prev => prev + 1);
+							connectWebSocket();
+						}, reconnectInterval);
+					}
+			};
+
+			websocket.current.onerror = (error) => {
+					setIsConnected(false);
+					console.error('WebSocket error:', error);
+			};
+		};
+
+		if (!isConnected && reconnectAttempts === 0) {
+			connectWebSocket();
 		}
 
-		websocket.current.onclose = () => {
-			console.log('WebSocket disconnected');
-			setIsConnected(false);
-		};
-
-		websocket.current.onerror = (error) => {
-			setIsConnected(false);
-			console.error('WebSocket error:', error);
-		};
-
-
-		//cleaup 
+		// Cleanup
 		return () => {
 			if (websocket.current) {
-				websocket.current.close();
+					websocket.current.close();
 			}
 		};
 	}, []);
@@ -73,6 +84,7 @@ export const WebSocketProvider = ({url, children}) => {
 				console.log("WebSocket message received:", data);
 	
 				if (data.type === 'user_status_change') {
+					setFriendStatusChange(true);
 					setUsers(prevUsers => { // Update the status of the users, if they are online or offline
 						const updatedUsers = prevUsers?.map(user => {
 							if (user.username === data.username) {
@@ -153,13 +165,16 @@ export const WebSocketProvider = ({url, children}) => {
 				fetchAllUsers,
 				pageNotFound,
 				setPageNotFound,
+				//for friend status change
+				friendStatusChange,
+				setFriendStatusChange
 				}}>
 			{children}
 		</WebSocketContext.Provider>
 	)
 };
 
-export const useWebSocketContext = () => useContext(WebSocketContext || {});
+export const useWebSocketContext = () => useContext(WebSocketContext);
 
 if (useWebSocketContext === undefined || useWebSocketContext === null) {
    throw new Error('useWebSocketContext must be used within a LoginProvider');

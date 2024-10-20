@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 const UserList = ({ users, listType }) => {
-  const { handleUserClick } = useContext(ChatContext);
+  const { handleUserClick } = useContext(ChatContext || {});
 
   return (
     <div className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}>

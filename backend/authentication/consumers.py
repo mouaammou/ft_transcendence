@@ -2,13 +2,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from authentication.serializers import UserSerializer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
-from asgiref.sync import sync_to_async
 from .models import Friendship, NotificationModel
 from django.db.models import Q
-from django.utils import timezone
 import logging
 import json
-import asyncio
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -23,15 +20,14 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
 			self.user_data = UserSerializer(self.user).data
-			self.room_notifications = f"notifications_{self.user.id}"
 			await self.add_user_to_groups()
 		
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
-		if self.user and self.user.is_authenticated:
-			await self.remove_user_from_groups()
-			# await self.close()
+		# if self.user and self.user.is_authenticated:
+		await self.remove_user_from_groups()
+		await self.close()
 
 	async def receive(self, text_data):
 		print("\n RECEIVED\n")
@@ -55,7 +51,6 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def add_user_to_groups(self):
 		try:
-			await self.channel_layer.group_add(self.room_notifications, self.channel_name)
 			await self.channel_layer.group_add(self.USER_STATUS_GROUP, self.channel_name)
 			await self.track_user_connection()
 		except Exception as e:
@@ -68,18 +63,17 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			self.user_connections[self.user.id].append(self.channel_name)
 		if len(self.user_connections[self.user.id]) == 1:
 			print(f"\n broadcasting online when login: {self.user}\n")
-			print(f"user id: {self.user.id}\n")
-			# user_id = self.user.id
 			await self.save_user_status("online")
 			await self.broadcast_online_status(self.user_data, "online")
 
 	@database_sync_to_async
 	def save_user_status(self, status):
-		theuser = User.objects.get(id=self.user.id)
-		theuser.status = status
-		theuser.save()
+		current_user = User.objects.get(id=self.user.id)
+		current_user.status = status
+		current_user.save()
 
 	async def untrack_user_connection(self):
+		print(f"untrack_user_connection: {self.user}")
 		if self.user.id in self.user_connections:
 			if self.channel_name in self.user_connections[self.user.id]:
 				self.user_connections[self.user.id].remove(self.channel_name)
@@ -91,7 +85,6 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def remove_user_from_groups(self):
 		try:
-			await self.channel_layer.group_discard(self.room_notifications, self.channel_name)
 			await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
 			await self.untrack_user_connection()
 		except Exception as e:
@@ -238,8 +231,6 @@ class NotificationConsumer(BaseConsumer):
 	async def receive(self, text_data):
 		await super().receive(text_data)
 		data = json.loads(text_data)
-		print(f"\nmessage_type notif:: {data}")
-		print(f"currnet user: {self.user.id}\n")
 		await self.handle_event(data)
 
 	@database_sync_to_async
