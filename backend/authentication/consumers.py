@@ -25,9 +25,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
-		# if self.user and self.user.is_authenticated:
-		await self.remove_user_from_groups()
-		await self.close()
+		if self.user and self.user.is_authenticated:
+			await self.remove_user_from_groups()
+			await self.close()
 
 	async def receive(self, text_data):
 		print("\n RECEIVED\n")
@@ -106,13 +106,13 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def user_status_change(self, event):
 		try:
-			# if event['id'] != self.user.id:
-			await self.send(text_data=json.dumps({
-				"type": "user_status_change",
-				"username": event['username'],
-				"avatar": event['avatar'],
-				"status": event['status'],
-			}))
+			if event['id'] != self.user.id:
+				await self.send(text_data=json.dumps({
+					"type": "user_status_change",
+					"username": event['username'],
+					"avatar": event['avatar'],
+					"status": event['status'],
+				}))
 		except Exception as e:
 			logger.error(f"\nError sending user status change: {e}\n")
 

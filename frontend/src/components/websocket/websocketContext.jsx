@@ -88,7 +88,6 @@ export const WebSocketProvider = ({url, children}) => {
 					setUsers(prevUsers => { // Update the status of the users, if they are online or offline
 						const updatedUsers = prevUsers?.map(user => {
 							if (user.username === data.username) {
-								console.log("User status change:", data.status);
 								return { ...user, status: data.status };
 							}
 							return user;
@@ -167,14 +166,14 @@ export const WebSocketProvider = ({url, children}) => {
 				setPageNotFound,
 				//for friend status change
 				friendStatusChange,
-				setFriendStatusChange
+				setFriendStatusChange,
 				}}>
 			{children}
 		</WebSocketContext.Provider>
 	)
 };
 
-export const useWebSocketContext = () => useContext(WebSocketContext);
+export const useWebSocketContext = () => useContext(WebSocketContext || {});
 
 if (useWebSocketContext === undefined || useWebSocketContext === null) {
    throw new Error('useWebSocketContext must be used within a LoginProvider');

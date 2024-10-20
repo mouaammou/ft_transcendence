@@ -10,7 +10,7 @@ import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 
 export default function FriendProfile({ params }) {
 
-	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound, friendStatusChange, setFriendStatusChange } = useWebSocketContext();
+	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound } = useWebSocketContext();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
@@ -41,7 +41,7 @@ export default function FriendProfile({ params }) {
 		const fetchFriendProfile = async (params) => {
 			if (!params.friendProfile) {
 				setPageNotFound(true);
-				return ;
+				return;
 			}
 			try {
 				const response = await getData(`/friendProfile/${params.friendProfile}`);
@@ -49,8 +49,7 @@ export default function FriendProfile({ params }) {
 					const fetchedProfile = response.data;
 					setFriendStatusRequest(fetchedProfile.friend);
 					setProfile(fetchedProfile);
-				}
-				else {
+				} else {
 					setPageNotFound(true);
 				}
 			} catch (error) {
@@ -59,37 +58,34 @@ export default function FriendProfile({ params }) {
 		};
 		fetchFriendProfile(params);
 
-		return () => {//cleanup when component unmount
+		return () => {
 			setPageNotFound(false);
 		};
-	}, []);//this will run when the component mounts
+	}, [params]); // Add 'params' as a dependency
 
 
-	useEffect(() => {
-		if (isConnected) {
-			websocket.current.onmessage = (event) => {
-				setFriendStatusChange(false);
-				const data = JSON.parse(event.data);
-				console.log("user status in friend profile:", data);
-				if (data.type === 'user_status_change') {
-					setProfile(prevProfile => {
-						if (prevProfile.username === data.username) {
-							return { ...prevProfile, status: data.status };
-						}
-						return prevProfile;
-					});
-				}
-			};
-		}
-	
-	}, [friendStatusChange]);
+	if (isConnected) {
+		websocket.current.onmessage = (event) => {
+			// setFriendStatusChange(false);
+			const data = JSON.parse(event.data);
+			console.log("user status in friend profile:", data);
+			if (data.type === 'user_status_change') {
+				setProfile(prevProfile => {
+					if (prevProfile.username === data.username) {
+						return { ...prevProfile, status: data.status };
+					}
+					return prevProfile;
+				});
+			}
+		};
+	}
 
 	if (pageNotFound) {
 		notFound();
 	}
 
 	return (
-		profile.id && (
+		profile?.id && (
 			<div className="profile container max-md:p-3 overflow-hidden">
 				{/* user avatar and infos */}
 				<div className="profile-top-infos flex justify-evenly items-center gap-1 max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
