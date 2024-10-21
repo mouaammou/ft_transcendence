@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
 import { TfiStatsUp } from "react-icons/tfi";
-import { notFound, usePathname } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
@@ -64,7 +64,7 @@ export default function FriendProfile({ params }) {
 	}, [params]); // Add 'params' as a dependency
 
 
-	if (isConnected) {
+	if (isConnected) {//this code : to listen to the user status change, in every rounder we check if the user status has changed
 		websocket.current.onmessage = (event) => {
 			// setFriendStatusChange(false);
 			const data = JSON.parse(event.data);

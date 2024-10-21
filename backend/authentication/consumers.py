@@ -1,121 +1,117 @@
+import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
-from authentication.serializers import UserSerializer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
-from .models import Friendship, NotificationModel
-from django.db.models import Q
-import logging
-import json
+from .serializers import UserSerializer
+from .redis_connection import redis_conn
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 class BaseConsumer(AsyncWebsocketConsumer):
-	USER_STATUS_GROUP = 'users_status'
-	user_connections = {}
+    USER_STATUS_GROUP = 'users_status'
 
-	async def connect(self):
-		print("\n CONNECTED\n")
-		await self.accept()
-		self.user = self.scope.get("user")
-		if self.user and self.user.is_authenticated:
-			self.user_data = UserSerializer(self.user).data
-			await self.add_user_to_groups()
-		
+    async def connect(self):
+        print("\n CONNECTED\n")
+        await self.accept()
+        self.user = self.scope.get("user")
+        if self.user and self.user.is_authenticated:
+            self.user_data = UserSerializer(self.user).data
+            await self.add_user_to_groups()
 
-	async def disconnect(self, close_code):
-		print("\n DISCONNECT\n")
-		if self.user and self.user.is_authenticated:
-			await self.remove_user_from_groups()
-			await self.close()
+    async def disconnect(self, close_code):
+        print("\n DISCONNECT\n")
+        if self.user and self.user.is_authenticated:
+            await self.remove_user_from_groups()
+            await self.close()
 
-	async def receive(self, text_data):
-		print("\n RECEIVED\n")
-		text_data_json = json.loads(text_data)
-		user = text_data_json.get('user')
-		logout = text_data_json.get('logout')
-		online = text_data_json.get('online')
+    async def receive(self, text_data):
+        print("\n RECEIVED\n")
+        text_data_json = json.loads(text_data)
+        user = text_data_json.get('user')
+        logout = text_data_json.get('logout')
+        online = text_data_json.get('online')
 
-		print(f"data Received :: {text_data_json}\n")
+        print(f"data Received :: {text_data_json}\n")
 
-		if user:
-			self.user = await database_sync_to_async(User.objects.get)(username=user)
-			self.user_data = UserSerializer(self.user).data
-		# Handle logout event
-		if logout and self.user.is_authenticated:
-			await self.untrack_user_connection()
+        if user:
+            self.user = await database_sync_to_async(User.objects.get)(username=user)
+            self.user_data = UserSerializer(self.user).data
+        # Handle logout event
+        if logout and self.user.is_authenticated:
+            await self.untrack_user_connection()
 
-		# Handle online event
-		elif online and self.user.is_authenticated:
-			await self.track_user_connection()
+        # Handle online event
+        elif online and self.user.is_authenticated:
+            await self.track_user_connection()
 
-	async def add_user_to_groups(self):
-		try:
-			await self.channel_layer.group_add(self.USER_STATUS_GROUP, self.channel_name)
-			await self.track_user_connection()
-		except Exception as e:
-			logger.error(f"\nError during connection: {e}\n")
+    async def add_user_to_groups(self):
+        try:
+            await self.channel_layer.group_add(self.USER_STATUS_GROUP, self.channel_name)
+            await self.track_user_connection()
+        except Exception as e:
+            logger.error(f"\nError during connection: {e}\n")
 
-	async def track_user_connection(self):
-		if self.user.id not in self.user_connections:
-			self.user_connections[self.user.id] = []
-		if self.channel_name not in self.user_connections[self.user.id]:
-			self.user_connections[self.user.id].append(self.channel_name)
-		if len(self.user_connections[self.user.id]) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
-			await self.save_user_status("online")
-			await self.broadcast_online_status(self.user_data, "online")
+    async def track_user_connection(self):
+        user_id = str(self.user.id)
+        channel_name = self.channel_name
 
-	@database_sync_to_async
-	def save_user_status(self, status):
-		current_user = User.objects.get(id=self.user.id)
-		current_user.status = status
-		current_user.save()
+        redis_conn.sadd(user_id, channel_name)
+        if redis_conn.scard(user_id) == 1:
+            print(f"\n broadcasting online when login: {self.user}\n")
+            await self.save_user_status("online")
+            await self.broadcast_online_status(self.user_data, "online")
 
-	async def untrack_user_connection(self):
-		print(f"untrack_user_connection: {self.user}")
-		if self.user.id in self.user_connections:
-			if self.channel_name in self.user_connections[self.user.id]:
-				self.user_connections[self.user.id].remove(self.channel_name)
-			if len(self.user_connections[self.user.id]) == 0:
-				print(f"\n broadcasting offline when logout: {self.user}\n")
-				await self.broadcast_online_status(self.user_data, "offline")
-				await self.save_user_status("offline")
-				del self.user_connections[self.user.id]
+    @database_sync_to_async
+    def save_user_status(self, status):
+        current_user = User.objects.get(id=self.user.id)
+        current_user.status = status
+        current_user.save()
 
-	async def remove_user_from_groups(self):
-		try:
-			await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
-			await self.untrack_user_connection()
-		except Exception as e:
-			logger.error(f"\nError during disconnection: {e}\n")
+    async def untrack_user_connection(self):
+        print(f"untrack_user_connection: {self.user}")
+        user_id = str(self.user.id)
+        channel_name = self.channel_name
 
-	async def broadcast_online_status(self, user_data, status):
-		try:
-			await self.channel_layer.group_send(self.USER_STATUS_GROUP,
-				{
-					"type": "user_status_change",
-					'id': user_data['id'],
-					"username": user_data['username'],
-					"avatar": user_data['avatar'],
-					"status": status,
-				}
-			)
-		except Exception as e:
-			logger.error(f"\nError broadcasting status: {e}\n")
+        redis_conn.srem(user_id, channel_name)
+        if redis_conn.scard(user_id) == 0:
+            print(f"\n broadcasting offline when logout: {self.user}\n")
+            await self.broadcast_online_status(self.user_data, "offline")
+            await self.save_user_status("offline")
 
-	async def user_status_change(self, event):
-		try:
-			if event['id'] != self.user.id:
-				await self.send(text_data=json.dumps({
-					"type": "user_status_change",
-					"username": event['username'],
-					"avatar": event['avatar'],
-					"status": event['status'],
-				}))
-		except Exception as e:
-			logger.error(f"\nError sending user status change: {e}\n")
+    async def remove_user_from_groups(self):
+        try:
+            await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
+            await self.untrack_user_connection()
+        except Exception as e:
+            logger.error(f"\nError during disconnection: {e}\n")
 
+    async def broadcast_online_status(self, user_data, status):
+        try:
+            await self.channel_layer.group_send(self.USER_STATUS_GROUP,
+                {
+                    "type": "user_status_change",
+                    'id': user_data['id'],
+                    "username": user_data['username'],
+                    "avatar": user_data['avatar'],
+                    "status": status,
+                }
+            )
+        except Exception as e:
+            logger.error(f"\nError broadcasting status: {e}\n")
+
+    async def user_status_change(self, event):
+        try:
+            if event['id'] != self.user.id:
+                await self.send(text_data=json.dumps({
+                    "type": "user_status_change",
+                    "username": event['username'],
+                    "avatar": event['avatar'],
+                    "status": event['status'],
+                }))
+        except Exception as e:
+            logger.error(f"\nError sending user status change: {e}\n")
 
 class NotificationConsumer(BaseConsumer):
 	async def connect(self):
