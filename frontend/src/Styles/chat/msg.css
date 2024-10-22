@@ -62,6 +62,8 @@
   /* height: 1053px; */
   height: calc(100% - 113px);
   /* flex-grow: 1;     */
+  /* background-color: aliceblue; */
+  /* background-color: rgb(172 215 252); */
 }
 
 .body-message-chat::-webkit-scrollbar {
@@ -89,9 +91,16 @@
   display: none;
 }
 
-.section-profile p {
+.user_prof {
   font-weight: bold;
   font-size: 25px;
+}
+
+/* add */
+.typing-indicator {
+  font-style: italic;
+  color: rgb(245, 230, 230);
+  font-size: 15px;
 }
 
 .link_selectedUser_profile{
@@ -173,7 +182,7 @@
 /* end */
 
 .par_date span{
-  background: rgb(73, 143, 173);
+  background: #5faffe;
   font-weight: bold;
   padding: 2px 10px;
   border-radius: 5px;

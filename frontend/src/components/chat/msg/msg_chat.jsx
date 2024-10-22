@@ -35,18 +35,12 @@ const Msg_chat = () => {
 
 	formatTime,
 	formatDate,
+
+	typingUsers, // Include typingUsers to access typing status
 	
   } = useContext(ChatContext);
 
   const { profileData: data } = useAuth();  // Current logged-in user
-
-
-  // const formatDate = (timestamp) => {
-  //   const date = new Date(timestamp);
-  //   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
-	
-  //   return date.toLocaleString('en-US', options).replace(',', ''); // Modify for your locale
-  // };
 
   return (
 	<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -65,7 +59,11 @@ const Msg_chat = () => {
 					className="img-section-profile"
 				  />
 				</Link>
-			  <p>{selectedUser.username}</p>
+			  <p className='user_prof'>{selectedUser.username}</p>
+				{/* Typing indicator */}
+				{typingUsers.includes(selectedUser.username) && (
+					<p className="typing-indicator">Typing...</p>
+				)}
 			</div>
 			<div className="section_action">
 			  <LiaGamepadSolid className="LiaGamepadSolid" />
@@ -75,42 +73,6 @@ const Msg_chat = () => {
 
 		  <div className="body-message-chat">
 			<div className="center-chat">
-			{/* {messages[selectedUser?.id]?.length > 0 &&(
-				messages[selectedUser.id].map((msg, index) => (
-				  <div
-					key={index}
-					className={msg.sender === data.username ? 'my-message' : 'message'}
-				  >
-				
-					{msg.sender !== data.username && (
-					  <img
-						src={selectedUser.avatar}
-						alt={selectedUser.username}
-						className="img_msg"
-						width={45}
-						height={45}
-						style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-					  />
-					)}
-					<div className='div_text_message'>
-					  <p className='text_message'>{msg.message}</p>
-					  <span className="message_time">{formatDate(msg.timestamp)}</span>
-					</div>
-					{msg.sender === data.username && (
-					  <img
-						src={data.avatar}
-						alt={data.username}
-						className="img_my_message"
-						width={45}
-						height={45}
-						style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-					  />
-					)}
-				  </div>
-				))
-			)} */}
-
-
 
 			{/* new code */}
 
@@ -155,6 +117,7 @@ const Msg_chat = () => {
 							style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
 						/>
 						)}
+						
 					</div>
 					))}
 				</div>
@@ -172,7 +135,9 @@ const Msg_chat = () => {
 				  className="message_input"
 				  type="text"
 				  placeholder="Type a message..."
-				  onChange={e => setText(e.target.value)}
+				//   onChange={e => setText(e.target.value)}
+				  onChange={e => {setText(e.target.value)
+				  }}
 				  value={text}
 				  onKeyDown={handleKeyPress}
 				/>

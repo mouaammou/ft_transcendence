@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import '@/styles/chat/UserCard.css';
 
-const UserCard = ({ user, listType, onUserSelect }) => {
+const UserCard = ({ user, listType, onUserSelect , typingUsers}) => {
   const borderColor = user.active ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
 
@@ -14,7 +14,7 @@ const UserCard = ({ user, listType, onUserSelect }) => {
     >
       <img
           src={user.avatar}
-          alt={user.username }
+          alt={user.username}
           width={imageSize}
           height={imageSize}
           className="img-usercard"
@@ -29,9 +29,13 @@ const UserCard = ({ user, listType, onUserSelect }) => {
       ></div>
       {listType === 'all' && (
         <>
-          <p>{user.username}</p>
-          { /* display last message */}
-          { /* display the time of the message */}
+			<p>{user.username}</p>
+			{/* Display typing indicator if the user is typing */}
+			{typingUsers.includes(user.username) && (
+				<p className="typing_indicator_card">Typing...</p>
+			)}
+			{ /* display last message */}
+			{ /* display the time of the message */}
         </>
       )}
     </div>

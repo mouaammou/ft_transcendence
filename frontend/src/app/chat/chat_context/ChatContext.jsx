@@ -34,6 +34,11 @@ export const ChatProvider = ({ children }) => {
     const { profileData: currentUser } = useAuth(); // Current authenticated user
     const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const endRef = useRef(null); // Reference to scroll to bottom of chat
+
+    const [typingUsers, setTypingUsers] = useState([]); // Initialize as an empty array
+    // Track users currently typing
+
+    const typingTimeoutRef = useRef(null); // To manage typing timeout
     // ************************ end ***********************
 
 
@@ -67,37 +72,27 @@ export const ChatProvider = ({ children }) => {
 
     // Group messages by date
     const groupMessagesByDate = (messagesList) => {
-        return messagesList.reduce((groups, message) => {
-        const messageDate = formatDate(message.timestamp);
-        if (!groups[messageDate]) {
-            groups[messageDate] = [];
-        }
-        groups[messageDate].push(message);
-        return groups;
-        }, {});
+        const groupedMessages = {};
+
+        messagesList.forEach(message => {
+            const messageDate = formatDate(message.timestamp);
+
+            // If this date doesn't exist in the groupedMessages, initialize it
+            if (!groupedMessages[messageDate]) {
+            groupedMessages[messageDate] = [];
+            }
+
+            // Add the message to the array for the specific date
+            groupedMessages[messageDate].push(message);
+        });
+
+        return groupedMessages;
     };
 
     // ************************ end ***********************
 
 
     //  ************************ Fetch chat history ************************
-    // const fetchChatHistory = async (receiver_id) => {
-    //     try {
-    //     console.log("Fetching chat history for user:", receiver_id);
-    //     const response = await getData(`/chat-history/${receiver_id}`);
-    //     console.log('fetchChatHistory  response ->',response)
-    //     if (response.status === 200) {
-    //         // Update messages state with the fetched chat history
-    //         setMessages((prevMessages) => ({
-    //         ...prevMessages,
-    //         [receiver_id]: response.data, // Store chat history under the receiver's ID
-    //         }));
-    //     }
-    //     } catch (error) {
-    //     console.error('Error fetching chat history:', error);
-    //     }
-    // };
-
 
     const fetchChatHistory = async (receiver_id) => {
         try {
@@ -171,10 +166,47 @@ export const ChatProvider = ({ children }) => {
 
 
     // ************************ Handle keypress event ************************
+
+        //  ************************ Handle typing status ************************
+        // Handle typing indication
+        const handleTyping = () => {
+            if (selectedUser && socket) {
+                // console.log('is going to typing write now')
+                const typingData = {
+                    sender: currentUser.username,
+                    receiver: selectedUser.username,
+                    typing: true,
+                };
+                socket.send(JSON.stringify(typingData));
+            }
+
+             // Clear the existing typing timeout if user continues typing
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+
+            // Set a timeout to stop typing after 2 seconds of inactivity
+            typingTimeoutRef.current = setTimeout(() => {
+                if (selectedUser && socket) {
+                    const stopTypingData = {
+                        sender: currentUser.username,
+                        receiver: selectedUser.username,
+                        typing: false,
+                    };
+                    socket.send(JSON.stringify(stopTypingData));
+                }
+            }, 2000); // 2 seconds inactivity
+        };
+
+
     const handleKeyPress = (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
             handleSendMessage();
+        }
+        else {
+            
+            handleTyping(); // Indicate typing on key press
         }
     };
     // ************************ end ***********************
@@ -193,45 +225,82 @@ export const ChatProvider = ({ children }) => {
         console.log('WebSocket chat connected');
         };
 
+        // ws.onmessage = (event) => {
+        //     const receivedData = JSON.parse(event.data);
+
+        //     const { sender, receiver, message, receiver_id, sender_id, timestamp } = receivedData;
+
+        //     // Update the local state with the received message
+        //     setMessages((prevMessages) => {
+        //         const updatedMessages = { ...prevMessages };
+                
+        //         // // Check if the current user is the sender or receiver
+        //         // let userId = sender_id === currentUser.id ? receiver_id : sender_id;
+
+
+        //         // Check if the current user is the sender or receiver and set userId accordingly
+        //         let userId;
+        //         if (sender_id === currentUser.id) {
+        //             // If the current user is the sender, use the receiver_id
+        //             userId = receiver_id;
+        //         } else {
+        //             // If the current user is the receiver, use the sender_id
+        //             userId = sender_id;
+        //         }
+
+        //             // Initialize the message array for this user if it doesn't exist
+        //             if (!updatedMessages[userId]) {
+        //             updatedMessages[userId] = {};
+        //             }
+
+        //             // const messageDate = timestamp;
+        //             const messageDate = formatDate(timestamp);
+        //             if (!updatedMessages[userId][messageDate]) {
+        //             updatedMessages[userId][messageDate] = [];
+        //             }
+
+        //             // Add the new message to the correct date group
+        //             updatedMessages[userId][messageDate].push(receivedData);
+
+        //             return updatedMessages;
+        //     });
+        // };
+
         ws.onmessage = (event) => {
             const receivedData = JSON.parse(event.data);
+            const { sender, receiver, message, receiver_id, sender_id, typing } = receivedData;
 
-            const { sender, receiver, message, receiver_id, sender_id, timestamp } = receivedData;
+            // Handle incoming messages
+            if (message) {
+                console.log('message => ', message)
+                setMessages((prevMessages) => {
+                    const updatedMessages = { ...prevMessages };
+                    const userId = sender_id === currentUser.id ? receiver_id : sender_id;
 
-            // Update the local state with the received message
-            setMessages((prevMessages) => {
-                const updatedMessages = { ...prevMessages };
-                
-                // // Check if the current user is the sender or receiver
-                // let userId = sender_id === currentUser.id ? receiver_id : sender_id;
-
-
-                // Check if the current user is the sender or receiver and set userId accordingly
-                let userId;
-                if (sender_id === currentUser.id) {
-                    // If the current user is the sender, use the receiver_id
-                    userId = receiver_id;
-                } else {
-                    // If the current user is the receiver, use the sender_id
-                    userId = sender_id;
-                }
-
-                    // Initialize the message array for this user if it doesn't exist
                     if (!updatedMessages[userId]) {
-                    updatedMessages[userId] = {};
+                        updatedMessages[userId] = {};
                     }
 
-                    // const messageDate = timestamp;
-                    const messageDate = formatDate(timestamp);
+                    const messageDate = formatDate(receivedData.timestamp);
                     if (!updatedMessages[userId][messageDate]) {
-                    updatedMessages[userId][messageDate] = [];
+                        updatedMessages[userId][messageDate] = [];
                     }
 
-                    // Add the new message to the correct date group
                     updatedMessages[userId][messageDate].push(receivedData);
-
                     return updatedMessages;
-            });
+                });
+            }
+
+            // Handle typing indicator
+            if (typing)
+            {
+                // console.log('typing => ', typing)
+                if (!typingUsers.includes(sender)) {
+                    setTypingUsers((prev) => [...prev, sender]);
+                }
+            } else {
+                    setTypingUsers((prev) => prev.filter(user => user !== sender));
+            }
         };
 
 
@@ -311,7 +380,8 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
-    // ************************ Scroll to the end of the messages whenever messages or selectedUser changes ************************
+
+    // ************************ Scroll to the end of the messages ************************
     useEffect(() => {
         if (endRef.current) {
         endRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -368,6 +438,8 @@ export const ChatProvider = ({ children }) => {
 
         formatTime,
         formatDate,
+
+        typingUsers, // Expose typingUsers state
         // groupMessagesByDate
         }}
         >
