@@ -63,7 +63,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, N
 					<button
 					className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
 					onClick={() => {
-						handleAction('Accepted');
+						handleAction('Accepted'); 
 						handleMarkAsRead();
 					}}
 					>
