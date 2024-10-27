@@ -5,18 +5,27 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
 from .redis_connection import redis_conn
+from .models import Friendship, NotificationModel
+from django.db.models import Q
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 class BaseConsumer(AsyncWebsocketConsumer):
-	USER_STATUS_GROUP = 'users_status'
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.USER_STATUS_GROUP = 'users_status'
+		self.user_windows = None
+		self.user = None
+		self.user_data = None
+
 
 	async def connect(self):
 		print("\n CONNECTED\n")
 		await self.accept()
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
+			self.user_windows = f"user_{self.user.id}"
 			self.user_data = UserSerializer(self.user).data
 			await self.add_user_to_groups()
 
@@ -48,6 +57,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def add_user_to_groups(self):
 		try:
+			await self.channel_layer.group_add(self.user_windows, self.channel_name)
 			await self.channel_layer.group_add(self.USER_STATUS_GROUP, self.channel_name)
 			await self.track_user_connection()
 		except Exception as e:
@@ -82,6 +92,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def remove_user_from_groups(self):
 		try:
+			await self.channel_layer.group_discard(self.user_windows, self.channel_name)
 			await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
 			await self.untrack_user_connection()
 		except Exception as e:
@@ -120,32 +131,40 @@ class NotificationConsumer(BaseConsumer):
 	async def disconnect(self, close_code):
 		await super().disconnect(close_code)
 
-# ************************ for friend request ************************
-	async def send_notification_alert(self, channels, notification):
-		"""Send the notification to all the user's channels."""
-		for channel in channels:
-			await self.channel_layer.send(channel, {
-				**notification
-			})
+	# ************************ for friend request ************************
+	async def send_notification_alert(self, user_id, notification):
+		"""Send the notification to the user's group."""
+		group_name = f"user_{user_id}"
+		try:
+			print(f"\nfriend_request_notif ::f:: {user_id}\n")
+			print(f"goup_name :: {group_name}\n")
+			await self.channel_layer.group_send(
+				group_name,
+				{
+						'type': notification.get('type'),
+						**notification
+				}
+			)
+		except Exception as e:
+			logger.error(f"\nError sending notification alert: {e}\n")
 
-	#handler for friend_request_received event
+	# Handler for friend_request_received event
 	async def friend_request_notif(self, event):
 		try:
-			# print(f"\n SEND FRIEND REQUEST: {event}\n")
+			print(f"\nfriend_request_notif: {event}\n")
 			await self.send(text_data=json.dumps({
-				'type': 'friend_request',
-				'to_user_id': event.get('to_user_id'),
-				'username': event.get('username'),
-				'success': event.get('success'),
-				'avatar': event.get('avatar'),
-				'message': event.get('message')
+					'type': 'friend_request',
+					'to_user_id': event.get('to_user_id'),
+					'username': event.get('username'),
+					'success': event.get('success'),
+					'avatar': event.get('avatar'),
+					'message': event.get('message')
 			}))
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
 
-	# handler for accept_friend_request event
+	# Handler for accept_friend_request event
 	async def accept_request_notif(self, event):
-		# print(f"\n ACCEPT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend',
 			'success': event.get('success'),
@@ -154,17 +173,14 @@ class NotificationConsumer(BaseConsumer):
 			'user_id': event.get('user_id'),
 			'avatar': event.get('avatar')
 		}))
-# enf of friend request *********************************************
 
-# ************************ for rejecting friend request ************************
+	# ************************ for rejecting friend request ************************
 	async def reject_request_notif(self, event):
-		print(f"\n REJECT FRIEND REQUEST: {event}\n")
 		await self.send(text_data=json.dumps({
 			'type': 'reject_friend',
 			'success': event.get('success'),
 			'user_id': event.get('user_id'),
 		}))
-# end of rejecting friend request *********************************************
 
 	async def handle_event(self, data):
 		message_type = data.get('type')
@@ -181,12 +197,9 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')
+		print(f"\nsend friend request to {to_user_id}")
 		success, message = await self.save_friend_request(to_user_id)
-		to_user_channels = self.user_connections.get(to_user_id)
-		if not to_user_channels:
-			logger.error(f"\nUser {to_user_id} is offline\n")
-			return
-		await self.send_notification_alert(to_user_channels, {
+		await self.send_notification_alert(to_user_id, {
 			'type': 'friend_request_notif',
 			'success': success,
 			'message': message,
@@ -197,12 +210,9 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_accept_request(self, data):
 		to_user_id = data.get('to_user_id')
+		print(f"\naccept friend request from {to_user_id}")
 		success, message = await self.accept_friend_request(to_user_id)
-		to_user_channels = self.user_connections.get(to_user_id)
-		if not to_user_channels:
-			logger.error(f"\nUser {to_user_id} is offline\n")
-			return
-		await self.send_notification_alert(to_user_channels, {
+		await self.send_notification_alert(to_user_id, {
 			'type': 'accept_request_notif',
 			'success': success,
 			'message': message,
@@ -214,11 +224,7 @@ class NotificationConsumer(BaseConsumer):
 	async def handle_reject_request(self, data):
 		rejected_user_id = data.get('to_user_id')
 		reject_status = await self.reject_friend_request(rejected_user_id)
-		to_user_channels = self.user_connections.get(rejected_user_id)
-		if not to_user_channels:
-			logger.error(f"\nUser {rejected_user_id} is offline\n")
-			return
-		await self.send_notification_alert(to_user_channels, {
+		await self.send_notification_alert(rejected_user_id, {
 			'type': 'reject_request_notif',
 			'success': reject_status,
 			'user_id': self.user.id,
@@ -251,40 +257,35 @@ class NotificationConsumer(BaseConsumer):
 		except Exception as e:
 			logger.error(f"\nError sending friend request: {e}\n")
 			return False, f"Error sending friend request, reason :: {str(e)}"
-	
+
 	@database_sync_to_async
 	def accept_friend_request(self, user_id):
 		try:
 			sender = User.objects.get(id=user_id)
-			# Fetch the friend request (either direction)
 			friend_request = Friendship.objects.get(
 					Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
 			)
 
-			# Check if the friend request is still pending
 			if friend_request.status == 'pending':
-				friend_request.status = 'accepted'
-				friend_request.save()
+					friend_request.status = 'accepted'
+					friend_request.save()
 
-				# Check if the reverse friendship exists and avoid duplicate creation
-				try:
-					Friendship.objects.get(sender=self.user, receiver=sender)
-				except Friendship.DoesNotExist:
-					# Create reverse friendship only if it doesn't exist
-					Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
+					try:
+						Friendship.objects.get(sender=self.user, receiver=sender)
+					except Friendship.DoesNotExist:
+						Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
 
-				# Send a notification to the sender
-				NotificationModel.objects.create(
-					sender=self.user,
-					receiver=sender,
-					message=f"{sender} accepted your friend request",
-					notif_type='friend',
-					notif_status='accepted'
-				)
-				logger.info(f"\nFriend request accepted 🍸\n")
-				return True, "Friend request accepted"
+					NotificationModel.objects.create(
+						sender=self.user,
+						receiver=sender,
+						message=f"{sender} accepted your friend request",
+						notif_type='friend',
+						notif_status='accepted'
+					)
+					logger.info(f"\nFriend request accepted 🍸\n")
+					return True, "Friend request accepted"
 			else:
-				return False, "Friend request already processed"
+					return False, "Friend request already processed"
 
 		except Friendship.DoesNotExist:
 			return False, "Friend request not found."
@@ -303,16 +304,274 @@ class NotificationConsumer(BaseConsumer):
 			).first()
 
 			if friend_request:
-				friend_request.delete()
-				logger.info(f"\nFriend request rejected\n")
-				return True
+					friend_request.delete()
+					logger.info(f"\nFriend request rejected\n")
+					return True
 			else:
-				logger.warning(f"No pending friend request found between {self.user.username} and {rejected_user_id}")
-				return False
+					logger.warning(f"No pending friend request found between {self.user.username} and {rejected_user_id}")
+					return False
 		except User.DoesNotExist:
 			logger.error(f"User with id {rejected_user_id} does not exist")
 			return False
 		except Exception as e:
 			logger.error(f"Error rejecting friend request: {e}")
 			return False
+
+
+# import json
+# import logging
+# from channels.generic.websocket import AsyncWebsocketConsumer
+# from channels.db import database_sync_to_async
+# from django.contrib.auth.models import User
+# from django.db.models import Q
+# from your_app.models import Friendship, NotificationModel
+
+# logger = logging.getLogger(__name__)
+
+# class NotificationConsumer(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         self.user = self.scope["user"]
+#         self.group_name = f"user_{self.user.id}"
+
+#         # Join user group
+#         await self.channel_layer.group_add(
+#             self.group_name,
+#             self.channel_name
+#         )
+
+#         await self.accept()
+
+#     async def disconnect(self, close_code):
+#         # Leave user group
+#         await self.channel_layer.group_discard(
+#             self.group_name,
+#             self.channel_name
+#         )
+
+#     # ************************ for friend request ************************
+#     async def send_notification_alert(self, user_id, notification):
+#         """Send the notification to the user's group."""
+#         group_name = f"user_{user_id}"
+#         await self.channel_layer.group_send(
+#             group_name,
+#             {
+#                 'type': 'notification.message',
+#                 **notification
+#             }
+#         )
+
+#     # Handler for friend_request_received event
+#     async def friend_request_notif(self, event):
+#         try:
+#             await self.send(text_data=json.dumps({
+#                 'type': 'friend_request',
+#                 'to_user_id': event.get('to_user_id'),
+#                 'username': event.get('username'),
+#                 'success': event.get('success'),
+#                 'avatar': event.get('avatar'),
+#                 'message': event.get('message')
+#             }))
+#         except Exception as e:
+#             logger.error(f"Error handling friend_request_received: {e}")
+
+#     # Handler for accept_friend_request event
+#     async def accept_request_notif(self, event):
+#         await self.send(text_data=json.dumps({
+#             'type': 'accept_friend',
+#             'success': event.get('success'),
+#             'message': event.get('message'),
+#             'username': event.get('username'),
+#             'user_id': event.get('user_id'),
+#             'avatar': event.get('avatar')
+#         }))
+
+#     # ************************ for rejecting friend request ************************
+#     async def reject_request_notif(self, event):
+#         await self.send(text_data=json.dumps({
+#             'type': 'reject_friend',
+#             'success': event.get('success'),
+#             'user_id': event.get('user_id'),
+#         }))
+
+#     async def handle_event(self, data):
+#         message_type = data.get('type')
+#         if message_type == 'send_friend_request':
+#             await self.handle_friend_request(data)
+#         elif message_type == 'accept_friend_request':
+#             await self.handle_accept_request(data)
+#         elif message_type == 'reject_friend_request':
+#             await self.handle_reject_request(data)
+#         elif message_type == 'user_status_online':
+#             await self.track_user_connection()
+#         elif message_type == 'user_status_offline':
+#             await self.untrack_user_connection()
+
+#     async def handle_friend_request(self, data):
+#         to_user_id = data.get('to_user_id')
+#         success, message = await self.save_friend_request(to_user_id)
+#         await self.send_notification_alert(to_user_id, {
+#             'type': 'friend_request_notif',
+#             'success': success,
+#             'message': message,
+#             'to_user_id': self.user.id,
+#             'username': self.user_data['username'],
+#             'avatar': self.user_data['avatar']
+#         })
+
+#     async def handle_accept_request(self, data):
+#         to_user_id = data.get('to_user_id')
+#         success, message = await self.accept_friend_request(to_user_id)
+#         await self.send_notification_alert(to_user_id, {
+#             'type': 'accept_request_notif',
+#             'success': success,
+#             'message': message,
+#             'username': self.user_data['username'],
+#             'user_id': self.user.id,
+#             'avatar': self.user_data['avatar']
+#         })
+
+#     async def handle_reject_request(self, data):
+#         rejected_user_id = data.get('to_user_id')
+#         reject_status = await self.reject_friend_request(rejected_user_id)
+#         await self.send_notification_alert(rejected_user_id, {
+#             'type': 'reject_request_notif',
+#             'success': reject_status,
+#             'user_id': self.user.id,
+#         })
+
+#     async def receive(self, text_data):
+#         await super().receive(text_data)
+#         data = json.loads(text_data)
+#         await self.handle_event(data)
+
+#     @database_sync_to_async
+#     def save_friend_request(self, to_user_id):
+#         try:
+#             to_user = User.objects.get(id=to_user_id)
+#             friend_request, created = Friendship.objects.get_or_create(sender=self.user, receiver=to_user, status='pending')
+#             if created:
+#                 NotificationModel.objects.create(
+#                     sender=self.user,
+#                     receiver=to_user,
+#                     message=f"{self.user} send to you friend request",
+#                     notif_type='friend',
+#                     notif_status='pending'
+#                 )
+#                 return True, "Friend request sent successfully"
+#             elif friend_request.status == 'pending':
+#                 logger.error(f"\nFriend request already sent\n")
+#                 return False, "Friend request already sent"
+#             else:
+#                 return False, "Friend request already processed"
+#         except Exception as e:
+#             logger.error(f"\nError sending friend request: {e}\n")
+#             return False, f"Error sending friend request, reason :: {str(e)}"
+
+#     @database_sync_to_async
+#     def accept_friend_request(self, user_id):
+#         try:
+#             sender = User.objects.get(id=user_id)
+#             friend_request = Friendship.objects.get(
+#                 Q(sender=sender, receiver=self.user) | Q(sender=self.user, receiver=sender)
+#             )
+
+#             if friend_request.status == 'pending':
+#                 friend_request.status = 'accepted'
+#                 friend_request.save()
+
+#                 try:
+#                     Friendship.objects.get(sender=self.user, receiver=sender)
+#                 except Friendship.DoesNotExist:
+#                     Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
+
+#                 NotificationModel.objects.create(
+#                     sender=self.user,
+#                     receiver=sender,
+#                     message=f"{sender} accepted your friend request",
+#                     notif_type='friend',
+#                     notif_status='accepted'
+#                 )
+#                 logger.info(f"\nFriend request accepted 🍸\n")
+#                 return True, "Friend request accepted"
+#             else:
+#                 return False, "Friend request already processed"
+
+#         except Friendship.DoesNotExist:
+#             return False, "Friend request not found."
+#         except Exception as e:
+#             logger.error(f"\nError Accepting friend request: {e}\n")
+#             return False, f"Error Accepting Friend request, reason :: {str(e)}"
+
+#     @database_sync_to_async
+#     def reject_friend_request(self, rejected_user_id):
+#         try:
+#             rejected_user = User.objects.get(id=rejected_user_id)
+#             friend_request = Friendship.objects.filter(
+#                 Q(sender=rejected_user, receiver=self.user) | 
+#                 Q(sender=self.user, receiver=rejected_user),
+#                 status='pending'
+#             ).first()
+
+#             if friend_request:
+#                 friend_request.delete()
+#                 logger.info(f"\nFriend request rejected\n")
+#                 return True
+#             else:
+#                 logger.warning(f"No pending friend request found between {self.user.username} and {rejected_user_id}")
+#                 return False
+#         except User.DoesNotExist:
+#             logger.error(f"User with id {rejected_user_id} does not exist")
+#             return False
+#         except Exception as e:
+#             logger.error(f"Error rejecting friend request: {e}")
+#             return False
+
+
+
+# Sure, let's break down the flow of sending notifications to users using Django Channels and channels_redis.
+
+# Overview
+# Django Channels extends Django to handle WebSockets, HTTP2, and other protocols. channels_redis is a Redis-backed channel layer that allows Django Channels to manage WebSocket connections and send messages between them.
+
+# Key Components
+# WebSocket Consumer: Handles WebSocket connections and messages.
+# Channel Layer: Manages communication between different consumers using Redis.
+# Groups: Allows grouping of channels to send messages to multiple consumers.
+# Flow of Sending Notifications
+# WebSocket Connection:
+
+# When a user connects to the WebSocket, the connect method of the NotificationConsumer is called.
+# The user is added to a group named after their user ID using channel_layer.group_add.
+# Handling Events:
+
+# The receive method handles incoming WebSocket messages.
+# Based on the message type, different methods are called to handle specific events (e.g., friend request, accept request).
+# Sending Notifications:
+
+# When an event occurs (e.g., a friend request is sent), the send_notification_alert method is called.
+# This method uses channel_layer.group_send to send a message to the user's group.
+# Receiving Notifications:
+
+# The user's WebSocket connection receives the message via a handler method (e.g., friend_request_notif).
+# The handler method sends the notification to the user's WebSocket client.
+# Example Flow
+# User A sends a friend request to User B:
+
+# User A's client sends a WebSocket message to the server.
+# The receive method of NotificationConsumer processes the message and calls handle_friend_request.
+# Handle Friend Request:
+
+# handle_friend_request saves the friend request to the database.
+# It then calls send_notification_alert to notify User B.
+# Send Notification Alert:
+
+# send_notification_alert uses channel_layer.group_send to send a message to User B's group.
+# User B Receives Notification:
+
+# User B's WebSocket connection receives the message via friend_request_notif.
+# friend_request_notif sends the notification to User B's client.
+# Role of channels_redis
+# Channel Layer: channels_redis provides a Redis-backed channel layer that allows different consumers to communicate.
+# Groups: It manages groups of channels, enabling broadcasting messages to multiple consumers.
+# Message Passing: It handles the low-level details of passing messages between different WebSocket connections.
 

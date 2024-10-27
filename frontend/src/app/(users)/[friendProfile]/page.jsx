@@ -10,17 +10,17 @@ import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 
 export default function FriendProfile({ params }) {
 
-	const {websocket, isConnected, notificationType, listOfNotifications, pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {websocket, isConnected, notificationType, NOTIFICATION_TYPES, pageNotFound, setPageNotFound } = useWebSocketContext();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 
 	useEffect(() => { // this for the notification type
-		if (notificationType.type === listOfNotifications.acceptFriend
+		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
 		&& notificationType.status === true) {
 			setFriendStatusRequest('accepted');
 		}
-		if (notificationType.type === listOfNotifications.rejectFriend 
+		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND 
 		&& notificationType.status === true) {
 			setFriendStatusRequest('no');
 		}
@@ -64,21 +64,28 @@ export default function FriendProfile({ params }) {
 	}, [params]); // Add 'params' as a dependency
 
 
-	if (isConnected) {//this code : to listen to the user status change, in every rounder we check if the user status has changed
-		websocket.current.onmessage = (event) => {
-			// setFriendStatusChange(false);
-			const data = JSON.parse(event.data);
-			console.log("user status in friend profile:", data);
-			if (data.type === 'user_status_change') {
-				setProfile(prevProfile => {
-					if (prevProfile.username === data.username) {
-						return { ...prevProfile, status: data.status };
-					}
-					return prevProfile;
-				});
+
+	useEffect(() => {
+		const handleFriendStatusChange = (event) => {
+			if (isConnected) {
+				const data = JSON.parse(event.data);
+				console.log("user status in friend profile:", data);
+				if (data.type === 'user_status_change') {
+					setProfile(prevProfile => {
+						if (prevProfile.username === data.username) {
+							return { ...prevProfile, status: data.status };
+						}
+						return prevProfile;
+					});
+				}
 			}
 		};
-	}
+
+		if (isConnected)
+			websocket.current.addEventListener('message', handleFriendStatusChange);
+
+		return () => websocket?.current?.removeEventListener('message', handleFriendStatusChange);
+	}, [profile]);
 
 	if (pageNotFound) {
 		notFound();

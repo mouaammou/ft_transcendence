@@ -5,12 +5,12 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 
-const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, listOfNotifications }) => {
+const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, NOTIFICATION_TYPES }) => {
 	// Retrieve status from localStorage or default to 'Pending'
 	const getStatusFromLocalStorage = () => {
 		const storedStatus = localStorage.getItem(`notification_status_${data.id}`);
 		// Check if the notification type is a friendship request or if local storage doesn't have a status
-		return (notificationType.type === listOfNotifications.friendship && !storedStatus)
+		return (notificationType.type === NOTIFICATION_TYPES.FRIENDSHIP && !storedStatus)
 			? 'Pending'
 			: storedStatus;
 	};
@@ -80,7 +80,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 					</button>	
 				</>
 			}
-			{(notificationType.type == listOfNotifications.acceptFriend) && 
+			{(notificationType.type == NOTIFICATION_TYPES.ACCEPT_FRIEND) && 
 				<>
 				<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${notificationType.status ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
 					{notificationType.status ? 'Accepted' : 'Rejected'}
@@ -100,7 +100,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, l
 
 const NotificationBell = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const { websocket, notifications, setNotifications, notificationType, listOfNotifications } = useWebSocketContext();
+	const { websocket, notifications, setNotifications, notificationType, NOTIFICATION_TYPES } = useWebSocketContext();
 
 	const markAsRead = (id) => {//i need  to add post the isread to notification
 		setNotifications((prev) =>
@@ -146,7 +146,7 @@ const NotificationBell = () => {
 							data={notification}
 							websocket={websocket}
 							onMarkAsRead={markAsRead}
-							listOfNotifications={listOfNotifications}
+							NOTIFICATION_TYPES={NOTIFICATION_TYPES}
 						/>
 					))}
 					{notifications.length === 0 && (
