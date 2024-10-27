@@ -14,6 +14,7 @@ export default function CreateJoinTournamentPage() {
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,
+    alreadyInGame: false,
     alreadyInTournamentJoin: false,
     tournamentFull: false,
   });
@@ -80,6 +81,12 @@ export default function CreateJoinTournamentPage() {
         setTimeout(() => {
           router.push('/tournament_board');
         }, 1000);
+      } else if (data.status === 'already_in_game') {
+        setInputError({ ...inputError, alreadyInGame: true });
+        setTimeout(() => {
+          router.push('/game');
+        }, 1000);
+        console.log('pushed to game');
       } else if (data.status === 'already_in_tournament_join') {
         setInputError({ ...inputError, alreadyInTournamentJoin: true });
         setTimeout(() => {
@@ -137,6 +144,11 @@ export default function CreateJoinTournamentPage() {
           {inputError.alreadyInTournament ? (
             <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
               You are already in a tournament
+            </li>
+          ) : null}
+          {inputError.alreadyInGame ? (
+            <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
+              You are already started a game
             </li>
           ) : null}
         </ul>

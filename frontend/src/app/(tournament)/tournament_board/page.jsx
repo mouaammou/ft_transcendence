@@ -7,17 +7,20 @@ import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
+import Modal from '@/components/modals/MessageDisplayer';
 
 export default function TournamentBoardPage() {
   const [players, setPlayers] = useState([]);
   const [fulfilled, setFulfilled] = useState(false);
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const router = useRouter();
   const { profileData } = useAuth();
 
   const defaultPlayer = {
     id : -1,
-    username: 'default',
+    username: 'Waiting...',
     avatar : '/defaultAvatar.svg',
   }
 
@@ -27,6 +30,15 @@ export default function TournamentBoardPage() {
       JSON.stringify({
         type: 'START_TOURNAMENT',
       })
+    );
+  };
+
+
+  const leaveTournament = () => {
+    mysocket.sendMessage(
+      JSON.stringify({
+        type: 'LEAVE_TOURNAMENT',
+      }) 
     );
   };
 
@@ -61,6 +73,17 @@ export default function TournamentBoardPage() {
         setFulfilled(true);
       } else if (data.status === 'PUSH_TO_GAME') {
         router.push('/game');
+      } else if (data.status === 'left_tournament') {
+        setModalOpen(true);
+        setModalMessage('You have left the tournament');
+        // make a modal to show the message and after 10 seconds redirect to the create_join_tournament page
+        setTimeout(() => {
+          router.push('/play');
+        }, 2000);
+      } else if (data.status === 'you_can_not_leave') {
+        console.log('you can not leave the tournament');
+        setModalOpen(true);
+        setModalMessage('The tournament has already started, you can not leave');
       }
     };
 
@@ -134,7 +157,12 @@ export default function TournamentBoardPage() {
   return (
     <>
       <div className="flex justify-evenly items-center  p-4 lg:p-12 ">
+        {/* make a button to leave the tournament  */}
         <Board {...imageUrls} {...userNames} />
+        <button className="hidden md:block font-bold text-slate-950 md:relative md:top-[-235px] md:right-[65px] md:text-[16px] md:w-[114px]
+                   md:h-[32px] md:border-white  md:rounded-xl md:bg-gray-200" onClick={leaveTournament}>
+          Leave 
+          </button>
         <Image
           className="hidden md:block"
           width={109}
@@ -152,6 +180,11 @@ export default function TournamentBoardPage() {
           </button>
         )}
       </div>
+      <Modal
+        isOpen={modalOpen}
+        message={modalMessage}
+        onClose={() => setModalOpen(false)}
+      />
     </>
   );
 }

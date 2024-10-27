@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import Modal from '@/components/modals/MessageDisplayer';
+
 
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />
 
@@ -15,6 +17,8 @@ const WaitingPage = () => {
   const { profileData: user_data } = useAuth();
   const [myuser, setMyuser] = useState(null);
   const router = useRouter(); // Use Next.js router
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleMessage = async message => {
     const data = JSON.parse(message.data);
@@ -59,9 +63,22 @@ const WaitingPage = () => {
         console.error('Failed to fetch opponent data', error);
       }
     } else if (data.status === 'already_in_game') {
-      router.push('/game');
-      console.log('hi blablo,  ');
+      setModalOpen(true);
+      setModalMessage('You are already participated in a game');
+      setTimeout(() => {
+        router.push('/game');
+      }, 2000);
+      console.log('pushed to game');
+    } else if (data.status === 'already_in_tournament') {
+      setModalOpen(true);
+      setModalMessage('You are already participated in a tournament');
+      // make a modal to show the message and after 10 seconds redirect to the create_join_tournament page
+      setTimeout(() => {
+        router.push('/tournament_board');
+      }, 2000);
+      console.log('pushed to tournament board');
     }
+
   };
 
   useEffect(() => {
@@ -72,9 +89,7 @@ const WaitingPage = () => {
 
     mysocket.sendMessage(
       JSON.stringify({
-        remote: {
-          mode: 'random',
-        },
+        type: 'RANDOM_GAME',
       })
     );
 
@@ -104,6 +119,11 @@ const WaitingPage = () => {
         </div>
           <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
       </div>
+      <Modal
+        isOpen={modalOpen}
+        message={modalMessage}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 };

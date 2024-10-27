@@ -16,7 +16,7 @@ output events:
     - left_player_score
     - ball_pos
     - finished
-"""
+"""    
 
 import asyncio
 

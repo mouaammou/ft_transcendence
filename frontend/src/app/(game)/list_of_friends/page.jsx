@@ -32,7 +32,7 @@ const Friends = () => {
 			}));
 		}
 	}
-
+    
 
 	const handleNextClick = () => {
 		if (selectedFriend) {

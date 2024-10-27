@@ -37,12 +37,23 @@ class RemoteGameOutput:
         """
         game_obj is None on connect, But a game instance on reconnect.
         """
+        cls.player_not_in_game_page(player_id)
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
         print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
         if sendConfig:   
             cls.send_config(player_id, game_obj or RemoteGameLogic())
+
+
+    @classmethod
+    def player_not_in_game_page(cls, player_id):
+        print("player_not_in_game_page method")
+        group = cls.consumer_group.get(player_id)
+        if group is None:
+            return
+        for consumer in group:
+            consumer.in_game_page = False
 
     @classmethod
     def send_update(cls, player_id, frame) -> None:
@@ -85,12 +96,12 @@ class RemoteGameOutput:
     def send_tournament_players(cls, players, data):
         print(f"send_tournament_players method {players} --> {data}")
         for player_id in players:
-            if player_id == -1:
+            if player_id == -1 or player_id is None:
                 continue
             group = cls.consumer_group.get(player_id) 
             if group is None:
                 print("Error : group is none ")
-                return
+                continue
             for consumer in group:
                 consumer.send_game_message(data)
 

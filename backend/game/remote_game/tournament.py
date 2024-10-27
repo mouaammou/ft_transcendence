@@ -62,7 +62,6 @@
 # final_round.players.set(players)
 # final_round.save()
 
-
 import uuid
 from game.models import TournamentHistory, RoundHistroy
 from game.remote_game.game_vs_friend import VsFriendGame
@@ -71,15 +70,90 @@ from asgiref.sync import sync_to_async
 import asyncio
 from channels.db import database_sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
-  
 
-   
+class TournamentManager:
+    
+    finished_games = []
+    
+    @classmethod
+    def init(cls, event_loop_manager) -> None:
+        cls.event_loop_manager = event_loop_manager
+        
+    @classmethod
+    async def run_tournaments(cls):
+        while True:
+            cls.update()
+            await cls.clean()
+            await asyncio.sleep(1/60)
+            
+    @classmethod
+    async def clean(cls):
+        for game in list(cls.finished_games):  # Use list to avoid modifying the list while iterating
+            print(f"A GAME CLEANED ")
+            if game.loser is not None:
+                cls.event_loop_manager.active_players.pop(game.loser)
+                cls.event_loop_manager.players_in_tournaments.pop(game.loser)
+            await cls._tournament_clean(game)
+            cls.event_loop_manager.tournament_games.pop(game)
+            cls.finished_games.remove(game)  # Remove the game from finished_games after cleaning
+        
+    @classmethod  
+    def update(cls):
+        # print(f"update method in tournament manager")
+        for game, _ in cls.event_loop_manager.tournament_games.items():
+            frame = game.update()
+            if game.is_finished() and not game.saved:
+                print(f"game is finished --->")
+                try:
+                    game.saved = True
+                    asyncio.create_task(cls.event_loop_manager.save_history(game))
+                    print(f"game saved -----> {game.saved}")
+                    cls.finished_games.append(game)
+                except Exception as e:
+                    print(f"Error saving game history: {e}")
+                print("after save finished game")
+                return   
+            cls.event_loop_manager.send_frame_to_player(game.player_1, game, frame)
+            cls.event_loop_manager.send_frame_to_player(game.player_2, game, frame)
+
+    @classmethod
+    async def _tournament_clean(cls, game):
+        for _, tournament in cls.event_loop_manager.active_tournaments.items():
+            if game in tournament.games:
+                cls._update_tournament_players(tournament, game)
+                tournament.finished_games.append(game)
+                
+                is_finished = tournament.round.update_round_results(game)
+                if is_finished:
+                    cls._clean_finished_games(tournament)
+                    tournament.start_new_round()
+                    await asyncio.sleep(40)
+                    cls.event_loop_manager.active_tournaments[tournament.id] = tournament
+                    cls.event_loop_manager.start_tournament(tournament.round.players[0])
+
+    @classmethod
+    def _update_tournament_players(cls, tournament, game):
+        index_of_game = tournament.games.index(game)
+        if tournament.round.status == 'quarter':  
+            if index_of_game in range(4):
+                tournament.players[8 + index_of_game] = game.winner
+        elif tournament.round.status == 'semi-final':
+            if index_of_game in range(2):
+                tournament.players[12 + index_of_game] = game.winner
+        elif tournament.round.status == 'final':
+            tournament.players[14] = game.winner
+            tournament.winner = game.winner
+
+    @classmethod
+    def _clean_finished_games(cls, tournament):
+        for game_to_remove in tournament.finished_games:
+            tournament.games.remove(game_to_remove)
 
 class Round:
     def __init__(self, tournament_id, status, players):
         self.tournament_id = tournament_id
         self.status = status # quarter, semi-final, final
-        self.players = players
+        self.players = players   
         self.winners = []
         self.start = False
         self.end = False
@@ -153,7 +227,7 @@ class Tournament:
     def __init__(self, organizer, name):   
         self.id = str(uuid.uuid4())
         self.name = name
-        self.max_participants = 4
+        self.max_participants = 8
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
         self.players[0] =  organizer
@@ -200,6 +274,14 @@ class Tournament:
     def get_players(self):
         return self.players
 
+
+    def remove_player(self, player):
+        index = self.players.index(player)
+        if index != -1:
+            self.players[index] = -1
+            return True
+        return False
+        
     def start_game(self, player_1, player_2):
         game = VsFriendGame(player_1=player_1, player_2=player_2)
         game.pause()
@@ -223,7 +305,6 @@ class Tournament:
         self.create_games()
         print('^_^ ^_^ All games are launched ^__^')
         self.round.games = self.games
-        self.status = 'started'
         print(f'Tournament saved for the status {self.status}')
         asyncio.create_task(self.save_trounament_to_db())
 
@@ -244,9 +325,10 @@ class Tournament:
         return self.round.get_next_round()
     
     def start_new_round(self):
+        print("start new round method 64568426284648")
         next_round = self.get_next_round()
         if next_round == 'semi-final':
-            players = self.players[8:10]  # suppose to be 8:12
+            players = self.players[8:12]  # suppose to be 8:12
         elif next_round == 'final':
             players = self.players[12:14]
         
