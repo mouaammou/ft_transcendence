@@ -16,33 +16,18 @@ const Links = () => {
 					className="text-white hover:bg-black transition-all rounded-lg px-5 py-2.5 text-center inline-flex items-center"
 					type="button"
 					>
-						<span className='text-[1rem]'>Game
-							<svg
-								className="w-2.5 h-2.5 ms-3 inline"
-								aria-hidden="true"
-								fill="none"
-								viewBox="0 0 10 6"
-							>
-								<path
-								stroke="currentColor"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="m1 1 4 4 4-4"
-								/>
-							</svg>
-						</span>
+						<Link href="/play"><span className='text-[1rem]'>
+							
+								
+										New Game
+								
+						</span></Link>
 					</button>
-
+{/* 
 					{isOpenGame && (
 						<div onMouseLeave={() => setIsOpenGame(false)}
 							className="z-10 absolute left-0 mt-2 divide-y rounded-lg max-w-52">
 							<ul className="py-0 text-sm text-gray-700">
-								<Link href="/play">
-									<li className="py-3 px-4 border border-emerald-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 mt-0 hover:bg-emerald-600 transition">
-										New Game
-									</li>
-								</Link>
 								<Link href="/tourname">
 									<li className="py-3 px-4 border border-sky-500 text-white text-sm w-32 rounded-md cursor-pointer my-2 hover:bg-sky-600 transition">
 										New Tournament
@@ -51,7 +36,7 @@ const Links = () => {
 							</ul>
 						</div>
 
-					)}
+					)} */}
 				</div>
 				{/* end  drop down menu for Users and game & tournament */}
 

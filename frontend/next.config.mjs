@@ -1,6 +1,6 @@
 const nextConfig = {
   reactStrictMode: false, // Set to true for stricter checks (optional)
-  swcMinify: true, // Use SWC for minification
+  // swcMinify: true, // Use SWC for minification
   async rewrites() {
     return [
       {

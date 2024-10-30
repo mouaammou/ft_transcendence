@@ -43,7 +43,7 @@ export const WebSocketProvider = ({url, children}) => {
 		};
 
 		websocket.current.onerror = (error) => {
-			console.error('WebSocket error:', error);
+			// console.error('WebSocket error:', error);
 		};
 
 		return () => {

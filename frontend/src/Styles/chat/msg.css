@@ -223,8 +223,9 @@ input placeholder {
   /* background-color: white; */
   color: white;
   font-size: 20px;
-}
-.send-icon.send-icon::hove {
+} 
+
+.send-icon:hover {
   color: rgb(12, 76, 92);
 }
 

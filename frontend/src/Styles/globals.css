@@ -161,3 +161,29 @@ html {
   }
 }
 
+
+.loader {
+  width: 150px;
+  height: 90px;
+  border: 5px solid #fff;
+  border-radius: 5px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  background: linear-gradient(#000 0 0) 0 0/8px 30px,
+    linear-gradient(#000 0 0) 100% 0/8px 30px,
+    radial-gradient(farthest-side, #000 90%, #fff) 0 5px/8px 8px content-box,
+    #fff;
+  background-repeat: no-repeat;
+  animation: l3 0.5s infinite linear;
+}
+@keyframes l3 {
+  25% {
+    background-position: 0 0, 100% 100%, 100% calc(100% - 5px);
+  }
+  50% {
+    background-position: 0 100%, 100% 100%, 0 calc(100% - 5px);
+  }
+  75% {
+    background-position: 0 100%, 100% 0, 100% 5px;
+  }
+}

@@ -43,7 +43,7 @@ const Friends = () => {
 			sendGameInvitation();
 			router.push('/waiting_friends_game');
 		} else {
-			alert('Please select a friend first.');
+			alert('Please select a friend first.'); // i have to change this an error message display
 		}
 	}
 	const fetchAllUsers = async (page) => {

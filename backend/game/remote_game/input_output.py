@@ -69,7 +69,7 @@ class RemoteGameOutput:
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
-        # print("_send_to_consumer_group method")
+        print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return
@@ -136,17 +136,11 @@ class RemoteGameInput:
         """
         dict_text_data: is the recieved text data as dict. as it is recieved
         """ 
-        launch = None
+
         if dict_text_data is not None:
             press = dict_text_data.get('onPress') 
             release = dict_text_data.get('onRelease') 
-            launch = dict_text_data.get('launch')
-        if launch is not None :
-            RemoteGameOutput.send_config(consumer.player_id, game_obj)
-            game_obj.increment_joined()
-            if (game_obj.joined == 2):
-                game_obj.play()
-                game_obj.islaunched = True
+
         # if press is not None and press.strip() == 'p':
         #     game_obj.start_game = not game_obj.start_game
         #     return

@@ -8,10 +8,14 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import '@/styles/game/waitingFriendPage.css';
+import Modal from '@/components/modals/MessageDisplayer';
 
 const WaitingFriendPage = () => {
   const { profileData: user_data } = useAuth();
   const [myfriend, setMyfriend] = useState(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const router = useRouter(); // Use Next.js router
   const { websocket, invitationResponse, setInvitationResponse, setOpponent } =
@@ -24,13 +28,28 @@ const WaitingFriendPage = () => {
       // Redirect to the game page
       router.push('/game');
     } else if (data.status === 'already_in_game') {
-      router.push('/game');
+      setModalOpen(true);
+      setModalMessage('You are already participated in a game');
+      setTimeout(() => {
+        router.push('/game');
+      }, 2000);
+      console.log('pushed to game');
       console.log('pushed to game');
     } else if (data.status === 'already_in_tournament') {
-      router.push('/tournament_board');
+      setModalOpen(true);
+      setModalMessage('You are already participated in a tournament');
+      // make a modal to show the message and after 10 seconds redirect to the create_join_tournament page
+      setTimeout(() => {
+        router.push('/tournament_board');
+      }, 2000);
+      console.log('pushed to tournament board');
       console.log('pushed to tournament board');
     } else if ((data.status === 'friend_in_game') || (data.status === 'friend_in_tournament')) {
-      router.push('/play'); // made a model for this or a notification
+      setModalOpen(true);
+      setModalMessage('Your friend is already participated in a game');
+      setTimeout(() => {
+        router.push('/play');
+      }, 2000);
       console.log('choose another game');
     }
   };
@@ -98,6 +117,11 @@ const WaitingFriendPage = () => {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={modalOpen}
+        message={modalMessage}
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
   // the second image pulsing effect is not working

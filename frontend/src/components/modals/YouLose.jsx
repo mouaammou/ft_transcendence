@@ -1,7 +1,20 @@
 import React from "react";
+import { useEffect } from "react";
 
 
 const YouLose = ({onClose}) => {
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            onClose();
+        }, 15000);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, []);
+
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
             <div className="text-center">

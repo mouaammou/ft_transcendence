@@ -22,7 +22,7 @@ class WebSocketManager {
             };
 
             this.socket.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                // console.error('WebSocket error:', error);
             };
         }
         return WebSocketManager.instance;
