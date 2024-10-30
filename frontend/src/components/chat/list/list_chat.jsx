@@ -11,10 +11,19 @@ import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+
 
 const list_chat = () => {
   const { isChatVisible, allUsers, handleSearch} = useContext(ChatContext);
-  const onlineUser = allUsers.slice(0, 4);
+  const onlineUser = allUsers.slice(0, 6);
 
   const { profileData: data} = useAuth();
 

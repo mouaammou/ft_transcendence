@@ -8,6 +8,20 @@
     overflow-x: hidden;
 } */
 
+
+/*  for carousel    */
+
+.user-grid {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/*  for carousel    */
+
 .UserListOnline {
   display: flex;
   flex-direction: row;
@@ -42,7 +56,50 @@
   background: linear-gradient(#0b0128, #1dafe4);
 }
 
-@media (max-width: 990px) {
+/*   for carousel */
+
+.user-carousel {
+
+}
+
+
+/* .user-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.carousel-content {
+  display: flex;
+  gap: 1rem;
+  scroll-snap-align: start;
+}
+
+.carousel-item {
+  flex: 1 0 50%;
+  max-width: 50%;
+  scroll-snap-align: center;
+}
+
+@media (min-width: 640px) {
+  .carousel-item {
+    flex: 1 0 33.33%; 
+    max-width: 33.33%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel-item {
+    flex: 1 0 25%; 
+    max-width: 25%;
+  }
+} */
+
+
+
+/*   for carousel */
+
+/* @media (max-width: 990px) {
   .UserListAll {
     width: 85%;
     margin-bottom: 100px;
@@ -53,4 +110,4 @@
     width: 85%;
     margin-bottom: 60px;
   }
-}
+} */
