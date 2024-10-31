@@ -93,7 +93,7 @@ module.exports = {
     			sm: 'calc(var(--radius) - 4px)'
     		},
 			screens: {
-				tablet: '900px', // Adjust to the specific width between md and lg
+				tablet: '990px',
 				larg_screen: '1300px'
 			},
 			
