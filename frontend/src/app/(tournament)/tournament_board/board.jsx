@@ -32,9 +32,13 @@ export default function Board({
   imageUrl15,
   userName15,
 }) {
-  const mobileImg = '/mobile_board_tournament.svg';
+  const mobileImg = '/mobile_board.svg';
+  const newboard = '/board.svg';
   return (
-    <svg width="1238" height="742" viewBox="0 0 1238 742" fill="none">
+    <div>
+      <img src={mobileImg} className='md:hidden' alt="" />
+      <img src={newboard} />
+    {/* <svg className='hidden md:block' width="1238" height="742" viewBox="0 0 1238 742" fill="none">
       <defs>
         <clipPath id="circleView1">
           <circle cx="48" cy="32" r="28" />
@@ -689,6 +693,7 @@ export default function Board({
           height="1"
         ></pattern>
       </defs>
-    </svg>
+    </svg> */}
+    </div>
   );
 }

@@ -164,13 +164,13 @@ export default function TournamentBoardPage() {
         >
           Leave
         </button>
-        <Image
+        {/* <Image
           className="hidden md:block"
           width={109}
           height={92}
           src="/trofi.svg"
           alt="notFound"
-        />
+        /> */}
         {fulfilled && profileData.username === organizerUsername && (
           <button
             onClick={startTournament}
