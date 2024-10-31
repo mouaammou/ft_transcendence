@@ -139,10 +139,27 @@ export default function TournamentBoardPage() {
     fetchPlayers();
   }, [players]);
 
-  const imageUrls = fetchedPlayers?.reduce((acc, player, index) => {
-    acc[`imageUrl${index + 1}`] = player?.avatar;
-    return acc;
-  }, {});
+  // const imageUrls = fetchedPlayers?.reduce((acc, player, index) => {
+  //   acc[`imageUrl${index + 1}`] = player?.avatar;
+  //   return acc;
+  // }, {});
+  const imageUrls = {
+    'imageUrl1' : '/mouad.jpeg',
+    'imageUrl2' : '/mouad.jpeg',
+    'imageUrl3' : '/mouad.jpeg',
+    'imageUrl4' : '/mouad.jpeg',
+    'imageUrl5' : '/mouad.jpeg',
+    'imageUrl6' : '/mouad.jpeg',
+    'imageUrl7' : '/mouad.jpeg',
+    'imageUrl8' : '/mouad.jpeg',
+    'imageUrl9' : '/mouad.jpeg',
+    'imageUrl10' : '/mouad.jpeg',
+    'imageUrl11' : '/mouad.jpeg',
+    'imageUrl12' : '/mouad.jpeg',
+    'imageUrl13' : '/mouad.jpeg',
+    'imageUrl14' : '/mouad.jpeg',
+    'imageUrl15' : '/mouad.jpeg'
+  }
 
   const userNames = fetchedPlayers?.reduce((acc, player, index) => {
     acc[`userName${index + 1}`] = player?.username;
@@ -154,11 +171,11 @@ export default function TournamentBoardPage() {
   console.log('image Urls --> ', imageUrls);
   return (
     <>
-      <div className="flex justify-evenly items-center  p-4 lg:p-12 ">
+      <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12 ">
         {/* make a button to leave the tournament  */}
         <Board {...imageUrls} {...userNames} />
         <button
-          className="hidden md:block font-bold text-slate-950 md:relative md:top-[-235px] md:right-[65px] md:text-[16px] md:w-[114px]
+          className="hidden md:block font-bold text-slate-950 md:relative md:text-[16px] md:w-[114px]
                    md:h-[32px] md:border-white  md:rounded-xl md:bg-gray-200"
           onClick={leaveTournament}
         >
