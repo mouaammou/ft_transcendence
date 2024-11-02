@@ -34,12 +34,12 @@ export const ChatProvider = ({ children }) => {
     const { profileData: currentUser } = useAuth(); // Current authenticated user
     const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const endRef = useRef(null); // Reference to scroll to bottom of chat
-
-    const [typingUsers, setTypingUsers] = useState([]); // Initialize as an empty array
-    // Track users currently typing
-
+    const [typingUsers, setTypingUsers] = useState([]); // Track users currently typing
     const typingTimeoutRef = useRef(null); // To manage typing timeout
+    const emojiPickerRef = useRef(null); // Reference for the emoji picker container
+
     // ************************ end ***********************
+
 
 
     //  ************************  Handle search functionality  ************************
@@ -318,7 +318,7 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
 
-    //  ************************ Function to handle emoji selection and append the selected emoji to the message text ************************
+    //  ************************ handle emoji selection and append the selected emoji to the message text ************************
         const handleEmojiClick = emoji => {
         setText(prev => prev + emoji.emoji);
         // if i want select just one emogi -> setOpen(false)
@@ -327,7 +327,7 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
 
-    //  ************************ Function to handle back button click, hide the chat component on smaller screens ************************
+    //  ************************ handle back button click, hide the chat component on smaller screens ************************
     const handleBackClick = () => {
         setIsChatVisible(false);
     };
@@ -413,6 +413,32 @@ export const ChatProvider = ({ children }) => {
 
 
 
+
+    // ************************ Close the emoji picker when clicking outside ************************
+
+    
+    useEffect(() => {
+		function handleClickOutside(event) {
+		  if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+			setOpen(false);
+		  }
+		}
+	
+		if (open) {
+		  document.addEventListener('mousedown', handleClickOutside);
+		}
+	
+		// Cleanup event listener on component unmount or when `open` changes
+		return () => {
+		  document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [open, setOpen]);
+    
+    // ************************ end ***********************
+
+
+
+
     return (
         <ChatContext.Provider
         value={{
@@ -437,9 +463,8 @@ export const ChatProvider = ({ children }) => {
         // getChatId,
 
         formatTime,
-        formatDate,
-
-        typingUsers, // Expose typingUsers state
+        typingUsers,
+        emojiPickerRef,
         // groupMessagesByDate
         }}
         >

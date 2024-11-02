@@ -182,11 +182,13 @@
 /* end */
 
 .par_date span{
-  background: #5faffe;
+  /* background: #5faffe; */
   font-weight: bold;
   padding: 2px 10px;
   border-radius: 5px;
+  color: #acb2c8;
   /* margin: 0px 10px; */
+
 }
 
 .my-message {
