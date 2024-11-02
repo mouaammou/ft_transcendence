@@ -101,18 +101,18 @@ const WaitingFriendPage = () => {
   // const sent = mysocket.sendMessage(JSON.stringify());
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="bg-gray-500 rounded-lg max-w-md w-full p-6">
-        <h1 className="text-2xl text-center font-balsamiq mb-12">
+      <div className=" bg-gray-400 bg-opacity-50 rounded-lg max-w-md w-full p-6">
+        <h1 className="text-lg  md:text-2xl text-center font-balsamiq mb-12">
           Waiting for {myfriend?.username} to join
         </h1>
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex flex-col md:flex-row items-center gap-1 justify-center mb-4">
           <img src={user_data?.avatar} alt="" className="w-[80] h-[80] rounded-full  bg-gray-700" />
-          <span className="text-2xl font-balsamiq mx-14 ">VS</span>
+          <span className="text-lg md:text-2xl font-balsamiq mx-14 ">VS</span>
           <div className="relative loader">
             <img
               src={myfriend?.avatar}
               alt=""
-              className="w-[80] h-[80] rounded-full  bg-gray-700"
+              className="w-[80] h-[80] rounded-full bg-gray-700 "
             />
           </div>
         </div>

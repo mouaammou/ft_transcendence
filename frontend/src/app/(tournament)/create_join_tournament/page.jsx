@@ -124,7 +124,7 @@ export default function CreateJoinTournamentPage() {
   };
 
   return (
-    <div className="bg-whitetrspnt m-auto w-[90%] lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
+    <div className="bg-whitetrspnt m-auto w-fit lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
       <div className="flex flex-col items-center lg:items-start">
         <p className="text-[26px] font-ibm font-semibold m-auto w-fit my-2 lg:text-[40px]  lg:m-0 lg:mb-11">
           Create tournament
@@ -196,7 +196,7 @@ export default function CreateJoinTournamentPage() {
               );
             })
           ) : (
-            <p>no tournaments</p>
+            <p className='my-9'>no tournaments</p>
           )}
         </div>
 

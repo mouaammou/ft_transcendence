@@ -20,7 +20,7 @@
 <circle cx="251.5" cy="30.5" r="30" transform="rotate(180 251.5 30.5)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
 <circle cx="33.5" cy="30.5" r="30" transform="rotate(180 33.5 30.5)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
 <circle cx="182.5" cy="30.5" r="30" transform="rotate(180 182.5 30.5)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
-<circle cx="67" cy="136" r="30.5" transform="rotate(180 67 136)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
+<circle cx="67" cy="136" r="30.5" transform="rotateaa(180 67 136)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
 <circle cx="216" cy="136" r="30.5" transform="rotate(180 216 136)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
 <circle cx="129" cy="247" r="31.5" transform="rotate(180 129 247)" fill="#00539D" fill-opacity="0.37" stroke="white"/>
 <path d="M32.5 61V76.4461H31.5V61H32.5ZM47 90.9461H62.9279V91.9461H47V90.9461ZM32.5 76.4461C32.5 84.4542 38.9919 90.9461 47 90.9461V91.9461C38.4396 91.9461 31.5 85.0065 31.5 76.4461H32.5Z" fill="white"/>

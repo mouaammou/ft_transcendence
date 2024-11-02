@@ -36,6 +36,7 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
         await self.accept()
         self.is_focused = True
         self.in_game_page = False # if False the user loses when the game starts, if True the user may start the game with the other player
+        self.in_board_page = False
         self.game_engine.connect(self)
         # dont forget to set timout callback
 
@@ -54,6 +55,8 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
         #check if the user send the inGamePage attribute
         if data.get('inGamePage') is not None:
             self.in_game_page = data.get('inGamePage')
+        if data.get('inBoardPage') is not None:
+            self.in_board_page = data.get('inBoardPage')
         print(f"dict data ---------->  {data}  user --------> {self.user.id}")
         
         # print(f"tab is focused --->  {self.is_focused}")

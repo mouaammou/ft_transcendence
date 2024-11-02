@@ -9,8 +9,7 @@ import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import Modal from '@/components/modals/MessageDisplayer';
 
-
-const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />
+const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
 const WaitingPage = () => {
   const { setOpponent } = useWebSocketContext();
@@ -78,7 +77,6 @@ const WaitingPage = () => {
       }, 2000);
       console.log('pushed to tournament board');
     }
-
   };
 
   useEffect(() => {
@@ -96,6 +94,11 @@ const WaitingPage = () => {
     return () => {
       clearTimeout(timer);
       mysocket.unregisterMessageHandler(handleMessage);
+      mysocket.sendMessage(
+        JSON.stringify({
+          type: 'LEAVE_RANDOM_PAGE',
+        })
+      );
     };
   }, []);
 
@@ -103,27 +106,19 @@ const WaitingPage = () => {
     <div className="flex items-center justify-center min-h-screen  p-4">
       <div className="bg-gray-400 rounded-lg  max-w-md w-full p-6">
         <div className="flex items-center justify-center mb-4">
-              <img
-                src={user_data?.avatar}
-                alt=""
-                className="w-16 h-16 rounded-full mr-2  bg-gray-700"
-              />
-              <span className="text-2xl font-bold">VS</span>
-              {(myuser && (
-                <img
-                  src={myuser?.avatar}
-                  alt=""
-                  className="w-16 h-16 rounded-full mx-2 bg-gray-700"
-                />
-              )) || <Skeleton />}
+          <img
+            src={user_data?.avatar}
+            alt=""
+            className="w-16 h-16 rounded-full mr-2  bg-gray-700"
+          />
+          <span className="text-2xl font-bold">VS</span>
+          {(myuser && (
+            <img src={myuser?.avatar} alt="" className="w-16 h-16 rounded-full mx-2 bg-gray-700" />
+          )) || <Skeleton />}
         </div>
-          <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
+        <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
       </div>
-      <Modal
-        isOpen={modalOpen}
-        message={modalMessage}
-        onClose={() => setModalOpen(false)}
-      />
+      <Modal isOpen={modalOpen} message={modalMessage} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

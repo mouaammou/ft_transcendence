@@ -3,7 +3,7 @@
 const Loading = () => {
   return (
     <div className="absolute top-[50%] right-[50%]">
-      <div className="loader"></div>
+      <div className="loading"></div>
     </div>
   );
 };

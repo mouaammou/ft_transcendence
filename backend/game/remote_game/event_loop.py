@@ -211,14 +211,7 @@ class EventLoopManager:
         """
         # if cls.already_in_game(player_id):
         #     return None
-        if (player_id in cls.players_in_tournaments):
-            print("YOUR Friend Is already in a game in the add random_game methode")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_in_tournament'})
-            return None
-        if (player_id in cls.active_players):
-            print("YOUR Friend Is already in a game in the add random_game methode")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_in_game'})
-            return None
+
         game_obj = cls.pending_game()
         if  game_obj is None:
             game_obj = cls.game_class()
@@ -244,14 +237,15 @@ class EventLoopManager:
     def already_in_game(cls, player_id):
         print("in the already_in_game methode of random game")
         game = cls.active_players.get(player_id)
-        if game is None:  # Check if the game exists
-            print(f"False in the already_in_game methode  --> {cls.active_players.get(player_id)}")
-            return False
-        if game.is_fulfilled() and game.islaunched:# i can check also for the player location, if it is not the '/game', 
+        if game is not None and game.is_fulfilled() :# i can check also for the player location, if it is not the '/game', 
             data = {'status': 'already_in_game'}
             print("True in the already_in_game methode")
             RemoteGameOutput._send_to_consumer_group(player_id, data)
             game.disconnected = False
+            return True
+        if (player_id in cls.players_in_tournaments):
+            print("YOUR Friend Is already in a game in the add random_game methode")
+            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_in_tournament'})
             return True
         return False
 
@@ -290,17 +284,17 @@ class EventLoopManager:
         print("in the game_focus methode")
         game = cls.active_players.get(player_id)
         
-        if game is None:
+        if game is None or game.is_fulfilled() == False:
             return True
 
-        if not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.there_is_game_page(player_id):
+        if not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.player_in_game_page(player_id):
             cls._handle_unfocused_game(game, player_id)
             return False
 
         # cls._reset_game_focus(game)
 
         player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
-        if RemoteGameOutput.there_is_focus(player_id_2) and RemoteGameOutput.there_is_game_page(player_id_2):
+        if RemoteGameOutput.there_is_focus(player_id_2) and RemoteGameOutput.player_in_game_page(player_id_2):
             cls._resume_game(game)
             return True
         else:
@@ -344,6 +338,24 @@ class EventLoopManager:
             RemoteGameOutput._send_to_consumer_group(player_id, { 'status': 'no_tournament_found'})
             print("Player is not registered in any tournament")
 
+    @classmethod
+    def check_players_in_board_page(cls, players):
+        print("in the check_players_in_board_page methode")
+        for player in players:
+            if not RemoteGameOutput.player_in_board_page(player):
+                game = cls.active_players.get(player)
+                if game is not None:
+                    game.pause()
+                    game.unfocused = player
+                    game.disconnected = True
+                    game.set_disconnection_timeout_callback(cls.remove, cls, player)#i will set timeout to 0 seconds
+                    print(f"player {player} is not in the board page")
+                else:
+                    print(f"player {player} is not in the board page and game is None")
+            else:
+                print(f"player {player} is in the board page")
+        print("end of the check_players_in_board_page methode")
+
 
     @classmethod
     def start_tournament(cls, player_id):
@@ -367,6 +379,10 @@ class EventLoopManager:
                     print(f"game {game.player_1} {game.player_2} is created")
                 print(f"NUMBER OF GAMES CREATED IN THE TOURNAMENT HAHA ---> {len(cls.tournament_games)}")
                 print(f"number of games in the tournament {tournament.round.get_players()}")
+                #check if the user is the board_page first and then redirect him to the game page, if not game ends and 
+                # he will be the loser, and the other player will be the winner,, and the game will be saved and deleted 
+                # from tournamet games, i will need the tournament def cancel(self): to save tournament if all players left
+                # cls.check_players_in_board_page(tournament.round.get_players())
                 RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
             else:
                 print(f"No active tournament found with id {tournament_id} or tournament round is None ")
@@ -417,9 +433,14 @@ class EventLoopManager:
                     print("the tournament is already started you can't leave")
                     RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'you_can_not_leave'}) # i need to handle this on the frontend
                     return
+                if tournament.organizer == player_id and tournament.claculate_len(tournament.players) > 1:
+                    print("the organizer can't leave the tournament")
+                    RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'organizer_can_not_leave'})
+                    return
                 if tournament.remove_player(player_id):
                     cls.players_in_tournaments.pop(player_id)
                     RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'left_tournament'})
+                    RemoteGameOutput.send_tournament_players(tournament.players, {'status' : 'not_fulfilled'})
                     if tournament.claculate_len(tournament.players) == 0:
                         cls.active_tournaments.pop(tournament_id)
                         cls.broadcast_tournaments()
@@ -429,7 +450,6 @@ class EventLoopManager:
                     tournament.fulfilled = False
                     tournament.status = 'pending'
                 else:
-                    RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'left_tournament'})
                     print("Player is not registered in any tournament")
             else:
                 print(f"No active tournament found with id {tournament_id}")
@@ -464,12 +484,9 @@ class EventLoopManager:
             return 
         tournament_name = data.get('tournament_name')
 
-        if player_id in cls.players_in_tournaments:
-            print("player is already in a tournament")
-            cls.send_to_consumer_group(player_id, 'already_in_tournament')
-        elif player_id in cls.active_players:
+        if cls.already_in_game(player_id):
             print("player is already in a game")
-            cls.send_to_consumer_group(player_id, 'already_in_game')
+            return
         else:
             print("player is not already in a tournament")
             cls.create_tournament(player_id, tournament_name)
@@ -537,13 +554,25 @@ class EventLoopManager:
         if game_obj is not None and game_obj.is_fulfilled():
             RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'GAME_DATA', 'player_1': game_obj.player_1, 'player_2': game_obj.player_2, 'game_type': game_obj.remote_type})
             game_obj.pause()
-            await asyncio.sleep(1)  
-            game_obj.play()
+            await asyncio.sleep(1)
+            if game_obj.unfocused is None:
+                game_obj.play()
             print("game is playedasfxaefxqwafxdscfwerfxzdvcewrfx")
         else:  
             print("NO GAME DATA because the game is not fulfilled or none")
             RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'NO_GAME_DATA'})   
             
+
+    @classmethod
+    def check_for_game(cls, player_id):
+        print("in the check_for_game methode")
+        game_obj = cls.active_players.get(player_id)
+        if game_obj is not None and game_obj.is_fulfilled():
+            return
+        elif game_obj is not None and not game_obj.is_fulfilled():
+            cls.active_players.pop(player_id)
+            print(f"player {player_id} is removed from the active players")
+            return
 
     @classmethod 
     def recieve(cls, player_id, event_dict, consumer):
@@ -568,6 +597,9 @@ class EventLoopManager:
             if cls.already_in_game(player_id):
                 return None
             cls.add_random_game(player_id, game_mode='remote')
+        if 'type' in event_dict and (event_dict['type'] == 'LEAVE_RANDOM_PAGE'):
+            cls.check_for_game(player_id)
+            return None
         if not cls.game_focus(player_id):
             return None
         game_obj = cls.active_players.get(player_id)
@@ -591,27 +623,22 @@ class EventLoopManager:
  
 
     @classmethod
-    def handle_friend_game_request(cls, player_id, event_dict):
+    def handle_friend_game_request(cls, player_id, event_dict): # add an init friend request method to check if the friend is in a game or not
         print("in the handle_friend_game_request methode")
-        print(f"88888  ------  event_dict {event_dict}")
         player_1_id = event_dict['player_1_id']
         player_2_id = event_dict['player_2_id']
         print(f"player 1 id {player_1_id} player 2 id {player_2_id}")
-        if (player_1_id in cls.players_in_tournaments) :
-            print("YOUR are ALREADY IN A tournament")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_in_tournament'})
-            return None
-        if (player_1_id in cls.active_players) :
-            print("YOUR are ALREADY IN A GAME")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'already_in_game'})
+        if (cls.already_in_game(player_id)):
             return None
         if (player_2_id in cls.players_in_tournaments):
             print("YOUR FRIEND ALREADY IN A tournament")
             RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'friend_in_tournament'})
         if (player_2_id in cls.active_players) :
-            print("YOUR FRIEND ALREADY IN A GAME")
-            RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'friend_in_game'})
-            return None
+            game = cls.active_players.get(player_2_id)
+            if game is not None and game.is_fulfilled():
+                print("YOUR FRIEND ALREADY IN A GAME")
+                RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'friend_in_game'})
+                return None
         game = VsFriendGame(player_1=player_1_id,player_2=player_2_id)
         print(f"game {game.player_1} {game.player_2}")
         cls.running_games[game] = [player_1_id, player_2_id]

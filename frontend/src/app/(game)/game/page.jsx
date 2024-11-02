@@ -1,7 +1,7 @@
 'use client';
 import PongGame from './PongGame';
 import { useState, useEffect } from 'react';
-import '@/styles/game/game.css';
+import '@/Styles/game/game.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import { getData } from '@/services/apiCalls';
@@ -22,7 +22,7 @@ const GamePage = () => {
     <div className="flex flex-col items-center m-auto">
       <div className="animate-pulse bg-gray-400  rounded-full w-20 h-20 ml-2" />
       <div className="animate-pulse bg-gray-400 rounded-full w-20 h-2 ml-2 mt-1" />
-      <div className="animate-pulse bg-gray-400 rounded-full w-20 h-2 ml-2 mt-1 lg:ml-[20px]" />
+      <div className="animate-pulse bg-gray-400  rounded-full w-20 h-2 ml-2 mt-1 lg:ml-[20px]" />
     </div>
   );
 

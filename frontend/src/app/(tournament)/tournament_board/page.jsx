@@ -8,6 +8,7 @@ import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
 import Modal from '@/components/modals/MessageDisplayer';
+import { MeteorsDemo } from '@/components/modals/Modal';
 
 export default function TournamentBoardPage() {
   const [players, setPlayers] = useState([]);
@@ -15,6 +16,7 @@ export default function TournamentBoardPage() {
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [msgDescription, setMsgDescription] = useState('');
   const router = useRouter();
   const { profileData } = useAuth();
 
@@ -24,8 +26,11 @@ export default function TournamentBoardPage() {
     avatar: '/defaultAvatar.svg',
   };
 
+  const pushToPlay = () => {
+    router.push('/play');
+  };
+
   const startTournament = () => {
-    setFulfilled(false);
     mysocket.sendMessage(
       JSON.stringify({
         type: 'START_TOURNAMENT',
@@ -42,11 +47,16 @@ export default function TournamentBoardPage() {
   };
 
   useEffect(() => {
+
     mysocket.sendMessage(
       JSON.stringify({
         type: 'GET_PLAYERS',
       })
     );
+
+    
+    mysocket.sendMessage(JSON.stringify({ 'inBoardPage': true }));
+
     const parse_players = data => {
       // data = {round1: Array(1), round2: null, round3: null}
       let players = [];
@@ -63,23 +73,33 @@ export default function TournamentBoardPage() {
       if (data.status === 'players') {
         console.log('bla bla bla bla', data.data);
         setPlayers(data.data);
-      } else if (data.status === 'no_tournament_found') {                   
+      } else if (data.status === 'no_tournament_found') {
         console.log('the player does not exist in any tournament');
         router.push('/create_join_tournament');
       } else if (data.status === 'fulfilled') {
         setFulfilled(true);
+      } else if (data.status === 'not_fulfilled') {
+        setFulfilled(false);
       } else if (data.status === 'PUSH_TO_GAME') {
         router.push('/game');
       } else if (data.status === 'left_tournament') {
         setModalOpen(true);
-        setModalMessage('You have left the tournament');
-        setTimeout(() => {
-          router.push('/play');
-        }, 2000);
+        setModalMessage('You have withdrawn from the tournament');
+        setMsgDescription(
+          'You have successfully exited the tournament. If you wish to rejoin or need further assistance, please go to play page. Thank you for your participation!'
+        );
       } else if (data.status === 'you_can_not_leave') {
-        console.log('you can not leave the tournament');    
+        console.log('you can not leave the tournament');
         setModalOpen(true);
         setModalMessage('The tournament has already started, you can not leave');
+      } else if (data.status === 'organizer_can_not_leave') {
+        console.log('you can not leave the tournament');
+        setModalOpen(true);
+        setModalMessage('Stay Engaged as Tournament Organizer');
+        setMsgDescription(
+          'The tournament is currently underway with active participants. As the organizer, your presence is essential to ensure the smooth management of the event. \
+        Please remain available to address any issues and support the players throughout the tournament. Thank you for your commitment!'
+        );
       } else if (data.status === 'celebration') {
         alert('celebration');
         console.log(
@@ -92,6 +112,7 @@ export default function TournamentBoardPage() {
 
     return () => {
       mysocket.unregisterMessageHandler(handleMessage);
+      mysocket.sendMessage(JSON.stringify({ 'inBoardPage': false }));
     };
   }, []);
 
@@ -139,27 +160,10 @@ export default function TournamentBoardPage() {
     fetchPlayers();
   }, [players]);
 
-  // const imageUrls = fetchedPlayers?.reduce((acc, player, index) => {
-  //   acc[`imageUrl${index + 1}`] = player?.avatar;
-  //   return acc;
-  // }, {});
-  const imageUrls = {
-    'imageUrl1' : '/mouad.jpeg',
-    'imageUrl2' : '/mouad.jpeg',
-    'imageUrl3' : '/mouad.jpeg',
-    'imageUrl4' : '/mouad.jpeg',
-    'imageUrl5' : '/mouad.jpeg',
-    'imageUrl6' : '/mouad.jpeg',
-    'imageUrl7' : '/mouad.jpeg',
-    'imageUrl8' : '/mouad.jpeg',
-    'imageUrl9' : '/mouad.jpeg',
-    'imageUrl10' : '/mouad.jpeg',
-    'imageUrl11' : '/mouad.jpeg',
-    'imageUrl12' : '/mouad.jpeg',
-    'imageUrl13' : '/mouad.jpeg',
-    'imageUrl14' : '/mouad.jpeg',
-    'imageUrl15' : '/mouad.jpeg'
-  }
+  const imageUrls = fetchedPlayers?.reduce((acc, player, index) => {
+    acc[`imageUrl${index + 1}`] = player?.avatar;
+    return acc;
+  }, {});
 
   const userNames = fetchedPlayers?.reduce((acc, player, index) => {
     acc[`userName${index + 1}`] = player?.username;
@@ -171,8 +175,7 @@ export default function TournamentBoardPage() {
   console.log('image Urls --> ', imageUrls);
   return (
     <>
-      <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12 ">
-        {/* make a button to leave the tournament  */}
+      <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12  gap-8">
         <Board {...imageUrls} {...userNames} />
         <button
           className="hidden md:block font-bold text-slate-950 md:relative md:text-[16px] md:w-[114px]
@@ -181,17 +184,10 @@ export default function TournamentBoardPage() {
         >
           Leave
         </button>
-        {/* <Image
-          className="hidden md:block"
-          width={109}
-          height={92}
-          src="/trofi.svg"
-          alt="notFound"
-        /> */}
         {fulfilled && profileData.username === organizerUsername && (
           <button
             onClick={startTournament}
-            className="relative inline-flex h-8 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+            className="relative md:text-[16px] md:w-[114px] md:h-[32px] inline-flex h-8 overflow-hidden rounded-full p-[2px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
           >
             <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
             <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
@@ -199,15 +195,13 @@ export default function TournamentBoardPage() {
             </span>
           </button>
         )}
-        {/*<button
-            onClick={startTournament}
-            className="border-[1px] m-10 text-[16px] w-[114px] h-[32px] border-white text-white rounded-xl bg-[#00539D]
-                       p-[10px] text-center my-6 font-bold lg:text-[22px] lg:w[137px] lg:h-[41] flex items-center justify-center"
-          >
-            Start
-          </button> */}
       </div>
-      <Modal isOpen={modalOpen} message={modalMessage} onClose={() => setModalOpen(false)} />
+      <MeteorsDemo
+        isOpen={modalOpen}
+        title={modalMessage}
+        description={msgDescription}
+        action={() => setModalOpen(false)}
+      />
     </>
   );
 }

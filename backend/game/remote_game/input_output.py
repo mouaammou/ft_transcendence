@@ -69,7 +69,7 @@ class RemoteGameOutput:
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
-        print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
+        # print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return
@@ -114,9 +114,9 @@ class RemoteGameOutput:
         return any(consumer.is_focused for consumer in group)   
     
     @classmethod
-    def there_is_game_page(cls, player_id):  
+    def player_in_game_page(cls, player_id):  
         #print the length of the group
-        print("there_is_game_page method")
+        print("player_in_game_page method")
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return False
@@ -124,6 +124,17 @@ class RemoteGameOutput:
             if consumer.in_game_page is True:
                 return True
         # return any(consumer.in_game_page is True for consumer in group)
+        return False
+    
+    @classmethod
+    def player_in_board_page(cls, player_id):
+        print("player_in_board_page method")
+        group = cls.consumer_group.get(player_id)
+        if group is None:
+            return False
+        for consumer in group:
+            if consumer.in_board_page is True:
+                return True
         return False
     
 
