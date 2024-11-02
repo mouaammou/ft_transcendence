@@ -39,6 +39,7 @@ urlpatterns = [
 
 	# for search
 	path("searchItems/<str:searchedQuery>", views.SearchClass.as_view(), name="search"),
+
 ]
 
 if settings.DEBUG:

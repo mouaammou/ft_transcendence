@@ -1,4 +1,4 @@
-from authentication.models import NotificationModel
+from authentication.models import Notification
 from rest_framework import  generics
 from authentication.serializers import NotificationSerializer
 from .allusers import CustomUserPagination
@@ -8,7 +8,7 @@ class ListNotifications(generics.GenericAPIView):
 	pagination_class = CustomUserPagination
 
 	def get_queryset(self):
-		return NotificationModel.objects.filter(receiver_id=self.request.customUser.id)	
+		return Notification.objects.filter(receiver_id=self.request.customUser.id)
 
 	def get(self, request):
 		queryset = self.get_queryset()

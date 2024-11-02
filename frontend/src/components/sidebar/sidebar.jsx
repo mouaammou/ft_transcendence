@@ -8,7 +8,8 @@ export default function Sidebar() {
 
 	const sidebarItems = [
 		{ label: 'Home', icon: '/vector.svg', route: '/' },
-		{ label: 'Friends', icon: '/3-User.svg', route: '/friends' },
+		{ label: 'Friends', icon: '/friends-svg.svg', route: '/friends' },
+		{ label: 'allusers', icon: '/3-User.svg', route: '/allusers' },
 		{ label: 'Profile', icon: '/Profil.svg', route: '/profile' },
 		{ label: 'Chat', icon: '/chat.svg', route: '/chat' },
 		{ label: 'Game', icon: '/Game.svg', route: '/Game' },

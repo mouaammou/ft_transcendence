@@ -65,7 +65,7 @@ const useWebSocket = (url) => {
 		};
 	}, []);
 
-	return { isConnected, websocket };
+		return { isConnected, websocket };
 	};
 
 	export const WebSocketProvider = ({ url, children }) => {
@@ -83,6 +83,7 @@ const useWebSocket = (url) => {
 			if (!isConnected) return;
 			try {
 				const data = JSON.parse(event.data);
+				console.log('WebSocket message received:', data);
 				if (data.type === 'user_status_change') {
 					setFriendStatusChange(true);
 					setUsers((prevUsers) =>
@@ -90,10 +91,12 @@ const useWebSocket = (url) => {
 							user.username === data.username ? { ...user, status: data.status } : user
 						)
 					);
-				} else if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND].includes(data.type)) {
+				} else if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND, 		NOTIFICATION_TYPES.INVITE_GAME, NOTIFICATION_TYPES.ACCEPT_GAME,
+					NOTIFICATION_TYPES.INVITE_TOURNAMENT
+				].includes(data.type)) {
 					setNotifications((prev) => [...prev, { ...data, id: Date.now() }]);
-					setNotificationType({ type: data.type, status: data.success });
 				}
+				setNotificationType({ type: data.type, status: data.success });
 			} catch (error) {
 				console.error('Error processing WebSocket message:', error);
 			}
@@ -119,6 +122,18 @@ const useWebSocket = (url) => {
 			[router]
 		);
 
+		const getUserNotifications = useCallback(async () => {
+			try {
+				const response = await getData('/notifications');
+				if (response.status === 200) {
+					setNotifications(response.data);
+				}
+			} catch (error) {
+				console.error('Error fetching notifications:', error);
+			}
+		}
+		, []);
+	
 		useEffect(() => {
 			if (isConnected && websocket.current) {
 				websocket.current.addEventListener('message', handleMessageEvent);

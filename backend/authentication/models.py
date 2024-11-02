@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 #---------------- Notifications model ===================#
-class NotificationModel(models.Model):
+class Notification(models.Model):
 
 	NOTIFICATION_TYPES = (
 		('friend', 'friend'),

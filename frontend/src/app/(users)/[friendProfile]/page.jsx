@@ -10,21 +10,10 @@ import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 
 export default function FriendProfile({ params }) {
 
-	const {websocket, isConnected, notificationType, NOTIFICATION_TYPES, pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {websocket, isConnected, notificationType,  NOTIFICATION_TYPES, pageNotFound, setPageNotFound } = useWebSocketContext();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-
-	useEffect(() => { // this for the notification type
-		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
-		&& notificationType.status === true) {
-			setFriendStatusRequest('accepted');
-		}
-		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND 
-		&& notificationType.status === true) {
-			setFriendStatusRequest('no');
-		}
-	}, [notificationType]);
 
 	const sendFriendRequest = () => {
 		if (isConnected && profile?.id) {
@@ -36,6 +25,19 @@ export default function FriendProfile({ params }) {
 			}));
 		}
 	}
+
+	useEffect(() => { // this for the notification type
+		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
+		&& notificationType.status === true) {
+			setFriendStatusRequest('accepted');
+		}
+		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND
+		&& notificationType.status === true) {
+			setFriendStatusRequest('no');
+		}
+
+		console.log('notificationType:', notificationType);
+	}, [notificationType]);
 
 	useEffect(() => {
 		const fetchFriendProfile = async (params) => {
@@ -69,8 +71,8 @@ export default function FriendProfile({ params }) {
 		const handleFriendStatusChange = (event) => {
 			if (isConnected) {
 				const data = JSON.parse(event.data);
-				console.log("user status in friend profile:", data);
 				if (data.type === 'user_status_change') {
+					console.log("user status in friend profile:", data);
 					setProfile(prevProfile => {
 						if (prevProfile.username === data.username) {
 							return { ...prevProfile, status: data.status };

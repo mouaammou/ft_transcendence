@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from .models import CustomUser, Friendship, NotificationModel
+from .models import CustomUser, Friendship, Notification
 from rest_framework import serializers
 from django.conf import settings
 
@@ -7,7 +7,7 @@ from django.conf import settings
 class NotificationSerializer(serializers.ModelSerializer):
 
 	class Meta:
-		model = NotificationModel
+		model = Notification
 		fields = '__all__'
 		read_only_fields = ['created_at']
 #-------------- # Notificaion Serializer ================#
