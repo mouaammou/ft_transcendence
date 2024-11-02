@@ -156,7 +156,8 @@ class NotificationConsumer(BaseConsumer):
 					'username': event.get('username'),
 					'success': event.get('success'),
 					'avatar': event.get('avatar'),
-					'message': event.get('message')
+					'message': event.get('message'),
+					'notif_status' : "pending"
 			}))
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
@@ -169,7 +170,8 @@ class NotificationConsumer(BaseConsumer):
 			'message': event.get('message'),
 			'username': event.get('username'),
 			'user_id': event.get('user_id'),
-			'avatar': event.get('avatar')
+			'avatar': event.get('avatar'),
+			'notif_status': "accepted"
 		}))
 
 	# ************************ for rejecting friend request ************************
@@ -204,7 +206,7 @@ class NotificationConsumer(BaseConsumer):
 			'message': message,
 			'to_user_id': self.user.id,
 			'username': self.user_data['username'],
-			'avatar': self.user_data['avatar']
+			'avatar': self.user_data['avatar'],
 		})
 
 	async def handle_accept_request(self, data):

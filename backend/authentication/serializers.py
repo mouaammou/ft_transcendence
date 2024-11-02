@@ -4,12 +4,20 @@ from rest_framework import serializers
 from django.conf import settings
 
 #-------------- Notificaion Serializer ================#
+from rest_framework import serializers
+
 class NotificationSerializer(serializers.ModelSerializer):
+	username = serializers.CharField(source='sender.username', read_only=True)
+	avatar = serializers.ImageField(source='sender.avatar', read_only=True)
 
 	class Meta:
 		model = Notification
-		fields = '__all__'
+		fields = (
+			'id', 'sender', 'username', 'avatar',
+			'message', 'created_at', 'is_read', 'notif_type', 'notif_status'
+		)
 		read_only_fields = ['created_at']
+
 #-------------- # Notificaion Serializer ================#
 
 #============= friendship Serializer +++++++++++++++

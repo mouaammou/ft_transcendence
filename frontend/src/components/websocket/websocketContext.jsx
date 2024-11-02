@@ -133,6 +133,20 @@ const useWebSocket = (url) => {
 			}
 		}
 		, []);
+
+		//get Unread Notifications
+		const getUnreadNotifications = useCallback(async () => {
+			try {
+				const response = await getData('/notifications/unread');
+				if (response.status === 200) {
+					// setNotifications(response.data);
+					console.log(`Unread Notifications: ${response.data}`);
+				}
+			} catch (error) {
+				console.error('Error fetching notifications:', error);
+			}
+		}
+		, []);
 	
 		useEffect(() => {
 			if (isConnected && websocket.current) {
@@ -163,12 +177,13 @@ const useWebSocket = (url) => {
 				setFriendStatusChange,
 				setPageNotFound,
 				setNextPage,
-				setPrevPage
+				setPrevPage,
+				getUnreadNotifications
 			}),
 			[
-				isConnected, notifications, notificationType, users, nextPage,
+				isConnected, notifications, setNotifications,  notificationType, users, nextPage,
 				prevPage, fetchAllUsers, pageNotFound, friendStatusChange, setPageNotFound, 
-				setNextPage, setPrevPage
+				setNextPage, setPrevPage, getUnreadNotifications
 			]
 		);
 

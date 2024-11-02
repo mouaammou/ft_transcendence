@@ -13,7 +13,7 @@ export default function NotificationsPage() {
 	const fetchNotifications = async (page = 1) => {
 		setLoading(true);
 		try {
-			const response = await getData(`/notifs?page=${page}`);
+			const response = await getData(`/notifications?page=${page}`);
 			setNotifications(response.data.results);
 			setNextPage(response.data.next ? page + 1 : null);
 			setPrevPage(response.data.previous ? page - 1 : null);
