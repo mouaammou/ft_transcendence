@@ -4,22 +4,31 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import { getData, postData } from '@/services/apiCalls';
+import { deleteData, getData, postData } from '@/services/apiCalls';
 
-const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, NOTIFICATION_TYPES }) => {
+const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, NOTIFICATION_TYPES , friend_id}) => {
 	const [status, setStatus] = useState(data.notif_status);
 
 	console.log("Notification Data: ", data);
 
 	// Function to handle action and send a WebSocket message
-	const handleAction = (action) => {
+	const handleAction = async (action) => {
 		setStatus(action);
 		if (websocket.current) {
-			const messageType = action === 'Accepted' ? 'accept_friend_request' : 'reject_friend_request';
+			const messageType = action === 'accepted' ? 'accept_friend_request' : 'reject_friend_request';
 			websocket.current.send(JSON.stringify({
 				type: messageType,
 				to_user_id: data.to_user_id,
 			}));
+		}
+		else 
+		{
+			if (action === 'accepted'){
+				//send get request to accept friend request
+				await postData(`/notifications/${notificationId}/acceptFriend`, {
+					
+				});
+			}
 		}
 	};
 
@@ -59,7 +68,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, N
 						<button
 							className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
 							onClick={() => {
-								handleAction('Accepted'); 
+								handleAction('accepted'); 
 								handleMarkAsRead();
 							}}
 						>
@@ -68,7 +77,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, N
 						<button
 							className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
 							onClick={() => {
-								handleAction('Rejected');
+								handleAction('rejected');
 								handleMarkAsRead();
 							}}
 						>
@@ -78,7 +87,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, N
 				)}
 				{notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND && (
 					<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${notificationType.status ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
-						{notificationType.status ? 'Accepted' : 'Rejected'}
+						{notificationType.status ? 'accepted' : 'rejected'}
 					</span>
 				)}
 				<button
@@ -94,7 +103,7 @@ const NotificationLayout = ({ data, websocket, onMarkAsRead, notificationType, N
 
 const NotificationBell = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const { websocket, notifications, setNotifications, notificationType, NOTIFICATION_TYPES } = useWebSocketContext();
+	const { isConnected ,websocket, notifications, setNotifications, notificationType, NOTIFICATION_TYPES } = useWebSocketContext();
 
 	// Fetch unread notifications with memoized function
 	const getUnreadNotifications = useCallback(async () => {
@@ -111,6 +120,7 @@ const NotificationBell = () => {
 
 	// Fetch unread notifications on component mount
 	useEffect(() => {
+		// if ( ! isConnected && ! websocket.current)
 		getUnreadNotifications();
 	}, [getUnreadNotifications]);
 
@@ -159,6 +169,7 @@ const NotificationBell = () => {
 								websocket={websocket}
 								onMarkAsRead={markAsRead}
 								NOTIFICATION_TYPES={NOTIFICATION_TYPES}
+								friend_id={notification.sender}
 							/>
 					)
 					})}

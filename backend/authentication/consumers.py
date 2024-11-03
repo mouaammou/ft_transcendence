@@ -151,6 +151,7 @@ class NotificationConsumer(BaseConsumer):
 		try:
 			print(f"\nfriend_request_notif: {event}\n")
 			await self.send(text_data=json.dumps({
+					'id' : event.get('id'),
 					'type': 'friend_request',
 					'to_user_id': event.get('to_user_id'),
 					'username': event.get('username'),
@@ -165,6 +166,7 @@ class NotificationConsumer(BaseConsumer):
 	# Handler for accept_friend_request event
 	async def accept_request_notif(self, event):
 		await self.send(text_data=json.dumps({
+			'id' : event.get('id'),
 			'type': 'accept_friend',
 			'success': event.get('success'),
 			'message': event.get('message'),
@@ -199,9 +201,10 @@ class NotificationConsumer(BaseConsumer):
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')
 		print(f"\nsend friend request to {to_user_id}")
-		success, message = await self.save_friend_request(to_user_id)
+		success, message, notif_id = await self.save_friend_request(to_user_id)
 		await self.send_notification_alert(to_user_id, {
 			'type': 'friend_request_notif',
+			'id': notif_id,
 			'success': success,
 			'message': message,
 			'to_user_id': self.user.id,
@@ -212,13 +215,14 @@ class NotificationConsumer(BaseConsumer):
 	async def handle_accept_request(self, data):
 		to_user_id = data.get('to_user_id')
 		print(f"\naccept friend request from {to_user_id}")
-		success, message = await self.accept_friend_request(to_user_id)
+		success, message, notif_id = await self.accept_friend_request(to_user_id)
 		await self.send_notification_alert(to_user_id, {
 			'type': 'accept_request_notif',
 			'success': success,
 			'message': message,
 			'username': self.user_data['username'],
 			'user_id': self.user.id,
+			'id': notif_id,
 			'avatar': self.user_data['avatar']
 		})
 
@@ -243,22 +247,23 @@ class NotificationConsumer(BaseConsumer):
 			to_user = User.objects.get(id=to_user_id)
 			friend_request, created = Friendship.objects.get_or_create(sender=self.user, receiver=to_user, status='pending')
 			if created:
-				Notification.objects.create(
+				notif = Notification.objects.create(
 					sender=self.user,
 					receiver=to_user,
 					message=f"{self.user} send to you friend request",
 					notif_type='friend',
 					notif_status='pending'
 				)
-				return True, "Friend request sent successfully"
+				notif_id = notif.id
+				return True, "Friend request sent successfully", notif_id
 			elif friend_request.status == 'pending':
 				logger.error(f"\nFriend request already sent\n")
-				return False, "Friend request already sent"
+				return False, "Friend request already sent", None
 			else:
-				return False, "Friend request already processed"
+				return False, "Friend request already processed", None
 		except Exception as e:
 			logger.error(f"\nError sending friend request: {e}\n")
-			return False, f"Error sending friend request, reason :: {str(e)}"
+			return False, f"Error sending friend request, reason :: {str(e)}", None
 
 	@database_sync_to_async
 	def accept_friend_request(self, user_id):
@@ -277,23 +282,24 @@ class NotificationConsumer(BaseConsumer):
 					except Friendship.DoesNotExist:
 						Friendship.objects.create(sender=self.user, receiver=sender, status='accepted')
 
-					Notification.objects.create(
+					notif = Notification.objects.create(
 						sender=self.user,
 						receiver=sender,
 						message=f"{sender} accepted your friend request",
 						notif_type='friend',
 						notif_status='accepted'
 					)
+					notif_id = notif.id
 					logger.info(f"\nFriend request accepted 🍸\n")
-					return True, "Friend request accepted"
+					return True, "Friend request accepted" , notif_id
 			else:
-					return False, "Friend request already processed"
+				return False, "Friend request already processed", None
 
 		except Friendship.DoesNotExist:
-			return False, "Friend request not found."
+			return False, "Friend request not found.", None
 		except Exception as e:
 			logger.error(f"\nError Accepting friend request: {e}\n")
-			return False, f"Error Accepting Friend request, reason :: {str(e)}"
+			return False, f"Error Accepting Friend request, reason :: {str(e)}", None
 
 	@database_sync_to_async
 	def reject_friend_request(self, rejected_user_id):

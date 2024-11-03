@@ -94,7 +94,7 @@ const useWebSocket = (url) => {
 				} else if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND, 		NOTIFICATION_TYPES.INVITE_GAME, NOTIFICATION_TYPES.ACCEPT_GAME,
 					NOTIFICATION_TYPES.INVITE_TOURNAMENT
 				].includes(data.type)) {
-					setNotifications((prev) => [...prev, { ...data, id: Date.now() }]);
+					setNotifications((prev) => [...prev, { ...data }]);
 				}
 				setNotificationType({ type: data.type, status: data.success });
 			} catch (error) {
