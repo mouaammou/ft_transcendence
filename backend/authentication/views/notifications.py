@@ -57,11 +57,12 @@ class AcceptFriendRequest(generics.GenericAPIView):
 	serializer_class = NotificationSerializer
 
 	def post(self, request):
+		print(f"\naccepting friend request\n")
 		new_notification = Notification.objects.create(
 			sender=request.customUser,
 			receiver_id=request.data['receiver_id'],
-			message=request.data['message'],
-			notif_type=request.data['notif_type'],
+			message= f"{request.customUser.username} has accepted your friend request via VIEW",
+			notif_type= "friend",
 			notif_status='accepted'
 		)
 		serializer = self.get_serializer(new_notification)

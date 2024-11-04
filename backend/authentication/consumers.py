@@ -152,7 +152,7 @@ class NotificationConsumer(BaseConsumer):
 			print(f"\nfriend_request_notif: {event}\n")
 			await self.send(text_data=json.dumps({
 					'id' : event.get('id'),
-					'type': 'friend_request',
+					'type': 'send_friend_request',
 					'to_user_id': event.get('to_user_id'),
 					'username': event.get('username'),
 					'success': event.get('success'),
@@ -167,7 +167,7 @@ class NotificationConsumer(BaseConsumer):
 	async def accept_request_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'id' : event.get('id'),
-			'type': 'accept_friend',
+			'type': 'accept_friend_request',
 			'success': event.get('success'),
 			'message': event.get('message'),
 			'username': event.get('username'),
@@ -180,7 +180,7 @@ class NotificationConsumer(BaseConsumer):
 	async def reject_request_notif(self, event):
 		print(f"\nreject_request_notif: {event}\n")
 		await self.send(text_data=json.dumps({
-			'type': 'reject_friend',
+			'type': 'reject_friend_request',
 			'success': event.get('success'),
 			'user_id': event.get('user_id'),
 		}))
@@ -221,7 +221,7 @@ class NotificationConsumer(BaseConsumer):
 			'success': success,
 			'message': message,
 			'username': self.user_data['username'],
-			'user_id': self.user.id,
+			'to_user_id': self.user.id,
 			'id': notif_id,
 			'avatar': self.user_data['avatar']
 		})

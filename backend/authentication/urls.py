@@ -38,7 +38,7 @@ urlpatterns = [
 	# mark notification as read
 	path('notifications/<int:pk>/read', views.MarkNotificationRead.as_view(), name="mark notification as read"),
 	# accept or reject friend request
-	path('notifications/<int:notif_id>/acceptFriend', views.AcceptFriendRequest.as_view(), name="accept friend request"),
+	path('notifications/acceptFriend', views.AcceptFriendRequest.as_view(), name="accept friend request"),
 
 	#for pending notifications for friendship
 	path('notifications/pending', views.PendingFrienshipRequest.as_view(), name="pending friend request"),
