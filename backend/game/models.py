@@ -10,20 +10,20 @@ User = get_user_model()
 def teen_minutes_ahead():
     return timezone.now() + timedelta(seconds=5)
 
-class LocalGame(models.Model):
-    user = models.ForeignKey(User, on_delete= models.CASCADE)
-    unique_key = models.CharField(max_length=250, null=True, blank=True)
+# class LocalGame(models.Model):
+#     user = models.ForeignKey(User, on_delete= models.CASCADE)
+#     unique_key = models.CharField(max_length=250, null=True, blank=True)
 
-    left_player = models.CharField(max_length=250)
-    right_player = models.CharField(max_length=250)
-    left_player_score = models.IntegerField(default=0)
-    right_player_score = models.IntegerField(default=0)
-    winner = models.CharField(max_length=250, null=True, blank=True)
+#     left_player = models.CharField(max_length=250)
+#     right_player = models.CharField(max_length=250)
+#     left_player_score = models.IntegerField(default=0)
+#     right_player_score = models.IntegerField(default=0)
+#     winner = models.CharField(max_length=250, null=True, blank=True)
 
-    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+#     # created_at = models.DateTimeField(editable=False, auto_now_add=True)
 
-    # LocalTounament if the game is tournament game else None
-    tournament = models.ForeignKey('LocalTournament', on_delete=models.CASCADE, null=True, blank=True)
+#     # LocalTounament if the game is tournament game else None
+#     tournament = models.ForeignKey('LocalTournament', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class LocalTournament(models.Model):
