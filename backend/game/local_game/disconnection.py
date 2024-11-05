@@ -16,7 +16,7 @@ output events:
     - left_player_score
     - ball_pos
     - finished
-"""    
+"""
 
 import asyncio
 
@@ -26,21 +26,20 @@ import asyncio
 class LocalGameDisconnection:
     # PING PONG Game will inherete this
 
-    _timeout_in = 7 # seconds
+    _timeout_in = 10 # seconds
 
     def __init__(self, *args, **kwargs):
-        # super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._disconnected = False
         self._disconnetion_task = None
 
-        self._outside_callback = None  
-        self._outside_callback_args = list()
-        self._outside_callback_kwargs = dict()
+        self._outside_callback = None         #function
+        self._outside_callback_args = list()  #1,5,6
+        self._outside_callback_kwargs = dict() #said=5,sasa=878
     
     ################## public interface #####################
     @property
     def disconnected(self):
-        print("disconnect getter called ")
         return self._disconnected
     
     @disconnected.setter
@@ -81,7 +80,7 @@ class LocalGameDisconnection:
         future_time = loop.time() + self._timeout_in
         task = loop.call_at(future_time, self._disconnection_timeout)
         self._disconnetion_task = task
-
+    
     def _disconnection_timeout(self):
         if self._outside_callback is None:
             return

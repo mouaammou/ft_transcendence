@@ -5,6 +5,8 @@ try:
 except:
     from pong_base import Base
 
+
+
 class Angle(Base):
     
     __hpi = math.pi / 2

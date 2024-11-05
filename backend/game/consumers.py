@@ -30,3 +30,5 @@ from .local_game.consumer import LocalGameConsumer
 
 class GlobalConsumer(RemoteGameConsumer):
     pass
+
+    
