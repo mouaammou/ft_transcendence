@@ -3,10 +3,9 @@
 import { Inter } from 'next/font/google';
 import { LoginProvider } from '@components/auth/loginContext';
 import Navbar from '@/components/navbar/navAuth';
-import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar/sidebar';
 import { WebSocketProvider } from '@/components/websocket/websocketContext';
-import SkeletonTheme from 'react-loading-skeleton';
+import {NotificationProvider} from '@components/navbar/useNotificationContext';
 
 import '@/styles/globals.css';
 import '@/styles/globalsTailwind.css';
@@ -14,25 +13,23 @@ import '@/styles/globalsTailwind.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
-	const pathname = usePathname();
-	const isChatPage = pathname === '/chat';
+
+	if (! WebSocketProvider || ! NotificationProvider || ! LoginProvider ) {
+		throw new Error('RootLayout must be used within a WebSocketProvider, NotificationProvider, and LoginProvider');
+	}
 
 	return (
 		<html lang="en">
 			<body className={inter.className}>
 				<WebSocketProvider url="ws://localhost:8000/ws/online/">
 					<LoginProvider>
-						{isChatPage ? (
-							<div className="content">
+						<NotificationProvider>
+							<div>
 								<Sidebar />
+								<Navbar />
 								{children}
 							</div>
-						) : (
-							<div>
-								<Navbar />
-								{children} 
-							</div>
-						)}
+						</NotificationProvider>
 					</LoginProvider>
 				</WebSocketProvider>
 			</body>

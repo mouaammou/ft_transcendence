@@ -26,16 +26,34 @@ urlpatterns = [
 	# for friends
 	path('friends', views.FriendshipListView.as_view(), name='friendship-list-create'),
 	path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
-	path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
+	# path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
 	path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
+	# for reject friend request
+	# path('friends/<int:pk>/reject/', views.RejectFriendshipView.as_view(), name='friendship-reject'),
 	
 	# for notificaions
-	path('notifs', views.ListNotifications.as_view(), name="notifications"),
+	path('notifications', views.ListNotifications.as_view(), name="notifications"),
+	# for unread notifications
+	path('notifications/unread', views.UnreadNotifications.as_view(), name="unread notifications"),
+	# mark notification as read
+	path('notifications/<int:pk>/read', views.MarkNotificationRead.as_view(), name="mark notification as read"),
+	# accept or reject friend request
+	path('notifications/acceptFriend', views.AcceptFriendRequest.as_view(), name="accept friend request"),
+
+	#for pending notifications for friendship
+	path('notifications/pending', views.PendingFrienshipRequest.as_view(), name="pending friend request"),
+
+	
+	# for all users
 	path("allusers", views.AllUser.as_view(), name="all users"),
 
 	# for Friend profile
 	path("friendProfile/<str:username>", views.FriendProfile.as_view(), name="friend profile"),
 	path("userById/<int:id>", views.GetUserById.as_view(), name="friend profile"),
+
+	# for search
+	path("searchItems/<str:searchedQuery>", views.SearchClass.as_view(), name="search"),
+
 ]
 
 if settings.DEBUG:

@@ -1,114 +1,130 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getData } from '@/services/apiCalls';
 import { TfiStatsUp } from "react-icons/tfi";
-import { notFound, usePathname } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import useNotifications from '@/components/navbar/useNotificationContext';
 
 export default function FriendProfile({ params }) {
 
-	const [userStatus, setUserStatus] = useState(() => {
-		const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-		const foundUser = storedUsers.find((user) => user.username == params.friendProfile);
-		if (foundUser) {
-			return foundUser.status;
-		}
-		return 'offline';
-	});
+	const {pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {websocket, isConnected, notificationType, NOTIFICATION_TYPES} = useNotifications();
 
-	const [profile, setProfile] = useState(() => {
-		console.log('fetching profile from local storage ', params.friendProfile);
-		return JSON.parse(localStorage.getItem(`profile_${params.friendProfile}`)) || {};
-	});
-
-	const [userNotFound, setUserNotFound] = useState(false);
-	const {websocket, isConnected, notificationType, listOfNotifications,hasGetMessage, setHasGetMessage} = useWebSocketContext();
-	const pathname = usePathname();
+	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-	const router = useRouter();
 
-	useEffect(() => {
-		if (notificationType.type === listOfNotifications.acceptFriend
-		&& notificationType.status === true) {
-			setFriendStatusRequest('accepted');
-		}
-		if (notificationType.type === listOfNotifications.rejectFriend 
-		&& notificationType.status === true) {
-			setFriendStatusRequest('no');
-		}
-	}, [notificationType]);
-
-	const sendFriendRequest = () => {
+	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
 			setFriendStatusRequest('pending');
 			console.log('sending friend request to: ', profile.id);
-			websocket.current.send(JSON.stringify({
-				type: 'send_friend_request',
-				to_user_id: profile.id,
-			}));
+			if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
+			{
+				websocket.current.send(JSON.stringify({
+					type: 'send_friend_request',
+					to_user_id: profile.id,
+				}));
+			}
+			else {
+				setTimeout(() => {
+					if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
+					{
+						websocket.current.send(JSON.stringify({
+							type: 'send_friend_request',
+							to_user_id: profile.id,
+						}));
+					}
+				}, 500);
+			}
 		}
-	}
+	}, [isConnected, profile?.id, websocket, setFriendStatusRequest]);
+
+	useEffect(() => { // this for the notification type
+		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
+		&& notificationType.status === true) {
+			setFriendStatusRequest('accepted');
+		}
+		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND
+		&& notificationType.status === true) {
+			setFriendStatusRequest('no');
+		}
+
+		console.log('notificationType:', notificationType);
+	}, [notificationType, setFriendStatusRequest]);
 
 	useEffect(() => {
-		const fetchProfile = async () => {
+		const fetchFriendProfile = async (params) => {
 			if (!params.friendProfile) {
-				setUserNotFound(true);
-				return ;
+				setPageNotFound(true);
+				return;
 			}
 			try {
-				console.log("FETCHING PROFILE");
 				const response = await getData(`/friendProfile/${params.friendProfile}`);
 				if (response.status === 200) {
 					const fetchedProfile = response.data;
-					if (response.data.Error) {
-						setProfile({});
-						router.push('/profile');
-					}
-					else {
-						console.log('set in local storage friend when fetch:: ', fetchedProfile.username);
-						localStorage.setItem(`profile_${fetchedProfile.username}`, JSON.stringify(fetchedProfile));
-						setProfile(fetchedProfile);
-						setFriendStatusRequest(fetchedProfile.friend);
-					}
-
-				}
-				else {
-					setUserNotFound(true);
+					setFriendStatusRequest(fetchedProfile.friend);
+					setProfile(fetchedProfile);
+				} else {
+					setPageNotFound(true);
 				}
 			} catch (error) {
-				setUserNotFound(true);
+				setPageNotFound(true);
 			}
 		};
-		fetchProfile();
+		fetchFriendProfile(params);
 
-		return () => {//cleanup when component unmount
-			setUserNotFound(false);
-			localStorage.removeItem(`profile_${params.friendProfile}`);
+		return () => {
+			setPageNotFound(false);
 		};
-	}, [pathname]);
+	}, [params]); // Add 'params' as a dependency
+
+
+	const rejectFriendRequest = useCallback(async (event) => {
+		if (isConnected){
+			const data = JSON.parse(event.data);
+			if (data.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
+				setFriendStatusRequest('no');
+			}
+		}
+	}, [setFriendStatusRequest, isConnected]);
+
+	const handleFriendStatusChange = useCallback(async (event) => {
+		if (isConnected) {
+			const data = JSON.parse(event.data);
+			if (data.type === 'user_status_change') {
+				console.log("user status in friend profile:", data);
+				setProfile(prevProfile => {
+					if (prevProfile.username === data.username) {
+						return { ...prevProfile, status: data.status };
+					}
+					return prevProfile;
+				});
+			}
+		}
+	}, [isConnected, setProfile]);
 
 	useEffect(() => {
-			if (profile.id) {
-				const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-				const foundUser = storedUsers.find((user) => (user.username == profile.username || user.username == params.friendProfile));
-				if (foundUser)
-					setUserStatus(foundUser.status);  // Update the userStatus with the found user's status
-				else
-					setUserStatus('offline');  // Default to offline if the user isn't found
-				setHasGetMessage(false);
-		}
-	}, [hasGetMessage]);
+		if (isConnected)
+			{
+				websocket.current.addEventListener('message', handleFriendStatusChange);
+				websocket.current.addEventListener('message', rejectFriendRequest);
+			}
 
-	if (userNotFound) {
+		return () => {
+			websocket?.current?.removeEventListener('message', handleFriendStatusChange);
+			websocket?.current?.removeEventListener('message', rejectFriendRequest);
+		};
+	}, [profile]);
+
+	if (pageNotFound) {
 		notFound();
 	}
 
 	return (
-		profile.id && (
+		profile?.id && (
 			<div className="profile container max-md:p-3 overflow-hidden">
 				{/* user avatar and infos */}
 				<div className="profile-top-infos flex justify-evenly items-center gap-1 max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
@@ -132,8 +148,8 @@ export default function FriendProfile({ params }) {
 							<button 
 								className="edit-btn flex items-center space-x-2 rounded-md bg-white px-6 py-3 text-[1rem] shadow-md"
 							>
-								<span className="text-gray-700">{userStatus}</span>
-								<span className={`h-3 w-3 rounded-full ${userStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+								<span className="text-gray-700">{profile?.status}</span>
+								<span className={`h-3 w-3 rounded-full ${profile?.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></span>
 							</button>
 						</div>
 					</div>

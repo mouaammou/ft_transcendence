@@ -1,6 +1,19 @@
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-const NotFound_404 = ({gobackPage}) => {
+const NotFound_404 = ({gobackPage, setPageNotFound, setPageNumber
+
+}) => {
+
+	const router = useRouter();
+
+	const handleGoBack = (e) => {
+		e.preventDefault();
+		setPageNotFound(false);
+		router.push(gobackPage); // This will push the route without reloading
+	};
+
+
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen">
 			<div className="bg-white p-8 rounded-lg shadow-md text-center">
@@ -14,7 +27,8 @@ const NotFound_404 = ({gobackPage}) => {
 					Oops! The page you're looking for doesn't exist or is currently unavailable.
 				</p>
 				<Link
-					href={gobackPage}
+					href="#"
+					onClick={handleGoBack}
 					className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
 				>
 					Go Back

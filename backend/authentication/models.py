@@ -7,9 +7,10 @@ from django.contrib.auth.models import AbstractUser
 from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
 
 #---------------- Notifications model ===================#
-class NotificationModel(models.Model):
+class Notification(models.Model):
 
 	NOTIFICATION_TYPES = (
 		('friend', 'friend'),
@@ -41,26 +42,53 @@ class NotificationModel(models.Model):
 
 	def __str__(self):
 		return f'Notification for {self.receiver.username}'
+	
+	def accept(self):
+		"""Handle acceptance based on notification type."""
+		if self.notif_type == 'friend':
+			# Accept the friendship
+			Friendship.objects.create(sender=self.sender, receiver=self.receiver, status='accepted')
+
+		elif self.notif_type == 'game':
+			# Add logic for accepting game invite
+			pass
+
+		elif self.notif_type == 'tournament':
+			# Add logic for accepting tournament invite
+			pass
+
+		self.notif_status = 'accepted'
+		self.save()
 #---------------- # Notifications model ===================#
 
-# ----------------- model Frienship -----------------#
+
+# ----------------- model Frienship -----------------#  
+################### Helper function to create notifications
+def create_notification(sender, receiver, message, notif_type, notif_status):
+	Notification.objects.create(
+		sender=sender,
+		receiver=receiver,
+		message=message,
+		notif_type=notif_type,
+		notif_status=notif_status
+	)
+################### Helper function to create notifications
+
 class Friendship(models.Model):
 	STATUS_CHOICES = (
-		('pending', 'pending'),
 		('accepted', 'accepted'),
 		('blocked', 'blocked'),
 	)
 
-	sender 		= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
-	receiver 	= models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
-	status 		= models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-	created_at  = models.DateTimeField(auto_now_add=True)
+	sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
+	receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
+	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
 		unique_together = ('sender', 'receiver')
-	
+
 	def clean(self):
-		# Ensure that sender and receiver are not the same user
 		if self.sender == self.receiver:
 			raise ValidationError("Sender and receiver cannot be the same user.")
 		if not self.receiver:
@@ -70,11 +98,20 @@ class Friendship(models.Model):
 
 	def save(self, *args, **kwargs):
 		self.clean()
-		# Avoid recursion by checking if the reciprocal friendship already exists with the same status.
 		reciprocal = Friendship.objects.filter(sender=self.receiver, receiver=self.sender).first()
-		
+
 		super().save(*args, **kwargs)
-		
+
+		# Create notification for accepted friend request
+		# if self.status == 'accepted' and (not reciprocal or reciprocal.status != 'accepted'):
+		# 	create_notification(
+		# 		sender=self.sender,
+		# 		receiver=self.receiver,
+		# 		message=f"{self.sender.username} accepted your friend request.",
+		# 		notif_type='friend',
+		# 		notif_status='accepted'
+		# 	)
+		# Create reciprocal friendship if needed
 		if self.status in ('accepted', 'blocked') and (not reciprocal or reciprocal.status != self.status):
 			Friendship.objects.update_or_create(
 				sender=self.receiver,
@@ -88,7 +125,7 @@ class Friendship(models.Model):
 
 	def accept(self):
 		if self.status != 'pending':
-			raise ValidationError("this request already passed")
+			raise ValidationError("This request already passed")
 		self.status = 'accepted'
 		self.save()
 
@@ -99,6 +136,7 @@ class Friendship(models.Model):
 
 	def __str__(self):
 		return f"{self.sender} is friend with {self.receiver}, friend status: {self.status}"
+
 # ----------------- # model Frienship -----------------#
 
 
@@ -123,6 +161,8 @@ class CustomUser(AbstractUser):
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
 
+	status = models.CharField(max_length=255, default="offline")
+
 	friends = models.ManyToManyField('self', through='Friendship', blank=True)
 
 	def get_friends(self):
@@ -137,7 +177,7 @@ class CustomUser(AbstractUser):
 			Q(received_friendships__sender=self, sent_friendships__status='blocked')
 		)
 
-	def download_and_save_image(self, image_url): # for 42 image
+	def download_and_save_image(self, image_url): # download 42 image
 		img_temp = NamedTemporaryFile(delete=True)
 		#download the image form the url
 		response = requests.get(url=image_url)

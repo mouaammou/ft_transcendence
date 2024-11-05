@@ -1,15 +1,29 @@
 from django.core.exceptions import ValidationError
-from .models import CustomUser, Friendship, NotificationModel
+from .models import CustomUser, Friendship, Notification
 from rest_framework import serializers
 from django.conf import settings
 
 #-------------- Notificaion Serializer ================#
+from rest_framework import serializers
+
 class NotificationSerializer(serializers.ModelSerializer):
+	username = serializers.CharField(source='sender.username', read_only=True)
+	avatar = serializers.ImageField(source='sender.avatar', read_only=True)
 
 	class Meta:
-		model = NotificationModel
-		fields = '__all__'
+		model = Notification
+		fields = (
+			'id', 'sender', 'username', 'avatar',
+			'message', 'created_at', 'is_read', 'notif_type', 'notif_status'
+		)
 		read_only_fields = ['created_at']
+	
+	def to_representation(self, instance):
+		representation = super().to_representation(instance)
+		if representation['avatar'] and not representation['avatar'].startswith('http'):
+				representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+		return representation
+
 #-------------- # Notificaion Serializer ================#
 
 #============= friendship Serializer +++++++++++++++
@@ -48,7 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ("id", "first_name", "last_name", "username", "email", "password", "avatar")
+		fields = ("id", "first_name", "last_name", "username", "email", "password", "avatar", "status")
 		extra_kwargs = {"username": {"read_only": True}}
 		extra_kwargs = {"password": {"write_only": True}}
 

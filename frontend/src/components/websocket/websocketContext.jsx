@@ -1,48 +1,53 @@
 "use client";
-import { useEffect, useState, useRef, createContext, useContext } from 'react';
+import { getData } from '@/services/apiCalls';
+import { useRouter } from 'next/navigation';
+import {
+	useEffect, useState, useRef, createContext, useContext,
+	useMemo, useCallback
+} from 'react';
 
-export const WebSocketContext = createContext({
-	value: 'true',
-});
+const WEBSOCKET_CONFIG = {
+	MAX_RECONNECT_ATTEMPTS: 5,
+	RECONNECT_INTERVAL: 3000,
+};
 
+export const WebSocketContext = createContext();
 
-export const WebSocketProvider = ({url, children}) => {
-
+const useWebSocket = (url) => {
 	const [isConnected, setIsConnected] = useState(false);
-	const [users, setUsers] = useState([]);
-	const [opponent, setOpponent] = useState(null);
-	const [notifications, setNotifications] = useState([]);
 	const websocket = useRef(null);
-	const [notificationType, setnotificationType] = useState({});
-	const [listOfNotifications, setListOfNotifications] = useState({
-		friendship: 'friend_request',
-		acceptFriend: 'accept_friend',
-		inviteToGame: 'invite_to_game',
-		acceptGame: 'accept_game',
-		inviteToTournament: 'invite_to_tournament',
-		rejectFriend: 'reject_friend',
-	});
-	const [hasGetMessage, setHasGetMessage] = useState(false);
+	const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
 	useEffect(() => {
-		// Create WebSocket instance when the component mounts
-		if ( ! isConnected) {
+		const connectWebSocket = () => {
 			websocket.current = new WebSocket(url);
 
 			websocket.current.onopen = () => {
 				console.log('WebSocket connected');
 				setIsConnected(true);
+				setReconnectAttempts(0);
 			};
+
+			websocket.current.onclose = () => {
+				console.log('WebSocket disconnected');
+				setIsConnected(false);
+				if (reconnectAttempts < WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS) {
+					setTimeout(() => {
+						setReconnectAttempts((prev) => prev + 1);
+						connectWebSocket();
+					}, WEBSOCKET_CONFIG.RECONNECT_INTERVAL);
+				}
+			};
+
+			websocket.current.onerror = (error) => {
+				setIsConnected(false);
+				console.error('WebSocket error:', error);
+			};
+		};
+
+		if (!isConnected && reconnectAttempts === 0) {
+			connectWebSocket();
 		}
-
-		websocket.current.onclose = () => {
-			console.log('WebSocket disconnected');
-			setIsConnected(false);
-		};
-
-		websocket.current.onerror = (error) => {
-			console.error('WebSocket error:', error);
-		};
 
 		return () => {
 			if (websocket.current) {
@@ -51,86 +56,98 @@ export const WebSocketProvider = ({url, children}) => {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (isConnected) {
-			websocket.current.onmessage = (event) => {
-				const data = JSON.parse(event.data);
-				console.log("WebSocket message received:", data);
+		return { isConnected, websocket };
+	};
 
+	export const WebSocketProvider = ({ url, children }) => {
+		const { isConnected, websocket } = useWebSocket(url);
+		const [users, setUsers] = useState([]);
+		const [nextPage, setNextPage] = useState(null);
+		const [prevPage, setPrevPage] = useState(null);
+		const [pageNotFound, setPageNotFound] = useState(false);
+		const [friendStatusChange, setFriendStatusChange] = useState(false);
+		const router = useRouter();
+
+		const handleOnlineStatus = useCallback((event) => {
+			if (!isConnected) return;
+			try {
+				const data = JSON.parse(event.data);
 				if (data.type === 'user_status_change') {
-					setHasGetMessage(true);
-					setUsers(prevUsers => {
-						const userIndex = prevUsers.findIndex(user => user.username === data.username);
-						if (userIndex !== -1) {
-								// User exists, update their status
-								const updatedUsers = [...prevUsers];
-								updatedUsers[userIndex] = { ...updatedUsers[userIndex], status: data.status };
-								return updatedUsers;
-						} else {
-								// User doesn't exist, add them to the list
-								return [...prevUsers, { username: data.username, status: data.status, avatar: data.avatar }];
-						}
-					});
+					console.log('WebSocket ONLINE STATUS:', data);
+					setFriendStatusChange(true);
+					setUsers((prevUsers) =>
+						prevUsers?.map((user) =>
+							user.username === data.username ? { ...user, status: data.status } : user
+						)
+					);
 				}
-				setnotificationType({
-					type: data.type,
-					status: data.success,
-				});
-				if (data.type === 'friend_request' || data.type === 'accept_friend') {//still type game and tournament
-					setNotifications((prev) => [...prev, {...data, id: Date.now()}]); // Add a unique id
+			} catch (error) {
+				console.error('Error IN handle ONline status:', error);
+			}
+		}, [isConnected]);
+
+		const fetchAllUsers = useCallback(
+			async (pageNumber, endpoint) => {
+				try {
+					const response = await getData(`/${endpoint}?page=${pageNumber}`);
+					if (response.status === 200) {
+						setUsers(response.data.results);
+						setPrevPage(response.data.previous ? response.data.previous.split("page=")[1] : null);
+						setNextPage(response.data.next ? response.data.next.split("page=")[1] : null);
+					} else {
+						setPageNotFound(true);
+					}
+				} catch (error) {
+					console.error("Error fetching users:", error);
+					setPageNotFound(true);
+				}
+				router.replace(`/${endpoint}?page=${pageNumber}`);
+			},
+			[router]
+		);
+
+		useEffect(() => {
+			if (isConnected && websocket.current) {
+				websocket.current.addEventListener('message', handleOnlineStatus);
+			}
+			return () => {
+				if (isConnected && websocket.current) {
+				websocket.current.removeEventListener('message', handleOnlineStatus);
 				}
 			};
-		}
+		}, [isConnected, handleOnlineStatus]);
 
-	}, [isConnected]);
-
-	// Save users to localStorage whenever the users change
-	useEffect(() => {
-		if (users.length > 0) {
-			// Get the existing users from localStorage
-			const storedUsers = localStorage.getItem('users');
-			let parsedStoredUsers = storedUsers ? JSON.parse(storedUsers) : [];
-
-			// Create a map of stored users for efficient merging
-			const storedUsersMap = new Map(parsedStoredUsers.map(user => [user.username, user]));
-
-			// Merge with the new users
-			const updatedUsers = users.map(user => {
-				const storedUser = storedUsersMap.get(user.username);
-				return {
-					username: user.username,
-					status: user.status || (storedUser ? storedUser.status : 'offline')
-				};
-			});
-
-			// Set the merged result back to localStorage
-			localStorage.setItem('users', JSON.stringify(updatedUsers));
-		}
-	}, [users, isConnected, websocket]);// Save users to localStorage whenever the users change
-
-
-	return (
-		<WebSocketContext.Provider
-			value={{
+		const contextValue = useMemo(
+			() => ({
 				isConnected,
 				websocket,
 				users,
 				setUsers,
-				notifications,
-				setNotifications,
-				notificationType,
-				listOfNotifications,
-				hasGetMessage,
-				setHasGetMessage,
-				opponent,
-				setOpponent
-				}}>
-			{children}
-		</WebSocketContext.Provider>
-	)
+				nextPage,
+				prevPage,
+				fetchAllUsers,
+				pageNotFound,
+				friendStatusChange,
+				setFriendStatusChange,
+				setPageNotFound,
+				setNextPage,
+				setPrevPage,
+			}),
+			[
+				isConnected, users, nextPage,
+				prevPage, fetchAllUsers, pageNotFound, friendStatusChange, setPageNotFound, 
+				setNextPage, setPrevPage
+			]
+		);
+
+	return <WebSocketContext.Provider value={contextValue}>{children}</WebSocketContext.Provider>;
+	};
+
+
+export const useWebSocketContext = () => {
+	const context = useContext(WebSocketContext);
+	if (!context) {	
+		throw new Error('useWebSocketContext must be used within a WebSocketProvider');
+	}
+	return context;
 };
-
-export const useWebSocketContext = () => useContext(WebSocketContext);
-
-
-

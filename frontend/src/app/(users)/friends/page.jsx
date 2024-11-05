@@ -1,100 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getData } from "@/services/apiCalls";
 import { useWebSocketContext } from "@/components/websocket/websocketContext";
 import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
 import Link  from "next/link";
 import {useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import NotFound_404 from "@/components/error_pages/404";
 
 const Friends = () => {
-	const {users, isConnected}  = useWebSocketContext();
-	const [nextPage, setNextPage] = useState(null);
-	const [prevPage, setPrevPage] = useState(null);
-	const router = useRouter();
+	const {fetchAllUsers, users, nextPage, prevPage, pageNotFound, setPageNotFound, setNextPage, setPrevPage} = useWebSocketContext();
+	
 	const query_params = useSearchParams();
-	const [pageNotFound, setPageNotFound] = useState(false);
 	const [pageNumber, setPageNumber] = useState(1);
-	const [fetchedUsers, setFetchedUsers] = useState([]);
-
-	const fetchAllUsers = async (pageNumber) => {
-
-		// Prevent multiple requests
-		try {
-			const response = await getData(`/friends?page=${pageNumber}`);
-			if (response.status === 200) {
-
-				setFetchedUsers(() => {
-					const fetchedUsers = response.data.results;
-					const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-					console.log('storedUsers :: ', storedUsers);
-					const mergedUsers = fetchedUsers.map((user) => {
-						const newUser = storedUsers.find((newUser) => newUser.username === user.username);
-						console.log('newUser :: ', newUser);
-						if (newUser) {
-							return { ...user, status: newUser.status || "offline" };
-						}
-						return user;
-					});
-					return mergedUsers;
-				});
-
-				setPrevPage(() => {
-					if (response.data.previous) 
-						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
-						// Extract the page number from the previous URL
-					return null; // No previous page
-				});
-
-				// Update nextPage
-				setNextPage(() => {
-					if (response.data.next)
-						return response.data.next.split("page=")[1] || null; // If there's no page number, return null
-					return null; // No next page
-				});
-			}
-			else {
-				setPageNotFound(true);
-			}
-		} catch (error) {
-			console.error("Error fetching users in friends page:", error);
-			setPageNotFound(true)
-		}
-		router.replace(`/friends?page=${pageNumber}`);
-	};
-
-	useEffect(() => {
-		//save the users in localstorage
-		setFetchedUsers((prevUsers) => {
-			console.log('users :: ', users);
-			// Merge the existing users with the new users and update the status
-			const mergedUsers = prevUsers.map((user) => {
-				const newUser = users.find((newUser) => newUser.username === user.username);
-				if (newUser) {
-					return { ...user, status: newUser.status || "offline" };
-				}
-				return user;
-			});
-			return mergedUsers;
-		});
-	}, [users, isConnected]);
-
+	
 	// Fetch users on the initial render
 	useEffect(() => {
 		const page = query_params.get('page') || 1;
-		fetchAllUsers(page);
+		fetchAllUsers(page, 'friends');
 		setPageNumber(page);
 	
 		return () => {
 			setPageNotFound(false);
+			setNextPage(null);
+			setPrevPage(null);
 		}
 	}, [pageNumber]);
 
 	return (
 	(pageNotFound) ? 
-		<NotFound_404 gobackPage="/friends" />
+		<NotFound_404 gobackPage="/friends" setPageNotFound={setPageNotFound} />
 	:
 		
 	<div className="friends container flex justify-center mt-14 rounded-lg max-md:p-2 max-md:w-[90%] max-sm:mb-20 bg-topBackground py-32">
@@ -117,7 +51,7 @@ const Friends = () => {
 
 					{/* DIV TWO users */}
 					<div className="div-for-two-users flex justify-center items-center flex-wrap gap-4 max-sm:gap-1 p-2 md:p-10 mx-auto">
-						{fetchedUsers && fetchedUsers.map((user, index) => (
+						{users && users.map((user, index) => (
 							/* USER Profile status online in game */
 							<Link href={`/${user.username}`} className="text-xs text-blue-500" key={index}>
 								<div className="flex items-center justify-center space-x-5 p-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition" key={user.id}>

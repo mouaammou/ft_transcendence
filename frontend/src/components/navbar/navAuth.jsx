@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { IoLogOut } from 'react-icons/io5';
 import NotificationBell from './notifications';
+import SearchProfileComponent from './search';
 
 const Logo = () => {
 	return (
@@ -32,15 +33,15 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className="p-4">
+			<nav className="p-4 w-full bg-gray-800">
 				{
 					isAuth ? ( // If user is authenticated, show the links
-						<div className="container p-[0px] mx-auto flex flex-row items-center justify-between content-center sm:space-y-0">
+						<div className="container flex flex-row items-center">
 							{/* logo component */}
-							<Logo/>
+							{/* <Logo/> */}
 							{/* links components */}
 							<div className='w-full'>
-								<Links/>
+								<SearchProfileComponent />
 							</div>
 							{/* drop down menu for Userlogo and notification */}
 							<div className="relative">

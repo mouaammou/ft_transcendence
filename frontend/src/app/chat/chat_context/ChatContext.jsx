@@ -10,9 +10,7 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 /// update 
 
-export const ChatContext = createContext({
-  value: 'true',
-});
+export const ChatContext = createContext(null);
 
 export const ChatProvider = ({ children }) => {
 
@@ -375,3 +373,11 @@ export const ChatProvider = ({ children }) => {
         </ChatContext.Provider>
     );
 };
+
+export const useChatContext = () => {
+	const context = React.useContext(ChatContext);
+	if (!context) {
+		throw new Error('useChatContext must be used within a ChatProvider');
+	}
+	return context;
+}
