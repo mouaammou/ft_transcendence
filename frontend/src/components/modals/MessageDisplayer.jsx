@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Modal = ({ isOpen, message, onClose }) => {
+const Moijlkm = ({ isOpen, message, onClose }) => {
   if (!isOpen) return null;
 
   return (

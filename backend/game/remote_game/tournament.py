@@ -133,6 +133,15 @@ class TournamentManager:
                 return False
         tournament.cancel()
         return True
+    
+    @classmethod
+    def players_in_same_game_left_board_page(cls, tournament):
+        for game in tournament.games:
+            if not RemoteGameOutput.player_in_board_page(game.player_1) and not RemoteGameOutput.player_in_board_page(game.player_2):
+                game.finished = True
+                game.winner = game.player_1
+                game.loser = game.player_2
+
   
     @classmethod
     async def _tournament_clean(cls, game):
@@ -149,15 +158,18 @@ class TournamentManager:
                         cls._clean_finished_games(tournament)
                         cls.event_loop_manager.tournament_games.clear()
                         if not tournament.start_new_round():
+                            await asyncio.sleep(11)
                             RemoteGameOutput._send_to_consumer_group(tournament.winner, {'status': 'celebration'})
-                            await asyncio.sleep(25)
+                            await asyncio.sleep(10)
                             cls.event_loop_manager.end_tournament(tournament.id)
-                            RemoteGameOutput._send_to_consumer_group(tournament.winner, {'status': 'no_tournament_found'})
+                            # RemoteGameOutput._send_to_consumer_group(tournament.winner, {'status': 'no_tournament_found'})
                             return
                         #send notification to all players that the round has started
                         await asyncio.sleep(15)
-                        if cls.check_tournament_is_cancelled(tournament):
-                            return
+                        # if cls.check_tournament_is_cancelled(tournament):
+                        #     return
+                        # cls.players_in_same_game_left_board_page(tournament)
+                        #check if two players in one game are left the board page, if so set game to finished and one of them as a winner
                         cls.event_loop_manager.active_tournaments[tournament.id] = tournament
                         cls.event_loop_manager.start_tournament(tournament.round.players[0])
         except Exception as e:

@@ -1,6 +1,7 @@
 class WebSocketManager {
     constructor(url) {
         if (!WebSocketManager.instance) {
+            this.url = url;
             this.socket = new WebSocket(url);
             WebSocketManager.instance = this;
             this.messageHandlers = [];
@@ -33,7 +34,14 @@ class WebSocketManager {
             this.socket.send(message);
             return true;
         } else {
-            // console.error('websocket is not initialized');
+            console.log('WebSocket is not open. Attempting to reconnect...');
+            this.socket = new WebSocket(this.url);
+
+            this.socket.onopen = () => {
+                console.log('WebSocket reconnected and message sent:', message);
+                this.isConnected = true;
+                setTimeout(() => this.socket.send(message), 1500); // Try again after 1 second
+            };
             return false;
         }
     }

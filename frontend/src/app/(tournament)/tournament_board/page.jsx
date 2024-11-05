@@ -7,8 +7,7 @@ import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
-import Modal from '@/components/modals/MessageDisplayer';
-import { MeteorsDemo } from '@/components/modals/Modal';
+import { Modal } from '@/components/modals/Modal';
 
 export default function TournamentBoardPage() {
   const [players, setPlayers] = useState([]);
@@ -17,6 +16,7 @@ export default function TournamentBoardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [msgDescription, setMsgDescription] = useState('');
+  const [exitTournament, setExitTournament] = useState(false);
   const router = useRouter();
   const { profileData } = useAuth();
 
@@ -46,16 +46,62 @@ export default function TournamentBoardPage() {
     );
   };
 
+  const handleMessage = message => {
+    const data = JSON.parse(message.data);
+    console.log('data  ---> ', data);
+    if (data.status === 'players') {
+      console.log('bla bla bla bla', data.data);
+      setPlayers(data.data);
+    } else if (data.status === 'no_tournament_found') {
+      console.log('the player does not exist in any tournament');
+      router.push('/create_join_tournament');
+    } else if (data.status === 'fulfilled') {
+      setFulfilled(true);
+    } else if (data.status === 'not_fulfilled') {
+      setFulfilled(false);
+    } else if (data.status === 'PUSH_TO_GAME') {
+      router.push('/game');
+    } else if (data.status === 'left_tournament') {
+      setModalOpen(true);
+      setModalMessage('You have withdrawn from the tournament');
+      setMsgDescription(
+        'You have successfully exited the tournament. If you wish to rejoin or need further assistance, please go to play page. Thank you for your participation!'
+      );
+      setExitTournament(true);
+    } else if (data.status === 'you_can_not_leave') {
+      console.log('you can not leave the tournament');
+      setModalOpen(true);
+      setModalMessage('Tournament Participation in Progress');
+      setMsgDescription('The tournament has already commenced, and your participation is crucial. \
+      Please remain engaged to support the event and your fellow players. Thank you for your commitment!')
+    } else if (data.status === 'organizer_can_not_leave') {
+      console.log('you can not leave the tournament');
+      setModalOpen(true);
+      setModalMessage('Stay Engaged as Tournament Organizer');
+      setMsgDescription(
+        'The tournament is currently underway with active participants. As the organizer, your presence is essential to ensure the smooth management of the event. \
+      Please remain available to address any issues and support the players throughout the tournament. Thank you for your commitment!'
+      );
+    } else if (data.status === 'celebration') {
+      setModalOpen(true);
+      setModalMessage('Congratulations on Your Tournament Victory!');
+      setMsgDescription(
+        'You have emerged victorious in the tournament! Your hard work and dedication have paid off,\
+         showcasing your exceptional skills. Celebrate this achievement and continue to strive for greatness!'
+      );
+      setExitTournament(true);
+      console.log(
+        ' celebration celebration celebration celebration celebration celebration celebration'
+      );
+    }
+  };
+
+
   useEffect(() => {
 
-    mysocket.sendMessage(
-      JSON.stringify({
-        type: 'GET_PLAYERS',
-      })
-    );
+  mysocket.sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    
-    mysocket.sendMessage(JSON.stringify({ 'inBoardPage': true }));
+    mysocket.sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {
       // data = {round1: Array(1), round2: null, round3: null}
@@ -67,52 +113,12 @@ export default function TournamentBoardPage() {
       }
       return players;
     };
-    const handleMessage = message => {
-      const data = JSON.parse(message.data);
-      console.log('data  ---> ', data);
-      if (data.status === 'players') {
-        console.log('bla bla bla bla', data.data);
-        setPlayers(data.data);
-      } else if (data.status === 'no_tournament_found') {
-        console.log('the player does not exist in any tournament');
-        router.push('/create_join_tournament');
-      } else if (data.status === 'fulfilled') {
-        setFulfilled(true);
-      } else if (data.status === 'not_fulfilled') {
-        setFulfilled(false);
-      } else if (data.status === 'PUSH_TO_GAME') {
-        router.push('/game');
-      } else if (data.status === 'left_tournament') {
-        setModalOpen(true);
-        setModalMessage('You have withdrawn from the tournament');
-        setMsgDescription(
-          'You have successfully exited the tournament. If you wish to rejoin or need further assistance, please go to play page. Thank you for your participation!'
-        );
-      } else if (data.status === 'you_can_not_leave') {
-        console.log('you can not leave the tournament');
-        setModalOpen(true);
-        setModalMessage('The tournament has already started, you can not leave');
-      } else if (data.status === 'organizer_can_not_leave') {
-        console.log('you can not leave the tournament');
-        setModalOpen(true);
-        setModalMessage('Stay Engaged as Tournament Organizer');
-        setMsgDescription(
-          'The tournament is currently underway with active participants. As the organizer, your presence is essential to ensure the smooth management of the event. \
-        Please remain available to address any issues and support the players throughout the tournament. Thank you for your commitment!'
-        );
-      } else if (data.status === 'celebration') {
-        alert('celebration');
-        console.log(
-          ' celebration celebration celebration celebration celebration celebration celebration'
-        );
-      }
-    };
 
     mysocket.registerMessageHandler(handleMessage);
 
     return () => {
       mysocket.unregisterMessageHandler(handleMessage);
-      mysocket.sendMessage(JSON.stringify({ 'inBoardPage': false }));
+      mysocket.sendMessage(JSON.stringify({ inBoardPage: false }));
     };
   }, []);
 
@@ -196,11 +202,16 @@ export default function TournamentBoardPage() {
           </button>
         )}
       </div>
-      <MeteorsDemo
+      <Modal
         isOpen={modalOpen}
         title={modalMessage}
         description={msgDescription}
-        action={() => setModalOpen(false)}
+        action={() => {
+          setModalOpen(false);
+          if (exitTournament) {
+            pushToPlay();
+          }
+        }}
       />
     </>
   );

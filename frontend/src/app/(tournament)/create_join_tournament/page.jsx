@@ -17,6 +17,7 @@ export default function CreateJoinTournamentPage() {
     alreadyInGame: false,
     alreadyInTournamentJoin: false,
     tournamentFull: false,
+    tournamentName: false,
   });
   const [tab, setTab] = useState([]);
   const [selectedTournamentId, setSelectedTournamentId] = useState('');
@@ -52,7 +53,13 @@ export default function CreateJoinTournamentPage() {
   };
 
   const handleCreateTournament = () => {
+    setInputError({...inputError, tournamentName: false });
     if (tournament_name.trim() !== '') {
+      if (tournament_name.length > 12) {
+        setInputError({ ...inputError, tournamentName: true });
+        setTournamentName('');
+        return;
+      }
       mysocket.sendMessage(
         JSON.stringify({
           type: 'CREATE_TOURNAMENT',
@@ -149,6 +156,11 @@ export default function CreateJoinTournamentPage() {
           {inputError.alreadyInGame ? (
             <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
               You are already started a game
+            </li>
+          ) : null}
+          {inputError.tournamentName ? (
+            <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
+              Tournament name is not less than 12 characters
             </li>
           ) : null}
         </ul>

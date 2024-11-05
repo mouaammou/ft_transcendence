@@ -289,6 +289,7 @@ class EventLoopManager:
 
         if not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.player_in_game_page(player_id):
             cls._handle_unfocused_game(game, player_id)
+            print("GAME IS PAUSED")
             return False
 
         # cls._reset_game_focus(game)
@@ -299,6 +300,7 @@ class EventLoopManager:
             return True
         else:
             cls._handle_unfocused_game(game, player_id_2)
+            print("GAME IS PAUSED")
             return False
 
     @classmethod
@@ -332,6 +334,8 @@ class EventLoopManager:
                 else:
                     players = tournament.players
                 RemoteGameOutput.send_tournament_players(players, {'status': 'players', 'data': tournament.players })
+                if tournament.fulfilled == True and tournament.round.status == 'quarter':
+                    RemoteGameOutput.send_tournament_players(tournament.players, {'status' : 'fulfilled'})
             else:
                 print(f"No active tournament found with id {tournament_id}")
         else:
@@ -358,9 +362,27 @@ class EventLoopManager:
 
 
     @classmethod
+    async def send_notifications_to_players(cls, player_id):
+        tournament_id = cls.players_in_tournaments.get(player_id)
+        if tournament_id is not None:
+            tournament = cls.active_tournaments.get(tournament_id)
+            if tournament is not None and tournament.round is not None:
+                #send notification to all players that the round has started
+                await asyncio.sleep(15)
+                if TournamentManager.check_tournament_is_cancelled(tournament): # i need to delete the tournament within active tournaments, still not working
+                    cls.end_tournament(tournament_id)
+                    return
+                TournamentManager.players_in_same_game_left_board_page(tournament)
+                RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
+            else:
+                print(f"No active tournament found with id {tournament_id} or tournament round is None ")
+        else:
+            print("Player is not registered in any tournament dfghbdfxg")
+
+    @classmethod  
     def start_tournament(cls, player_id):
         print("in the start_tournament method")
-        if cls.tournament_task is None or cls.tournament_task.done():
+        if cls.tournament_task is None or cls.tournament_task.done():   
             print("init the tournament task")
             TournamentManager.init(cls)
             cls.tournament_task = asyncio.create_task(cls.run_tournaments_with_exception_handling())
@@ -376,18 +398,29 @@ class EventLoopManager:
                     cls.active_players[game.player_1] = game
                     cls.active_players[game.player_2] = game
                     game.pause()
-                    print(f"game {game.player_1} {game.player_2} is created")
+                    print(f"game {game.player_1} {game.player_2} is created")    
                 print(f"NUMBER OF GAMES CREATED IN THE TOURNAMENT HAHA ---> {len(cls.tournament_games)}")
                 print(f"number of games in the tournament {tournament.round.get_players()}")
                 #check if the user is the board_page first and then redirect him to the game page, if not game ends and 
                 # he will be the loser, and the other player will be the winner,, and the game will be saved and deleted 
                 # from tournamet games, i will need the tournament def cancel(self): to save tournament if all players left
                 # cls.check_players_in_board_page(tournament.round.get_players())
-                RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
+                                        #send notification to all players that the round has started
+                #send notification to all players that the round has started
+                # await asyncio.sleep(
+                
+                # if TournamentManager.check_tournament_is_cancelled(tournament):
+                #     return
+                # TournamentManager.players_in_same_game_left_board_page(tournament)
+                # RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
             else:
                 print(f"No active tournament found with id {tournament_id} or tournament round is None ")
         else:
             print("Player is not registered in any tournament dfghbdfxg")
+        asyncio.create_task(cls.send_notifications_to_players(player_id))
+            
+
+        
 
     @classmethod
     async def run_tournaments_with_exception_handling(cls):
@@ -456,6 +489,41 @@ class EventLoopManager:
         else:
             print("Player is not registered in any tournament")
             
+     
+    @classmethod 
+    def recieve(cls, player_id, event_dict, consumer):
+        print("in the  recieve methode")
+        """
+        To be called from outside of this class. 
+        Dont forget To handle game events using GAME
+        as the key for revieved events.
+        """
+        # print("******** RECIEVE ********", cls.active_players)
+        if 'type' in event_dict and event_dict['type'] == 'FRIEND_GAME_REQUEST':  
+            cls.handle_friend_game_request(player_id, event_dict)
+            return None
+        if 'type' in event_dict and event_dict['type'] == 'GET_GAME_DATA':
+            asyncio.create_task(cls.send_game_data(player_id))
+            return None
+        if 'type' in event_dict and (event_dict['type'] == 'CREATE_TOURNAMENT' or event_dict['type'] == 'GET_PLAYERS' or event_dict['type'] == 'LEAVE_TOURNAMENT' \
+            or event_dict['type'] == 'GET_TOURNAMENTS' or event_dict['type'] == 'JOIN_TOURNAMENT'or event_dict['type'] == 'START_TOURNAMENT') :
+            cls.handle_tournament(event_dict, player_id)
+            return None
+        if 'type' in event_dict and (event_dict['type'] == 'RANDOM_GAME'):
+            if cls.already_in_game(player_id):
+                return None
+            cls.add_random_game(player_id, game_mode='remote')
+        if 'type' in event_dict and (event_dict['type'] == 'LEAVE_RANDOM_PAGE'):
+            cls.check_for_game(player_id)
+            return None
+        if not cls.game_focus(player_id):
+            return None
+        game_obj = cls.active_players.get(player_id)
+        if game_obj is None:
+            print("game_obj is None here in the recieve methode")
+            return None
+        if game_obj.game_mode == 'remote' and game_obj.unfocused is None:
+            cls.handle_remote_game_input(game_obj, player_id, event_dict, consumer)  
             
     @classmethod
     def handle_tournament(cls, event_dict, player_id):
@@ -507,6 +575,8 @@ class EventLoopManager:
         print(f"tournament names {tournament_names}")
         if tournament_names != []:
             RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': tournament_names })
+        else:
+            RemoteGameOutput.brodcast({ 'status': 'tournaments_created', 'tournaments': [] })
 
     @classmethod
     def handle_join_tournament(cls, event_dict, player_id):
@@ -554,7 +624,7 @@ class EventLoopManager:
         if game_obj is not None and game_obj.is_fulfilled():
             RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'GAME_DATA', 'player_1': game_obj.player_1, 'player_2': game_obj.player_2, 'game_type': game_obj.remote_type})
             game_obj.pause()
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.6)
             if game_obj.unfocused is None:
                 game_obj.play()
             print("game is playedasfxaefxqwafxdscfwerfxzdvcewrfx")
@@ -573,42 +643,6 @@ class EventLoopManager:
             cls.active_players.pop(player_id)
             print(f"player {player_id} is removed from the active players")
             return
-
-    @classmethod 
-    def recieve(cls, player_id, event_dict, consumer):
-        print("in the  recieve methode")
-        """
-        To be called from outside of this class. 
-        Dont forget To handle game events using GAME
-        as the key for revieved events.
-        """
-        # print("******** RECIEVE ********", cls.active_players)
-        if 'type' in event_dict and event_dict['type'] == 'FRIEND_GAME_REQUEST':  
-            cls.handle_friend_game_request(player_id, event_dict)
-            return None
-        if 'type' in event_dict and event_dict['type'] == 'GET_GAME_DATA':
-            asyncio.create_task(cls.send_game_data(player_id))
-            return None
-        if 'type' in event_dict and (event_dict['type'] == 'CREATE_TOURNAMENT' or event_dict['type'] == 'GET_PLAYERS' or event_dict['type'] == 'LEAVE_TOURNAMENT' \
-            or event_dict['type'] == 'GET_TOURNAMENTS' or event_dict['type'] == 'JOIN_TOURNAMENT'or event_dict['type'] == 'START_TOURNAMENT') :
-            cls.handle_tournament(event_dict, player_id)
-            return None
-        if 'type' in event_dict and (event_dict['type'] == 'RANDOM_GAME'):
-            if cls.already_in_game(player_id):
-                return None
-            cls.add_random_game(player_id, game_mode='remote')
-        if 'type' in event_dict and (event_dict['type'] == 'LEAVE_RANDOM_PAGE'):
-            cls.check_for_game(player_id)
-            return None
-        if not cls.game_focus(player_id):
-            return None
-        game_obj = cls.active_players.get(player_id)
-        if game_obj is None:
-            print("game_obj is None here in the recieve methode")
-            return None
-        if game_obj.game_mode == 'remote' and game_obj.unfocused is None:
-            cls.handle_remote_game_input(game_obj, player_id, event_dict, consumer)  
-
 
 
     # end used

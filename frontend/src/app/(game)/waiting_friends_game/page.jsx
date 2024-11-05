@@ -8,7 +8,7 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import '@/styles/game/waitingFriendPage.css';
-import Modal from '@/components/modals/MessageDisplayer';
+import Modal from '@/components/modals/Modal';
 
 const WaitingFriendPage = () => {
   const { profileData: user_data } = useAuth();
@@ -16,6 +16,7 @@ const WaitingFriendPage = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [msgDescription, setMsgDescription] = useState('');
 
   const router = useRouter(); // Use Next.js router
   const { websocket, invitationResponse, setInvitationResponse, setOpponent } =
@@ -29,7 +30,11 @@ const WaitingFriendPage = () => {
       router.push('/game');
     } else if (data.status === 'already_in_game') {
       setModalOpen(true);
-      setModalMessage('You are already participated in a game');
+      setModalMessage('You Are already In Game');
+      setMsgDescription(
+        'You are currently participating in a game. Please complete your \
+                        ongoing game before joining a new one. Thank you for your engagement!'
+      );
       setTimeout(() => {
         router.push('/game');
       }, 2000);
@@ -37,16 +42,21 @@ const WaitingFriendPage = () => {
       console.log('pushed to game');
     } else if (data.status === 'already_in_tournament') {
       setModalOpen(true);
-      setModalMessage('You are already participated in a tournament');
-      // make a modal to show the message and after 10 seconds redirect to the create_join_tournament page
+      setModalMessage('You Are Already In Tournament');
+      setMsgDescription('You are currently registered in a tournament.\
+       Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!'
+      );
       setTimeout(() => {
         router.push('/tournament_board');
       }, 2000);
       console.log('pushed to tournament board');
       console.log('pushed to tournament board');
-    } else if ((data.status === 'friend_in_game') || (data.status === 'friend_in_tournament')) {
+    } else if (data.status === 'friend_in_game' || data.status === 'friend_in_tournament') {
       setModalOpen(true);
-      setModalMessage('Your friend is already participated in a game');
+      setModalMessage('Your Friend Participation Status');
+      setMsgDescription('Your friend is currently participating in a game or tournament. Please check back later or \
+      encourage them to finish before joining another event. Thank you for your understanding!'
+      );
       setTimeout(() => {
         router.push('/play');
       }, 2000);
@@ -117,11 +127,7 @@ const WaitingFriendPage = () => {
           </div>
         </div>
       </div>
-      <Modal
-        isOpen={modalOpen}
-        message={modalMessage}
-        onClose={() => setModalOpen(false)}
-      />
+      <Modal isOpen={modalOpen} title={modalMessage} description={msgDescription} action={() => setModalOpen(false)} />
     </div>
   );
   // the second image pulsing effect is not working

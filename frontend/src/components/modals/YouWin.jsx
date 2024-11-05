@@ -8,7 +8,7 @@ const YouWin = ({ onClose }) => {
 
     const timer = setTimeout(() => {
       onClose();
-    }, 15000);
+    }, 9000);
 
     function winner_celebration() {
       let duration = 5 * 1000;

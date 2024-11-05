@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import Modal from '@/components/modals/MessageDisplayer';
+import {Modal} from '@/components/modals/Modal';
 
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
@@ -18,6 +18,8 @@ const WaitingPage = () => {
   const router = useRouter(); // Use Next.js router
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [msgDescription, setMsgDescription] = useState('');
+
 
   const handleMessage = async message => {
     const data = JSON.parse(message.data);
@@ -63,15 +65,21 @@ const WaitingPage = () => {
       }
     } else if (data.status === 'already_in_game') {
       setModalOpen(true);
-      setModalMessage('You are already participated in a game');
+      setModalMessage('You Are already In Game');
+      setMsgDescription(
+        'You are currently participating in a game. Please complete your \
+                        ongoing game before joining a new one. Thank you for your engagement!'
+      );
       setTimeout(() => {
         router.push('/game');
       }, 2000);
       console.log('pushed to game');
     } else if (data.status === 'already_in_tournament') {
       setModalOpen(true);
-      setModalMessage('You are already participated in a tournament');
-      // make a modal to show the message and after 10 seconds redirect to the create_join_tournament page
+      setModalMessage('You Are Already In Tournament');
+      setMsgDescription('You are currently registered in a tournament.\
+       Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!'
+      );
       setTimeout(() => {
         router.push('/tournament_board');
       }, 2000);
@@ -118,7 +126,7 @@ const WaitingPage = () => {
         </div>
         <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
       </div>
-      <Modal isOpen={modalOpen} message={modalMessage} onClose={() => setModalOpen(false)} />
+      <Modal isOpen={modalOpen} description={msgDescription} title={modalMessage} action={() => setModalOpen(false)} />
     </div>
   );
 };
