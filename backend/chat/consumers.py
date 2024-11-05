@@ -48,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def send_typing_indicator(self, sender_id, receiver_id, sender_username, receiver_username, typing_status):
         # Prepare typing indicator data
         typing_data = {
-            'typing': typing_status,  # This could be True or False
+            'typing': typing_status,
             'sender': sender_username,
             'receiver': receiver_username,
         }
@@ -92,7 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'receiver': receiver_username,
             'receiver_id': receiver_id,
             'message': message,
-            'timestamp': timestamp  # Include the timestamp
+            'timestamp': timestamp
         }
 
         # # Send message to sender's group
@@ -114,7 +114,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'receiver': event['receiver'],
             'receiver_id': event['receiver_id'],
             'message': event['message'],
-            'timestamp': event['timestamp'],  # Send the timestamp
+            'timestamp': event['timestamp'],
         }))
 
     @database_sync_to_async

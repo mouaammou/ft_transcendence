@@ -17,7 +17,7 @@ export const ChatContext = createContext({
 export const ChatProvider = ({ children }) => {
 
 
-    //  ************************ All useState hooks  ************************
+    //  ************************ All State hooks  ************************
     const [selectedUser, setSelectedUser] = useState(null);
     const [isChatVisible, setIsChatVisible] = useState(false);
 
@@ -32,7 +32,7 @@ export const ChatProvider = ({ children }) => {
     const [socket, setSocket] = useState(null); // WebSocket connection
     // const [userCount, setUserCount] = useState(0);
     const { profileData: currentUser } = useAuth(); // Current authenticated user
-    const [nextPage, setNextPage] = useState(null); // Store the next page URL
+    // const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const endRef = useRef(null); // Reference to scroll to bottom of chat
     const [typingUsers, setTypingUsers] = useState([]); // Track users currently typing
     const typingTimeoutRef = useRef(null); // To manage typing timeout
@@ -48,7 +48,8 @@ export const ChatProvider = ({ children }) => {
         setSearchTerm(term);
 
         // Fetch the users based on the search term, starting from page 1
-        fetchFriends(1, term);
+        // fetchFriends(1, term);
+        fetchFriends(term);
     };
 
 
@@ -335,26 +336,50 @@ export const ChatProvider = ({ children }) => {
 
 
     // ************************  Fetch friends (users to chat with) ************************
-    const fetchFriends = async (page = 1, search = '') => {
+    // const fetchFriends = async (page = 1, search = '') => {
+    //     try {
+    //         // Send the search term to the backend, if available
+    //         const url = `/chat-friends?page=${page}&search=${search}`;
+    //         const response = await getData(url);
+
+    //         if (response.status === 200) {
+    //             const newUsers = response.data.results;
+
+    //             // If we're fetching a new search term, reset the user lists
+    //             if (page === 1) {
+    //                 setOriginalUsers(newUsers);
+    //                 setAllUsers(newUsers);
+    //             } else {
+    //                 // Append new users to the current list (for infinite scroll)
+    //                 setOriginalUsers((prev) => [...prev, ...newUsers]);
+    //                 setAllUsers((prev) => [...prev, ...newUsers]);
+    //             }
+
+    //             setNextPage(response.data.next); // Set the next page URL
+    //         } else {
+    //             console.error("Unexpected response status:", response.status);
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to fetch friends:", error);
+    //     }
+    // };
+
+    const fetchFriends = async (search = '') => {
         try {
-            // Send the search term to the backend, if available
-            const url = `/chat-friends?page=${page}&search=${search}`;
+            const url = `/chat-friends?search=${search}`;
             const response = await getData(url);
-
+            
             if (response.status === 200) {
-                const newUsers = response.data.results;
-
-                // If we're fetching a new search term, reset the user lists
-                if (page === 1) {
-                    setOriginalUsers(newUsers);
-                    setAllUsers(newUsers);
-                } else {
-                    // Append new users to the current list (for infinite scroll)
-                    setOriginalUsers((prev) => [...prev, ...newUsers]);
-                    setAllUsers((prev) => [...prev, ...newUsers]);
-                }
-
-                setNextPage(response.data.next); // Set the next page URL
+                console.log('response => ', response)
+                console.log('response.data => ', response.data)
+                // const newUsers = response.data.results;
+                const newUsers = response.data;
+    
+                // Reset user lists when fetching with a new search term
+                setOriginalUsers(newUsers);
+                setAllUsers(newUsers);
+                console.log('users => ', allUsers)
+                // setNextPage(null); // Clear next page state as it's no longer used
             } else {
                 console.error("Unexpected response status:", response.status);
             }
@@ -368,16 +393,16 @@ export const ChatProvider = ({ children }) => {
 
 
     // ************* Handle scrolling to fetch more users (Infinite scroll) ************
-    const handleScroll = (event) => {
-        const { scrollTop, scrollHeight, clientHeight } = event.target;
-        if (scrollHeight - scrollTop === clientHeight) {
-        // We're at the bottom of the list, so load the next page
-        if (nextPage) {
-            const page = new URL(nextPage).searchParams.get('page'); // Extract the next page number from the URL
-            fetchFriends(page);
-        }
-        }
-    };
+    // const handleScroll = (event) => {
+    //     const { scrollTop, scrollHeight, clientHeight } = event.target;
+    //     if (scrollHeight - scrollTop === clientHeight) {
+    //     // We're at the bottom of the list, so load the next page
+    //     if (nextPage) {
+    //         const page = new URL(nextPage).searchParams.get('page'); // Extract the next page number from the URL
+    //         fetchFriends(page);
+    //     }
+    //     }
+    // };
     // ************************ end ***********************
 
 
@@ -459,7 +484,7 @@ export const ChatProvider = ({ children }) => {
         handleEmojiClick,
         handleKeyPress,
         endRef,
-        handleScroll, // Expose handleScroll
+        // handleScroll,
         // getChatId,
 
         formatTime,

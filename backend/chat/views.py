@@ -7,15 +7,67 @@ from .serializers import MessageSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from authentication.views.friends import FriendshipListView
+
+
+
+from django.db.models import Q, Max
+from authentication.models import Friendship, CustomUser
+from authentication.serializers import UserSerializer
+
+
 # Create your views here.
 
 
 User = get_user_model()
 
-class   ListUsersView(FriendshipListView):
+# class   ListUsersView(FriendshipListView):
+#     def list(self, request, *args, **kwargs):
+#         # Call the parent class's `list` method to list friends
+#         return super().list(request, *args, **kwargs)
+    
+class ListUsersView(FriendshipListView):
     def list(self, request, *args, **kwargs):
-        # Call the parent class's `list` method to list friends
-        return super().list(request, *args, **kwargs)
+        # Step 1: Get all friends data (this will return user instances)
+        all_friends_data = self.get_queryset()
+        
+        # Step 2: Fetch latest messages related to these friends
+        custom_user = request.customUser  # Get the current user from the request
+        latest_messages = Message.objects.filter(
+            Q(sender=custom_user) | Q(receiver=custom_user)
+        ).values('sender', 'receiver').annotate(
+            latest_timestamp=Max('timestamp')
+        ).order_by('-latest_timestamp')
+
+        # Step 3: Initialize an empty dictionary to map friend IDs to their latest message timestamps.
+        friend_latest_map = {}
+
+        # Step 4: Loop through each message in the list of latest messages.
+        for message in latest_messages:
+            # Step 5: Check if the current user is the sender of the message.
+            if message['sender'] != custom_user.id:
+                # If the sender is not the current user, the friend is the sender.
+                friend_id = message['sender']  # The friend is the sender of the message.
+            else:
+                # If the sender is the current user, then the friend is the receiver.
+                friend_id = message['receiver']  # The friend is the receiver of the message.
+
+            # Step 6: Store the friend's ID and the latest timestamp of the message in the dictionary.
+            friend_latest_map[friend_id] = message['latest_timestamp']
+
+        # Step 7: Sort friends based on the latest message timestamp.
+        sorted_friends = sorted(
+            all_friends_data,
+            key=lambda friend: (
+            friend_latest_map.get(friend.id).timestamp() if friend_latest_map.get(friend.id) is not None else 0
+            ),
+            reverse=True  # Sort in descending order
+        )
+
+        # Step 8: Return the ordered friends list.
+        serializer = UserSerializer(sorted_friends, many=True)
+        print('serializer.data    => ', serializer.data)
+        return Response(serializer.data)
+
 
 
 # API to get chat history between the current user and a specific receiver

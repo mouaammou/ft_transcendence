@@ -10,3 +10,13 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['sender', 'receiver', 'message', 'timestamp']
+
+
+# New LastMessageSerializer for displaying the last message and timestamp
+class LastMessageSerializer(serializers.ModelSerializer):
+    message = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+
+    class Meta:
+        model = Message
+        fields = ['message', 'timestamp']

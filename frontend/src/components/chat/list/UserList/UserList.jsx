@@ -42,7 +42,8 @@ import {
 } from "@/components/ui/carousel";
 
 const UserList = ({ users, listType }) => {
-  const { handleUserClick, handleScroll, typingUsers } = useContext(ChatContext);
+  // const { handleUserClick, handleScroll, typingUsers } = useContext(ChatContext);
+  const { handleUserClick, typingUsers } = useContext(ChatContext);
 
   // Render user cards with or without Carousel based on listType
   return (
@@ -97,7 +98,7 @@ const UserList = ({ users, listType }) => {
         // Standard scrollable list for "all" users
         <div
           className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
-          onScroll={handleScroll}
+          // onScroll={handleScroll}
         >
           {users.map(user => (
             <UserCard
