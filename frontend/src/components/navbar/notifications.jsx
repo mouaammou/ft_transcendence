@@ -11,20 +11,30 @@ export const NotificationLayout = ({ data, websocket, MarkAsRead, NOTIFICATION_T
 	const [status, setStatus] = useState(data.notif_status);
 	const [isActedUpon, setIsActedUpon] = useState(false);
 
+	const sendAction = async (action) => {
+		let messageType = '';
+		if (action === 'accepted')
+			messageType = NOTIFICATION_TYPES.ACCEPT_FRIEND;
+		else if (action === 'rejected')
+			messageType = NOTIFICATION_TYPES.REJECT_FRIEND;
+		websocket.current.send(JSON.stringify({
+			type: messageType,
+			to_user_id: data.sender,
+		}));
+	};
+
 	const handleAction = async (action) => {
 		setStatus(action);
 		setIsActedUpon(true);
 		handleMarkAsRead();
-		if (websocket.current) {
-			let messageType = '';
-			if (action === 'accepted')
-				messageType = NOTIFICATION_TYPES.ACCEPT_FRIEND;
-			else if (action === 'rejected')
-				messageType = NOTIFICATION_TYPES.REJECT_FRIEND;
-			websocket.current.send(JSON.stringify({
-				type: messageType,
-				to_user_id: data.sender,
-			}));
+		if (websocket.current && websocket.current.readyState === WebSocket.OPEN) {
+			sendAction(action);
+		} else {
+			setTimeout(() => {
+				if (websocket.current && websocket.current.readyState === WebSocket.OPEN) {
+					sendAction(action);
+				}
+			}, 300);
 		}
 	};
 

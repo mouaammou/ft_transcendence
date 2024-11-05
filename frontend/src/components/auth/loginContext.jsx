@@ -43,7 +43,7 @@ export const LoginProvider = ({ children }) => {
 				Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
 
 				// Send WebSocket message if connected
-				if (isConnected) {
+				if (isConnected && websocket.current && websocket.current.readyState === WebSocket.OPEN) {
 					websocket.current.send(JSON.stringify({ online: 'online', user: res.data.username }));
 				}
 				router.push('/profile');
@@ -73,7 +73,7 @@ export const LoginProvider = ({ children }) => {
 
 	// Logout function with WebSocket notification
 	const Logout = useCallback(() => {
-		if (isConnected) {
+		if (isConnected && websocket.current && websocket.current.readyState === WebSocket.OPEN) {
 			websocket.current.send(JSON.stringify({ logout: 'logout', user: profileData.username }));
 		}
 		setIsAuth(false);

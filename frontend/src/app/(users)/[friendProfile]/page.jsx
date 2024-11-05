@@ -21,10 +21,24 @@ export default function FriendProfile({ params }) {
 		if (isConnected && profile?.id) {
 			setFriendStatusRequest('pending');
 			console.log('sending friend request to: ', profile.id);
-			websocket.current.send(JSON.stringify({
-				type: 'send_friend_request',
-				to_user_id: profile.id,
-			}));
+			if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
+			{
+				websocket.current.send(JSON.stringify({
+					type: 'send_friend_request',
+					to_user_id: profile.id,
+				}));
+			}
+			else {
+				setTimeout(() => {
+					if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
+					{
+						websocket.current.send(JSON.stringify({
+							type: 'send_friend_request',
+							to_user_id: profile.id,
+						}));
+					}
+				}, 500);
+			}
 		}
 	}, [isConnected, profile?.id, websocket, setFriendStatusRequest]);
 
