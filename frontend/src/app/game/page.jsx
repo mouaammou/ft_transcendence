@@ -33,14 +33,14 @@ const GamePage = () => {
 			</div>
 			<div className="down-section">
 				<div className="left-user">
-					<Image className="left-user-img" src="/med.jpeg" alt="user1" width={100} height={100}/>
+					{/* <Image className="left-user-img" src="/med.jpeg" alt="user1" width={100} height={100}/> */}
 					<div className="left-user-name">{leftUser}</div>
 				</div>
 				<div className="self-game">
 					<PongGame  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} setLeftUser={setLeftUser} setRightUser={setRightUser}/>
 				</div>
 				<div className="right-user">
-					<Image className="right-user-img" src="/mouad.jpeg" alt="user1" width={100} height={100}/>
+					{/* <Image className="right-user-img" src="/mouad.jpeg" alt="user1" width={100} height={100}/> */}
 					<div className="right-user-name">{rightUser}</div>
 				</div>
 			</div>

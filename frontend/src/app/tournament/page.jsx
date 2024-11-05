@@ -9,7 +9,7 @@ const TournamentList = () => {
   // Fetch all tournaments
   const fetchTournaments = async () => {
     try {
-      const response = await fetch('http://localhost:8000/game/local-tournaments/', {
+      const response = await fetch('http://localhost:8000/game/ local-tournaments/', {
         method: 'GET',
       });
 
