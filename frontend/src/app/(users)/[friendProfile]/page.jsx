@@ -39,7 +39,7 @@ export default function FriendProfile({ params }) {
 		}
 
 		console.log('notificationType:', notificationType);
-	}, [notificationType]);
+	}, [notificationType, setFriendStatusRequest]);
 
 	useEffect(() => {
 		const fetchFriendProfile = async (params) => {
@@ -71,11 +71,11 @@ export default function FriendProfile({ params }) {
 	const rejectFriendRequest = useCallback(async (event) => {
 		if (isConnected){
 			const data = JSON.parse(event.data);
-			if (data.type == NOTIFICATION_TYPES.REJECT_FRIEND) {
+			if (data.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
 				setFriendStatusRequest('no');
 			}
 		}
-	}, []);
+	}, [setFriendStatusRequest, isConnected]);
 
 	const handleFriendStatusChange = useCallback(async (event) => {
 		if (isConnected) {
@@ -90,7 +90,7 @@ export default function FriendProfile({ params }) {
 				});
 			}
 		}
-	}, [isConnected]);
+	}, [isConnected, setProfile]);
 
 	useEffect(() => {
 		if (isConnected)

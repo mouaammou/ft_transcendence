@@ -50,8 +50,17 @@ export const NotificationProvider = ({ children }) => {
 				NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
 			].includes(data.type)) {
 				console.log('WebSocket FOR Notifications:', data);
-				setNotifications((prev) => [...prev, { ...data }]);
-				setNotificationType({ type: data.type, status: data.success });
+				// setNotifications((prev) => [...prev, { ...data }]);
+
+				setNotifications(prevNotifications => {
+					const updatedNotifications = [...prevNotifications, { ...data }];
+					// Sort by created_at to maintain consistency
+					return updatedNotifications.sort((a, b) => 
+						new Date(b.created_at) - new Date(a.created_at)
+					);
+				});
+
+				setNotificationType({ type: data.type, status: data.success, notificationId: data.id});
 				// Increment unread count for new notification
 				setUnreadCount(prev => prev + 1);
 			}
@@ -59,7 +68,7 @@ export const NotificationProvider = ({ children }) => {
 			console.error('Error processing WebSocket Notifications:', error);
 			setError('Error processing WebSocket Notifications');
 		}
-	}, [isConnected]);
+	}, [isConnected, setNotifications, setNotificationType]);
 
 	// Fetch notifications when the user is logged in
 	const UnreadNotifications = useCallback(async () => {
@@ -68,13 +77,15 @@ export const NotificationProvider = ({ children }) => {
 		try {
 			const response = await getData('/notifications/unread');
 			if (response.status === 200) {
-				// setNotifications(response.data);
 				const data = await response.data.results;
-	
-				setNotifications(data);
-				setUnreadCount(data.length);
-				console.log(`Unread Notifications: ${response.data}`);
-				console.log("number of unread notifications: ", data.length);
+				
+				// Sort notifications by created_at in descending order
+				const sortedData = data.sort((a, b) => 
+					new Date(b.created_at) - new Date(a.created_at)
+				);
+
+				setNotifications(sortedData);
+				setUnreadCount(sortedData.length);
 			}
 		} catch (err) {
 			setError('Failed to fetch notifications');

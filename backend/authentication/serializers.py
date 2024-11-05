@@ -17,6 +17,12 @@ class NotificationSerializer(serializers.ModelSerializer):
 			'message', 'created_at', 'is_read', 'notif_type', 'notif_status'
 		)
 		read_only_fields = ['created_at']
+	
+	def to_representation(self, instance):
+		representation = super().to_representation(instance)
+		if representation['avatar'] and not representation['avatar'].startswith('http'):
+				representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+		return representation
 
 #-------------- # Notificaion Serializer ================#
 

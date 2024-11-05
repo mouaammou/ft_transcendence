@@ -103,14 +103,14 @@ class Friendship(models.Model):
 		super().save(*args, **kwargs)
 
 		# Create notification for accepted friend request
-		if self.status == 'accepted' and (not reciprocal or reciprocal.status != 'accepted'):
-			create_notification(
-				sender=self.sender,
-				receiver=self.receiver,
-				message=f"{self.sender.username} accepted your friend request.",
-				notif_type='friend',
-				notif_status='accepted'
-			)
+		# if self.status == 'accepted' and (not reciprocal or reciprocal.status != 'accepted'):
+		# 	create_notification(
+		# 		sender=self.sender,
+		# 		receiver=self.receiver,
+		# 		message=f"{self.sender.username} accepted your friend request.",
+		# 		notif_type='friend',
+		# 		notif_status='accepted'
+		# 	)
 		# Create reciprocal friendship if needed
 		if self.status in ('accepted', 'blocked') and (not reciprocal or reciprocal.status != self.status):
 			Friendship.objects.update_or_create(

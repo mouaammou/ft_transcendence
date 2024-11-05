@@ -7,12 +7,13 @@ import Link from 'next/link';
 import { postData } from '@/services/apiCalls';
 import useNotifications from '@components/navbar/useNotificationContext';
 
-const NotificationLayout = ({ data, websocket, MarkAsRead, notificationType, NOTIFICATION_TYPES}) => {
+export const NotificationLayout = ({ data, websocket, MarkAsRead, NOTIFICATION_TYPES}) => {
 	const [status, setStatus] = useState(data.notif_status);
+	const [isActedUpon, setIsActedUpon] = useState(false);
 
-	// Function to handle action and send a WebSocket message
 	const handleAction = async (action) => {
 		setStatus(action);
+		setIsActedUpon(true);
 		handleMarkAsRead();
 		if (websocket.current) {
 			let messageType = '';
@@ -22,12 +23,11 @@ const NotificationLayout = ({ data, websocket, MarkAsRead, notificationType, NOT
 				messageType = NOTIFICATION_TYPES.REJECT_FRIEND;
 			websocket.current.send(JSON.stringify({
 				type: messageType,
-				to_user_id: data.to_user_id || data.sender,
+				to_user_id: data.sender,
 			}));
 		}
 	};
 
-	// Mark notification as read
 	const handleMarkAsRead = () => {
 		setTimeout(() => {
 			MarkAsRead(data.id);
@@ -46,12 +46,12 @@ const NotificationLayout = ({ data, websocket, MarkAsRead, notificationType, NOT
 				<div className="mb-2 text-sm font-normal max-w-52">
 					{data.message}
 				</div>
-				{status === 'pending' && (
+				{status === 'pending' && !isActedUpon && (
 					<>
 						<button
 							className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
 							onClick={() => {
-								handleAction('accepted'); 
+								handleAction('accepted');
 							}}
 						>
 							Accept
@@ -66,11 +66,11 @@ const NotificationLayout = ({ data, websocket, MarkAsRead, notificationType, NOT
 						</button>
 					</>
 				)}
-				{notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND && (
-					<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${notificationType.status ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
-						{notificationType.status ? 'accepted' : 'rejected'}
+				{isActedUpon && (
+					<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${status === 'accepted' ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
+						{status}
 					</span>
-				)}
+				)} 
 				<button
 					className="ml-2 inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:ring-4 outline-none absolute right-4 top-8"
 					onClick={handleMarkAsRead}
@@ -83,7 +83,7 @@ const NotificationLayout = ({ data, websocket, MarkAsRead, notificationType, NOT
 };
 
 const NotificationBell = () => {
-	const { websocket, notifications, notificationType, UnreadNotifications, NOTIFICATION_TYPES, unreadCount, markAsRead } = useNotifications();
+	const { websocket, notifications, UnreadNotifications, NOTIFICATION_TYPES, unreadCount, markAsRead } = useNotifications();
 	const [isOpen, setIsOpen] = useState(false);
 
 	// Fetch unread notifications on component mount
@@ -117,13 +117,12 @@ const NotificationBell = () => {
 							See all
 						</Link>
 					</div>
-					{notifications?.slice().reverse().map((notification) => {
+					{notifications?.map((notification) => {
 						console.log("Notification Type: ", typeof notification);
 						console.log("Notification: ", notification);
 						return (
 							<NotificationLayout
 								data={notification}
-								notificationType={notificationType}
 								key={notification.id}
 								websocket={websocket}
 								MarkAsRead={markAsRead}
