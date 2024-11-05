@@ -13,7 +13,7 @@ class Base:
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60
-        self.max_score = 999
+        self.max_score = 9
         
         # assert self.max_score % 2 == 1, ValueError('value should be odd')
         
@@ -53,6 +53,9 @@ class Base:
         self.debug = False
     
         self.ball_win   = None # for debug
+
+        self.left_nickname = 'left_default'
+        self.right_nickname = 'right_default'
         
     
     @property
@@ -69,5 +72,7 @@ class Base:
             
             "left_player_score": 0,
             "right_player_score": 0,
+            'left_nickname': self.left_nickname,
+            'right_nickname': self.right_nickname,
         }
         

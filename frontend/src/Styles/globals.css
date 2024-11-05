@@ -40,13 +40,14 @@ img {
 }
 
 html {
-	width: 100%;
-	/* height: 100%; */
 	height: 100vh;
+	width: 100vw;
 }
 
 body {
 /* d solid 2px; */
+	width: 100%;
+	height: 100%;
 	background: var(--bg) ; 
 	background-size: cover;
 	background-repeat: no-repeat;
@@ -78,18 +79,52 @@ body {
 	height: 0px;
 }
 
-.svg-icon {
-	width: 1em;
-	height: 1em;
+
+
+
+
+
+
+
+
+
+
+/* styles/globals.css */
+.tournament-container {
+	text-align: center;
+	margin: 0 auto;
+	padding: 20px;
   }
   
-  .svg-icon path,
-  .svg-icon polygon,
-  .svg-icon rect {
-	fill: #4691f6;
+  .round {
+	margin: 40px 0;
   }
   
-  .svg-icon circle {
-	stroke: #4691f6;
-	stroke-width: 1;
-  } */
+  .match {
+	background-color: #090909;
+	border-radius: 10px;
+	padding: 10px;
+	margin: 10px 0;
+	display: inline-block;
+	width: 300px;
+	font-weight: bold;
+  }
+  
+  .round-1 .match {
+	border: 2px solid #4b4429;
+  }
+  
+  .round-2 .match {
+	border: 2px solid #00ccff;
+  }
+  
+  .final-round .match {
+	border: 2px solid #ff0000;
+  }
+  
+  .champion {
+	margin-top: 50px;
+	font-size: 24px;
+	font-weight: bold;
+  }
+  

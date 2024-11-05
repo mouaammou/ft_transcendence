@@ -9,7 +9,7 @@ import { useAuth } from "@/components/auth/loginContext.jsx";
 
 const Profile = () => {
 	
-	const {profileData: data, fetch_profile} = useAuth()
+	const {profileData: data, fetch_profile} = useAuth() 
 	useEffect(() =>{
 		fetch_profile()
 	}, [])

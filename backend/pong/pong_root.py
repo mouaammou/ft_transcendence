@@ -43,6 +43,8 @@ class RootBase(Base):
             'left_paddle_pos': self.left_player.padd_pos,
             'right_paddle_pos': self.right_player.padd_pos,
             'ball_pos': self.ball.ball_pos,
+            'left_nickname': self.left_nickname,
+            'right_nickname': self.right_nickname,
         }
         conf.update(data)
         # conf['ball_pos'] = self.ball.ball_pos
@@ -58,6 +60,7 @@ class RootBase(Base):
         self.ball.move_paddles(self.game_mode)
 
     def update(self) -> dict:
+        # print('update: ', self.start_game, self.disconnected)
         if not self.start_game or self.disconnected:
             return
         self.move_paddles() # update paddles pos if there is a press event

@@ -25,15 +25,15 @@ export default function RootLayout({ children }) {
 					content="width=device-width, initial-scale=1.0"
 				/>
 			</head>
-			<LoginProvider>
-				<body>
-					{/* <div className="container"> */}
-						<Navbar />
-						{children}
-						<div className="footer"></div>
-					{/* </div> */}
-				</body>
-			</LoginProvider>
+				<LoginProvider>
+						<body>
+							{/* <div className="container"> */}
+								<Navbar />
+								{children}
+								<div className="footer"></div>
+							{/* </div> */}
+						</body>
+				</LoginProvider>
 		</html>
 	);
 }

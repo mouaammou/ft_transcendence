@@ -38,6 +38,7 @@ class TokenVerificationMiddleWare:
             # print('x'*15)
             # print(refresh_token_obj.payload)
             # print('x'*15)
+            request.unique_key = refresh_token_obj.payload['channel_name']
             if not access_token:
                 # Generate a new access token if none exists or is invalid
                 new_access_token = refresh_token_obj.access_token
@@ -57,7 +58,11 @@ class TokenVerificationMiddleWare:
             # Validate the access token
             try:
                 user_id = AccessToken(access_token).get("user_id")
+                # print('x'*15)
+                # print(user_id)
+                # print('x'*15)
                 request.customUser = User.objects.get(id=user_id)
+                request.user = User.objects.get(id=user_id)
                 return self.get_response(request)
             except (TokenError, User.DoesNotExist):
                 # If access token is invalid, create a new one

@@ -15,6 +15,10 @@ const links =  [
 		path: "/profile",
 	},
 	{
+		title: "GameLocal",
+		path: "/local_game",
+	},
+	{
 		title: "Game",
 		path: "/game",
 	},

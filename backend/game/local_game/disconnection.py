@@ -33,9 +33,9 @@ class LocalGameDisconnection:
         self._disconnected = False
         self._disconnetion_task = None
 
-        self._outside_callback = None
-        self._outside_callback_args = list()
-        self._outside_callback_kwargs = dict()
+        self._outside_callback = None         #function
+        self._outside_callback_args = list()  #1,5,6
+        self._outside_callback_kwargs = dict() #said=5,sasa=878
     
     ################## public interface #####################
     @property

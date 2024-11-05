@@ -1,7 +1,8 @@
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState} from 'react';
+import GamePage from './page';
 
-export default function PongGame({ score1, score2, setScore1, setScore2 }) {
+export default function PongGame({ score1, score2, setScore1, setScore2, setLeftUser, setRightUser}) {
 	const canvasRef = useRef(null);
 	const [socketState, setSocketState] = useState(false);
 
@@ -182,7 +183,33 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 				setScore2(score2 => gameConfig.left_player_score);
 				computer.score = gameConfig.right_player_score;
 				setScore1(score1 => gameConfig.right_player_score);
+
+
+				if (data.config.left_nickname)
+				{
+					setLeftUser(data.config.left_nickname);
+				}
+				if (data.config.right_nickname)
+				{
+					setRightUser(data.config.right_nickname);
+				}
 				drawGame();
+			}
+			else if (data.tournament)
+			{
+				if (data.tournament.left)
+				{
+					setLeftUser(data.tournament.left);
+				}
+				if (data.tournament.right)
+				{
+					setRightUser(data.tournament.right);
+				}
+				console.log(data);
+			}
+			else
+			{
+				console.log(data);
 			}
 		}
 		// Game state
@@ -231,7 +258,22 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 					{
 						"create":
 						{
-							mode:'local'
+							mode:'local',
+							type: 'single'
+						}
+					}
+				));
+			}
+			if (event.key === 't' || event.key === 'T')
+			{
+				// create new game if space key is created
+				socket.send(JSON.stringify(
+					{
+						"start-tournament":
+						{
+							mode:'local',
+							type: 'tournament',
+							id: 1,
 						}
 					}
 				));
