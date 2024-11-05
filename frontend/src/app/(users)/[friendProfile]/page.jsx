@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getData } from '@/services/apiCalls';
 import { TfiStatsUp } from "react-icons/tfi";
 import { notFound } from 'next/navigation';
@@ -7,15 +7,17 @@ import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
+import useNotifications from '@/components/navbar/useNotificationContext';
 
 export default function FriendProfile({ params }) {
 
-	const {websocket, isConnected, notificationType,  NOTIFICATION_TYPES, pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {websocket, isConnected, notificationType, NOTIFICATION_TYPES} = useNotifications();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 
-	const sendFriendRequest = () => {
+	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
 			setFriendStatusRequest('pending');
 			console.log('sending friend request to: ', profile.id);
@@ -24,7 +26,7 @@ export default function FriendProfile({ params }) {
 				to_user_id: profile.id,
 			}));
 		}
-	}
+	}, [isConnected, profile?.id, websocket, setFriendStatusRequest]);
 
 	useEffect(() => { // this for the notification type
 		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
@@ -66,27 +68,41 @@ export default function FriendProfile({ params }) {
 	}, [params]); // Add 'params' as a dependency
 
 
+	const rejectFriendRequest = useCallback(async (event) => {
+		if (isConnected){
+			const data = JSON.parse(event.data);
+			if (data.type == NOTIFICATION_TYPES.REJECT_FRIEND) {
+				setFriendStatusRequest('no');
+			}
+		}
+	}, []);
+
+	const handleFriendStatusChange = useCallback(async (event) => {
+		if (isConnected) {
+			const data = JSON.parse(event.data);
+			if (data.type === 'user_status_change') {
+				console.log("user status in friend profile:", data);
+				setProfile(prevProfile => {
+					if (prevProfile.username === data.username) {
+						return { ...prevProfile, status: data.status };
+					}
+					return prevProfile;
+				});
+			}
+		}
+	}, [isConnected]);
 
 	useEffect(() => {
-		const handleFriendStatusChange = (event) => {
-			if (isConnected) {
-				const data = JSON.parse(event.data);
-				if (data.type === 'user_status_change') {
-					console.log("user status in friend profile:", data);
-					setProfile(prevProfile => {
-						if (prevProfile.username === data.username) {
-							return { ...prevProfile, status: data.status };
-						}
-						return prevProfile;
-					});
-				}
-			}
-		};
-
 		if (isConnected)
-			websocket.current.addEventListener('message', handleFriendStatusChange);
+			{
+				websocket.current.addEventListener('message', handleFriendStatusChange);
+				websocket.current.addEventListener('message', rejectFriendRequest);
+			}
 
-		return () => websocket?.current?.removeEventListener('message', handleFriendStatusChange);
+		return () => {
+			websocket?.current?.removeEventListener('message', handleFriendStatusChange);
+			websocket?.current?.removeEventListener('message', rejectFriendRequest);
+		};
 	}, [profile]);
 
 	if (pageNotFound) {

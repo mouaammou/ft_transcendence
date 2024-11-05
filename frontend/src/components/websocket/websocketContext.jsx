@@ -6,15 +6,6 @@ import {
 	useMemo, useCallback
 } from 'react';
 
-const NOTIFICATION_TYPES = {
-	FRIENDSHIP: 'friend_request',
-	ACCEPT_FRIEND: 'accept_friend',
-	REJECT_FRIEND: 'reject_friend',
-	INVITE_GAME: 'invite_to_game',
-	ACCEPT_GAME: 'accept_game',
-	INVITE_TOURNAMENT: 'invite_to_tournament',
-};
-
 const WEBSOCKET_CONFIG = {
 	MAX_RECONNECT_ATTEMPTS: 5,
 	RECONNECT_INTERVAL: 3000,
@@ -70,8 +61,6 @@ const useWebSocket = (url) => {
 
 	export const WebSocketProvider = ({ url, children }) => {
 		const { isConnected, websocket } = useWebSocket(url);
-		const [notifications, setNotifications] = useState([]);
-		const [notificationType, setNotificationType] = useState({});
 		const [users, setUsers] = useState([]);
 		const [nextPage, setNextPage] = useState(null);
 		const [prevPage, setPrevPage] = useState(null);
@@ -79,26 +68,21 @@ const useWebSocket = (url) => {
 		const [friendStatusChange, setFriendStatusChange] = useState(false);
 		const router = useRouter();
 
-		const handleMessageEvent = useCallback((event) => {
+		const handleOnlineStatus = useCallback((event) => {
 			if (!isConnected) return;
 			try {
 				const data = JSON.parse(event.data);
-				console.log('WebSocket message received:', data);
 				if (data.type === 'user_status_change') {
+					console.log('WebSocket ONLINE STATUS:', data);
 					setFriendStatusChange(true);
 					setUsers((prevUsers) =>
 						prevUsers?.map((user) =>
 							user.username === data.username ? { ...user, status: data.status } : user
 						)
 					);
-				} else if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND, 		NOTIFICATION_TYPES.INVITE_GAME, NOTIFICATION_TYPES.ACCEPT_GAME,
-					NOTIFICATION_TYPES.INVITE_TOURNAMENT
-				].includes(data.type)) {
-					setNotifications((prev) => [...prev, { ...data }]);
 				}
-				setNotificationType({ type: data.type, status: data.success });
 			} catch (error) {
-				console.error('Error processing WebSocket message:', error);
+				console.error('Error IN handle ONline status:', error);
 			}
 		}, [isConnected]);
 
@@ -122,51 +106,21 @@ const useWebSocket = (url) => {
 			[router]
 		);
 
-		const getUserNotifications = useCallback(async () => {
-			try {
-				const response = await getData('/notifications');
-				if (response.status === 200) {
-					setNotifications(response.data);
-				}
-			} catch (error) {
-				console.error('Error fetching notifications:', error);
-			}
-		}
-		, []);
-
-		//get Unread Notifications
-		const getUnreadNotifications = useCallback(async () => {
-			try {
-				const response = await getData('/notifications/unread');
-				if (response.status === 200) {
-					// setNotifications(response.data);
-					console.log(`Unread Notifications: ${response.data}`);
-				}
-			} catch (error) {
-				console.error('Error fetching notifications:', error);
-			}
-		}
-		, []);
-	
 		useEffect(() => {
 			if (isConnected && websocket.current) {
-				websocket.current.addEventListener('message', handleMessageEvent);
+				websocket.current.addEventListener('message', handleOnlineStatus);
 			}
 			return () => {
 				if (isConnected && websocket.current) {
-				websocket.current.removeEventListener('message', handleMessageEvent);
+				websocket.current.removeEventListener('message', handleOnlineStatus);
 				}
 			};
-		}, [isConnected, handleMessageEvent]);
+		}, [isConnected, handleOnlineStatus]);
 
 		const contextValue = useMemo(
 			() => ({
 				isConnected,
 				websocket,
-				notifications,
-				setNotifications,
-				notificationType,
-				NOTIFICATION_TYPES,
 				users,
 				setUsers,
 				nextPage,
@@ -178,12 +132,11 @@ const useWebSocket = (url) => {
 				setPageNotFound,
 				setNextPage,
 				setPrevPage,
-				getUnreadNotifications
 			}),
 			[
-				isConnected, notifications, setNotifications,  notificationType, users, nextPage,
+				isConnected, users, nextPage,
 				prevPage, fetchAllUsers, pageNotFound, friendStatusChange, setPageNotFound, 
-				setNextPage, setPrevPage, getUnreadNotifications
+				setNextPage, setPrevPage
 			]
 		);
 

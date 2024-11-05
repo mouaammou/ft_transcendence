@@ -1,45 +1,98 @@
-// NotificationContext.js
+'use client';
+import { getData, postData } from '@/services/apiCalls';
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import {  useWebSocketContext } from '@components/websocket/websocketContext';
+
+const NOTIFICATION_TYPES = {
+	FRIENDSHIP: 'send_friend_request',
+	ACCEPT_FRIEND: 'accept_friend_request',
+	REJECT_FRIEND: 'reject_friend_request',
+	INVITE_GAME: 'invite_to_game',
+	ACCEPT_GAME: 'accept_game',
+	INVITE_TOURNAMENT: 'invite_to_tournament',
+	ACCEPT_TOURNAMENT: 'accept_tournament',
+};
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-	const [notifications, setNotifications] = useState([]);
+
+	const {isConnected, websocket} = useWebSocketContext()
+
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [notifications, setNotifications] = useState([]);
+	const [notificationType, setNotificationType] = useState({});
+
+		// Update the unread count based on the notifications
+	const updateUnreadCount = useCallback((notifs) => {
+		if (Array.isArray(notifs)) {
+			const unreadNotifs = notifs.filter(notif => !notif.is_read);
+			setUnreadCount(unreadNotifs.length);
+		} else {
+			// If it's a new notification, increment the count
+			if (!notifs.is_read) {
+				setUnreadCount(prev => prev + 1);
+			} else {
+				// If marking as read, decrement the count
+				setUnreadCount(prev => prev - 1);
+			}
+		}
+	}, []);
+
+	const handleNotifications = useCallback((event) => {
+		if (!isConnected) return;
+		try {
+			const data = JSON.parse(event.data);
+			if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
+				, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
+				NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
+			].includes(data.type)) {
+				console.log('WebSocket FOR Notifications:', data);
+				setNotifications((prev) => [...prev, { ...data }]);
+				setNotificationType({ type: data.type, status: data.success });
+				// Increment unread count for new notification
+				setUnreadCount(prev => prev + 1);
+			}
+		} catch (error) {
+			console.error('Error processing WebSocket Notifications:', error);
+			setError('Error processing WebSocket Notifications');
+		}
+	}, [isConnected]);
 
 	// Fetch notifications when the user is logged in
-	const fetchNotifications = useCallback(async () => {
+	const UnreadNotifications = useCallback(async () => {
 		setIsLoading(true);
 		setError(null);
 		try {
-			const response = await fetch('/api/notifications');
-			const data = await response.json();
-
-			setNotifications(data);
-			updateUnreadCount(data);
+			const response = await getData('/notifications/unread');
+			if (response.status === 200) {
+				// setNotifications(response.data);
+				const data = await response.data.results;
+	
+				setNotifications(data);
+				setUnreadCount(data.length);
+				console.log(`Unread Notifications: ${response.data}`);
+				console.log("number of unread notifications: ", data.length);
+			}
 		} catch (err) {
 			setError('Failed to fetch notifications');
 			console.error('Error fetching notifications:', err);
 		} finally {
 			setIsLoading(false);
 		}
-	}, []);
+	}, [setNotifications]);
 
-	const updateUnreadCount = useCallback((notifs) => {
-		const unread = notifs.filter(notif => !notif.read).length;
-		setUnreadCount(unread);
-	}, []);
 
 	const markAsRead = useCallback(async (notificationId) => {
 		try {
-			await fetch(`/api/notifications/${notificationId}/read`, {
-			method: 'PUT'
-			});
+			await postData(`/notifications/${notificationId}/read`);
+			console.log('Notification marked as read:::', notificationId);
 
-			const updatedNotifications = notifications.map(notif => 
-			notif.id === notificationId ? { ...notif, read: true } : notif
+			// Filter out the read notification instead of updating it
+			const updatedNotifications = notifications.filter(notif => 
+				notif.id !== notificationId
 			);
 
 			setNotifications(updatedNotifications);
@@ -51,13 +104,11 @@ export const NotificationProvider = ({ children }) => {
 
 	const markAllAsRead = useCallback(async () => {
 		try {
-			await fetch('/api/notifications/mark-all-read', {
-			method: 'PUT'
-			});
+			await postData('/notifications/markAllRead');
 
 			const updatedNotifications = notifications.map(notif => ({
-			...notif,
-			read: true
+				...notif,
+				read: true
 			}));
 
 			setNotifications(updatedNotifications);
@@ -67,16 +118,43 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, [notifications]);
 
+	useEffect(() => {
+			if (isConnected && websocket.current) {
+				websocket.current.addEventListener('message', handleNotifications);
+			}
+			return () => {
+				if (isConnected && websocket.current) {
+				websocket.current.removeEventListener('message', handleNotifications);
+				}
+			};
+		}, [isConnected, handleNotifications]);
+
 	// Memoize the context value to prevent unnecessary re-renders
 	const value = useMemo(() => ({
 		notifications,
+		notificationType,
 		unreadCount,
 		isLoading,
 		error,
-		fetchNotifications,
+		isConnected,
+		websocket,
+		UnreadNotifications,
 		markAsRead,
-		markAllAsRead
-	}), [notifications, unreadCount, isLoading, error, fetchNotifications, markAsRead, markAllAsRead]);
+		markAllAsRead,
+		NOTIFICATION_TYPES
+	}), [
+			notifications,
+			notificationType,
+			unreadCount,
+			isLoading,
+			error,
+			isConnected,
+			websocket,
+			UnreadNotifications,
+			markAsRead,
+			markAllAsRead,
+			NOTIFICATION_TYPES
+		]);
 
 	return (
 		<NotificationContext.Provider value={value}>
@@ -86,10 +164,12 @@ export const NotificationProvider = ({ children }) => {
 };
 
 // Custom hook to use the notification context
-export const useNotifications = () => {
+const useNotifications = () => {
 	const context = useContext(NotificationContext);
 	if (!context) {
 		throw new Error('useNotifications must be used within a NotificationProvider');
 	}
 	return context;
 };
+
+export default useNotifications;

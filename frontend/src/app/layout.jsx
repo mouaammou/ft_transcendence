@@ -5,6 +5,7 @@ import { LoginProvider } from '@components/auth/loginContext';
 import Navbar from '@/components/navbar/navAuth';
 import Sidebar from '@/components/sidebar/sidebar';
 import { WebSocketProvider } from '@/components/websocket/websocketContext';
+import {NotificationProvider} from '@components/navbar/useNotificationContext';
 
 import '@/styles/globals.css';
 import '@/styles/globalsTailwind.css';
@@ -18,11 +19,13 @@ export default function RootLayout({ children }) {
 			<body className={inter.className}>
 				<WebSocketProvider url="ws://localhost:8000/ws/online/">
 					<LoginProvider>
-						<div>
-							<Sidebar />
-							<Navbar />
-							{children}
-						</div>
+						<NotificationProvider>
+							<div>
+								<Sidebar />
+								<Navbar />
+								{children}
+							</div>
+						</NotificationProvider>
 					</LoginProvider>
 				</WebSocketProvider>
 			</body>
