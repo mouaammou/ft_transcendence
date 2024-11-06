@@ -55,40 +55,119 @@
 
 
 
+// import React from 'react';
+// import { Card, CardContent } from '@/components/ui/card';
+// import '@/styles/chat/UserCard.css';
+
+// const UserCard = ({ user, listType, onUserSelect, typingUsers }) => {
+//   const borderColor = user.active ? 'green' : 'red';
+//   const imageSize = listType === 'online' ? '65' : '45';
+
+//   return listType === 'online' ? (
+//     // Render using Card and CardContent for "online" listType
+//     <Card className="usercard-card" onClick={() => onUserSelect(user)}>
+//       <CardContent 
+//       // className="flex items-center p-4 space-x-4"
+//       className="flex aspect-square items-center justify-center"
+//       >
+//         <img
+//           src={user.avatar}
+//           alt={user.username}
+//           width={imageSize}
+//           height={imageSize}
+//           // className="img-usercard"
+//           className="w-full h-full object-cover "
+//           style={{
+//             // borderRadius: '50%',
+//             // border: '2px solid #fff',
+//           }}
+//         />
+
+//         {/* <div
+//           className="status"
+//           style={{ backgroundColor: `${borderColor}`, borderRadius: '50%' }}
+//         >
+//         </div> */}
+
+//       </CardContent>
+//     </Card>
+//   ) : (
+//     // Render default structure for "all" listType
+//     <div
+//       className={`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}
+//       onClick={() => onUserSelect(user)}
+//     >
+//       <img
+//         src={user.avatar}
+//         alt={user.username}
+//         width={imageSize}
+//         height={imageSize}
+//         className="img-usercard"
+//         style={{
+//           borderRadius: '50%',
+//           border: '2px solid #fff',
+//         }}
+//       />
+//       <div
+//         className="status"
+//         style={{ backgroundColor: `${borderColor}`, borderRadius: '50%' }}
+//       ></div>
+//       {listType === 'all' && (
+//         <>
+//           <p>{user.username}</p>
+//           {typingUsers.includes(user.username) && (
+//             <p className="typing_indicator_card">Typing...</p>
+//           )}
+//         </>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default UserCard;
+
+
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import '@/styles/chat/UserCard.css';
+import { formatDistanceToNow } from 'date-fns'; // Optionally for formatting the timestamp
 
-const UserCard = ({ user, listType, onUserSelect, typingUsers }) => {
+const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) => {
   const borderColor = user.active ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
+
+  // Format the timestamp if it exists
+  // const formattedTimestamp = lastMessage.timestamp
+  //   ? formatDistanceToNow(new Date(lastMessage.timestamp)) + ' ago'
+  //   : '';
+  const formattedTimestamp = lastMessage.timestamp
+    ? formatDistanceToNow(new Date(lastMessage.timestamp))
+    : '';
 
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType
     <Card className="usercard-card" onClick={() => onUserSelect(user)}>
       <CardContent 
-      // className="flex items-center p-4 space-x-4"
-      className="flex aspect-square items-center justify-center"
+        className="flex aspect-square items-center justify-center"
       >
         <img
           src={user.avatar}
           alt={user.username}
           width={imageSize}
           height={imageSize}
-          // className="img-usercard"
-          className="w-full h-full object-cover "
-          style={{
-            // borderRadius: '50%',
-            // border: '2px solid #fff',
-          }}
+          className="w-full h-full object-cover"
         />
 
-        {/* <div
-          className="status"
-          style={{ backgroundColor: `${borderColor}`, borderRadius: '50%' }}
-        >
+        {/* <div className="usercard-info">
+          <p>{user.username}</p>
+          {lastMessage && lastMessage.message && (
+            <p className="last-message">{lastMessage.message}</p>
+          )}
+          {formattedTimestamp && (
+            <p className="timestamp">{formattedTimestamp}</p>
+          )}
         </div> */}
-
       </CardContent>
     </Card>
   ) : (
@@ -117,6 +196,12 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers }) => {
           <p>{user.username}</p>
           {typingUsers.includes(user.username) && (
             <p className="typing_indicator_card">Typing...</p>
+          )}
+          {lastMessage && lastMessage.message && (
+            <p className="last-message">{lastMessage.message}</p>
+          )}
+          {formattedTimestamp && (
+            <p className="timestamp">{formattedTimestamp}</p>
           )}
         </>
       )}
