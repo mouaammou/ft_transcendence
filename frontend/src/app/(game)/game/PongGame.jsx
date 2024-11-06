@@ -1,13 +1,18 @@
 "use client";
-import { useEffect, player_1ef, useState, useRef} from 'react';
+import { useEffect, useState, useRef} from 'react';
 import socket from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
+import { useRouter , useSearchParams, usePathname } from 'next/navigation';
 
-export default function PongGame({ score1, score2, setScore1, setScore2 }) {
+export default function PongGame({ score1, score2, setScore1, setScore2, gameType }) {
 	const canvasRef = useRef(null);
 	const [showWinModal, setShowWinModal] = useState(false);
 	const [showLoseModal, setShowLoseModal] = useState(false);
+	const router = useRouter();
+	const pathname = usePathname();
+    const searchParams = useSearchParams();
+	const previousPathnameRef = useRef(pathname);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -97,8 +102,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		// handle the page visibility for later:
 		let conectionOn = false;
 		function sendVisibilityStatus() {
-			console.log("Visibility: ")
-				console.log(document.visibilityState)
+			// console.log("Visibility: ")
+				// console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
 				socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
 		}
@@ -125,6 +130,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 		let gameConfig = {};
 
 		const handleMessage = (message) => {
+			// console.log(message);
 			if (!message) {
 				console.error('Received an undefined message or data:', message);
 				return; // Exit early if message is invalid
@@ -132,7 +138,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
-				console.log(data);
+				// console.log(data);
 				if (data.update.left_paddle_pos)
 				{
 					player_1.x = data.update.left_paddle_pos[0];
@@ -177,7 +183,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			}
 			else if (data.config)
 			{
-				console.log(data);
+				// console.log(data);
 
 					// setScore1(score1 => data.config.right_player_score);
 					// setScore2(score2 => data.config.left_player_score);
@@ -313,6 +319,20 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
 		};
 	}, []);
+
+
+	useEffect(() => {
+		// This code will run when the component is mounted
+		// console.log('Game page entered:', pathname);
+		socket.sendMessage(JSON.stringify({"inGamePage" : true}));
+	
+		return () => {
+			// This code will run when the component is unmounted
+			console.log('Game page left:', pathname);
+			socket.sendMessage(JSON.stringify({"inGamePage" : false}));
+		};
+	}, []);
+
 	return (
 		<>
 			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
@@ -320,14 +340,30 @@ export default function PongGame({ score1, score2, setScore1, setScore2 }) {
 			</canvas>
 				{showWinModal && (
 					<YouWin 
-						onClose={() => setShowWinModal(false)}
+						onClose={() => {
+							setShowWinModal(false);
+							if (gameType === 'tournament') {
+						    router.push('/tournament_board');
+							}else {
+								router.push('/play');
+							}
+						}
+						}
 						// stats={{ score1, score2 }} // Pass stats as needed
 					/>
 				)}
 				
 				{showLoseModal && (
 					<YouLose 
-						onClose={() => setShowLoseModal(false)}
+						onClose={() => {
+							setShowLoseModal(false);
+							// if (gameType === 'tournament') {
+							// 	router.push('/tournament_board');
+							// 	}else {
+									router.push('/play');
+								// }
+						}
+						}
 						// stats={{ score1, score2 }} // Pass stats as needed
 					/>
 				)}

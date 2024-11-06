@@ -1,6 +1,7 @@
 import asyncio
 from .game import PingPongGame
 from .middleware import LocalGameInputMiddleware, LocalGameOutputMiddleware
+# from .tournament.manager import TournamentManager, Tournament
 
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
@@ -24,29 +25,42 @@ class EventLoopManager:
     finished = []
     _event_loop_task = None
     game_class = PingPongGame
+    # trournament_manager_class = TournamentManager
+    input_middleware_class =  LocalGameInputMiddleware
+    output_middlware_class = LocalGameOutputMiddleware
 
     @classmethod
     async def _event_loop(cls):
         while True:
-            cls._update() 
+            # print("******** UPDATE ********: ", cls.runing)
+            cls._update()
             cls._clean()
+            # print("******** FINISHED ********: ")
             await asyncio.sleep(1/60)
 
     @classmethod
     def _update(cls):
         for channel_name, game in cls.runing.items():
+            if game.first_time:
+                LocalGameOutputMiddleware.send_config(channel_name, game)
+                game.first_time = False
             frame :dict = game.update()
+            # print('************frame************', frame)
             if game.is_finished():
                 cls.finished.append(channel_name)
-                cls._save_finished(game)
+                cls._save_finished(game, unique_key=channel_name)
             cls._dispatch_send_event(channel_name, game, frame)
 
     @classmethod
-    def _save_finished(cls, game_obj):
+    def _save_finished(cls, game_obj, unique_key=None):
         # finished games here
         # do your things here
         print(game_obj)
-        pass
+        # pass
+        # print('------winner--------: ', game_obj.winner)
+        # print('------unique_key--------: ', unique_key)
+        # if game_obj.game_mode == 'tournament':
+        # TournamentManager.match_finished(unique_key, game_obj.winner)
         
     @classmethod
     def _clean(cls):
@@ -55,7 +69,7 @@ class EventLoopManager:
         cls.finished.clear()
 
     @classmethod
-    def add(cls, channel_name, game_mode='local'):
+    def add(cls, channel_name, game_mode='local', tourn_obj=None):
         """
         This method is handled by input middlware.
         so when create event is recieved it uses it
@@ -67,12 +81,17 @@ class EventLoopManager:
         print("******** ATOMIC OPERATION ********: add new game")
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
-            game_obj = cls.game_class()
+            game_obj = cls.game_class(
+                tourn_obj=tourn_obj,
+            )
             game_obj.set_game_mode(game_mode)
             cls.runing[channel_name] = game_obj
-        else:
-            game_obj.disconnected = False # disconnetion class used here
-        # LocalGameOutputMiddleware.add_callback(channel_name, send_callback, game_obj)
+            # if left_nickname and right_nickname:
+            #     LocalGameOutputMiddleware.send_config(channel_name, game_obj)
+        return game_obj
+        # else:
+        #     game_obj.disconnected = False # disconnetion class used here
+        # cls.output_middlware_class.add_callback(channel_name, send_callback, game_obj)
         
     
     @classmethod
@@ -82,8 +101,10 @@ class EventLoopManager:
         if game_obj is None:
             return False
         print('************ RECONNECT *************')
-        LocalGameOutputMiddleware.add_callback(channel_name, consumer, game_obj=game_obj)
+        cls.output_middlware_class.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
+        print('********************* disco ****: ', game_obj.disconnected)
+        print('********************* start ****: ', game_obj.start_game)
         # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
@@ -91,6 +112,12 @@ class EventLoopManager:
 
     @classmethod
     def remove(cls, channel_name):
+        if channel_name is None:
+            return
+        game = cls.runing.get(channel_name)
+        if not game:
+            return
+        cls._save_finished(game, unique_key=channel_name)
         cls.runing.pop(channel_name)
         try:
             cls.finished.pop(channel_name)
@@ -110,9 +137,10 @@ class EventLoopManager:
     @classmethod
     def disconnect(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
-        if game_obj and LocalGameOutputMiddleware.is_disconnection(channel_name):
-            game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
+        if game_obj and cls.output_middlware_class.is_disconnection(channel_name):
+            # dont disconnect game until all Tabs is disconnected
             game_obj.disconnected = True # and disconnetion class also used here
+            game_obj.set_disconnection_timeout_callback(cls.remove, channel_name)
             return True
         return False
     
@@ -120,7 +148,7 @@ class EventLoopManager:
     def connect(cls, channel_name, consumer):
         cls.run_event_loop()
         if not cls._reconnect(channel_name, consumer):
-            LocalGameOutputMiddleware.add_callback(channel_name, consumer)
+            cls.output_middlware_class.add_callback(channel_name, consumer)
         # always on connect set send callback
         # because the CREATE event assumes that
         # send calback is already set on connect
@@ -139,10 +167,10 @@ class EventLoopManager:
             There is no game runing with that channel name.
             So check if recieved event is CREATE
             """
-            LocalGameInputMiddleware.try_create(cls, channel_name, event_dict)
+            cls.input_middleware_class.try_create(cls, channel_name, event_dict)
             return None
         if game_obj.game_mode == 'local':
-            LocalGameInputMiddleware.recieved_dict_text_data(channel_name, game_obj, event_dict)
+            cls.input_middleware_class.recieved_dict_text_data(channel_name, game_obj, event_dict)
         elif game_obj.game_mode == 'remote':
             pass
             # add middleware for remote game here
@@ -169,8 +197,8 @@ class EventLoopManager:
         if game_obj is None:
             return
         if game_obj.game_mode == 'local':
-            LocalGameOutputMiddleware.send(channel_name, frame)
-        # elif game_obj.game_mode == 'remote':
+            cls.output_middlware_class.send(channel_name, frame)
+        # elif game_obj.game_mode == 'remote': 
         #     pass
             # add middleware for remote game here
     
@@ -179,5 +207,9 @@ class EventLoopManager:
         if cls._event_loop_task is not None:
             return
         print("================== EVENT LOOP CREATED ================")
+        # cls.trournament_manager_class.event_loop_cls = cls
+        # Tournament.send_to_user_callback = cls.output_middlware_class.send_to_userid
+        # Tournament.event_loop_cls = cls
         task = cls._event_loop()
         cls._event_loop_task = asyncio.create_task(task)
+        # cls.trournament_manager_class.init_monitor(cls)

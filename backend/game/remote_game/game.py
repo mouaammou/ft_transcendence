@@ -12,17 +12,16 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         #i have to add a type of the game : random, vsfriend, vsbot
         self.game_id = str(uuid.uuid4())
         self._unfocused = None  
-        self._islaunched = False  
+        self._islaunched = False    
         self._player_1 = None
         self._player_2 = None
-        self._consumer_1 = None
-        self._consumer_2 = None
         self.fulfilled = False
         self._notify_players = False
         self._winner = None 
-        self._loser = None 
+        self._loser = None  
         self._saved = False
         self.joined = 0
+        self.remote_type = None # random, vsfriend, tournament
 
 
     def increment_joined(self):
@@ -79,23 +78,6 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     def notify_players(self, value):
         self._notify_players = value
 
-
-    @property
-    def consumer_1(self):
-        return self._consumer_1 
-
-    @consumer_1.setter
-    def consumer_1(self, value):
-        self._consumer_1 = value
- 
-    @property
-    def consumer_2(self):
-        return self._consumer_2 
-
-    @consumer_2.setter
-    def consumer_2(self, value):
-        self._consumer_2 = value
-   
    
     @property
     def winner(self):

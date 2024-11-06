@@ -13,8 +13,7 @@ class Base:
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60
-        self.max_score = 999
-        self.max_score = 4
+        self.max_score = 900
         
         # assert self.max_score % 2 == 1, ValueError('value should be odd')
         
@@ -23,13 +22,13 @@ class Base:
         # self.window_width = 1600
         # self.window_height = 1200
         self.window_width = 900
-        self.window_height = 400 
+        self.window_height = 400
         
         self.paddle_width = 15
         self.paddle_height = self.window_height/3.5
         self.paddle_speed = 8
         
-        self.ball_width = 25  
+        self.ball_width = 25
         self.ball_height = self.ball_width
         self.ball_speed = 8
         
@@ -54,6 +53,9 @@ class Base:
         self.debug = False
     
         self.ball_win   = None # for debug
+
+        self.left_nickname = 'left_default'
+        self.right_nickname = 'right_default'
         
     
     @property
@@ -70,5 +72,7 @@ class Base:
             
             "left_player_score": 0,
             "right_player_score": 0,
+            'left_nickname': self.left_nickname,
+            'right_nickname': self.right_nickname,
         }
         

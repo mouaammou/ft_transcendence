@@ -2,5 +2,7 @@
 
 all:
 	cd frontend && npm run dev  &
-	cd backend && python manage.py runserver
+
+back:
+	cd backend && source .venv/bin/activate &&  python manage.py runserver
 

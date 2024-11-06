@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "@/Styles/navbar/navbar.module.css"
+import styles from "@/styles/navbar/navbar.module.css"
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/components/auth/loginContext";

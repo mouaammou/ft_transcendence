@@ -28,6 +28,7 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
     game_engine = EventLoopManager
     
     async def connect(self):
+        self.unique_name = None
         self.user = self.scope['user']
         if self.user.is_anonymous:
             return await self.close()
@@ -58,6 +59,12 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
     def send_game_message(self, event):
         try:
             # dont await it
-            asyncio.create_task(self.send(text_data=json.dumps(event)))
+            asyncio.create_task(self.safe_send(event))
+        except Exception as e:
+            print("Exception: send_game_message: Failed", e)
+    
+    async def safe_send(self, event):
+        try:
+            await self.send(text_data=json.dumps(event))
         except:
-            print("Exception: send_game_message: Failed")
+            print("Exception: safe_send: Failed [no problem it can function without it]")

@@ -57,12 +57,14 @@ export default function FriendProfile({ params }) {
 
 	useEffect(() => {
 		const fetchFriendProfile = async (params) => {
-			if (!params.friendProfile) {
+			const unwrappedParams = await params;
+			console.log('params:', unwrappedParams.friendProfile);
+			if (! unwrappedParams.friendProfile) {
 				setPageNotFound(true);
 				return;
 			}
 			try {
-				const response = await getData(`/friendProfile/${params.friendProfile}`);
+				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
 				if (response.status === 200) {
 					const fetchedProfile = response.data;
 					setFriendStatusRequest(fetchedProfile.friend);

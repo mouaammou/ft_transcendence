@@ -41,6 +41,7 @@
   display: flex;
   justify-content: center;
   column-gap: 3%;
+  padding: 0 20px;
 }
 
 .game .down-section .left-user,
@@ -171,7 +172,8 @@
   }
 
   .game .down-section .play-ground {
-    width: 100%;
+    width: 90%;
+    margin: auto;
   }
 
   .game .up-section .vs-section {
@@ -189,3 +191,13 @@
     font-size: 0.7rem;
   }
 }
+
+.custom-scrollbar{
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 80%;
+}
+
