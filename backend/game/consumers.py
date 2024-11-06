@@ -24,8 +24,8 @@ from .local_game.consumer import LocalGameConsumer
 
 
 
-# class GlobalConsumer(LocalGameConsumer):
-#     pass
+class LocalConsumer(LocalGameConsumer):
+    pass
     
 
 class GlobalConsumer(RemoteGameConsumer):

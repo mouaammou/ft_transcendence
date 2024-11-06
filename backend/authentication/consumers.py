@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
-from .redis_connection import redis_conn
+# from .redis_connection import redis_conn
 from .models import Friendship, Notification
 from django.db.models import Q
 from .serializers import NotificationSerializer
@@ -67,11 +67,11 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		user_id = str(self.user.id)
 		channel_name = self.channel_name
 
-		redis_conn.sadd(user_id, channel_name)
-		if redis_conn.scard(user_id) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
-			await self.save_user_status("online")
-			await self.broadcast_online_status(self.user_data, "online")
+		# redis_conn.sadd(user_id, channel_name)
+		# if redis_conn.scard(user_id) == 1:
+		# 	print(f"\n broadcasting online when login: {self.user}\n")
+		# 	await self.save_user_status("online")
+		# 	await self.broadcast_online_status(self.user_data, "online")
 
 	@database_sync_to_async
 	def save_user_status(self, status):
@@ -84,11 +84,11 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		user_id = str(self.user.id)
 		channel_name = self.channel_name
 
-		redis_conn.srem(user_id, channel_name)
-		if redis_conn.scard(user_id) == 0:
-			print(f"\n broadcasting offline when logout: {self.user}\n")
-			await self.broadcast_online_status(self.user_data, "offline")
-			await self.save_user_status("offline")
+		# redis_conn.srem(user_id, channel_name)
+		# if redis_conn.scard(user_id) == 0:
+		# 	print(f"\n broadcasting offline when logout: {self.user}\n")
+		# 	await self.broadcast_online_status(self.user_data, "offline")
+		# 	await self.save_user_status("offline")
 
 	async def remove_user_from_groups(self):
 		try:
