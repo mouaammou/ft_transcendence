@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
@@ -7,41 +7,31 @@ import Link from 'next/link';
 import { postData } from '@/services/apiCalls';
 import useNotifications from '@components/navbar/useNotificationContext';
 
-export const NotificationLayout = ({ data, websocket, MarkAsRead, NOTIFICATION_TYPES}) => {
+export const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
+	const { sendMessage } = useNotifications();
 	const [status, setStatus] = useState(data.notif_status);
 	const [isActedUpon, setIsActedUpon] = useState(false);
 
-	const sendAction = async (action) => {
-		let messageType = '';
-		if (action === 'accepted')
-			messageType = NOTIFICATION_TYPES.ACCEPT_FRIEND;
-		else if (action === 'rejected')
-			messageType = NOTIFICATION_TYPES.REJECT_FRIEND;
-		websocket.current.send(JSON.stringify({
+	// Function to send friend request actions
+	const sendAction = useCallback((action) => {
+		const messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
+		sendMessage(JSON.stringify({
 			type: messageType,
 			to_user_id: data.sender,
 		}));
-	};
+	}, [data.sender, NOTIFICATION_TYPES, sendMessage]);
 
-	const handleAction = async (action) => {
+	// Function to handle the accept/reject actions
+	const handleAction = (action) => {
 		setStatus(action);
 		setIsActedUpon(true);
+		sendAction(action);
 		handleMarkAsRead();
-		if (websocket.current && websocket.current.readyState === WebSocket.OPEN) {
-			sendAction(action);
-		} else {
-			setTimeout(() => {
-				if (websocket.current && websocket.current.readyState === WebSocket.OPEN) {
-					sendAction(action);
-				}
-			}, 300);
-		}
 	};
 
+	// Function to mark notifications as read
 	const handleMarkAsRead = () => {
-		setTimeout(() => {
-			MarkAsRead(data.id);
-		}, 300);
+		MarkAsRead(data.id);
 	};
 
 	return (
@@ -60,17 +50,13 @@ export const NotificationLayout = ({ data, websocket, MarkAsRead, NOTIFICATION_T
 					<>
 						<button
 							className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
-							onClick={() => {
-								handleAction('accepted');
-							}}
+							onClick={() => handleAction('accepted')}
 						>
 							Accept
 						</button>
 						<button
 							className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
-							onClick={() => {
-								handleAction('rejected');
-							}}
+							onClick={() => handleAction('rejected')}
 						>
 							Reject
 						</button>
@@ -93,14 +79,16 @@ export const NotificationLayout = ({ data, websocket, MarkAsRead, NOTIFICATION_T
 };
 
 const NotificationBell = () => {
-	const { websocket, notifications, UnreadNotifications, NOTIFICATION_TYPES, unreadCount, markAsRead } = useNotifications();
+	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES } = useNotifications();
 	const [isOpen, setIsOpen] = useState(false);
 
 	// Fetch unread notifications on component mount
 	useEffect(() => {
 		UnreadNotifications();
-	}, []);
+	}, [unreadCount]);
 
+	// Toggle notification bell dropdown
+	const toggleDropdown = () => setIsOpen((prev) => !prev);
 
 	return (
 		<div>
@@ -108,7 +96,7 @@ const NotificationBell = () => {
 				<div className="relative">
 					<IoIosNotificationsOutline
 						className="text-[2.2rem] text-white hover:text-gray-400 transition duration-200 cursor-pointer"
-						onClick={() => setIsOpen(!isOpen)}
+						onClick={toggleDropdown}
 					/>
 					<span className={`absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs font-bold leading-none text-white rounded-full ${
 						unreadCount > 0 ? 'bg-red-600' : 'bg-gray-500'
@@ -128,13 +116,10 @@ const NotificationBell = () => {
 						</Link>
 					</div>
 					{notifications?.map((notification) => {
-						console.log("Notification Type: ", typeof notification);
-						console.log("Notification: ", notification);
 						return (
 							<NotificationLayout
-								data={notification}
 								key={notification.id}
-								websocket={websocket}
+								data={notification}
 								MarkAsRead={markAsRead}
 								NOTIFICATION_TYPES={NOTIFICATION_TYPES}
 							/>

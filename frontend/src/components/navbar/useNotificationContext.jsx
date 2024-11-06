@@ -17,7 +17,7 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
 
-	const {isConnected, websocket} = useWebSocketContext()
+	const { isConnected, lastJsonMessage, sendMessage } = useWebSocketContext()
 
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
@@ -41,32 +41,28 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, []);
 
-	const handleNotifications = useCallback((event) => {
-		if (!isConnected) return;
-		try {
-			const data = JSON.parse(event.data);
-			if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
-				, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
-				NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
-			].includes(data.type)) {
-				console.log('WebSocket FOR Notifications:', data);
-				// setNotifications((prev) => [...prev, { ...data }]);
+	const handleNotifications = useCallback((data) => {
 
-				setNotifications(prevNotifications => {
-					const updatedNotifications = [...prevNotifications, { ...data }];
-					// Sort by created_at to maintain consistency
-					return updatedNotifications.sort((a, b) => 
-						new Date(b.created_at) - new Date(a.created_at)
-					);
-				});
+		if (!isConnected || !data) return;
 
-				setNotificationType({ type: data.type, status: data.success, notificationId: data.id});
-				// Increment unread count for new notification
-				setUnreadCount(prev => prev + 1);
-			}
-		} catch (error) {
-			console.error('Error processing WebSocket Notifications:', error);
-			setError('Error processing WebSocket Notifications');
+		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
+			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
+			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
+		].includes(data.type)) {
+			console.log('WebSocket FOR Notifications:', data);
+			// setNotifications((prev) => [...prev, { ...data }]);
+
+			setNotifications(prevNotifications => {
+				const updatedNotifications = [...prevNotifications, { ...data }];
+				// Sort by created_at to maintain consistency
+				return updatedNotifications.sort((a, b) => 
+					new Date(b.created_at) - new Date(a.created_at)
+				);
+			});
+
+			setNotificationType({ type: data.type, status: data.success, notificationId: data.id});
+			// Increment unread count for new notification
+			setUnreadCount(prev => prev + 1);
 		}
 	}, [isConnected, setNotifications, setNotificationType]);
 
@@ -129,16 +125,12 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, [notifications]);
 
-	useEffect(() => {
-			if (isConnected && websocket.current) {
-				websocket.current.addEventListener('message', handleNotifications);
+	  // Handle new WebSocket messages
+		useEffect(() => {
+			if (lastJsonMessage) {
+					handleNotifications(lastJsonMessage);
 			}
-			return () => {
-				if (isConnected && websocket.current) {
-				websocket.current.removeEventListener('message', handleNotifications);
-				}
-			};
-		}, [isConnected, handleNotifications]);
+		}, [lastJsonMessage, handleNotifications]);
 
 	// Memoize the context value to prevent unnecessary re-renders
 	const value = useMemo(() => ({
@@ -148,11 +140,11 @@ export const NotificationProvider = ({ children }) => {
 		isLoading,
 		error,
 		isConnected,
-		websocket,
 		UnreadNotifications,
 		markAsRead,
 		markAllAsRead,
-		NOTIFICATION_TYPES
+		NOTIFICATION_TYPES,
+		sendMessage
 	}), [
 			notifications,
 			notificationType,
@@ -160,7 +152,6 @@ export const NotificationProvider = ({ children }) => {
 			isLoading,
 			error,
 			isConnected,
-			websocket,
 			UnreadNotifications,
 			markAsRead,
 			markAllAsRead,

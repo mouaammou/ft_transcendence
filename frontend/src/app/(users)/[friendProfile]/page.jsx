@@ -12,7 +12,7 @@ import useNotifications from '@/components/navbar/useNotificationContext';
 export default function FriendProfile({ params }) {
 
 	const {pageNotFound, setPageNotFound } = useWebSocketContext();
-	const {websocket, isConnected, notificationType, NOTIFICATION_TYPES} = useNotifications();
+	const {isConnected, notificationType, NOTIFICATION_TYPES, lastJsonMessage, sendMessage} = useNotifications();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
@@ -20,27 +20,17 @@ export default function FriendProfile({ params }) {
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
 			setFriendStatusRequest('pending');
-			console.log('sending friend request to: ', profile.id);
-			if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
-			{
-				websocket.current.send(JSON.stringify({
-					type: 'send_friend_request',
-					to_user_id: profile.id,
-				}));
-			}
-			else {
-				setTimeout(() => {
-					if (websocket.current && websocket.current.readyState === WebSocket.OPEN)
-					{
-						websocket.current.send(JSON.stringify({
-							type: 'send_friend_request',
-							to_user_id: profile.id,
-						}));
-					}
-				}, 500);
-			}
+			console.log('Sending friend request to:', profile.id);
+
+			// Use sendMessage directly
+			sendMessage(JSON.stringify({
+				type: NOTIFICATION_TYPES.FRIENDSHIP,
+				to_user_id: profile.id,
+			}));
+		} else {
+			console.error('WebSocket is not connected or profile ID is missing.');
 		}
-	}, [isConnected, profile?.id, websocket, setFriendStatusRequest]);
+	}, [isConnected, profile, setFriendStatusRequest, sendMessage]);
 
 	useEffect(() => { // this for the notification type
 		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
@@ -53,7 +43,7 @@ export default function FriendProfile({ params }) {
 		}
 
 		console.log('notificationType:', notificationType);
-	}, [notificationType, setFriendStatusRequest]);
+	}, [notificationType]);
 
 	useEffect(() => {
 		const fetchFriendProfile = async (params) => {
@@ -82,46 +72,36 @@ export default function FriendProfile({ params }) {
 	}, [params]); // Add 'params' as a dependency
 
 
-	const rejectFriendRequest = useCallback(async (event) => {
-		if (isConnected){
-			const data = JSON.parse(event.data);
-			if (data.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
-				setFriendStatusRequest('no');
-			}
+	const rejectFriendRequest = useCallback(async (data) => {
+		if (! data || !isConnected) return;
+		if (data.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
+			console.log('Friend request rejected:', data);
+			setFriendStatusRequest('no');
 		}
 	}, [setFriendStatusRequest, isConnected]);
 
-	const handleFriendStatusChange = useCallback(async (event) => {
-		if (isConnected) {
-			const data = JSON.parse(event.data);
-			if (data.type === 'user_status_change') {
-				console.log("user status in friend profile:", data);
-				setProfile(prevProfile => {
-					if (prevProfile.username === data.username) {
-						return { ...prevProfile, status: data.status };
-					}
-					return prevProfile;
-				});
-			}
+	const handleFriendStatusChange = useCallback(async (data) => {
+		
+		if (! data || ! isConnected) return;
+
+		if (data.type === 'user_status_change') {
+			console.log("user status in friend profile:", data);
+			setProfile(prevProfile => {
+				if (prevProfile.username === data.username) {
+					return { ...prevProfile, status: data.status };
+				}
+				return prevProfile;
+			});
 		}
 	}, [isConnected, setProfile]);
 
 	useEffect(() => {
-		if (isConnected)
-			{
-				websocket.current.addEventListener('message', handleFriendStatusChange);
-				websocket.current.addEventListener('message', rejectFriendRequest);
-			}
-
-		return () => {
-			websocket?.current?.removeEventListener('message', handleFriendStatusChange);
-			websocket?.current?.removeEventListener('message', rejectFriendRequest);
-		};
-	}, [profile]);
-
-	if (pageNotFound) {
-		notFound();
-	}
+		handleFriendStatusChange(lastJsonMessage);
+		rejectFriendRequest(lastJsonMessage);
+		// return () => {
+		// 	setFriendStatusRequest('no');
+		// };
+	}, [profile, friendStatusRequest]);
 
 	return (
 		profile?.id && (

@@ -39,7 +39,6 @@ class WebSocketManager {
 
     close() {
         if (this.socket) {
-            // console.log('websocket closed');
             this.socket.close();
             this.isConnected = false; 
         }
