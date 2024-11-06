@@ -517,7 +517,7 @@ class EventLoopManager:
             cls.check_for_game(player_id)
             return None
         if not cls.game_focus(player_id):
-            return None
+            return None   
         game_obj = cls.active_players.get(player_id)
         if game_obj is None:
             print("game_obj is None here in the recieve methode")
