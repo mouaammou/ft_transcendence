@@ -42,6 +42,7 @@ class TokenVerificationMiddleWare:
 			# print('x'*15)
 			# print(refresh_token_obj.payload)
 			# print('x'*15)
+			request.unique_key = refresh_token_obj.payload.get("channel_name")
 			if not access_token:
 					# Generate a new access token if none exists or is invalid
 					new_access_token = refresh_token_obj.access_token

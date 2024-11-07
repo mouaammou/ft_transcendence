@@ -10,6 +10,6 @@ urlpatterns = [
         name='local-tournaments',
     ),
     path('play-tournament/', PlayTounament.as_view(), name='play-tournament'),
-    path('play-regular/', PlayRegular.as_view(), name='play-regular'),
+    path('play-regular', PlayRegular.as_view(), name='play-regular'),
 ]
 

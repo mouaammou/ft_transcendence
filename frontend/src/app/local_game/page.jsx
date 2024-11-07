@@ -14,8 +14,10 @@ const ChoseGame = () => {
         e.preventDefault();
         try {
 
-            const response = await getData('game/play-regular/', {});
-            console.log('=======>');
+            // const response = await getData('/game/play-regular/');
+            const response = await getData("/game/play-regular");
+
+            console.log('=======>', response);
             // console.log(res);
             router.push('/l_game');
         }
