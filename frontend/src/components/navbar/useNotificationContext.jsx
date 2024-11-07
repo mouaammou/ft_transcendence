@@ -17,7 +17,7 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
 
-	const {isConnected, websocket} = useWebSocketContext()
+	const { isConnected, lastJsonMessage, sendMessage , lastMessage} = useWebSocketContext()
 
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
@@ -41,34 +41,29 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, []);
 
-	const handleNotifications = useCallback((event) => {
-		if (!isConnected) return;
-		try {
-			const data = JSON.parse(event.data);
-			if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
-				, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
-				NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
-			].includes(data.type)) {
-				console.log('WebSocket FOR Notifications:', data);
-				// setNotifications((prev) => [...prev, { ...data }]);
+	const handleNotifications = useCallback(async (data) => {
 
-				setNotifications(prevNotifications => {
-					const updatedNotifications = [...prevNotifications, { ...data }];
-					// Sort by created_at to maintain consistency
-					return updatedNotifications.sort((a, b) => 
-						new Date(b.created_at) - new Date(a.created_at)
-					);
-				});
+		if (!isConnected || !data) return;
+		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
+			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
+			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
+		].includes(data.type)) {
+			console.log('WebSocket FOR Notifications:', data);
+			// setNotifications((prev) => [...prev, { ...data }]);
 
-				setNotificationType({ type: data.type, status: data.success, notificationId: data.id});
-				// Increment unread count for new notification
-				setUnreadCount(prev => prev + 1);
-			}
-		} catch (error) {
-			console.error('Error processing WebSocket Notifications:', error);
-			setError('Error processing WebSocket Notifications');
+			setNotifications(prevNotifications => {
+				const updatedNotifications = [...prevNotifications, { ...data }];
+				// Sort by created_at to maintain consistency
+				return updatedNotifications.sort((a, b) => 
+					new Date(b.created_at) - new Date(a.created_at)
+				);
+			});
+
+			setNotificationType({ type: data.type, status: data.success, notificationId: data.id});
+			// Increment unread count for new notification
+			setUnreadCount(prev => prev + 1);
 		}
-	}, [isConnected, setNotifications, setNotificationType]);
+	}, [isConnected, lastMessage]);
 
 	// Fetch notifications when the user is logged in
 	const UnreadNotifications = useCallback(async () => {
@@ -93,7 +88,7 @@ export const NotificationProvider = ({ children }) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [setNotifications]);
+	}, []);
 
 
 	const markAsRead = useCallback(async (notificationId) => {
@@ -119,7 +114,7 @@ export const NotificationProvider = ({ children }) => {
 
 			const updatedNotifications = notifications.map(notif => ({
 				...notif,
-				read: true
+				is_read: true
 			}));
 
 			setNotifications(updatedNotifications);
@@ -129,16 +124,12 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, [notifications]);
 
-	useEffect(() => {
-			if (isConnected && websocket.current) {
-				websocket.current.addEventListener('message', handleNotifications);
+	  // Handle new WebSocket messages
+		useEffect(() => {
+			if (lastJsonMessage) {
+				handleNotifications(lastJsonMessage);
 			}
-			return () => {
-				if (isConnected && websocket.current) {
-				websocket.current.removeEventListener('message', handleNotifications);
-				}
-			};
-		}, [isConnected, handleNotifications]);
+		}, [lastMessage]);
 
 	// Memoize the context value to prevent unnecessary re-renders
 	const value = useMemo(() => ({
@@ -147,12 +138,16 @@ export const NotificationProvider = ({ children }) => {
 		unreadCount,
 		isLoading,
 		error,
-		isConnected,
-		websocket,
 		UnreadNotifications,
 		markAsRead,
 		markAllAsRead,
-		NOTIFICATION_TYPES
+		NOTIFICATION_TYPES,
+		sendMessage,
+		lastJsonMessage,
+		isConnected,
+		setNotifications,
+		handleNotifications,
+		lastMessage,
 	}), [
 			notifications,
 			notificationType,
@@ -160,11 +155,12 @@ export const NotificationProvider = ({ children }) => {
 			isLoading,
 			error,
 			isConnected,
-			websocket,
 			UnreadNotifications,
 			markAsRead,
 			markAllAsRead,
-			NOTIFICATION_TYPES
+			NOTIFICATION_TYPES,
+			lastJsonMessage,
+			lastMessage
 		]);
 
 	return (
@@ -175,12 +171,12 @@ export const NotificationProvider = ({ children }) => {
 };
 
 // Custom hook to use the notification context
-const useNotifications = () => {
+const useNotificationContext = () => {
 	const context = useContext(NotificationContext);
 	if (!context) {
-		throw new Error('useNotifications must be used within a NotificationProvider');
+		throw new Error('useNotificationContext must be used within a NotificationProvider');
 	}
 	return context;
 };
 
-export default useNotifications;
+export default useNotificationContext;

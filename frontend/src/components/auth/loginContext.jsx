@@ -18,7 +18,7 @@ export const LoginProvider = ({ children }) => {
 	const [profileData, setProfileData] = useState({});
 
 	// WebSocket context
-	const { isConnected, websocket } = useWebSocketContext();
+	const { isConnected, sendMessage } = useWebSocketContext();
 
 	// Authentication effect
 	useEffect(() => {
@@ -43,9 +43,8 @@ export const LoginProvider = ({ children }) => {
 				Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
 
 				// Send WebSocket message if connected
-				if (isConnected && websocket.current && websocket.current.readyState === WebSocket.OPEN) {
-					websocket.current.send(JSON.stringify({ online: 'online', user: res.data.username }));
-				}
+				if (isConnected)
+					sendMessage(JSON.stringify({ online: 'online', user: res.data.username }));
 				router.push('/profile');
 			} else {
 				handleError(res);
@@ -73,8 +72,8 @@ export const LoginProvider = ({ children }) => {
 
 	// Logout function with WebSocket notification
 	const Logout = useCallback(() => {
-		if (isConnected && websocket.current && websocket.current.readyState === WebSocket.OPEN) {
-			websocket.current.send(JSON.stringify({ logout: 'logout', user: profileData.username }));
+		if (isConnected) {
+			sendMessage(JSON.stringify({ logout: 'logout', user: profileData.username }));
 		}
 		setIsAuth(false);
 		Cookies.remove('isAuth');
@@ -83,7 +82,7 @@ export const LoginProvider = ({ children }) => {
 				router.push('/login');
 			}
 		});
-	}, [isConnected, websocket, profileData, router]);
+	}, [isConnected, profileData, router]);
 
 	// Fetch profile data only if authenticated
 	const fetchProfile = useCallback(async () => {

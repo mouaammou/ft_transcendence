@@ -8,7 +8,6 @@ redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0)
 try:
 	# redis_conn.flushdb(): for testing purposes, it clears the database, use with caution
 	redis_conn.flushdb()
-	redis_conn.ping() # for testing purposes, it pings the server
-	logging.info("\nConnected to Redis successfully.")
+	redis_conn.ping()
 except redis.ConnectionError:
-	logging.error("\nFailed to connect to Redis.")
+	logging.error("\nFailed to connect to Redis.\n")

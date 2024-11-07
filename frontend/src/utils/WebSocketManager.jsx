@@ -1,47 +1,38 @@
 class WebSocketManager {
     constructor(url) {
         if (!WebSocketManager.instance) {
-            this.url = url;
+            
             this.socket = new WebSocket(url);
             WebSocketManager.instance = this;
             this.messageHandlers = [];
             this.isConnected = false;
-
             this.socket.onopen = () => {
-                console.log('WebSocket /global connection opened');
+                // console.log('WebSocket connection opened');
                 this.isConnected = true;
-            };
-
+            }
+            
             this.socket.onclose = () => {
-                console.log('WebSocket /global connection closed');
+                // console.log('WebSocket connection closed');
                 this.isConnected = false;
-                WebSocketManager.instance = null; // Reset instance on close
-            };
+            }
 
             this.socket.onmessage = (event) => {
-                this.messageHandlers.forEach(handler => handler(event)); // Call all handlers
+                // console.log('message from the server -->  ', event.data);
+                this.messageHandlers.forEach(handler => handler(event));// call all handlers
             };
-
-            this.socket.onerror = (error) => {
-                // console.error('WebSocket error:', error);
-            };
-        }
+        }    
         return WebSocketManager.instance;
     }
+    
+    // reconnect = false;
 
     sendMessage(message) {
-        if (this.isConnected && this.socket.readyState === WebSocket.OPEN) {
+        if (this.isConnected) {
             this.socket.send(message);
+            // console.log("send a request to start remote random game");
             return true;
         } else {
-            console.log('WebSocket is not open. Attempting to reconnect...');
-            this.socket = new WebSocket(this.url);
-
-            this.socket.onopen = () => {
-                console.log('WebSocket reconnected and message sent:', message);
-                this.isConnected = true;
-                setTimeout(() => this.socket.send(message), 1500); // Try again after 1 second
-            };
+            console.error('websocket is not initialized');
             return false;
         }
     }
@@ -49,18 +40,21 @@ class WebSocketManager {
     close() {
         if (this.socket) {
             this.socket.close();
-            this.isConnected = false;
+            this.isConnected = false; 
         }
     }
 
     registerMessageHandler(handler) {
+        // console.log('the message handler is registred');
         this.messageHandlers.push(handler);
     }
 
     unregisterMessageHandler(method) {
-        this.messageHandlers = this.messageHandlers.filter(handler => handler !== method);
+        // console.log('the handler deleted');
+        this.messageHandlers = this.messageHandlers.filter(handler => handler !== method)
     }
-}
 
-const instance = new WebSocketManager('ws://localhost:8000/ws/global/');
+    }
+
+const instance = new WebSocketManager('ws://localhost:8000/ws/global/')
 export default instance;
