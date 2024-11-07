@@ -11,8 +11,15 @@ import useNotificationContext from '@/components/navbar/useNotificationContext';
 
 export default function FriendProfile({ params }) {
 
-	const {pageNotFound, setPageNotFound } = useWebSocketContext();
-	const {isConnected, notificationType, NOTIFICATION_TYPES, lastJsonMessage, sendMessage, lastMessage} = useNotificationContext();
+	const { pageNotFound, setPageNotFound } = useWebSocketContext();
+	const {
+		isConnected,
+		notificationType,
+		NOTIFICATION_TYPES,
+		lastJsonMessage,
+		sendMessage,
+		lastMessage
+	} = useNotificationContext();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
@@ -21,33 +28,28 @@ export default function FriendProfile({ params }) {
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
 			setFriendStatusRequest('pending');
-			console.log('Sending friend request to:', profile.id);
-
-			// Use sendMessage directly
 			sendMessage(JSON.stringify({
 				type: NOTIFICATION_TYPES.FRIENDSHIP,
 				to_user_id: profile.id,
 			}));
-		} else {
-			console.error('WebSocket is not connected or profile ID is missing.');
 		}
-	}, [isConnected, profile, NOTIFICATION_TYPES, sendMessage]);
+	}, [isConnected, profile?.id, NOTIFICATION_TYPES, sendMessage]);
 
-	useEffect(() => { // this for the notification type
-		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND
-		&& notificationType.status === true) {
+	// Handle notification status changes
+	useEffect(() => {
+		if (!notificationType?.type) return;
+
+		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND && notificationType.status) {
 			setFriendStatusRequest('accepted');
 		}
-		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND
-		&& notificationType.status === true) {
+		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND && notificationType.status) {
 			setFriendStatusRequest('no');
 		}
+	}, [notificationType, NOTIFICATION_TYPES]);
 
-		console.log('notificationType:', notificationType);
-	}, [lastMessage, notificationType]);
-
+	// Fetch initial profile and friend status
 	useEffect(() => {
-		const fetchFriendProfile = async (params) => {
+		const fetchFriendProfile = async () => {
 			if (!params.friendProfile) {
 				setPageNotFound(true);
 				return;
@@ -55,47 +57,31 @@ export default function FriendProfile({ params }) {
 			try {
 				const response = await getData(`/friendProfile/${params.friendProfile}`);
 				if (response.status === 200) {
-					const fetchedProfile = response.data;
-					setFriendStatusRequest(fetchedProfile.friend);
-					setProfile(fetchedProfile);
+					setProfile(response.data);
+					setFriendStatusRequest(response.data.friend);
 				} else {
 					setPageNotFound(true);
 				}
 			} catch (error) {
-				setPageNotFound(true);
+			setPageNotFound(true);
 			}
 		};
-		fetchFriendProfile(params);
+		fetchFriendProfile();
+	}, [pathname, params.friendProfile]);
 
-	}, [pathname]); // Add 'params' as a dependency
+	// Handle websocket messages
+	useEffect(() => {
+		if (!lastJsonMessage || !isConnected) return;
 
-
-	const rejectFriendRequest = useCallback(async (data) => {
-		if (! data || !isConnected) return;
-		if (data.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
-			console.log('Friend request rejected:', data);
+		if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
 			setFriendStatusRequest('no');
 		}
-	}, [setFriendStatusRequest, isConnected]);
 
-	const handleFriendStatusChange = useCallback(async (data) => {
-		
-		if (! data || ! isConnected) return;
-
-		if (data.type === 'user_status_change') {
-			setProfile(prevProfile => {
-				if (prevProfile.username === data.username) {
-					return { ...prevProfile, status: data.status };
-				}
-				return prevProfile;
-			});
+		if (lastJsonMessage.type === 'user_status_change' && 
+			lastJsonMessage.username === profile.username) {
+			setProfile(prev => ({...prev, status: lastJsonMessage.status}));
 		}
-	}, [isConnected, profile]);
-
-	useEffect(() => {
-		handleFriendStatusChange(lastJsonMessage);
-		rejectFriendRequest(lastJsonMessage);
-	}, [lastJsonMessage]);
+	}, [lastJsonMessage, isConnected, profile.username]);
 
 	return (
 		profile?.id && (
@@ -143,16 +129,38 @@ export default function FriendProfile({ params }) {
 									</li>
 								</>
 							}
-							{(friendStatusRequest === 'no') && (
-								<li
-									onClick={() => {
-										sendFriendRequest();
-									}}
-									className="w-full py-3 px-4 bg-amber-400 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-amber-500 transition flex items-center justify-center">
-									<FaUserPlus className="mr-2 size-5" /> Add to Friend List
-								</li>
-								)}
-								
+
+								{<div className="mt-6">
+									{friendStatusRequest === 'no' && (
+									<button
+										onClick={sendFriendRequest}
+										className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+										>
+										Send Friend Request
+									</button>
+									)}
+
+									{friendStatusRequest === 'pending' && (
+									<div className="flex items-center space-x-2">
+										<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+										<span className="text-yellow-400">Friend Request Pending</span>
+									</div>
+									)}
+
+									{friendStatusRequest === 'accepted' && (
+									<div className="flex items-center space-x-2 text-green-400">
+										<svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										<span>Friends</span>
+									</div>
+									)}
+
+									{friendStatusRequest === 'rejected' && (
+										<span className="text-red-400">Friend Request Rejected</span>
+									)}
+								</div>}
+
 								{friendStatusRequest === 'pending' && (
 									<li className="w-full py-3 px-4 bg-gray-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-gray-600 transition flex items-center justify-center">
 										Pending
