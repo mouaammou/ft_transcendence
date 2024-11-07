@@ -38,7 +38,8 @@
 
 .UserListAll::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background: linear-gradient(#642bff, #22fffb);
+  /* background: linear-gradient(#0b0128, #017573); */
+  background: linear-gradient(#0b0128, #1dafe4);
 }
 
 @media (max-width: 990px) {

@@ -5,8 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Mingzat&family=Nerko+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
-
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wdth,wght@93.7,300..700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -159,5 +158,32 @@ html {
   ._42-logo {
     margin-right: 1.5rem;
     width: 2rem;
+  }
+}
+
+
+.loading {
+  width: 150px;
+  height: 90px;
+  border: 5px solid #fff;
+  border-radius: 5px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  background: linear-gradient(#000 0 0) 0 0/8px 30px,
+    linear-gradient(#000 0 0) 100% 0/8px 30px,
+    radial-gradient(farthest-side, #000 90%, #fff) 0 5px/8px 8px content-box,
+    #fff;
+  background-repeat: no-repeat;
+  animation: l3 0.5s infinite linear;
+}
+@keyframes l3 {
+  25% {
+    background-position: 0 0, 100% 100%, 100% calc(100% - 5px);
+  }
+  50% {
+    background-position: 0 100%, 100% 100%, 0 calc(100% - 5px);
+  }
+  75% {
+    background-position: 0 100%, 100% 0, 100% 5px;
   }
 }

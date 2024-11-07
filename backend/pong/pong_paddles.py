@@ -56,6 +56,10 @@ class Paddle(Base):
             self.root_obj.scope['finished'] = self.direction+'_'+'player'
             # self.root_obj.start_game = False
             self.root_obj.reset_to_default_state() # reset the game but keep the scope
+            # self.root_obj.winner = self.root_obj.get_nickname(self.direction) # for tournament
+            # setattr(self.root_obj, 'winner', f'{self.direction}_nickname')
+            # self.root_obj.winner = getattr(self, self.direction+'_nickname')
+            self.root_obj.save_match(self.direction)
     
     def update_scope(self):
         # on paddle move only

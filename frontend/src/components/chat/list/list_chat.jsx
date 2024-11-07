@@ -9,22 +9,32 @@ import UserList from '@/components/chat/list/UserList/UserList';
 import React, { useContext } from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
+import { useAuth } from '@/components/auth/loginContext.jsx';
+
+
 const list_chat = () => {
-  const { isChatVisible, onlineUser, allUsers, handleSearch } = useContext(ChatContext);
+  const { isChatVisible, allUsers, handleSearch} = useContext(ChatContext);
+  const onlineUser = allUsers.slice(0, 4);
+
+  const { profileData: data} = useAuth();
 
   return (
+    // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`} ref={scrollRef}>
     <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
       <div className="user-chat">
         <div className="info-user">
-          <Image
-            src="/med.jpeg"
-            alt="mohammed"
+           <img
+            // src="/med.jpeg"
+            // alt="mohammed"
+            src={data.avatar}
+            alt={data?.username}
             className="img-info-user"
             width={65}
             height={65}
             style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
           />
-          <p> mohammed </p>
+          {/* <p> mohammed </p> */}
+          <p> {data?.username} </p>
         </div>
         <div>
           <HiBell className="HiBell" />

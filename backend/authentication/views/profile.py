@@ -15,7 +15,7 @@ class UserProfile(APIView):
 	def post(self, request):
 		user = UserSerializer(request.customUser).data
 		return Response({"user": user}, status=status.HTTP_200_OK)
-
+ 
 class UpdateProfile(APIView):
 	def post(self, request):
 		user = request.customUser

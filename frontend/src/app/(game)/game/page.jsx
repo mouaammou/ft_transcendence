@@ -4,40 +4,64 @@ import { useState, useEffect } from 'react';
 import '@/styles/game/game.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
-import { useAuth } from "@/components/auth/loginContext.jsx";
-import { useWebSocketContext } from '@/components/websocket/websocketContext';
-
+import { getData } from '@/services/apiCalls';
+import mysocket from '@/utils/WebSocketManager';
+import { useRouter } from 'next/navigation';
 
 const GamePage = () => {
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
-	const {profileData: user_data} = useAuth();
+  const [player1_id, setPlayer1_id] = useState(null);
+  const [player2_id, setPlayer2_id] = useState(null);
+  const router = useRouter();
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
+  const [gameType, setGameType] = useState(null);
 
-  const {opponent} = useWebSocketContext();
-	// const changeScore1 = () => {
-	// 	setScore1(score1 + 1);
-	// }
+  const Skeleton = () => (
+    <div className="flex flex-col items-center m-auto">
+      <div className="animate-pulse bg-gray-400  rounded-full w-20 h-20 ml-2" />
+      <div className="animate-pulse bg-gray-400 rounded-full w-20 h-2 ml-2 mt-1" />
+      <div className="animate-pulse bg-gray-400  rounded-full w-20 h-2 ml-2 mt-1 lg:ml-[20px]" />
+    </div>
+  );
 
-  // const changeScore1 = () => {
-  // 	setScore1(score1 + 1);
-  // }
+  const handle_message = message => {
+    const data = JSON.parse(message.data);
+    if (data.status == 'GAME_DATA') {
+      setPlayer1_id(data.player_1);
+      setPlayer2_id(data.player_2);
+      setGameType(data.game_type);
+    } else if (data.status == 'NO_GAME_DATA') {
+      router.push('/play');
+    }
+  };
 
-  // Extract parameters from URLSearchParams
-
+  const fetchPlayer = async player_id => {
+    try {
+      const fetchedUser = await getData(`/userById/${player_id}`);
+      if (fetchedUser.status === 200) {
+        return fetchedUser.data;
+      }
+    } catch (error) {
+      console.log('Failed to fetch player data', error);
+    }
+  };
 
   useEffect(() => {
-    console.log("params : ", opponent);
-
-    // Set players based on the side
-    if (opponent && opponent.side === 'right') {
-      setPlayer1(opponent);
-      setPlayer2(user_data);
-    } else {
-      setPlayer1(user_data);
-      setPlayer2(opponent);
+    if (player1_id && player2_id) {
+      fetchPlayer(player1_id).then(player1 => {
+        fetchPlayer(player2_id).then(player2 => {
+          setPlayer1(player1);
+          setPlayer2(player2);
+        });
+      });
     }
+  }, [player1_id, player2_id]);
+
+  useEffect(() => {
+    mysocket.registerMessageHandler(handle_message);
+    mysocket.sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
   }, []);
 
   return (
@@ -53,10 +77,9 @@ const GamePage = () => {
         <div className="right-score">{score1}</div>
       </div>
       <div className="down-section">
-         { player1 ? 
-         (<div className="left-user">
-       
-            <img // i have to resolve the issue with <Image/> 
+        {player1 ? (
+          <div className="left-user">
+            <img // i have to resolve the issue with <Image/>
               className="left-user-img"
               src={player1.avatar}
               alt="user1"
@@ -64,13 +87,16 @@ const GamePage = () => {
               height={100}
             />
             <div className="left-user-name">{player1.username}</div>
-          </div> ):(<div>still loading ....</div>) }
+          </div>
+        ) : (
+          <Skeleton />
+        )}
         <div className="self-game">
-          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} />
+          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} gameType={gameType} />
         </div>
-        { player1 ? 
-         (<div className="right-user">
-            <img // i have to resolve the issue with <Image/> 
+        {player2 ? (
+          <div className="right-user">
+            <img // i have to resolve the issue with <Image/>
               className="right-user-img"
               src={player2?.avatar}
               alt="user1"
@@ -78,7 +104,10 @@ const GamePage = () => {
               height={100}
             />
             <div className="right-user-name">{player2?.username}</div>
-          </div>):(<div>still loading ....</div>)}
+          </div>
+        ) : (
+          <Skeleton />
+        )}
       </div>
     </div>
   );

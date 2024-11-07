@@ -49,13 +49,14 @@ export default function FriendProfile({ params }) {
 
 	// Fetch initial profile and friend status
 	useEffect(() => {
-		const fetchFriendProfile = async () => {
-			if (!params.friendProfile) {
+		const fetchFriendProfile = async (params) => {
+			const unwrappedParams = await params;
+			if (! unwrappedParams.friendProfile) {
 				setPageNotFound(true);
 				return;
 			}
 			try {
-				const response = await getData(`/friendProfile/${params.friendProfile}`);
+				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
 				if (response.status === 200) {
 					setProfile(response.data);
 					setFriendStatusRequest(response.data.friend);
@@ -66,8 +67,8 @@ export default function FriendProfile({ params }) {
 			setPageNotFound(true);
 			}
 		};
-		fetchFriendProfile();
-	}, [pathname, params.friendProfile]);
+		fetchFriendProfile(params);
+	}, []);
 
 	// Handle websocket messages
 	useEffect(() => {
@@ -698,132 +699,4 @@ export default function FriendProfile({ params }) {
 			</div>
 		)
 	);
-}
-
-export function FriendProfiless({ params }) {
-  const { pageNotFound, setPageNotFound } = useWebSocketContext();
-  const {
-    isConnected,
-    notificationType,
-    NOTIFICATION_TYPES,
-    lastJsonMessage,
-    sendMessage,
-    lastMessage
-  } = useNotificationContext();
-
-  const [profile, setProfile] = useState({});
-  const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-  const pathname = usePathname();
-
-  const sendFriendRequest = useCallback(() => {
-    if (isConnected && profile?.id) {
-      setFriendStatusRequest('pending');
-      sendMessage(JSON.stringify({
-        type: NOTIFICATION_TYPES.FRIENDSHIP,
-        to_user_id: profile.id,
-      }));
-    }
-  }, [isConnected, profile?.id, NOTIFICATION_TYPES, sendMessage]);
-
-  // Handle notification status changes
-  useEffect(() => {
-    if (!notificationType?.type) return;
-
-    if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND && notificationType.status) {
-      setFriendStatusRequest('accepted');
-    }
-    if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND && notificationType.status) {
-      setFriendStatusRequest('no');
-    }
-  }, [notificationType, NOTIFICATION_TYPES]);
-
-  // Fetch initial profile and friend status
-  useEffect(() => {
-    const fetchFriendProfile = async () => {
-      if (!params.friendProfile) {
-        setPageNotFound(true);
-        return;
-      }
-      try {
-        const response = await getData(`/friendProfile/${params.friendProfile}`);
-        if (response.status === 200) {
-          setProfile(response.data);
-          setFriendStatusRequest(response.data.friend);
-        } else {
-          setPageNotFound(true);
-        }
-      } catch (error) {
-        setPageNotFound(true);
-      }
-    };
-    fetchFriendProfile();
-  }, [pathname, params.friendProfile]);
-
-  // Handle websocket messages
-  useEffect(() => {
-    if (!lastJsonMessage || !isConnected) return;
-
-    if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
-      setFriendStatusRequest('no');
-    }
-
-    if (lastJsonMessage.type === 'user_status_change' && 
-        lastJsonMessage.username === profile.username) {
-      setProfile(prev => ({...prev, status: lastJsonMessage.status}));
-    }
-  }, [lastJsonMessage, isConnected, profile.username]);
-
-  return (
-    <div className="container mx-auto p-6">
-      <div className="rounded-lg bg-gray-800 p-6 shadow-lg">
-        <div className="flex items-center space-x-4">
-          <img
-            src={profile.avatar || '/default-avatar.png'}
-            alt={profile.username}
-            className="h-20 w-20 rounded-full border-2 border-blue-500 object-cover"
-          />
-          <div>
-            <h1 className="text-2xl font-bold text-white">{profile.username}</h1>
-            <div className="mt-1 flex items-center">
-              <span className={`mr-2 h-2.5 w-2.5 rounded-full ${
-                profile.status === 'online' ? 'bg-green-500' : 'bg-gray-500'
-              }`}></span>
-              <p className="text-sm text-gray-300">{profile.status || 'offline'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          {friendStatusRequest === 'no' && (
-            <button
-              onClick={sendFriendRequest}
-              className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Send Friend Request
-            </button>
-          )}
-
-          {friendStatusRequest === 'pending' && (
-            <div className="flex items-center space-x-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-              <span className="text-yellow-400">Friend Request Pending</span>
-            </div>
-          )}
-
-          {friendStatusRequest === 'accepted' && (
-            <div className="flex items-center space-x-2 text-green-400">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <span>Friends</span>
-            </div>
-          )}
-
-          {friendStatusRequest === 'rejected' && (
-            <span className="text-red-400">Friend Request Rejected</span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+};

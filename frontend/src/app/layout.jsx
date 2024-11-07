@@ -6,6 +6,8 @@ import Navbar from '@/components/navbar/navAuth';
 import Sidebar from '@/components/sidebar/sidebar';
 import { WebSocketProvider } from '@/components/websocket/websocketContext';
 import {NotificationProvider} from '@components/navbar/useNotificationContext';
+import SkeletonTheme from 'react-loading-skeleton';
+import Loading from './loading';
 
 import '@/styles/globals.css';
 import '@/styles/globalsTailwind.css';
