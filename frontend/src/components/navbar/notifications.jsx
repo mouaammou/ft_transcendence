@@ -4,15 +4,12 @@ import { IoIosNotificationsOutline } from 'react-icons/io';
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
-import { postData } from '@/services/apiCalls';
-import useNotifications from '@components/navbar/useNotificationContext';
+import useNotificationContext from '@components/navbar/useNotificationContext';
 
-export const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
-	const { sendMessage } = useNotifications();
+const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
+	const { sendMessage } = useNotificationContext();
 	const [status, setStatus] = useState(data.notif_status);
-	const [isActedUpon, setIsActedUpon] = useState(false);
 
-	// Function to send friend request actions
 	const sendAction = useCallback((action) => {
 		const messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
 		sendMessage(JSON.stringify({
@@ -21,71 +18,79 @@ export const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => 
 		}));
 	}, [data.sender, NOTIFICATION_TYPES, sendMessage]);
 
-	// Function to handle the accept/reject actions
 	const handleAction = (action) => {
 		setStatus(action);
-		setIsActedUpon(true);
 		sendAction(action);
-		handleMarkAsRead();
+		MarkAsRead(data.id); // Mark as read when action is taken
 	};
 
-	// Function to mark notifications as read
 	const handleMarkAsRead = () => {
 		MarkAsRead(data.id);
 	};
 
 	return (
-		<div className="flex p-4 w-full max-w-96 border-b mt-2 border-gray-700 relative">
-			<img className="w-10 h-10 rounded-lg" src={data.avatar} alt="avatar" />
-			<div className="ml-3 text-sm font-normal">
-				<span className="mb-1 text-sm font-semibold text-white">
-					<Link href={`/${data.username}`}>
-						{data.username}
-					</Link>
-				</span>
-				<div className="mb-2 text-sm font-normal max-w-52">
-					{data.message}
-				</div>
-				{status === 'pending' && !isActedUpon && (
-					<>
-						<button
-							className="inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none"
-							onClick={() => handleAction('accepted')}
-						>
-							Accept
-						</button>
-						<button
-							className="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none"
-							onClick={() => handleAction('rejected')}
-						>
-							Reject
-						</button>
-					</>
-				)}
-				{isActedUpon && (
-					<span className={`inline-flex mr-2 px-2.5 py-1.5 text-xs font-medium text-center text-white ${status === 'accepted' ? 'bg-green-600' : 'bg-red-600'} rounded-lg`}>
-						{status}
-					</span>
-				)} 
-				<button
-					className="ml-2 inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:ring-4 outline-none absolute right-4 top-8"
-					onClick={handleMarkAsRead}
-				>
-					<IoCheckmarkOutline className="text-[1.2rem] mr-1" />
-				</button>
+		<div className="group relative mt-2 flex w-full max-w-96 border-b border-gray-700/30 p-4 transition-all duration-300 hover:bg-gray-800/30">
+			<div className="transition-transform duration-300 group-hover:scale-105">
+			<img 
+				className="h-10 w-10 rounded-lg object-cover ring-2 ring-blue-500/30 transition-all duration-300 group-hover:ring-blue-500" 
+				src={data.avatar} 
+				alt="avatar" 
+			/>
 			</div>
+			
+			<div className="ml-4 text-sm font-normal">
+			<Link 
+				href={`/${data.username}`}
+				className="mb-1 text-sm font-semibold text-white transition-colors duration-300 hover:text-blue-400"
+			>
+				{data.username}
+			</Link>
+			
+			<div className="mb-3 mt-1 max-w-52 text-sm font-normal text-gray-300">
+				{data.message}
+			</div>
+			
+			{/* Only show action buttons for pending status */}
+			{status === 'pending' && (
+				<div className="flex items-center gap-2">
+					<button
+					className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
+					onClick={() => handleAction('accepted')}
+					>
+					Accept
+					</button>
+					<button
+					className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 active:scale-95"
+					onClick={() => handleAction('rejected')}
+					>
+					Reject
+					</button>
+				</div>
+			)}
+			</div>
+
+			{/* Only show mark as read button for non-pending notifications */}
+			{status !== 'pending' && (
+			<button
+				className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-gray-700 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-all duration-300 hover:bg-gray-600 group-hover:opacity-100"
+				onClick={handleMarkAsRead}
+			>
+				<IoCheckmarkOutline className="text-base" />
+				Mark as read
+			</button>
+			)}
 		</div>
 	);
 };
 
 const NotificationBell = () => {
-	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES } = useNotifications();
+	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES } = useNotificationContext();
 	const [isOpen, setIsOpen] = useState(false);
 
 	// Fetch unread notifications on component mount
 	useEffect(() => {
 		UnreadNotifications();
-	}, [unreadCount]);
+	}, []);
 
 	// Toggle notification bell dropdown
 	const toggleDropdown = () => setIsOpen((prev) => !prev);
@@ -115,10 +120,10 @@ const NotificationBell = () => {
 							See all
 						</Link>
 					</div>
-					{notifications?.map((notification) => {
+					{notifications?.map((notification, index) => {
 						return (
 							<NotificationLayout
-								key={notification.id}
+								key={index}
 								data={notification}
 								MarkAsRead={markAsRead}
 								NOTIFICATION_TYPES={NOTIFICATION_TYPES}

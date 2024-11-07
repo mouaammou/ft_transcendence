@@ -92,10 +92,11 @@ export const WebSocketProvider = ({ url, children }) => {
 			setPageNotFound,
 			setNextPage,
 			setPrevPage,
+			lastMessage
 		}),
 		[
 			isConnected, users, nextPage, prevPage,
-			fetchAllUsers, pageNotFound, friendStatusChange,
+			fetchAllUsers, pageNotFound, friendStatusChange,lastMessage
 		]
 	);
 

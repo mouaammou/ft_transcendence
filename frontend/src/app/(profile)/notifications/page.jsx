@@ -2,42 +2,28 @@
 import { useEffect, useState, useCallback } from "react";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
-import useNotifications from "@/components/navbar/useNotificationContext";
-import { getData, postData } from "@/services/apiCalls";
+import { getData } from "@/services/apiCalls";
 
-const NotificationLayout = ({ data }) => {
-	const [status, setStatus] = useState(data.notif_status);
-	const [isRead, setIsRead] = useState(data.is_read || false);
-	const [isActedUpon, setIsActedUpon] = useState(false);
-
-
+const NotificationMessage = ({ data }) => {
 	return (
-		<div className={`flex items-start p-4 w-full border-b transition-colors duration-300
-			${isRead ? 'bg-gray-50/80' : 'bg-white hover:bg-gray-50/40'}`}>
-			<img 
-			className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
-			src={data.avatar} 
-			alt={`${data.username}'s avatar`}
+		<div className="group flex w-full gap-4 border-b p-4 transition-all duration-300 hover:bg-blue-50/50">
+			<div className="transition-transform duration-300 group-hover:scale-110">
+			<img
+				className="h-10 w-10 rounded-full object-cover shadow-md ring-2 ring-blue-100 transition-all duration-300 hover:ring-4 hover:ring-blue-200 md:h-12 md:w-12"
+				src={data.avatar}
+				alt={`${data.username}'s avatar`}
 			/>
-			<div className="ml-3 sm:ml-4 flex-1 min-w-0">
-			<div className="flex items-center justify-between gap-2">
-				<Link 
-					href={`/${data.username}`} 
-					className="text-sm font-medium text-gray-900 hover:text-blue-600 truncate"
-				>
-					{data.username}
-				</Link>
-				{!isRead && status !== 'pending' && (
-					<button
-					className="text-gray-400 hover:text-gray-600 transition-colors"
-					onClick={handleMarkAsRead}
-					aria-label="Mark as read"
-					>
-					<IoCheckmarkOutline className="text-xl" />
-					</button>
-				)}
 			</div>
-			<p className="text-sm text-gray-600 mt-1 break-words">{data.message}</p>
+			<div className="min-w-0 flex-1">
+			<Link
+				href={`/${data.username}`}
+				className="inline-block text-base font-bold text-gray-900 transition-all duration-300 hover:text-blue-600 hover:scale-105"
+			>
+				{data.username}
+			</Link>
+			<p className="mt-2 break-words text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-700">
+				{data.message}
+			</p>
 			</div>
 		</div>
 	);
@@ -50,7 +36,7 @@ export default function NotificationsPage() {
 	const [loading, setLoading] = useState(false);
 	const [pageNumber, setPageNumber] = useState(1);
 
-	const fetchNotifications = async (page = 1) => {
+	const fetchNotifications = useCallback(async (page = 1) => {
 		setLoading(true);
 		try {
 			const response = await getData(`/notifications?page=${page}`);
@@ -63,60 +49,64 @@ export default function NotificationsPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		fetchNotifications();
 	}, []);
 
 	return (
-		<div className="min-h-screen py-8 px-4 sm:px-6">
-			<div className="max-w-3xl mx-auto">
-			<h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+		<div className="min-h-screen  px-4 py-8 sm:px-6">
+			<div className="mx-auto max-w-3xl">
+			<h1 className="mb-8 text-center text-3xl font-bold text-gray-900">
 				Notifications
 			</h1>
 			
 			{loading ? (
-				<div className="flex justify-center items-center h-32">
-					<div className="animate-pulse text-blue-600">Loading...</div>
+				<div className="flex h-32 items-center justify-center">
+					<div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
 				</div>
 			) : (
-				<div className="bg-white rounded-xl shadow-sm overflow-hidden">
+				<div className="animate-fadeIn overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
 					{notifications.length > 0 ? (
 					notifications.map(notification => (
-						<NotificationLayout
+						<NotificationMessage
 							key={notification.id}
 							data={notification}
 						/>
 					))
 					) : (
-					<div className="p-8 text-center text-gray-500">
-						No notifications available.
+					<div className="flex flex-col items-center justify-center gap-4 p-12 text-center text-gray-500">
+						<IoCheckmarkOutline className="h-12 w-12 text-gray-400" />
+						<p className="text-lg font-medium">All caught up!</p>
+						<p className="text-sm">No new notifications available.</p>
 					</div>
 					)}
 				</div>
 			)}
 
-			<div className="flex justify-between items-center mt-6">
+			<div className="mt-8 flex items-center justify-between">
 				<button
 					onClick={() => fetchNotifications(prevPage)}
 					disabled={!prevPage || loading}
-					className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors
+					className={`rounded-lg px-6 py-2.5 text-sm font-medium transition-all duration-300
 					${!prevPage || loading
-						? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-						: 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm'
+					? 'cursor-not-allowed bg-gray-100 text-gray-400'
+					: 'bg-white text-gray-700 shadow-md hover:bg-blue-50 hover:shadow-lg active:scale-95'
 					}`}
 				>
 					Previous
 				</button>
-				<span className="text-sm text-gray-600">Page {pageNumber}</span>
+				<span className="rounded-full bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600">
+					Page {pageNumber}
+				</span>
 				<button
 					onClick={() => fetchNotifications(nextPage)}
 					disabled={!nextPage || loading}
-					className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors
+					className={`rounded-lg px-6 py-2.5 text-sm font-medium transition-all duration-300
 					${!nextPage || loading
-						? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-						: 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm'
+					? 'cursor-not-allowed bg-gray-100 text-gray-400'
+					: 'bg-white text-gray-700 shadow-md hover:bg-blue-50 hover:shadow-lg active:scale-95'
 					}`}
 				>
 					Next

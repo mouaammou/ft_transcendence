@@ -17,7 +17,7 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
 
-	const { isConnected, lastJsonMessage, sendMessage } = useWebSocketContext()
+	const { isConnected, lastJsonMessage, sendMessage , lastMessage} = useWebSocketContext()
 
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
@@ -41,10 +41,9 @@ export const NotificationProvider = ({ children }) => {
 		}
 	}, []);
 
-	const handleNotifications = useCallback((data) => {
+	const handleNotifications = useCallback(async (data) => {
 
 		if (!isConnected || !data) return;
-
 		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
 			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
 			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT
@@ -64,7 +63,7 @@ export const NotificationProvider = ({ children }) => {
 			// Increment unread count for new notification
 			setUnreadCount(prev => prev + 1);
 		}
-	}, [isConnected, setNotifications, setNotificationType]);
+	}, [isConnected, lastMessage]);
 
 	// Fetch notifications when the user is logged in
 	const UnreadNotifications = useCallback(async () => {
@@ -89,7 +88,7 @@ export const NotificationProvider = ({ children }) => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [setNotifications]);
+	}, []);
 
 
 	const markAsRead = useCallback(async (notificationId) => {
@@ -115,7 +114,7 @@ export const NotificationProvider = ({ children }) => {
 
 			const updatedNotifications = notifications.map(notif => ({
 				...notif,
-				read: true
+				is_read: true
 			}));
 
 			setNotifications(updatedNotifications);
@@ -128,9 +127,9 @@ export const NotificationProvider = ({ children }) => {
 	  // Handle new WebSocket messages
 		useEffect(() => {
 			if (lastJsonMessage) {
-					handleNotifications(lastJsonMessage);
+				handleNotifications(lastJsonMessage);
 			}
-		}, [lastJsonMessage, handleNotifications]);
+		}, [lastMessage]);
 
 	// Memoize the context value to prevent unnecessary re-renders
 	const value = useMemo(() => ({
@@ -139,12 +138,16 @@ export const NotificationProvider = ({ children }) => {
 		unreadCount,
 		isLoading,
 		error,
-		isConnected,
 		UnreadNotifications,
 		markAsRead,
 		markAllAsRead,
 		NOTIFICATION_TYPES,
-		sendMessage
+		sendMessage,
+		lastJsonMessage,
+		isConnected,
+		setNotifications,
+		handleNotifications,
+		lastMessage,
 	}), [
 			notifications,
 			notificationType,
@@ -155,7 +158,9 @@ export const NotificationProvider = ({ children }) => {
 			UnreadNotifications,
 			markAsRead,
 			markAllAsRead,
-			NOTIFICATION_TYPES
+			NOTIFICATION_TYPES,
+			lastJsonMessage,
+			lastMessage
 		]);
 
 	return (
@@ -166,12 +171,12 @@ export const NotificationProvider = ({ children }) => {
 };
 
 // Custom hook to use the notification context
-const useNotifications = () => {
+const useNotificationContext = () => {
 	const context = useContext(NotificationContext);
 	if (!context) {
-		throw new Error('useNotifications must be used within a NotificationProvider');
+		throw new Error('useNotificationContext must be used within a NotificationProvider');
 	}
 	return context;
 };
 
-export default useNotifications;
+export default useNotificationContext;

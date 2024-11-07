@@ -8,6 +8,8 @@ from .redis_connection import redis_conn
 from .models import Friendship, Notification
 from django.db.models import Q
 from .serializers import NotificationSerializer
+from django.db import transaction, DatabaseError
+import time
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -135,6 +137,7 @@ class NotificationConsumer(BaseConsumer):
 	async def send_notification_alert(self, user_id, notification):
 		"""Send the notification to the user's group."""
 		group_name = f"user_{user_id}"
+		print(f"\nSending notification alert to {group_name}\n")
 		try:
 			await self.channel_layer.group_send(
 				group_name,
@@ -148,8 +151,8 @@ class NotificationConsumer(BaseConsumer):
 
 	# Handler for friend_request_received event
 	async def friend_request_notif(self, event):
+		print(f"\nfriend_request_notif: {event}\n")
 		try:
-			print(f"\nfriend_request_notif: {event}\n")
 			await self.send(text_data=json.dumps({
 				'type': 'send_friend_request',
 				'success': event.get('success'),
@@ -193,23 +196,24 @@ class NotificationConsumer(BaseConsumer):
 		print(f"\nsend friend request to {to_user_id}")
 		success, message, notif = await self.save_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
-		await self.send_notification_alert(to_user_id, {
-			'type': 'friend_request_notif',
-			'success': success,
-			'notification': notif_data,
-		})
-
+		if (success):
+			await self.send_notification_alert(to_user_id, {
+				'type': 'friend_request_notif',
+				'success': success,
+				'notification': notif_data,
+			})
 
 	async def handle_accept_request(self, data):
 		to_user_id = data.get('to_user_id')
 		print(f"\naccept friend request from {to_user_id}")
 		success, message, notif = await self.accept_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
-		await self.send_notification_alert(to_user_id, {
-			'type': 'accept_request_notif',
-			'success': success,
-			'notification': notif_data,
-		})
+		if (success):
+			await self.send_notification_alert(to_user_id, {
+				'type': 'accept_request_notif',
+				'success': success,
+				'notification': notif_data,
+			})
 
 	async def handle_reject_request(self, data):
 		rejected_user_id = data.get('to_user_id')
@@ -243,23 +247,35 @@ class NotificationConsumer(BaseConsumer):
 
 	@database_sync_to_async
 	def accept_friend_request(self, user_id):
-		try:
-			to_user = User.objects.get(id=user_id)
-			notif = Notification.objects.create(
-				sender=self.user,
-				receiver=to_user,
-				message=f"{self.user} accepted your friend request",
-				notif_type='friend',
-				notif_status='accepted'
-			)
-			notif.accept() # for creating reciprocal friendship
-			logger.info(f"\nFriend request accepted 🍸\n")
-			return True, "Friend request accepted" , notif
-		except Friendship.DoesNotExist:
-			return False, "Friend request not found.", None
-		except Exception as e:
-			logger.error(f"\nError Accepting friend request: {e}\n")
-			return False, f"Error Accepting Friend request, reason :: {str(e)}", None
+		max_retries = 5
+		for attempt in range(max_retries):
+			try:
+				with transaction.atomic():
+					to_user = User.objects.select_for_update().get(id=user_id)
+					notif = Notification.objects.create(
+						sender=self.user,
+						receiver=to_user,
+						message=f"{self.user} accepted your friend request",
+						notif_type='friend',
+						notif_status='accepted'
+					)
+					notif.accept() # for creating reciprocal friendship
+					logger.info(f"\nFriend request accepted 🍸\n")
+					return True, "Friend request accepted", notif
+			except Friendship.DoesNotExist:
+				return False, "Friend request not found.", None
+			except DatabaseError as e:
+				if 'database is locked' in str(e):
+					logger.warning(f"\nDatabase is locked, retrying {attempt + 1}/{max_retries}\n")
+					time.sleep(1)  # Wait for a second before retrying
+					continue
+				else:
+					logger.error(f"\nError Accepting friend request: {e}\n")
+					return False, f"Error Accepting Friend request, reason :: {str(e)}", None
+			except Exception as e:
+				logger.error(f"\nError Accepting friend request: {e}\n")
+				return False, f"Error Accepting Friend request, reason :: {str(e)}", None
+		return False, "Error Accepting Friend request, database is locked after multiple retries", None
 
 # Sure, let's break down the flow of sending notifications to users using Django Channels and channels_redis.
 
