@@ -119,7 +119,7 @@ class Friendship(models.Model):
 		self.status = 'accepted'
 		self.save()
 
-	def blocked(self):
+	def block(self, *args, **kwargs):
 		if self.status == 'accepted':
 			self.status = 'blocked'
 			self.save()

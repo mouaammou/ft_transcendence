@@ -315,9 +315,13 @@ input placeholder {
   color: white;
   font-size: 20px;
 }
+<<<<<<< HEAD
 
 
 /* .send-icon.send-icon:hove {
+=======
+.send-icon.send-icon:hover {
+>>>>>>> d64ef22713a80699e58476de29c1c93f275af75c
   color: rgb(12, 76, 92);
 } */
 

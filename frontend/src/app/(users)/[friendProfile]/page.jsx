@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
-import { getData } from '@/services/apiCalls';
+import { deleteData, getData, postData } from '@/services/apiCalls';
 import { TfiStatsUp } from "react-icons/tfi";
 import { notFound, usePathname } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
@@ -8,6 +8,9 @@ import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
+import { IoPersonRemove } from "react-icons/io5";
+import { MdDoNotDisturbOff } from "react-icons/md";
+
 
 export default function FriendProfile({ params }) {
 
@@ -24,6 +27,51 @@ export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const pathname = usePathname();
+
+	const removeFriend = useCallback(() => {
+		//http request to remove friend
+		if (profile?.id)
+			deleteData(`/removeFriend/${profile.id}`)
+			.then(response => {
+					if (response.status === 200) {
+						setFriendStatusRequest('no');
+					}
+				}
+			)
+			.catch(error => {
+				console.log(error);
+			});
+	}, [ profile?.id ]);
+
+	const blockFriend = useCallback(() => {
+		//http request to block friend
+			if (profile?.id)
+				postData(`/blockFriend/${profile.id}`)
+				.then(response => {
+						if (response.status === 200) {
+							setFriendStatusRequest('blocked');
+						}
+					}
+				)
+				.catch(error => {
+					console.log(error);
+				});
+	}, [ profile?.id ]);
+
+	const removeBlock = useCallback(() => {
+		//http request to block friend
+			if (profile?.id)
+				deleteData(`/removeBlock/${profile.id}`)
+				.then(response => {
+						if (response.status === 200) {
+							setFriendStatusRequest('no');
+						}
+					}
+				)
+				.catch(error => {
+					console.log(error);
+				});
+	}, [ profile?.id ]);
 
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
@@ -168,9 +216,27 @@ export default function FriendProfile({ params }) {
 									</li>
 								)}
 								{friendStatusRequest === 'accepted' && (
-									<li className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
-										<FaBan className="mr-2 size-5" /> Block
-									</li>
+									<div>
+										<li
+											onClick={blockFriend}
+											className="w-full py-3 px-4 bg-rose-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-rose-600 transition flex items-center justify-center">
+											<FaBan className="mr-2 size-5" /> Block
+										</li>
+										<li
+											onClick={removeFriend}
+											className="w-full py-3 px-4 bg-orange-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-orange-600 transition flex items-center justify-center">
+											<IoPersonRemove className="mr-2 size-5" /> Remove Friend
+										</li>
+									</div>
+								)}
+								{friendStatusRequest === 'blocked' && (
+									<div>
+										<li
+											onClick={removeBlock}
+											className="w-full py-3 px-4 bg-yellow-500 text-white text-sm text-center rounded-md cursor-pointer my-2 hover:bg-yellow-600 transition flex items-center justify-center">
+											<MdDoNotDisturbOff className="mr-2 size-5" /> Remove Block
+										</li>
+									</div>
 								)}
 						</ul>
 					</div>

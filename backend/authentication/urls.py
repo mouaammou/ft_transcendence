@@ -27,9 +27,11 @@ urlpatterns = [
 	path('friends', views.FriendshipListView.as_view(), name='friendship-list-create'),
 	path('friends/<int:pk>/', views.FriendshipRetrieveUpdateDestroyView.as_view(), name='friendship-detail'),
 	# path('friends/<int:pk>/accept/',views. AcceptFriendshipView.as_view(), name='friendship-accept'),
-	path('friends/<int:pk>/block/', views.BlockFriendshipView.as_view(), name='friendship-block'),
-	# for reject friend request
-	# path('friends/<int:pk>/reject/', views.RejectFriendshipView.as_view(), name='friendship-reject'),
+	path('blockFriend/<int:pk>', views.BlockFriendshipView.as_view(), name='friendship-block'),
+	# remove friend
+	path('removeFriend/<int:pk>', views.RemoveFriend.as_view(), name='remove friend'),
+	# remove blocked friend
+	path('removeBlock/<int:pk>', views.RemoveBlockedFriend.as_view(), name='remove blocked friend'),
 	
 	# for notificaions
 	path('notifications', views.ListNotifications.as_view(), name="notifications"),
