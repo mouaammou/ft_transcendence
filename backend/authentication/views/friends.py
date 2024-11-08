@@ -94,15 +94,14 @@ class BlockFriendshipView(generics.GenericAPIView):
 	serializer_class = FriendsSerializer
 
 
-	# def get_object(self, *args, **kwargs):
-	# 	friend_id = kwargs.get('pk')
-	# 	friendship = get_object_or_404(Friendship, Q(sender=friend_id) | Q(receiver=friend_id))
-	# 	return friendship
+	def get_object(self, *args, **kwargs):
+		friend_id = kwargs.get('pk')
+		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		return friendship
 
 	def post(self, request, *args, **kwargs):
 		print("\nblock ::  friend\n")
-		friend_id = kwargs.get('pk')
-		friendship = friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		friendship = self.get_object(*args, **kwargs)
 		print(f"frienship: {friendship.status}")
 
 		if friendship.status == 'accepted':
@@ -114,7 +113,23 @@ class BlockFriendshipView(generics.GenericAPIView):
 		elif friendship.status == 'blocked':
 			return Response({"error": "This request has already been blocked."}, status=status.HTTP_400_BAD_REQUEST)
 
-#get all friends: blocked and accepted
+# ***************** Remove Blocked Friend View ***************** #
+class RemoveBlockedFriend(generics.DestroyAPIView):
+	queryset = Friendship.objects.all()
+	serializer_class = FriendsSerializer
+
+	def get_object(self, *args, **kwargs):
+		friend_id = kwargs.get('pk')
+		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		return friendship
+
+	def delete(self, request, *args, **kwargs):
+		friendship = self.get_object(*args, **kwargs)
+		if friendship.status == 'blocked':
+			friendship.delete()
+			return Response({"message": "Blocked friend removed from blocked list."}, status=status.HTTP_200_OK)
+		else:
+			return Response({"error": "This request has already been processed."}, status=status.HTTP_400_BAD_REQUEST)
 
 # ***************** Remove Friend View ***************** #
 class RemoveFriend(generics.DestroyAPIView):
@@ -123,11 +138,11 @@ class RemoveFriend(generics.DestroyAPIView):
 
 	def get_object(self, *args, **kwargs):
 		friend_id = kwargs.get('pk')
-		friendship = get_object_or_404(Friendship, Q(sender=friend_id) | Q(receiver=friend_id))
+		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
 		return friendship
 
 	def delete(self, request, *args, **kwargs):
-		friendship = self.get_object()
+		friendship = self.get_object(*args, **kwargs)
 		if friendship.status == 'accepted':
 			friendship.delete()
 			return Response({"message": "Friend removed from friends list."}, status=status.HTTP_200_OK)

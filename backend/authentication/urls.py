@@ -30,6 +30,8 @@ urlpatterns = [
 	path('blockFriend/<int:pk>', views.BlockFriendshipView.as_view(), name='friendship-block'),
 	# remove friend
 	path('removeFriend/<int:pk>', views.RemoveFriend.as_view(), name='remove friend'),
+	# remove blocked friend
+	path('removeBlock/<int:pk>', views.RemoveBlockedFriend.as_view(), name='remove blocked friend'),
 	
 	# for notificaions
 	path('notifications', views.ListNotifications.as_view(), name="notifications"),

@@ -44,6 +44,10 @@ const SearchProfileComponent = () => {
 				setLoading(true);
 				setResults(response.data);
 
+				setTimeout(() => {
+					setResults({});
+				}, 5000);
+
 			} else {
 				throw new Error('Profile not found');
 			}
@@ -53,10 +57,13 @@ const SearchProfileComponent = () => {
 	}
 
 	useEffect(() => {
+		if (searchTerm.trim() == '') {
+			setResults({});
+		}
 		if (debouncedSearchTerm) {
 			searchQuery();
 		}
-	}, [debouncedSearchTerm]);
+	}, [debouncedSearchTerm, searchTerm]);
 
 	return (
 		<div>
