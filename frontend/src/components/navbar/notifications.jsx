@@ -6,9 +6,8 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import useNotificationContext from '@components/navbar/useNotificationContext';
 
-const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
+const NotificationLayout = ({ data, notifStatus, handleAction, NOTIFICATION_TYPES }) => {
 	const { sendMessage } = useNotificationContext();
-	const [status, setStatus] = useState(data.notif_status);
 
 	const sendAction = useCallback((action) => {
 		const messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
@@ -18,14 +17,13 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 		}));
 	}, [data.sender, NOTIFICATION_TYPES, sendMessage]);
 
-	const handleAction = (action) => {
-		setStatus(action);
+	const onAction = (action, id) => {
+		handleAction(action, id);
 		sendAction(action);
-		MarkAsRead(data.id); // Mark as read when action is taken
-	};
+	}
 
 	const handleMarkAsRead = () => {
-		MarkAsRead(data.id);
+		handleAction('read', data.id);
 	};
 
 	return (
@@ -51,17 +49,17 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 			</div>
 			
 			{/* Only show action buttons for pending status */}
-			{status === 'pending' && (
+			{notifStatus === 'pending' && (
 				<div className="flex items-center gap-2">
 					<button
 					className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
-					onClick={() => handleAction('accepted')}
+					onClick={() => onAction('accepted', data.id)}
 					>
 					Accept
 					</button>
 					<button
 					className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 active:scale-95"
-					onClick={() => handleAction('rejected')}
+					onClick={() => onAction('rejected', data.id)}
 					>
 					Reject
 					</button>
@@ -70,7 +68,7 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 			</div>
 
 			{/* Only show mark as read button for non-pending notifications */}
-			{status !== 'pending' && (
+			{notifStatus !== 'pending' && (
 			<button
 				className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-gray-700 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-all duration-300 hover:bg-gray-600 group-hover:opacity-100"
 				onClick={handleMarkAsRead}
@@ -84,8 +82,25 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 };
 
 const NotificationBell = () => {
-	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES } = useNotificationContext();
+	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES, setNotifications } = useNotificationContext();
 	const [isOpen, setIsOpen] = useState(false);
+
+	const handleAction = useCallback((notif_status, id) => {
+		if (notif_status !== 'read')
+			setNotifications((prev) => {
+				return prev.map((notif) => {
+					if (notif.id === id) {
+						return {
+							...notif,
+							notif_status: notif_status,
+						};
+					}
+					return notif;
+				});
+			});
+		markAsRead(id);
+	}, [markAsRead]);
+
 
 	// Fetch unread notifications on component mount
 	useEffect(() => {
@@ -121,11 +136,13 @@ const NotificationBell = () => {
 						</Link>
 					</div>
 					{notifications?.map((notification, index) => {
+						// console.log(notifStatuses);
 						return (
 							<NotificationLayout
 								key={index}
 								data={notification}
-								MarkAsRead={markAsRead}
+								notifStatus={notification.notif_status}
+								handleAction={handleAction}
 								NOTIFICATION_TYPES={NOTIFICATION_TYPES}
 							/>
 					)
