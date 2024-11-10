@@ -1,8 +1,9 @@
 "use client";
 
 import { getData } from '@/services/apiCalls';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useDebounce } from 'use-debounce';
 
 const SearchedItem = ({ result }) => {
 	return (
@@ -28,30 +29,41 @@ const SearchProfileComponent = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [results, setResults] = useState({});
+	const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
-	const handleSearch = async (e) => {
-		e.preventDefault();
-		const searchedValue = e.target.value;
-		setSearchTerm(searchedValue);
-
-		if (searchedValue.trim() == '') {
+	const searchQuery = async() => {
+		
+		if (searchTerm.trim() == '') {
 			setLoading(false);
 			return;
 		}
 
 		try {
-				const response = await getData(`/searchItems/${searchedValue}`);
-				if (response.status === 200) {
-					setLoading(true);
-					setResults(response.data);
-	
-				} else {
-					throw new Error('Profile not found');
-				}
+			const response = await getData(`/searchItems/${searchTerm}`);
+			if (response.status === 200) {
+				setLoading(true);
+				setResults(response.data);
+
+				setTimeout(() => {
+					setResults({});
+				}, 5000);
+
+			} else {
+				throw new Error('Profile not found');
+			}
 		} catch (err) {
 			setLoading(false);
 		}
-	};
+	}
+
+	useEffect(() => {
+		if (searchTerm.trim() == '') {
+			setResults({});
+		}
+		if (debouncedSearchTerm) {
+			searchQuery();
+		}
+	}, [debouncedSearchTerm, searchTerm]);
 
 	return (
 		<div>
@@ -80,11 +92,7 @@ const SearchProfileComponent = () => {
 						className="block w-full max-w-96 p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 outline-none"
 						placeholder="Search for profiles, tournaments, pages..."
 						value={searchTerm}
-						onChange={
-							(e) => {
-								handleSearch(e);
-							}
-						}
+						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 
 					{/* Results of Search */}

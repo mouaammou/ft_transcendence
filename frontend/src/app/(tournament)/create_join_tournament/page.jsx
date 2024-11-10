@@ -195,7 +195,7 @@ export default function CreateJoinTournamentPage() {
                   key={index}
                   className={`flex-shrink-0 text-[14px]  font-mono bg-[#D6D6D6] text-black font-bold
                             rounded-md m-2 w-[120px] h-[30px] text-center lg:text-[16px] 
-                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-buttoncolor text-white' : ''} flex justify-center items-center gap-3 `}
+                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-btnColor text-white' : ''} flex justify-center items-center gap-3 `}
                   onClick={() => {
                     setSelectedTournamentId(tournament.id);
                   }}

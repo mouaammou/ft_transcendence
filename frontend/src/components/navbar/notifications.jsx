@@ -5,27 +5,43 @@ import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
 import useNotificationContext from '@components/navbar/useNotificationContext';
+import { useRouter } from 'next/navigation';
 
-const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
+const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
 	const { sendMessage } = useNotificationContext();
-	const [status, setStatus] = useState(data.notif_status);
-
-	const sendAction = useCallback((action) => {
-		const messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
-		sendMessage(JSON.stringify({
+	const router = useRouter();
+	console.log('NotificationLayout:', data);
+	const sendAction = useCallback((action, notif_type) => {
+		console.log('sendAction:', action, notif_type);
+		let messageType = null;
+		if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
+		} else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
+			if (action === 'accepted'){
+				messageType = NOTIFICATION_TYPES.ACCEPT_GAME;
+				router.push('/game');
+			}
+			else {
+				messageType = NOTIFICATION_TYPES.REJECT_GAME;
+			}
+		} else if (notif_type === NOTIFICATION_TYPES.INVITE_TOURNAMENT) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_TOURNAMENT : NOTIFICATION_TYPES.REJECT_TOURNAMENT;
+		}
+		console.log('sendAction:', messageType)
+		messageType && sendMessage(JSON.stringify({
 			type: messageType,
 			to_user_id: data.sender,
 		}));
 	}, [data.sender, NOTIFICATION_TYPES, sendMessage]);
 
-	const handleAction = (action) => {
-		setStatus(action);
-		sendAction(action);
-		MarkAsRead(data.id); // Mark as read when action is taken
-	};
+	const onAction = (action, data) => {
+		handleAction(action, data);
+		sendAction(action, data.type);
+	}
 
 	const handleMarkAsRead = () => {
-		MarkAsRead(data.id);
+		handleAction('read', data);
 	};
 
 	return (
@@ -51,17 +67,17 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 			</div>
 			
 			{/* Only show action buttons for pending status */}
-			{status === 'pending' && (
+			{data.notif_status === 'pending' && (
 				<div className="flex items-center gap-2">
 					<button
 					className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
-					onClick={() => handleAction('accepted')}
+					onClick={() => onAction('accepted', data)}
 					>
 					Accept
 					</button>
 					<button
 					className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 active:scale-95"
-					onClick={() => handleAction('rejected')}
+					onClick={() => onAction('rejected', data)}
 					>
 					Reject
 					</button>
@@ -70,7 +86,7 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 			</div>
 
 			{/* Only show mark as read button for non-pending notifications */}
-			{status !== 'pending' && (
+			{data.notif_status !== 'pending' && (
 			<button
 				className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-gray-700 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-all duration-300 hover:bg-gray-600 group-hover:opacity-100"
 				onClick={handleMarkAsRead}
@@ -84,8 +100,25 @@ const NotificationLayout = ({ data, MarkAsRead, NOTIFICATION_TYPES }) => {
 };
 
 const NotificationBell = () => {
-	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES } = useNotificationContext();
+	const { notifications, UnreadNotifications, unreadCount, markAsRead, NOTIFICATION_TYPES, setNotifications } = useNotificationContext();
 	const [isOpen, setIsOpen] = useState(false);
+
+	const handleAction = useCallback((notif_status, data) => {
+		if (notif_status !== 'read')
+			setNotifications((prev) => {
+				return prev.map((notif) => {
+					if (notif.id === data.id) {
+						return {
+							...notif,
+							notif_status: notif_status,
+						};
+					}
+					return notif;
+				});
+			});
+		markAsRead(data.id);
+	}, [markAsRead]);
+
 
 	// Fetch unread notifications on component mount
 	useEffect(() => {
@@ -121,11 +154,12 @@ const NotificationBell = () => {
 						</Link>
 					</div>
 					{notifications?.map((notification, index) => {
+						// console.log(notifStatuses);
 						return (
 							<NotificationLayout
 								key={index}
 								data={notification}
-								MarkAsRead={markAsRead}
+								handleAction={handleAction}
 								NOTIFICATION_TYPES={NOTIFICATION_TYPES}
 							/>
 					)

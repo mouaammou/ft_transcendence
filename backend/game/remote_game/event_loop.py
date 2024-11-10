@@ -1,3 +1,4 @@
+import sys
 import time
 import asyncio
 from .game import RemoteGameLogic
@@ -8,8 +9,11 @@ from authentication.models import CustomUser
 from asgiref.sync import async_to_sync, sync_to_async
 from .game_vs_friend import VsFriendGame
 from .tournament import Tournament, TournamentManager
+from channels.layers import get_channel_layer
 from game.models import TournamentHistory
-
+import logging
+from authentication.consumers import NotificationConsumer
+# from authentication.consumers import NotificationConsumer
 # i will store a unique value in each jwt token payload each time
 # no matter if its the same user its always gonna be unique
 
@@ -20,17 +24,6 @@ from game.models import TournamentHistory
 # we should use as channel name: f"player_id_{user_id}"
 # and then call this method on the consumer: send_message(self, event) 
 # and then use the key 'game_message' to get the message from event
-
-
-                      #revise this code:
-# if (tournament.round.status == 'quarter' or tournament.round.status == 'semi-final') and tournament.round.update_round_results():
-#                         tournament.round.start = True
-#                         tournament.round.end = False
-#                         tournament.round.status = tournament.round.get_next_round()
-#                         tournament.round.players = tournament.round.get_winners()
-#                         tournament.round.games = []
-#                         print(f"number of games in the tournament {len(tournament.games)}")
-#                         continue
 
 
 
@@ -97,22 +90,24 @@ class EventLoopManager:
     @classmethod
     async def _event_loop(cls):
         print("in the c methode")
-        while True:
-            # print("updating\n")
-            cls._update() 
-            # print("cleaning\n")
-            cls._clean()
-            await asyncio.sleep(1/60)
+        try:
+            while True:
+                cls._update() 
+                cls._clean()
+                await asyncio.sleep(1/60)    
+        except Exception as e:
+            logging.error(f"Error in event loop: {e}")
+                       
   
     @classmethod
     def _update(cls): 
-        # print(f"in the _update methode in the event_loop {(cls.active_players)}")
         for game, _ in (cls.running_games.items()):
             if game.is_fulfilled() == False: #or game.disconnected()  
                 continue
             frame :dict = game.update()
+            # print(f"game is finished {game.is_finished()} and saved {game.saved}")
             if game.is_finished() and not game.saved : 
-                print("game is finished 1") 
+                # print("game is finished 1")   
                 try:
                     game.saved = True
                     asyncio.create_task(cls.save_history(game))  
@@ -124,7 +119,7 @@ class EventLoopManager:
             cls.send_frame_to_player(game.player_1, game, frame) 
             cls.send_frame_to_player(game.player_2, game, frame) 
             # print("3\n") 
-
+    
     @classmethod
     def notify_players(cls, game):
         print("in the notify_players methode")
@@ -163,11 +158,11 @@ class EventLoopManager:
 
     @classmethod 
     def _save_finished(cls, game_obj):
-        print("in the  _save_finished methode") 
+        print("in the  _save_finished methode")     
         print(game_obj)
         cls.finished_players.append(game_obj.player_1)
         cls.finished_players.append(game_obj.player_2)
-        cls.finished_games.append(game_obj)   
+        cls.finished_games.append(game_obj)     
         # pass
         
         
@@ -289,7 +284,7 @@ class EventLoopManager:
 
         if not RemoteGameOutput.there_is_focus(player_id) or not RemoteGameOutput.player_in_game_page(player_id):
             cls._handle_unfocused_game(game, player_id)
-            print("GAME IS PAUSED")
+            print(f"GAME IS PAUSED {game.finished}")
             return False
 
         # cls._reset_game_focus(game)
@@ -300,7 +295,7 @@ class EventLoopManager:
             return True
         else:
             cls._handle_unfocused_game(game, player_id_2)
-            print("GAME IS PAUSED")
+            print(f"GAME IS PAUSED {game.finished}")
             return False
 
     @classmethod
@@ -360,6 +355,21 @@ class EventLoopManager:
                 print(f"player {player} is in the board page")
         print("end of the check_players_in_board_page methode")
 
+    @classmethod
+    def send_tournament_notifications(cls, players, round):
+        try:
+            channel_layer = get_channel_layer()
+            for player in players:
+                consumer = NotificationConsumer(scope={'user': player})
+                consumer.channel_layer = channel_layer
+                data = {
+                    "to_user_id": player,
+                    "message": f"{round} round starts in 15 seconds. Go to /tournament_board!",
+                }
+                asyncio.create_task(consumer.round_notifs(data))
+                
+        except Exception as e:
+            logging.error(f"Error sending tournament notifications: {e}")      
 
     @classmethod
     async def send_notifications_to_players(cls, player_id):
@@ -367,13 +377,14 @@ class EventLoopManager:
         if tournament_id is not None:
             tournament = cls.active_tournaments.get(tournament_id)
             if tournament is not None and tournament.round is not None:
-                #send notification to all players that the round has started
+                players_in_round = tournament.round.get_players()
+                cls.send_tournament_notifications(players_in_round, tournament.round.status)
                 await asyncio.sleep(15)
                 if TournamentManager.check_tournament_is_cancelled(tournament): # i need to delete the tournament within active tournaments, still not working
                     cls.end_tournament(tournament_id)
                     return
                 TournamentManager.players_in_same_game_left_board_page(tournament)
-                RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
+                RemoteGameOutput.send_tournament_players(players_in_round, {'status': 'PUSH_TO_GAME'})
             else:
                 print(f"No active tournament found with id {tournament_id} or tournament round is None ")
         else:
@@ -401,18 +412,6 @@ class EventLoopManager:
                     print(f"game {game.player_1} {game.player_2} is created")    
                 print(f"NUMBER OF GAMES CREATED IN THE TOURNAMENT HAHA ---> {len(cls.tournament_games)}")
                 print(f"number of games in the tournament {tournament.round.get_players()}")
-                #check if the user is the board_page first and then redirect him to the game page, if not game ends and 
-                # he will be the loser, and the other player will be the winner,, and the game will be saved and deleted 
-                # from tournamet games, i will need the tournament def cancel(self): to save tournament if all players left
-                # cls.check_players_in_board_page(tournament.round.get_players())
-                                        #send notification to all players that the round has started
-                #send notification to all players that the round has started
-                # await asyncio.sleep(
-                
-                # if TournamentManager.check_tournament_is_cancelled(tournament):
-                #     return
-                # TournamentManager.players_in_same_game_left_board_page(tournament)
-                # RemoteGameOutput.send_tournament_players(tournament.round.get_players(), {'status': 'PUSH_TO_GAME'})
             else:
                 print(f"No active tournament found with id {tournament_id} or tournament round is None ")
         else:
@@ -520,7 +519,7 @@ class EventLoopManager:
             return None   
         game_obj = cls.active_players.get(player_id)
         if game_obj is None:
-            print("game_obj is None here in the recieve methode")
+            print("game_obj is None here in the recieve methode")  
             return None
         if game_obj.game_mode == 'remote' and game_obj.unfocused is None:
             cls.handle_remote_game_input(game_obj, player_id, event_dict, consumer)  
@@ -567,7 +566,7 @@ class EventLoopManager:
         tournament_names = []
         for tournament in cls.active_tournaments.values():
             print(f"tournament name {tournament.name}")
-            if tournament.status == 'pending':
+            if not tournament.fulfilled:
                 tournament_names.append({
                     'id' : tournament.id,
                     'name' : tournament.name,
@@ -627,7 +626,7 @@ class EventLoopManager:
             await asyncio.sleep(0.6)
             if game_obj.unfocused is None:
                 game_obj.play()
-            print("game is playedasfxaefxqwafxdscfwerfxzdvcewrfx")
+            print("game is played")
         else:  
             print("NO GAME DATA because the game is not fulfilled or none")
             RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'NO_GAME_DATA'})   

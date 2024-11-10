@@ -15,7 +15,7 @@ export default function MobileSidebar() {
     { label: 'Freinds', icon: '/3-User.svg', route: '/freinds' },
     { label: 'Profile', icon: '/Profil.svg', route: '/profile' },
     { label: 'Chat', icon: '/chat.svg', route: '/chat' },
-    { label: 'Game', icon: '/Game.svg', route: '/Game' },
+    { label: 'Game', icon: '/Game.svg', route: '/play' },
     { label: 'Setting', icon: '/Setting.svg', route: '/Setting' },
     // {label: 'Logout',icon: '/Logout.svg', route: '/Logout'},
     // {label: 'Logout',icon: '../public/back.png', route: '/Logout'},

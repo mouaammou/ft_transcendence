@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
 					<LoginProvider>
 						<NotificationProvider>
 							<div>
-								<Sidebar />
+								{/* <Sidebar /> */}
 								<Navbar />
 								{children}
 							</div>

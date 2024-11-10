@@ -9,7 +9,9 @@ from .models import Friendship, Notification
 from django.db.models import Q
 from .serializers import NotificationSerializer
 from django.db import transaction, DatabaseError
+from asgiref.sync import sync_to_async
 import time
+# from .notif_consumers import notification_consumers 
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -21,6 +23,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		self.user_windows = None
 		self.user = None
 		self.user_data = None
+		# self.channel_name = None
 
 	async def connect(self):
 		print("\n CONNECTED\n")
@@ -30,6 +33,11 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			self.user_windows = f"user_{self.user.id}"
 			self.user_data = UserSerializer(self.user).data
 			await self.add_user_to_groups()
+        # Add the consumer to the notification_consumers dictionary
+		# if self.user.id in notification_consumers:
+		# 	notification_consumers[self.user.id].append(self.channel_name)
+		# else:
+		# 	notification_consumers[self.user.id] = [self.channel_name]
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
@@ -69,7 +77,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		user_id = str(self.user.id)
 		channel_name = self.channel_name
 
-		redis_conn.sadd(user_id, channel_name)
+		redis_conn.sadd(user_id, channel_name) # Add the user's channel name to the set
 		if redis_conn.scard(user_id) == 1:
 			print(f"\n broadcasting online when login: {self.user}\n")
 			await self.save_user_status("online")
@@ -150,6 +158,29 @@ class NotificationConsumer(BaseConsumer):
 			logger.error(f"\nError sending notification alert: {e}\n")
 
 	# Handler for friend_request_received event
+ 
+	async def accept_game_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'accept_game',
+			'success': event.get('success'),
+			**event.get('notification')
+		}))
+
+	async def round_notification(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'round_notif',
+			'success': event.get('success'),
+			'avatar': event.get('avatar'),
+			**event.get('notification')
+		}))
+ 
+	async def invite_to_game_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'invite_to_game',
+			'success': event.get('success'),
+			**event.get('notification')
+		}))
+ 
 	async def friend_request_notif(self, event):
 		print(f"\nfriend_request_notif: {event}\n")
 		try:
@@ -182,14 +213,75 @@ class NotificationConsumer(BaseConsumer):
 		message_type = data.get('type')
 		if message_type == 'send_friend_request':
 			await self.handle_friend_request(data)
+		elif message_type == 'invite_to_game':
+			await self.handle_invite_to_game(data)
 		elif message_type == 'accept_friend_request':
 			await self.handle_accept_request(data)
+		elif message_type == 'accept_game':
+			await self.handle_accept_game(data)
 		elif message_type == 'reject_friend_request':
 			await self.handle_reject_request(data)
 		elif message_type == 'user_status_online':
 			await self.track_user_connection()
 		elif message_type == 'user_status_offline':
 			await self.untrack_user_connection()
+  
+	async def handle_accept_game(self, data):
+		print(f"\naccept_game: {data}\n")
+		to_user_id = data.get('to_user_id')
+		try:
+			# Use sync_to_async to run synchronous code in a separate thread
+			notif = await database_sync_to_async(Notification.objects.create)(
+				sender=self.user,
+				receiver= await database_sync_to_async(User.objects.get)(id=to_user_id),
+				message=f"{self.user} accepted your game invite",
+				notif_type='game',
+				notif_status='accepted'
+			)
+			notif_data =  NotificationSerializer(notif).data
+			await self.send_notification_alert(to_user_id, {
+				'type': 'accept_game_notif',
+				'success': True,
+				'notification': notif_data,
+			})
+		except Exception as e:
+			logger.error(f"\nError sending game invite: {e}\n")
+
+	async def round_notifs(self, data):
+		print(f"new round: {data}\n")
+		to_user_id = data.get('to_user_id')
+		try:
+			user = await database_sync_to_async(User.objects.get)(id=to_user_id)
+			user_data = UserSerializer(user).data
+			await self.send_notification_alert(to_user_id, {
+				'type': 'round_notification',
+				'success': True,
+				'avatar': user_data['avatar'],
+				'notification': data,
+			})
+		except Exception as e:
+			logger.error(f"\nError sending game invite: {e}\n")
+
+	async def handle_invite_to_game(self, data):
+		print(f"\ninvite_to_game: {data}\n")
+		to_user_id = data.get('to_user_id')
+		try:
+			# Use sync_to_async to run synchronous code in a separate thread
+			notif = await database_sync_to_async(Notification.objects.create)(
+				sender=self.user,
+				receiver= await database_sync_to_async(User.objects.get)(id=to_user_id),
+				message=f"{self.user} invited you to a game",
+				notif_type='game',
+				notif_status='pending'
+			)
+			notif_data =  NotificationSerializer(notif).data
+			await self.send_notification_alert(to_user_id, {
+				'type': 'invite_to_game_notif',
+				'success': True,
+				'notification': notif_data,
+			})
+		except Exception as e:
+			logger.error(f"\nError sending game invite: {e}\n")
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')

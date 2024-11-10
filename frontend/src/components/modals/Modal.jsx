@@ -26,3 +26,5 @@ export function Modal({ isOpen, title, description, action }) {
     </div>
   );
 }
+
+export default Modal;

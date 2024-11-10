@@ -59,7 +59,7 @@ class Paddle(Base):
             # self.root_obj.winner = self.root_obj.get_nickname(self.direction) # for tournament
             # setattr(self.root_obj, 'winner', f'{self.direction}_nickname')
             # self.root_obj.winner = getattr(self, self.direction+'_nickname')
-            self.root_obj.save_match(self.direction)
+            # self.root_obj.save_match(self.direction)#// madafaking samjaabo, id iski tich, awi ikhan nk skran mani yadni
     
     def update_scope(self):
         # on paddle move only

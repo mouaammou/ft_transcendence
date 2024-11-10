@@ -1,14 +1,15 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
-import { useWebSocketContext } from "@/components/websocket/websocketContext";
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 
 import { getData } from "@/services/apiCalls";
+import useNotificationContext from '@/components/navbar/useNotificationContext';
+import Modal from '@/components/modals/Modal';
 
 const Friends = () => {
-	const { websocket, users, isConnected } = useWebSocketContext();
+	const { users, isConnected, sendMessage , NOTIFICATION_TYPES} = useNotificationContext();
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
 	const router = useRouter();
@@ -18,18 +19,25 @@ const Friends = () => {
 	const [friends, setFriends] = useState([]);
 	const [selectedFriend, setSelectedFriend] = useState(null);
 
+	const [openModal, setOpenModal] = useState(false);
+	const [modalMessage, setModalMessage] = useState('');
+	const [msgDescription, setMsgDescription] = useState('');
+
+
 	const handleFriendClick = (friend) => {
 		setSelectedFriend(friend);
 	}
 
 
 	const sendGameInvitation = () => {
-		if (selectedFriend?.id) {//selectedFriend.status == 'online' &&
+		if (selectedFriend?.id) {
 			console.log('sending game invitation to: ', selectedFriend);
-			websocket.current.send(JSON.stringify({
-				type: 'send_game_invitation',
-				to_user_id: selectedFriend.id,
-			}));
+
+			if (isConnected)
+				sendMessage(JSON.stringify({
+					type: NOTIFICATION_TYPES.INVITE_GAME,
+					to_user_id: selectedFriend.id,
+				}));
 		}
 	}
     
@@ -43,7 +51,9 @@ const Friends = () => {
 			sendGameInvitation();
 			router.push('/waiting_friends_game');
 		} else {
-			alert('Please select a friend first.'); // i have to change this an error message display
+			setOpenModal(true);
+			setModalMessage('Please select a friend');
+			setMsgDescription('You need to select a friend to invite to the game');
 		}
 	}
 	const fetchAllUsers = async (page) => {
@@ -153,6 +163,7 @@ const Friends = () => {
 					</button>
 				</div>
 			</div>
+			<Modal isOpen={openModal} title={modalMessage} description={msgDescription} action={() => setOpenModal(false)} />
 		</>
 	);
 };
