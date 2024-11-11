@@ -71,23 +71,23 @@ OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
-    'channels',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'pong',
-    'game',
-    # 'game.apps.GameConfig',
-    "authentication.apps.AuthenticationConfig",
-    "rest_framework",
-    "rest_framework_simplejwt",
-    "corsheaders",
-    "rest_framework_simplejwt.token_blacklist",
-    "chat",
+	'daphne',
+	'channels',
+	'django.contrib.admin',
+	'django.contrib.auth',
+	'django.contrib.contenttypes',
+	'django.contrib.sessions',
+	'django.contrib.messages',
+	'django.contrib.staticfiles',
+	'pong',
+	'game',
+	# 'game.apps.GameConfig',
+	"authentication.apps.AuthenticationConfig",
+	"rest_framework",
+	"rest_framework_simplejwt",
+	"corsheaders",
+	"rest_framework_simplejwt.token_blacklist",
+	"chat",
 ]
 
 MIDDLEWARE = [
@@ -202,4 +202,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
