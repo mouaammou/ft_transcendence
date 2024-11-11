@@ -1,4 +1,5 @@
 import axiosInstance from './axiosInstance';
+import axios from 'axios';
 
 // for get request
 export const getData = async endPoint => {
@@ -50,3 +51,34 @@ export const deleteData = async endPoint => {
 		return error;
 	}
 };
+
+
+//# by samjaaabo
+
+const getCSRFToken = () => {
+	const matches = document.cookie.match(/csrftoken=([\w-]+)/);
+	return matches ? matches[1] : '';
+  };
+  
+  const api = axios.create({
+	baseURL: 'http://localhost:8000/game/local-tournaments/',  // Base URL for your Django API
+	timeout: 10000,
+	withCredentials: true,  // Include cookies (credentials)
+  });
+  
+  export const fetchTournaments = async (page = 1) => {
+	try {
+	  const response = await api.get('/', {
+		params: { page },  // Attach pagination params
+		// headers: {
+		//   'X-CSRFToken': getCSRFToken(),  // Attach the CSRF token to the request headers
+		// },
+	  });
+	  return response.data;  // Returns the response data (count, next, previous, results)
+	} catch (error) {
+	  console.error('Error fetching tournaments:', error);
+	  return { results: [] };  // Return an empty array in case of error
+	}
+  };
+
+  

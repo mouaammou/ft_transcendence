@@ -49,6 +49,7 @@ class TokenVerificationMiddleWare:
 
 					user_id = AccessToken(new_access_token).get("user_id")
 					request.customUser = User.objects.get(id=user_id)
+					# request.user = User.objects.get(id=user_id)
 
 					response = self.get_response(request)
 					response.set_cookie(

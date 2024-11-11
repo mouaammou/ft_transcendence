@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const NotFound = () => {
 	return (
-		<div>
+		<div >
 			{/* 404 not found
 				<p> sorry this page is not available for now</p> */}
 			<Image

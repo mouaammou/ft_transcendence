@@ -12,7 +12,7 @@ export default function Sidebar() {
 		{ label: 'allusers', icon: '/3-User.svg', route: '/allusers' },
 		{ label: 'Profile', icon: '/Profil.svg', route: '/profile' },
 		{ label: 'Chat', icon: '/chat.svg', route: '/chat' },
-		{ label: 'Game', icon: '/Game.svg', route: '/Game' },
+		{ label: 'Game', icon: '/Game.svg', route: '/play' },
 		{ label: 'Settings', icon: '/Setting.svg', route: '/Settings' },
 	];
 

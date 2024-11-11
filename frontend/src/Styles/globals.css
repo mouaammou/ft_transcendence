@@ -187,3 +187,30 @@ html {
     background-position: 0 100%, 100% 0, 100% 5px;
   }
 }
+
+
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'logo navbar' 
+                        'sidebar main';
+}
+
+.grid-logo {
+  grid-area: logo;
+}
+
+.grid-sidebar {
+  grid-area: sidebar;
+}
+
+.grid-navbar {
+  grid-area: navbar;
+}
+
+.grid-main {
+  grid-area: main;
+}
+

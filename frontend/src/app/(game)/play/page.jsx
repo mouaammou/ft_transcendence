@@ -3,6 +3,9 @@ import '@/styles/game/mode.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import mysocket from '@/utils/WebSocketManager';
+import { postData } from '@/services/apiCalls';
+
+import Link from 'next/link';
 
 const PlayMode = () => {
 
@@ -33,6 +36,13 @@ const PlayMode = () => {
     // .then(data => console.log(data));
   };
 
+  // const router = useRouter();
+
+  const handlePlayLocalClick = (e) => {
+    e.preventDefault();
+    router.push('/local_game');
+  };
+
 
   mysocket.sendMessage(JSON.stringify({ init: 'game' }));
 
@@ -46,9 +56,9 @@ const PlayMode = () => {
             <img className="images" src="mode1.svg" alt="remote-game" />
             <p>REMOTE GAME</p>
           </div>
-          <div className="middle-mode">
+          <div className="middle-mode uppercase" onClick={handlePlayLocalClick}>
             <img className="images" src="mode2.svg" alt="remote-game" />
-            <p>LOCAL GAME</p>
+            <p>Play Local</p>
           </div>
           <div className="right-mode"  onClick={handlePlayTournament} >
             <img className="images" src="mode3.svg" alt="remote-game" />

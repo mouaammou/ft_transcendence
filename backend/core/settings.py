@@ -45,6 +45,8 @@ REST_FRAMEWORK = {
 	"DEFAULT_AUTHENTICATION_CLASSES": (
 		"rest_framework_simplejwt.authentication.JWTAuthentication",
 	),
+	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 SIMPLE_JWT = {
@@ -91,6 +93,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+	"corsheaders.middleware.CorsMiddleware",
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
@@ -98,7 +101,6 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	"corsheaders.middleware.CorsMiddleware",
 	"authentication.middleware.TokenVerificationMiddleWare",
 ]
 
@@ -204,5 +206,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+
+# CORS_ALLOW_HEADERS = [
+#     'content-type',
+#     'x-csrftoken',
+#     'authorization',  # Allow Authorization header if needed
+# ]
+
+# CORS_EXPOSE_HEADERS = [
+#     'X-CSRFToken',
+#     'Set-Cookie',  # Expose the Set-Cookie header if you're using session cookies
+# ]
