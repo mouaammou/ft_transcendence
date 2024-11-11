@@ -7,6 +7,7 @@ import Login42 from '@/components/auth/login42';
 import Image from 'next/image';
 import '@/styles/auth/login.css';
 
+
 export default function LoginPage() {
 	const [formData, setFormData] = useState({
 		username: '',
@@ -17,6 +18,8 @@ export default function LoginPage() {
 	const handleChange = e => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
+
+	const [showPassword, setShowPassword] = useState(false);
 
 	const LoginTo = async e => {
 		e.preventDefault();
