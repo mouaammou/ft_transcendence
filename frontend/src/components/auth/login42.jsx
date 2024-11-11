@@ -2,16 +2,20 @@
 import { getData } from '@/services/apiCalls';
 
 const Login42 = () => {
-  const handleLogin = async () => {
-    getData('/auth/login/42').then(res => {
-      if (res.status === 200) {
-        console.log(res);
-        window.location.href = res.data.auth_url;
-      }
-    });
-  };
+	const handleLogin = async () => {
+		getData('/auth/login/42').then(res => {
+			if (res.status === 200) {
+				console.log(res);
+				window.location.href = res.data.auth_url;
+			}
+		});
+	};
 
-  return <img src="/g3.svg" alt="" className="_42-logo" onClick={handleLogin} />;
+	return (
+		<div>
+			<img className='' src="/logo-42.svg" alt="42 Oauth"  onClick={handleLogin} />
+		</div>
+	);
 };
 
 export default Login42; 

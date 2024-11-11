@@ -13,13 +13,13 @@
 
 
 :root {
-  --principaleColor: #46ccda;
-  --wt: white;
-  --principaleFont: 'IBM Plex Sans', sans-serif;
-  --secondFont: Montserrat, Arial, Helvetica, sans-serif;
-  --bg: radial-gradient(circle at center, rgba(38, 143, 208, 0.546), rgba(26, 41, 128, 0.25) 80%),
-    #000000;
-  --bg2: rgb(26, 41, 128);
+	--principaleColor: #46ccda;
+	--wt: white;
+	--principaleFont: 'IBM Plex Sans', sans-serif;
+	--secondFont: Montserrat, Arial, Helvetica, sans-serif;
+	--bg: radial-gradient(circle at center, rgba(38, 143, 208, 0.546), rgba(26, 41, 128, 0.25) 80%),
+		#000000;
+	--bg2: rgb(26, 41, 128);
 }
 
 * {

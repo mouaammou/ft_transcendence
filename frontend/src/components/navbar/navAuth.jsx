@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { IoLogOut } from 'react-icons/io5';
 import NotificationBell from './notifications';
 import SearchProfileComponent from './search';
+import { usePathname } from 'next/navigation';
 
 const Logo = () => {
 	return (
@@ -14,9 +15,9 @@ const Logo = () => {
 		<div className="flex-shrink max-w-20">
 			<Link href="/">
 				<Image
-				src="/new-logo.svg"
-				width={100}
-				height={100}
+				src="/main-logo.svg"
+				width={1}
+				height={1}
 				alt="logo"
 				priority={true}
 				className="h-20 w-20 sm:h-16 sm:w-16 md:h-24 md:w-24"
@@ -29,17 +30,33 @@ const Logo = () => {
 const Navbar = () => {
 	const { Logout, isAuth, profileData: data } = useAuth();
 	const [isOpen, setIsOpen] = useState(false);
+	const pathname = usePathname();
+	const [loginPage, setLoginPage] = useState(() => {
+		if (pathname === '/login') {
+			return "Sign Up";
+		}
+		return "Login";
+	});
+
+	useEffect(() => {
+		if (pathname === '/login') {
+			setLoginPage("Sign Up");
+		} else {
+			setLoginPage("Login");
+		}
+
+		return () => {
+			setLoginPage("");
+		}
+	}, [pathname]);
 
 
 	return (
 		<>
-			<nav className="p-4 w-full bg-gray-800">
+			<nav className="w-full md:container relative z-10">
 				{
 					isAuth ? ( // If user is authenticated, show the links
 						<div className="container flex flex-row items-center">
-							{/* logo component */}
-							{/* <Logo/> */}
-							{/* links components */}
 							<div className='w-full'>
 								<SearchProfileComponent />
 							</div>
@@ -101,13 +118,10 @@ const Navbar = () => {
 							<Logo/>
 							<div className=''>
 								<Link
-									href="/login"
-									className="text-black bg-white px-4 py-2 mr-2 rounded"
+									href={loginPage === 'Login' ? '/login' : '/signup'}
+									className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300"
 								>
-									Login
-								</Link>
-								<Link href="/signup" className="text-black bg-white px-7 py-2 rounded">
-									Signup
+									{loginPage}
 								</Link>
 							</div>
 						</div>
