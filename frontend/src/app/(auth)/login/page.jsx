@@ -77,9 +77,9 @@ export default function LoginPage() {
 
 					<div className="third-div flex justify-center items-center flex-col">
 							<p className='my-7 text-2xl font-light'>OR continue with</p>
-							<div className="bg-white px-4 py-5 rounded-full cursor-pointer">
+							<button className="px-8 py-3 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg">
 								<Login42 />
-							</div>
+							</button>
 					</div>
 
 					<div className="forgot-password mt-5">
