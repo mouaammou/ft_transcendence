@@ -112,7 +112,7 @@ const NotificationBell = () => {
 
 	return (
 		<div>
-			<div className="notifications absolute right-40 top-4">
+			<div className="notifications">
 				<div className="relative">
 					<IoIosNotificationsOutline
 						className="text-[2.2rem] text-white hover:text-gray-400 transition duration-200 cursor-pointer"
