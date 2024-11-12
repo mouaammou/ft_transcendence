@@ -36,6 +36,12 @@
 
 @layer utilities {
 
+	.parent {
+		display: grid;
+		grid-template-columns: 7rem 3fr;
+		grid-template-rows: 1fr;
+	}
+
 	.background-blue {
 		background: radial-gradient(circle at center, rgba(38, 143, 208, 0.546), rgba(26, 41, 128, 0.25) 80%),
 			#000000;

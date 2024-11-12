@@ -32,7 +32,7 @@ class WebSocketManager {
             // console.log("send a request to start remote random game");
             return true;
         } else {
-            console.error('websocket is not initialized');
+            console.log('websocket is not initialized');
             return false;
         }
     }

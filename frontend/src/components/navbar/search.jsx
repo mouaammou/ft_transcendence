@@ -88,7 +88,7 @@ const SearchProfileComponent = () => {
 				<input
 					type="search"
 					id="default-search"
-					className="block w-full p-4 ps-10 text-gray-900 outline-none max-sm:text-sm h-16 bg-gray-100"
+					className="block w-full ps-10 text-gray-900 outline-none max-sm:text-sm h-20 bg-gray-100"
 					placeholder="Search for users, friends, tournaments"
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}

@@ -53,23 +53,25 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className="w-full relative z-10">
+			<nav className="relative z-10">
 				{
 					isAuth ? ( // If user is authenticated, show the links
-						<div className="flex flex-row items-center justify-between bg-gray-100 pr-10 pl-36">
+						<div className="flex flex-row items-center justify-between bg-gray-100 pr-10">
 							<div className='w-full'>
 								<SearchProfileComponent />
 							</div>
 							{/* notifications bell */}
-							<div className="mx-10 max-sm:mx-3">
+							<div className="mx-10 max-sm:mx-3 max-sm:hidden">
 								<NotificationBell />
 							</div>
-
+							<div className='max-sm:hidden'>
+								<h3
+									className='text-gray-800 text-xl font-semibold mx-4 mt-2'
+								>{data.username}</h3>
+							</div>
 							<div className="">
-								{/* for notifications */}
-								
-								{/* drop down menu for Userlogo and notification */} 
-								<button type="button" onClick={() => setIsOpen(!isOpen)} className="max-w-16 overflow-hidden flex text-sm bg-gray-800 rounded-lg hover:ring-4 hover:ring-gray-300">
+								{/* drop down menu for Userlogo and notification */}
+								<button type="button" onClick={() => setIsOpen(!isOpen)} className="max-w-20 overflow-hidden flex text-sm bg-gray-800 rounded-full border-2 border-gray-500">
 									<img className='w-20 h-fit' src={data.avatar} alt="down-arrow"/>
 								</button>
 

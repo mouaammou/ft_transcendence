@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
+import { IoNotifications } from "react-icons/io5";
+
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import Link from 'next/link';
@@ -113,13 +115,13 @@ const NotificationBell = () => {
 	return (
 		<div>
 			<div className="notifications">
-				<div className="relative">
+				<div className="relative border border-gray-400 p-2 rounded-full transition duration-200 cursor-pointer">
 					<IoIosNotificationsOutline
-						className="text-[2.2rem] text-white hover:text-gray-400 transition duration-200 cursor-pointer"
+						className="text-[2.2rem] text-black"
 						onClick={toggleDropdown}
 					/>
-					<span className={`absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-xs font-bold leading-none text-white rounded-full ${
-						unreadCount > 0 ? 'bg-red-600' : 'bg-gray-500'
+					<span className={`absolute top-0 left-10 text-white rounded-full px-2 ${
+						unreadCount > 0 ? 'bg-red-600' : 'bg-gray-300'
 					}`}>
 						{unreadCount}
 					</span>
