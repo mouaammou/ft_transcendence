@@ -67,43 +67,41 @@ const SearchProfileComponent = () => {
 
 	return (
 		<div>
-			<div className="relative">
-				<div className="relative w-full">
-					<div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-						<svg
-						className="w-4 h-4 text-gray-500 dark:text-gray-400"
-						aria-hidden="true"
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 20 20"
-						>
-						<path
-							stroke="currentColor"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth="2"
-							d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-						/>
-						</svg>
-					</div>
-					<input
-						type="search"
-						id="default-search"
-						className="block w-full p-4 ps-10 text-gray-900 border border-gray-300 bg-gray-50 outline-none h-20 max-sm:text-sm"
-						placeholder="Search for users, friends, tournaments"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
+			<div className="relative w-full">
+				<div className="absolute inset-y-0 start-0 flex items-center ps-3 h-full">
+					<svg
+					className="w-4 h-4 text-gray-500 dark:text-gray-400"
+					aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 20 20"
+					>
+					<path
+						stroke="currentColor"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth="2"
+						d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
 					/>
-
-					{/* Results of Search */}
-					<div className="absolute top-14 bg-white z-40">
-						{/* {loading && <SearchedItem results={results} />} */}
-						{loading && results.length > 0 && results.map((result, index) => (
-							<SearchedItem key={index} result={result} />
-						))}
-					</div>
-
+					</svg>
 				</div>
+				<input
+					type="search"
+					id="default-search"
+					className="block w-full p-4 ps-10 text-gray-900 outline-none max-sm:text-sm h-16 bg-gray-100"
+					placeholder="Search for users, friends, tournaments"
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+				/>
+
+				{/* Results of Search */}
+				<div className="absolute top-14 bg-white z-40">
+					{/* {loading && <SearchedItem results={results} />} */}
+					{loading && results.length > 0 && results.map((result, index) => (
+						<SearchedItem key={index} result={result} />
+					))}
+				</div>
+
 			</div>
 		</div>
 	);

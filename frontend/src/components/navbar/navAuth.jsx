@@ -53,10 +53,10 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className="w-full relative z-10 bg-red-900 pr-10">
+			<nav className="w-full relative z-10">
 				{
 					isAuth ? ( // If user is authenticated, show the links
-						<div className="flex flex-row items-center justify-between">
+						<div className="flex flex-row items-center justify-between bg-gray-100 pr-10 pl-36">
 							<div className='w-full'>
 								<SearchProfileComponent />
 							</div>
