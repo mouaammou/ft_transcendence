@@ -21,6 +21,8 @@ export default function LoginPage() {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
+	const [showPassword, setShowPassword] = useState(false);
+
 	const LoginTo = async e => {
 		e.preventDefault();
 		console.log("LoginTo -> formData", formData);
