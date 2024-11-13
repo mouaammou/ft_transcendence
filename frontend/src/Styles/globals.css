@@ -51,34 +51,6 @@ body {
   font-family: 'Courier New', Courier, monospace;
 }
 
-.content {
-  display: flex;
-  width: 100%;
-  overflow-y: auto;
-  /* overflow-x: hidden; */
-  height: 100%;
-  /*  add   */
-}
-html {
-  width: 100%;
-  /* height: 100%; */
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100vh;
-  /* width: 100%; */
-  /* background-color:  rgb(62, 104, 188); */
-  background: radial-gradient(
-      circle at center,
-      rgba(38, 143, 208, 0.546),
-      rgba(26, 41, 128, 0.25) 80%
-    ),
-    #000000;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
 
 .content::-webkit-scrollbar {
   display: none;
