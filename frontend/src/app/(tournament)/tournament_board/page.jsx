@@ -72,8 +72,10 @@ export default function TournamentBoardPage() {
       console.log('you can not leave the tournament');
       setModalOpen(true);
       setModalMessage('Tournament Participation in Progress');
-      setMsgDescription('The tournament has already commenced, and your participation is crucial. \
-      Please remain engaged to support the event and your fellow players. Thank you for your commitment!')
+      setMsgDescription(
+        'The tournament has already commenced, and your participation is crucial. \
+      Please remain engaged to support the event and your fellow players. Thank you for your commitment!'
+      );
     } else if (data.status === 'organizer_can_not_leave') {
       console.log('you can not leave the tournament');
       setModalOpen(true);
@@ -96,10 +98,8 @@ export default function TournamentBoardPage() {
     }
   };
 
-
   useEffect(() => {
-
-  mysocket.sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
+    mysocket.sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
     mysocket.sendMessage(JSON.stringify({ inBoardPage: true }));
 

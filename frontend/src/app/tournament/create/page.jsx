@@ -19,21 +19,21 @@ const CreateTournament = () => {
     user: null,
   });
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setTournament((prev) => ({
+    setTournament(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-  
+
     try {
       // Get JWT token from cookies
       const token = Cookies.get('token'); // Assuming token is stored as 'token' in cookies
-  
+
       // Make the POST request using Axios
       const response = await axios.post(
         'http://localhost:8000/game/local-tournaments/',
@@ -42,12 +42,12 @@ const CreateTournament = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: true
-        },
+          withCredentials: true,
+        }
       );
-  
+
       console.log('Tournament:', tournament);
-  
+
       if (response.status === 201) {
         console.log('Tournament created:', response.data);
         // Optionally, redirect to the tournament details page or show a success message
@@ -74,10 +74,10 @@ const CreateTournament = () => {
           type="datetime-local"
           name="start_at"
           value={tournament.start_at}
-          onChange={(e) => setTournament({ ...tournament, start_at: e.target.value })}
+          onChange={e => setTournament({ ...tournament, start_at: e.target.value })}
         />
         {/* Match Nicknames */}
-        {[1, 2, 3, 4].map((match) => (
+        {[1, 2, 3, 4].map(match => (
           <div key={match}>
             <input
               type="text"

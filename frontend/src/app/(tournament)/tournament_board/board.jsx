@@ -39,7 +39,7 @@ export default function Board({
   return (
     <div>
       {/* <img src={mobileImg} alt="" /> */}
-       <svg
+      <svg
         className="lg:hidden"
         width="283"
         height="600"
@@ -420,7 +420,7 @@ export default function Board({
           d="M240.54 341L242.43 344.5C242.52 344.667 242.7 344.792 242.88 344.833L247.065 345.417C247.56 345.5 247.785 346.042 247.425 346.375L244.41 349.125C244.275 349.25 244.185 349.458 244.23 349.625L244.95 353.5C245.04 353.958 244.5 354.333 244.05 354.083L240.315 352.25C240.135 352.167 239.91 352.167 239.73 352.25L235.95 354.083C235.5 354.292 234.96 353.958 235.05 353.5L235.77 349.625C235.815 349.458 235.725 349.25 235.59 349.125L232.575 346.375C232.215 346.042 232.395 345.458 232.935 345.417L237.12 344.833C237.3 344.792 237.48 344.708 237.57 344.5L239.46 341C239.685 340.583 240.315 340.583 240.54 341Z"
           fill="white"
         />
-      </svg> 
+      </svg>
 
       <svg
         className="hidden lg:flex "
@@ -478,8 +478,17 @@ export default function Board({
           </clipPath>
         </defs>
 
-        <rect x="1003.5" y="289.5" width="306" height="99" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="1080" cy="339" r="48" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="1003.5"
+          y="289.5"
+          width="306"
+          height="99"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="1080" cy="339" r="48" fill="#00539D" fillOpacity="0.37" />
         <image
           x="1032" // x = cx - r
           y="291"
@@ -510,22 +519,63 @@ export default function Board({
           fill="white"
         />
 
-        <rect x="0.5" y="0.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="31.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
-        <image x="22" y="1" width="61" height="61" href={imageUrl1} clipPath="url(#circleView1rt)" />
+        <rect
+          x="0.5"
+          y="0.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="31.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
+        <image
+          x="22"
+          y="1"
+          width="61"
+          height="61"
+          href={imageUrl1}
+          clipPath="url(#circleView1rt)"
+        />
         <text x="100" y="31.5" fill="white" alignmentBaseline="middle">
           {userName1}
         </text>
 
-        <rect x="0.5" y="97.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="128.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
-        <image x="22" y="98" width="61" height="61" href={imageUrl2} clipPath="url(#circleView2a)" />
+        <rect
+          x="0.5"
+          y="97.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="128.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
+        <image
+          x="22"
+          y="98"
+          width="61"
+          height="61"
+          href={imageUrl2}
+          clipPath="url(#circleView2a)"
+        />
         <text x="100" y="128.5" fill="white" alignmentBaseline="middle">
           {userName2}
         </text>
 
-        <rect x="0.5" y="197.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="228.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="197.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="228.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="199"
@@ -538,8 +588,17 @@ export default function Board({
           {userName3}
         </text>
 
-        <rect x="0.5" y="294.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="325.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="294.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="325.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="295"
@@ -552,8 +611,17 @@ export default function Board({
           {userName4}
         </text>
 
-        <rect x="0.5" y="387.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="418.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="387.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="418.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="388"
@@ -566,8 +634,17 @@ export default function Board({
           {userName5}
         </text>
 
-        <rect x="0.5" y="484.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="515.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="484.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="515.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="485"
@@ -580,8 +657,17 @@ export default function Board({
           {userName6}
         </text>
 
-        <rect x="0.5" y="581.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="612.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="581.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="612.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="582"
@@ -594,8 +680,17 @@ export default function Board({
           {userName7}
         </text>
 
-        <rect x="0.5" y="678.5" width="220" height="62" rx="31" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="52.5" cy="709.5" r="30.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="0.5"
+          y="678.5"
+          width="220"
+          height="62"
+          rx="31"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="52.5" cy="709.5" r="30.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="22"
           y="679"
@@ -608,8 +703,17 @@ export default function Board({
           {userName8}
         </text>
 
-        <rect x="365.5" y="39.5" width="220" height="69" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="415" cy="74" r="34" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="365.5"
+          y="39.5"
+          width="220"
+          height="69"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="415" cy="74" r="34" fill="#00539D" fillOpacity="0.37" />
         <image
           x="381"
           y="40"
@@ -622,8 +726,17 @@ export default function Board({
           {userName9}
         </text>
 
-        <rect x="722.5" y="132.5" width="220" height="79" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="776.5" cy="172" r="38.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="722.5"
+          y="132.5"
+          width="220"
+          height="79"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="776.5" cy="172" r="38.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="738"
           y="133"
@@ -636,8 +749,17 @@ export default function Board({
           {userName13}
         </text>
 
-        <rect x="720.5" y="514.5" width="220" height="79" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="776.5" cy="554.004" r="38.5" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="720.5"
+          y="514.5"
+          width="220"
+          height="79"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="776.5" cy="554.004" r="38.5" fill="#00539D" fillOpacity="0.37" />
         <image
           x="738"
           y="515"
@@ -650,8 +772,17 @@ export default function Board({
           {userName14}
         </text>
 
-        <rect x="365.5" y="240.5" width="220" height="69" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="415" cy="275" r="34" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="365.5"
+          y="240.5"
+          width="220"
+          height="69"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="415" cy="275" r="34" fill="#00539D" fillOpacity="0.37" />
         <image
           x="381"
           y="241"
@@ -664,8 +795,17 @@ export default function Board({
           {userName10}
         </text>
 
-        <rect x="364.5" y="429.5" width="220" height="69" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="414" cy="464" r="34" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="364.5"
+          y="429.5"
+          width="220"
+          height="69"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="414" cy="464" r="34" fill="#00539D" fillOpacity="0.37" />
         <image
           x="380"
           y="430"
@@ -678,8 +818,17 @@ export default function Board({
           {userName11}
         </text>
 
-        <rect x="364.5" y="624.5" width="220" height="69" rx="34.5" stroke="#FFFEFE" fill="#00539D" fillOpacity="0.37"  />
-        <circle cx="414" cy="659" r="34" fill="#00539D" fillOpacity="0.37"  />
+        <rect
+          x="364.5"
+          y="624.5"
+          width="220"
+          height="69"
+          rx="34.5"
+          stroke="#FFFEFE"
+          fill="#00539D"
+          fillOpacity="0.37"
+        />
+        <circle cx="414" cy="659" r="34" fill="#00539D" fillOpacity="0.37" />
         <image
           x="380"
           y="625"

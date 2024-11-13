@@ -3,7 +3,6 @@ import Selector from '@/app/(game)/mode/selecor';
 import { RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg } from '@components/modeSvgs/ModeSvgs.jsx';
 import { useRouter } from 'next/navigation';
 
-
 const Mode = () => {
   const router = useRouter();
 
@@ -21,10 +20,7 @@ const Mode = () => {
 
   const goBack = () => {
     router.push('/play');
-  }
-
-
-
+  };
 
   return (
     <div className="flex flex-col lg:flex-row w-fit mx-6 sm:m-auto mt-56 sm:mt-56 lg:gap-10">
@@ -49,12 +45,12 @@ const Mode = () => {
           Svgvar={VsbotSvg}
           onclick={botGame}
         ></Selector>
-        <Selector 
-          title="GO BACK" 
+        <Selector
+          title="GO BACK"
           description={<br></br>}
           Svgvar={ExitSvg}
           onclick={goBack}
-          ></Selector>
+        ></Selector>
       </div>
     </div>
   );

@@ -11,8 +11,8 @@
   align-items: center;
 }
 .container > div {
-	display: flex;
-	gap: 100px;
+  display: flex;
+  gap: 100px;
 }
 
 .logo {

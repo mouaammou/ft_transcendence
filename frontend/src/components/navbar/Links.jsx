@@ -3,14 +3,14 @@ import { useState } from 'react';
 import SearchProfileComponent from '@/components/navbar/search';
 
 const Links = () => {
-	const [isOpenUsers, setIsOpenUsers] = useState(false);
-	const [isOpenGame, setIsOpenGame] = useState(false);
-	return (
-		<> 
-			<div className="flex justify-center gap-x-5 items-center text-[1.1rem] ">
-				{/* <Link href='/chat' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Chat</Link> */}
-				{/* drop down menu for Users and game & tournament */}
-				{/* <div className="relative">
+  const [isOpenUsers, setIsOpenUsers] = useState(false);
+  const [isOpenGame, setIsOpenGame] = useState(false);
+  return (
+    <>
+      <div className="flex justify-center gap-x-5 items-center text-[1.1rem] ">
+        {/* <Link href='/chat' className="text-white hover:text-gray-300 transition duration-300 px-4 py-2">Chat</Link> */}
+        {/* drop down menu for Users and game & tournament */}
+        {/* <div className="relative">
 					<button
 					onClick={() => setIsOpenGame(!isOpenGame)}
 					className="text-white hover:bg-black transition-all rounded-lg px-5 py-2.5 text-center inline-flex items-center"
@@ -49,10 +49,10 @@ const Links = () => {
 
 					)}
 				</div> */}
-				{/* end  drop down menu for Users and game & tournament */}
+        {/* end  drop down menu for Users and game & tournament */}
 
-				{/* drop down menu for Users and Friends */}
-				{/* <div className="relative">
+        {/* drop down menu for Users and Friends */}
+        {/* <div className="relative">
 					<button
 					onClick={() => setIsOpenUsers(!isOpenUsers)}
 					className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 text-center inline-flex items-center"
@@ -91,18 +91,18 @@ const Links = () => {
 
 					)}
 				</div> */}
-				{/* end drop down menu for Users and Friends */}
+        {/* end drop down menu for Users and Friends */}
 
-				{/* search bar ***************** */}
-				<SearchProfileComponent />
-				{/*  end search bar ***************** */}
-			</div>
+        {/* search bar ***************** */}
+        <SearchProfileComponent />
+        {/*  end search bar ***************** */}
+      </div>
 
-			{/* for mobile navigation */}
-					{/* NOTHING */}
-			{/* for mobile navigation */}
-		</>
-	);
+      {/* for mobile navigation */}
+      {/* NOTHING */}
+      {/* for mobile navigation */}
+    </>
+  );
 };
 
 export default Links;

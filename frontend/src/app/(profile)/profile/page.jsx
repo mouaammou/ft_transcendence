@@ -2,382 +2,166 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { MdDataSaverOff } from 'react-icons/md';
+import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
 import { IoMdPhonePortrait } from 'react-icons/io';
-import { TfiStatsUp } from "react-icons/tfi";
-import { GrHistory } from "react-icons/gr";
-
+import { TfiStatsUp } from 'react-icons/tfi';
+import { GrHistory } from 'react-icons/gr';
+import { CiUser } from 'react-icons/ci';
+import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
+import { GiBattleAxe } from 'react-icons/gi';
+import Image from 'next/image';
+import DoughnutChart from '@/components/userStats/userStatsCharts';
 
 const Profile = () => {
-
 	const { profileData: data } = useAuth();
 
 	return (
-		<div className="profile container max-md:p-3 overflow-hidden">
-			{/* user avatar and infos */}
-			<div className="profile-top-infos flex justify-center items-center gap-[20rem] max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
-			<div className="profile-pic-name flex justify-center flex-col gap-4 items-start">
-				{/* avatar */}
-				<div className="flex items-start gap-4 max-md:items-center max-md:flex-col max-md:justify-center max-md:gap-1">
-					{/* the avatar */}
-					<div className="w-52 h-52 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
-					<img className="w-full h-full object-cover" src={data.avatar} alt="profile picture" />
-					</div>
-
-					{/* username & nickname */}
-					<div className="mt-24 max-md:mt-3">
-					<h3>{data?.username}</h3>
-					</div>
-				</div>
-
-				<div className="profile-update-button">
-					<button className="edit-btn rounded-md bg-white text-black px-6 py-3 text-[1rem]">
-					<Link href="/edit_profile">Update Profile</Link>
-					</button>
-				</div>
+		data && (
+			<div className="min-h-screen bg-gray-900 text-white">
+			{/* Hero Section with Background */}
+				<div className="relative h-72 w-full overflow-hidden">
+					<Image
+						src="/gaming-demo.jpeg"
+						alt="profile background"
+						width={1920}
+						height={1080}
+						className="w-full h-full object-cover object-center filter brightness-50"
+					/>
+				<div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
 			</div>
 
-			{/* display user infos */}
-			<div className="user-infos">
-				<div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-72">
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdOutlineAlternateEmail className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>email: {data?.email}</span>
-					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>first_name: {data?.first_name}</span>
-					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<MdDataSaverOff className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>last_name: {data?.last_name}</span>
-					</div>
-					<div className="flex justify-center items-center gap-7 py-3">
-					<IoMdPhonePortrait className="bg-white text-black w-8 h-8 p-1 rounded-full" />
-					<span>phone number: 06666666666</span>
-					</div>
-				</div>
-			</div>
-			</div>
-			{/* user level */}
-			<div className="profile-level h-full mt-4 mx-auto w-[83%] max-xl:w-[95%]">
-			<div className="bg-gray-200 rounded-md h-10 text-center overflow-hidden border border-white">
-				<div
-					className="bg-darkgreen text-white text-center p-0.5 h-full"
-					style={{ width: '45%' }}
-				>
-					<div className="leading-9">Level 45%</div>
-				</div>
-			</div>
-			</div>
-
-
-			{/* for stats charts and history */}
-			<div className="user-stats-history flex justify-between items-start flex-wrap pt-9 mt-10">
-
-				{/* user history: games 1v1 */}
-				<div className="user-history mx-auto p-4">
-					<div className="flex justify-between items-center mb-1">
-						<div className="text-xl font-medium text-brand-500">
-							<GrHistory className="inline-block mx-2"/>
-							Match History
+			{/* Main Content */}
+			<div className="container mx-auto px-4 -mt-32 relative z-10">
+				{/* Profile Header */}
+				<div className="flex flex-col items-center mb-12">
+					<div className="relative">
+						<img
+							src={data.avatar}
+							alt="profile avatar"
+							className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
+						/>
+						<div className="absolute -bottom-2 -right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+							Level 5
 						</div>
-					</div>
-
-					<div className='max-h-96 overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-[#ffffff70] scrollbar-track-transparent scroll-smooth'>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						{/* <!-- Match Entry 1--> */}
-						<div className="bg-white shadow-md rounded-lg px-8 py-2 h-20 max-sm:h-full flex justify-between gap-2 flex-col sm:flex-row items-center mx-auto mt-8">
-							{/* <!-- User Profile and Basic Info --> */}
-							<div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
-								<img className="w-14 h-14 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User Avatar"/>
-								<div>
-									<h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-									<p className="text-sm text-gray-600">2023-09-07</p>
-								</div>
-							</div>
-
-							{/* <!-- Match Details --> */}
-							<div className="flex flex-col sm:flex-row items-center justify-between">
-								{/* <!-- Gauge Component --> */}
-								<div className="relative size-24 max-sm:size-12 mb-4 sm:mb-0">
-									{/* <!-- Value Text --> */}
-									<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-										<span className="text-xl font-bold text-purple-600">75</span>
-										<span className="text-purple-600 block text-xs">Score</span>
-									</div>
-								</div>
-
-								{/* <!-- Match Result --> */}
-								<div className="text-center sm:text-right flex flex-row max-sm:flex-col items-center gap-5 max-sm:gap-0">
-									<span className="bg-green-200 text-green-600 py-1 px-3 rounded-full text-sm font-semibold">Win</span>
-									<div>
-										<p className="mt-2 text-sm text-gray-600">21 - 18</p>
-										<p className="text-sm text-gray-600 inline">15m 30s</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						
-					</div>
-						
-				</div>
-
-				{/* user statistics */}
-				<div className='user-stats mx-auto p-4 max-md:mt-10'>
-					<div className="stats-icon text-xl font-medium lg:text-center max-lg:mt-10"><TfiStatsUp className="inline-block mx-2"/>Your Stats</div>
-					
-					<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 p-5 mt-14 rounded-lg px-8">
-
-						{/* <!-- Gauge Component --> */}
-						<div className="relative size-60">
-							<svg
-							className="rotate-[135deg] size-full"
-							viewBox="0 0 36 36"
-							xmlns="http://www.w3.org/2000/svg"
-							>
-							{/* <!-- Background Circle (Gauge) --> */}
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								className="stroke-current text-white"
-								strokeWidth="1"
-								strokeDasharray="75 100"
-							></circle>
-
-							{/* <!-- Gauge Progress --> */}
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								className="stroke-current text-red-500"
-								strokeWidth="3"
-								strokeDasharray="18.75 100"
-							></circle>
-							</svg>
-
-							{/* <!-- Value Text --> */}
-							<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-								<span className="text-4xl font-bold text-red-500">25</span>
-								<span className="text-red-500 block">loses</span>
-							</div>
-						</div>
-						{/* <!-- End Gauge Component --> */}
-
-						{/* <!-- Gauge Component --> */}
-						<div className="relative size-60">
-							<svg
-							className="rotate-[135deg] size-full"
-							viewBox="0 0 36 36"
-							xmlns="http://www.w3.org/2000/svg"
-							>
-							{/* <!-- Background Circle (Gauge) --> */}
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								className="stroke-current text-white"
-								strokeWidth="1"
-								strokeDasharray="75 100"
-								strokeLinecap="round"
-							></circle>
-							{/*  */}
-							{/* <!-- Gauge Progress --> */}
-							<circle
-								cx="18"
-								cy="18"
-								r="16"
-								fill="none"
-								className="stroke-current text-green-500"
-								strokeWidth="2"
-								strokeDasharray="56.25 100"
-								strokeLinecap="round"
-							></circle>
-							</svg>
-
-							{/* <!-- Value Text --> */}
-							<div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-								<span className="text-3xl font-bold text-green-600">75</span>
-								<span className="text-green-600 block">Wins</span>
-							</div>
-						</div>
-						{/* <!-- End Gauge Component --> */}
-
-						{/* <!-- Gauge Component --> */}
-						<div className="relative size-60">
-							<svg
-							className="rotate-[135deg] size-full"
-							viewBox="0 0 36 36"
-							xmlns="http://www.w3.org/2000/svg"
-							>
-								{/* <!-- Background Circle (Gauge) --> */}
-								<circle
-									cx="18"
-									cy="18"
-									r="16"
-									fill="none"
-									className="stroke-current text-white"
-									strokeWidth="1"
-									strokeDasharray="75 100"
-									strokeLinecap="round"
-								></circle>
-								{/* <!-- Gauge Progress --> */}
-								<circle
-									cx="18"
-									cy="18"
-									r="16"
-									fill="none"
-									className="stroke-current text-yellow-500"
-									strokeWidth="2"
-									strokeDasharray="56.25 100"
-									strokeLinecap="round"
-								></circle>
-							</svg>
-
-							{/* <!-- Value Text --> */}
-							<div className="absolute top-9 start-1/2 transform -translate-x-1/2 text-center">
-								<span className="text-4xl font-bold text-yellow-500">50</span>
-								<span className="text-yellow-500 block">Average</span>
-							</div>
-						</div>
-						{/* <!-- End Gauge Component --> */}
 					</div>
 					
+					<div className="mt-4 text-center">
+						<h1 className="text-3xl font-bold">{`${data.first_name} ${data.last_name}`}</h1>
+						<p className="text-sky-400">@{data.username}</p>
+					</div>
+
+					{/* Level Progress Bar */}
+					<div className="w-full max-w-md mt-6">
+						<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
+							<div 
+								className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
+								style={{ width: '45%' }}
+							>
+							</div>
+						</div>
+						<div className="flex justify-between text-sm mt-1">
+							<span>Level 5</span>
+							<span>45/100 XP</span>
+						</div>
+					</div>
+				</div>
+
+				{/* Grid Layout for Info Cards */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+					{/* User Info Card */}
+					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+					<h2 className="text-xl font-semibold mb-6 flex items-center">
+						<FaUser className="mr-2" /> Profile Information
+					</h2>
+					
+					<div className="space-y-4">
+						{[
+							{ icon: <FaUserCheck />, label: "Username", value: data.username },
+							{ icon: <MdEmail />, label: "Email", value: data.email },
+							{ icon: <MdPhone />, label: "Phone", value: data.phone || "No phone number" },
+						].map((item, index) => (
+							<div key={index} className="flex items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+							<span className="text-sky-400 mr-3">{item.icon}</span>
+							<div>
+								<div className="text-sm text-gray-400">{item.label}</div>
+								<div className="font-medium">{item.value}</div>
+							</div>
+							</div>
+						))}
+					</div>
+
+					<Link href="/edit_profile">
+						<button className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+							<MdUpdate className="mr-2" /> Update Profile
+						</button>
+					</Link>
+					</div>
+
+					{/* Match History Card */}
+					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+					<h2 className="text-xl font-semibold mb-6 flex items-center">
+						<FaHistory className="mr-2" /> Recent Matches
+					</h2>
+					
+					<div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+						{[1, 2, 3, 4, 5, 6].map((match, index) => (
+							<div key={index} className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300">
+							<div className="flex justify-between items-center">
+								{/* Player 1 */}
+								<div className="flex items-center space-x-3">
+									<img
+									src="https://randomuser.me/api/portraits/men/1.jpg"
+									alt="Player 1"
+									className="w-12 h-12 rounded-full border-2 border-green-500"
+									/>
+									<div>
+									<div className="font-medium">John Doe</div>
+									<div className="text-green-400 text-lg font-bold">21</div>
+									</div>
+								</div>
+
+								{/* VS */}
+								<div className="flex flex-col items-center">
+									<GiBattleAxe className="text-gray-400 text-xl" />
+									<div className="text-sm text-gray-400 mt-1">VS</div>
+								</div>
+
+								{/* Player 2 */}
+								<div className="flex items-center space-x-3">
+									<div className="text-right">
+									<div className="font-medium">Jane Smith</div>
+									<div className="text-red-400 text-lg font-bold">18</div>
+									</div>
+									<img
+									src="https://randomuser.me/api/portraits/women/3.jpg"
+									alt="Player 2"
+									className="w-12 h-12 rounded-full border-2 border-red-500"
+									/>
+								</div>
+							</div>
+							
+							<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
+								<MdUpdate className="mr-1" />
+								2023-09-07 • 3:00 PM
+							</div>
+							</div>
+						))}
+					</div>
+					</div>
+				</div>
+
+				{/* Stats Section */}
+				<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
+					<h2 className="text-xl font-semibold mb-6 flex items-center">
+						<TfiStatsUp className="mr-2" /> Statistics
+					</h2>
+					<div className="max-w-3xl mx-auto">
+						<DoughnutChart />
+					</div>
 				</div>
 			</div>
-		</div>
+			</div>
+		)
 	);
 };
 

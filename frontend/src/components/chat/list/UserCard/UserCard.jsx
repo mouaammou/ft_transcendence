@@ -13,16 +13,16 @@ const UserCard = ({ user, listType, onUserSelect }) => {
       onClick={() => onUserSelect(user)}
     >
       <img
-          src={user.avatar}
-          alt={user.username }
-          width={imageSize}
-          height={imageSize}
-          className="img-usercard"
-          style={{
-            borderRadius: '50%',
-            border: '2px solid #fff',
-          }}
-        />
+        src={user.avatar}
+        alt={user.username}
+        width={imageSize}
+        height={imageSize}
+        className="img-usercard"
+        style={{
+          borderRadius: '50%',
+          border: '2px solid #fff',
+        }}
+      />
       <div
         className="status"
         style={{ backgroundColor: `${borderColor}`, borderRadius: '50%' }}
@@ -30,8 +30,8 @@ const UserCard = ({ user, listType, onUserSelect }) => {
       {listType === 'all' && (
         <>
           <p>{user.username}</p>
-          { /* display last message */}
-          { /* display the time of the message */}
+          {/* display last message */}
+          {/* display the time of the message */}
         </>
       )}
     </div>

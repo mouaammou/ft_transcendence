@@ -21,7 +21,7 @@ export default function CreateJoinTournamentPage() {
   });
   const [tab, setTab] = useState([]);
   const [selectedTournamentId, setSelectedTournamentId] = useState('');
-  const [players, setPlayers] = useState({})
+  const [players, setPlayers] = useState({});
 
   const fetchPlayer = async playerId => {
     try {
@@ -53,7 +53,7 @@ export default function CreateJoinTournamentPage() {
   };
 
   const handleCreateTournament = () => {
-    setInputError({...inputError, tournamentName: false });
+    setInputError({ ...inputError, tournamentName: false });
     if (tournament_name.trim() !== '') {
       if (tournament_name.length > 12) {
         setInputError({ ...inputError, tournamentName: true });
@@ -105,15 +105,14 @@ export default function CreateJoinTournamentPage() {
         setTimeout(() => {
           router.push('/tournament_board');
         }, 1000);
-      }
-      else if (data.tournaments !== undefined) {
+      } else if (data.tournaments !== undefined) {
         setTab(data.tournaments);
-        const playersAvatar = {}
+        const playersAvatar = {};
         for (const tournauwa of data.tournaments) {
           if (!(tournauwa.organizer in playersAvatar)) {
-            const player = await fetchPlayer(tournauwa.organizer)
+            const player = await fetchPlayer(tournauwa.organizer);
             if (player) {
-              playersAvatar[tournauwa.organizer] = player
+              playersAvatar[tournauwa.organizer] = player;
             }
           }
         }
@@ -188,8 +187,7 @@ export default function CreateJoinTournamentPage() {
         <div className="flex flex-col items-center overflow-y-auto custom-scrollbar max-h-32 lg:max-h-44">
           {tab.length > 0 ? (
             tab.map((tournament, index) => {
-
-              const player = players[tournament.organizer]
+              const player = players[tournament.organizer];
               return (
                 <button
                   key={index}
@@ -201,14 +199,18 @@ export default function CreateJoinTournamentPage() {
                   }}
                 >
                   {player && player.avatar && (
-                    <img src={player.avatar} alt={`${player.name}'s avatar`} className="w-8 h-8  rounded-full" />
+                    <img
+                      src={player.avatar}
+                      alt={`${player.name}'s avatar`}
+                      className="w-8 h-8  rounded-full"
+                    />
                   )}
-                  {tournament.name} 
+                  {tournament.name}
                 </button>
               );
             })
           ) : (
-            <p className='my-9'>no tournaments</p>
+            <p className="my-9">no tournaments</p>
           )}
         </div>
 

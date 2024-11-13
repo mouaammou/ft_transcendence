@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'; // Use Next.js router
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import {Modal} from '@/components/modals/Modal';
+import { Modal } from '@/components/modals/Modal';
 
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
@@ -19,7 +19,6 @@ const WaitingPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [msgDescription, setMsgDescription] = useState('');
-
 
   const handleMessage = async message => {
     const data = JSON.parse(message.data);
@@ -77,7 +76,8 @@ const WaitingPage = () => {
     } else if (data.status === 'already_in_tournament') {
       setModalOpen(true);
       setModalMessage('You Are Already In Tournament');
-      setMsgDescription('You are currently registered in a tournament.\
+      setMsgDescription(
+        'You are currently registered in a tournament.\
        Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!'
       );
       setTimeout(() => {
@@ -126,7 +126,12 @@ const WaitingPage = () => {
         </div>
         <h2 className="text-center text-gray-600">Waiting for another player to join...</h2>
       </div>
-      <Modal isOpen={modalOpen} description={msgDescription} title={modalMessage} action={() => setModalOpen(false)} />
+      <Modal
+        isOpen={modalOpen}
+        description={msgDescription}
+        title={modalMessage}
+        action={() => setModalOpen(false)}
+      />
     </div>
   );
 };

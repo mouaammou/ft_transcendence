@@ -21,10 +21,7 @@ export default function MobileBoard({ imageUrls }) {
 
   return (
     <div>
-      <svg
-        className="lg:hidden"
-        viewBox="0 0 283 632"
-      >
+      <svg className="lg:hidden" viewBox="0 0 283 632">
         <defs>
           {circleData.map((circle, index) => (
             <clipPath key={index} id={`circleView${index + 1}`}>

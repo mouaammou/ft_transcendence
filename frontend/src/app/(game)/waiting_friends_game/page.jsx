@@ -43,7 +43,8 @@ const WaitingFriendPage = () => {
     } else if (data.status === 'already_in_tournament') {
       setModalOpen(true);
       setModalMessage('You Are Already In Tournament');
-      setMsgDescription('You are currently registered in a tournament.\
+      setMsgDescription(
+        'You are currently registered in a tournament.\
        Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!'
       );
       setTimeout(() => {
@@ -54,7 +55,8 @@ const WaitingFriendPage = () => {
     } else if (data.status === 'friend_in_game' || data.status === 'friend_in_tournament') {
       setModalOpen(true);
       setModalMessage('Your Friend Participation Status');
-      setMsgDescription('Your friend is currently participating in a game or tournament. Please check back later or \
+      setMsgDescription(
+        'Your friend is currently participating in a game or tournament. Please check back later or \
       encourage them to finish before joining another event. Thank you for your understanding!'
       );
       setTimeout(() => {
@@ -127,7 +129,12 @@ const WaitingFriendPage = () => {
           </div>
         </div>
       </div>
-      <Modal isOpen={modalOpen} title={modalMessage} description={msgDescription} action={() => setModalOpen(false)} />
+      <Modal
+        isOpen={modalOpen}
+        title={modalMessage}
+        description={msgDescription}
+        action={() => setModalOpen(false)}
+      />
     </div>
   );
   // the second image pulsing effect is not working

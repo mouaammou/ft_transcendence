@@ -92,7 +92,13 @@ const GamePage = () => {
           <Skeleton />
         )}
         <div className="self-game">
-          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} gameType={gameType} />
+          <PongGame
+            score1={score1}
+            score2={score2}
+            setScore1={setScore1}
+            setScore2={setScore2}
+            gameType={gameType}
+          />
         </div>
         {player2 ? (
           <div className="right-user">

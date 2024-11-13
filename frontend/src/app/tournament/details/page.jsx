@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 
 const TournamentDetails = () => {
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');// Get tournament ID from query params
+  const id = searchParams.get('id'); // Get tournament ID from query params
   const [tournament, setTournament] = useState({
     title: 'Local Tournament',
     match1_nickname1: 'Player 1',
@@ -25,7 +25,7 @@ const TournamentDetails = () => {
     match7_winner: null,
   });
 
-  const fetchTournamentDetails = async (id) => {
+  const fetchTournamentDetails = async id => {
     try {
       const response = await fetch(`http://localhost:8000/game/local-tournaments/${id}/`, {
         method: 'GET',
