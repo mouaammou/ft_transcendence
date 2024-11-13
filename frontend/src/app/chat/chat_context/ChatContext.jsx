@@ -59,7 +59,6 @@ export const ChatProvider = ({ children }) => {
 
      // ************************ Helper Functions ************************
 
-    // Helper to format time (e.g., "15:30")
     const formatTime = (timestamp) => {
         const date = new Date(timestamp);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -126,6 +125,29 @@ export const ChatProvider = ({ children }) => {
         // setSelectedUser(user);
         // setIsChatVisible(true);
         fetchChatHistory(user.id); // Fetch chat history for selected user
+
+        // add 
+
+        // Send a WebSocket message to mark messages as read
+        if (socket) {
+                console.log('we send a mark_read: to the backand')
+                socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
+            // Update `is_read` status in the frontend immediately for the selected user
+            setAllUsers((prevUsers) =>
+                prevUsers.map((friend) =>
+                    friend.friend.id === user.id
+                        ? {
+                            ...friend,
+                            last_message: {
+                                ...friend.last_message,
+                                is_read: true,  // Mark as read immediately
+                            },
+                        }
+                        : friend
+                )
+            );
+        }
+
     };
     // ************************ end ***********************
 
@@ -160,6 +182,12 @@ export const ChatProvider = ({ children }) => {
   
       setText(''); // Clear input field
 
+    }
+    else {
+        // Log why the message was not sent
+        if (!text.trim()) console.log('Message not sent: Text is empty.');
+        if (!selectedUser) console.log('Message not sent: No selected user.');
+        if (!socket || socket.readyState !== WebSocket.OPEN) console.log('Message not sent: WebSocket is not open.');
     }
 
     };
@@ -212,11 +240,23 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
+    // Update the `last_message` field in `allUsers` when a new message is sent or received
+    const updateLastMessage = (userId, message, is_read, timestamp) => {
+        setAllUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                user.friend.id === userId
+                    ? { ...user, last_message: { message, is_read, timestamp } }
+                    : user
+            )
+        );
+    };
+    // ************************ end ***********************
 
     // ************************ Manage WebSocket connection ************************
     const connectWebSocket = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
         // If there's already an open WebSocket, close it before opening a new one
+        console.log('If there is already an open WebSocket, close it before opening a new one');
         socket.close(); 
         }
 
@@ -226,57 +266,25 @@ export const ChatProvider = ({ children }) => {
         console.log('WebSocket chat connected');
         };
 
-        // ws.onmessage = (event) => {
-        //     const receivedData = JSON.parse(event.data);
-
-        //     const { sender, receiver, message, receiver_id, sender_id, timestamp } = receivedData;
-
-        //     // Update the local state with the received message
-        //     setMessages((prevMessages) => {
-        //         const updatedMessages = { ...prevMessages };
-                
-        //         // // Check if the current user is the sender or receiver
-        //         // let userId = sender_id === currentUser.id ? receiver_id : sender_id;
-
-
-        //         // Check if the current user is the sender or receiver and set userId accordingly
-        //         let userId;
-        //         if (sender_id === currentUser.id) {
-        //             // If the current user is the sender, use the receiver_id
-        //             userId = receiver_id;
-        //         } else {
-        //             // If the current user is the receiver, use the sender_id
-        //             userId = sender_id;
-        //         }
-
-        //             // Initialize the message array for this user if it doesn't exist
-        //             if (!updatedMessages[userId]) {
-        //             updatedMessages[userId] = {};
-        //             }
-
-        //             // const messageDate = timestamp;
-        //             const messageDate = formatDate(timestamp);
-        //             if (!updatedMessages[userId][messageDate]) {
-        //             updatedMessages[userId][messageDate] = [];
-        //             }
-
-        //             // Add the new message to the correct date group
-        //             updatedMessages[userId][messageDate].push(receivedData);
-
-        //             return updatedMessages;
-        //     });
-        // };
-
         ws.onmessage = (event) => {
             const receivedData = JSON.parse(event.data);
-            const { sender, receiver, message, receiver_id, sender_id, typing } = receivedData;
+            const { sender, receiver, message, receiver_id, sender_id, typing , mark_read} = receivedData;
 
             // Handle incoming messages
             if (message) {
                 console.log('message => ', message)
                 setMessages((prevMessages) => {
                     const updatedMessages = { ...prevMessages };
-                    const userId = sender_id === currentUser.id ? receiver_id : sender_id;
+                    // const userId = sender_id === currentUser.id ? receiver_id : sender_id;
+                    // Check if the current user is the sender or receiver and set userId accordingly
+                    let userId;
+                    if (sender_id === currentUser.id) {
+                        // If the current user is the sender, use the receiver_id
+                        userId = receiver_id;
+                    } else {
+                        // If the current user is the receiver, use the sender_id
+                        userId = sender_id;
+                    }
 
                     if (!updatedMessages[userId]) {
                         updatedMessages[userId] = {};
@@ -290,6 +298,37 @@ export const ChatProvider = ({ children }) => {
                     updatedMessages[userId][messageDate].push(receivedData);
                     return updatedMessages;
                 });
+                if (sender_id === currentUser.id) {
+                    updateLastMessage(receiver_id, message, true, receivedData.timestamp); // Sent message, mark as read for sender
+                } else {
+                    updateLastMessage(sender_id, message, false, receivedData.timestamp); // Received message, mark as unread for receiver
+                }
+                
+            }
+
+            console.log(' mark_read befor condition => ', mark_read)
+            console.log(' this is receiver  => ', receiver)
+            if (mark_read && receiver) {
+                // Update the read status of messages from this user
+                console.log(' mark_read inside condition => ', mark_read)
+                setAllUsers((prevUsers) =>
+                    prevUsers.map((friend) => {
+                        if (friend.username === receiver) {
+                            // Update the `is_read` status of the `last_message`
+                    return {
+                        ...friend,
+                        last_message: {
+                            ...friend.last_message,
+                            is_read: true
+                        }
+                    };
+                        }
+                        return friend;
+                    })
+                );
+            }
+            else {
+                console.log("Skipping mark_read update as conditions are not met.");
             }
 
             // Handle typing indicator

@@ -137,13 +137,21 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
   const borderColor = user.active ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
 
-  // Format the timestamp if it exists
-  // const formattedTimestamp = lastMessage.timestamp
-  //   ? formatDistanceToNow(new Date(lastMessage.timestamp)) + ' ago'
-  //   : '';
+  console.log('user. username => ', user.username)
+  // Check if the user is typing
+  const isTyping = typingUsers.includes(user.username);
+
   const formattedTimestamp = lastMessage.timestamp
     ? formatDistanceToNow(new Date(lastMessage.timestamp))
     : '';
+
+  // Determine message display based on is_read status
+  const messageDisplay = lastMessage.is_read
+    ? <span>{lastMessage.message} ✓✓</span>  // Double checkmark for read
+    : <span style={{ fontWeight: 'bold' }}>{lastMessage.message} (New)</span>;  //
+
+  // console.log('Determine message display based on is_read status => ',messageDisplay)
+  console.log('lastMessage.is_read ==> ',lastMessage.is_read)
 
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType
@@ -158,16 +166,6 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
           height={imageSize}
           className="w-full h-full object-cover"
         />
-
-        {/* <div className="usercard-info">
-          <p>{user.username}</p>
-          {lastMessage && lastMessage.message && (
-            <p className="last-message">{lastMessage.message}</p>
-          )}
-          {formattedTimestamp && (
-            <p className="timestamp">{formattedTimestamp}</p>
-          )}
-        </div> */}
       </CardContent>
     </Card>
   ) : (
@@ -194,14 +192,19 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
       {listType === 'all' && (
         <>
           <p>{user.username}</p>
-          {typingUsers.includes(user.username) && (
+          {isTyping ? (
             <p className="typing_indicator_card">Typing...</p>
-          )}
-          {lastMessage && lastMessage.message && (
-            <p className="last-message">{lastMessage.message}</p>
-          )}
-          {formattedTimestamp && (
-            <p className="timestamp">{formattedTimestamp}</p>
+          ) : (
+            <>
+              {/* {lastMessage && lastMessage.message && (
+                <p className="last-message">{lastMessage.message}</p>
+              )} */}
+              {messageDisplay}
+
+              {formattedTimestamp && (
+                <p className="timestamp">{formattedTimestamp}</p>
+              )}
+            </>
           )}
         </>
       )}

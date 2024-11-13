@@ -102,6 +102,7 @@ const Msg_chat = () => {
 							/>
 							)}
 							<div className='div_text_message'>
+								{/* {console.log('msg.message', msg.message)} */}
 								<p className='text_message'>{msg.message}</p>
 								{/* Display the time for each message */}
 								<span className="message_time">{formatTime(msg.timestamp)}</span>

@@ -137,7 +137,7 @@ import {
 
 const UserList = ({ users, listType }) => {
   const { handleUserClick, typingUsers } = useContext(ChatContext);
-
+  console.log('hay users  => ' , users)
   return (
     <>
       {listType === 'online' ? (

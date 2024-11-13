@@ -18,10 +18,10 @@ class MessageSerializer(serializers.ModelSerializer):
 class LastMessageSerializer(serializers.ModelSerializer):
     message = serializers.CharField()
     timestamp = serializers.DateTimeField()
-
+    is_read = serializers.BooleanField()
     class Meta:
         model = Message
-        fields = ['message', 'timestamp']
+        fields = ['message', 'timestamp', 'is_read']  # Add is_read to fields list
 
 
 

@@ -73,63 +73,14 @@ User = get_user_model()
 
 # ********************* methode 2 *****************************
 
-# class ListUsersView(FriendshipListView):
-#     def list(self, request, *args, **kwargs):
-#         # Step 1: Get all friends data (this will return user instances)
-#         all_friends_data = self.get_queryset()
-#         custom_user = request.customUser  # Current user
-
-#         # Step 2: Prepare a list to hold each friend's data and last message
-#         friends_with_messages = []
-
-#         for friend in all_friends_data:
-#             # Step 3: Get the latest message between the current user and this friend
-#             last_message = Message.objects.filter(
-#                 Q(sender=custom_user, receiver=friend) | Q(sender=friend, receiver=custom_user)
-#             ).order_by('-timestamp').first()
-
-#             # Step 4: Add the friend and last message to the list
-#             friends_with_messages.append({
-#                 "friend": friend,
-#                 "last_message": last_message
-#             })
-
-#         # Step 5: Sort friends based on the timestamp of the last message
-#         # friends_with_messages.sort(
-#         #     key=lambda item: item['last_message'].timestamp if item['last_message'] else datetime.min,
-#         #     reverse=True
-#         # )
-
-#         friends_with_messages.sort(
-#             key=lambda item: item['last_message'].timestamp if item['last_message'] else datetime.datetime.min,
-#             reverse=True  # Sort in descending order
-#         )
-
-#         # Step 6: Serialize the data using FriendWithLastMessageSerializer
-#         serialized_data = FriendWithLastMessageSerializer(friends_with_messages, many=True).data
-
-#         # Step 7: Return the response with the serialized data
-#         return Response(serialized_data)
-
-
-from django.utils import timezone
-from datetime import datetime
-
-from django.utils import timezone
-from datetime import datetime
-from rest_framework.response import Response
-from django.db.models import Q, Max
-from .models import Message
-from .serializers import FriendWithLastMessageSerializer
-from .views import FriendshipListView
 
 class ListUsersView(FriendshipListView):
     def list(self, request, *args, **kwargs):
-        # Get all friends data (this will return user instances)
+        # Get all friends data
         all_friends_data = self.get_queryset()
         custom_user = request.customUser  # Current user
 
-        # Create a mapping of friend IDs to their last message and timestamp
+        # Create a mapping of friend IDs to their last message, timestamp, and is_read status
         friend_latest_map = {}
 
         for friend in all_friends_data:
@@ -139,44 +90,37 @@ class ListUsersView(FriendshipListView):
             ).order_by('-timestamp').first()
 
             if latest_message:
-                # Store the latest message and timestamp
+                # Store the latest message, timestamp, and is_read status
                 friend_latest_map[friend.id] = {
                     "message": latest_message.message,
-                    "timestamp": latest_message.timestamp
+                    "timestamp": latest_message.timestamp,
+                    # "is_read": latest_message.is_read
+                    "is_read": latest_message.is_read if latest_message.receiver == custom_user else True
                 }
             else:
                 # No message found
                 friend_latest_map[friend.id] = {
-                    # "message": 'No message',
                     "message": '',
-                    "timestamp": None
+                    "timestamp": None,
+                    "is_read": True  # Default as read if no messages are found
                 }
-
-        # Debug: Print the friend_latest_map to verify the data
-        print("Friend latest map:")
-        for friend_id, latest_message in friend_latest_map.items():
-            print(f"Friend ID: {friend_id}, Last message: {latest_message['message']}, Timestamp: {latest_message['timestamp']}")
 
         # Prepare a list with friends and their last message details
         friends_with_messages = []
         for friend in all_friends_data:
-            # Get the latest message for each friend or None if not found
             latest_message = friend_latest_map.get(friend.id, None)
-
-            # Handle case where there's no message (None) for the friend
-            if latest_message is not None:
+            if latest_message:
                 last_message = {
                     "message": latest_message.get('message', 'No message'),
-                    "timestamp": latest_message.get('timestamp', None)
+                    "timestamp": latest_message.get('timestamp', None),
+                    "is_read": latest_message.get('is_read', True)
                 }
             else:
                 last_message = {
                     "message": 'No message',
-                    "timestamp": None
+                    "timestamp": None,
+                    "is_read": True  # Default to read if no message
                 }
-
-            # Debug: Print the last message for each friend
-            print(f"Friend ID {friend.id}, Last message: {last_message['message']}")
 
             # Append friend and their last message to the list
             friends_with_messages.append({
@@ -184,29 +128,17 @@ class ListUsersView(FriendshipListView):
                 "last_message": last_message
             })
 
-        # Sort friends based on the latest message timestamp.
-        timezone_aware_min = timezone.make_aware(datetime.min)  # Making it timezone-aware
+        # Sort friends by timestamp (most recent first)
+        timezone_aware_min = timezone.make_aware(datetime.min)  # Timezone-aware minimum datetime
 
-        # Debug: Print the friends before sorting
-        print("Friends before sorting:")
-        for friend in friends_with_messages:
-            print(f"Friend ID: {friend['friend'].id}, Last message: {friend['last_message']['message']}, Timestamp: {friend['last_message']['timestamp']}")
-
-        # Sorting by timestamp, using timezone-aware min datetime as fallback for None values
         friends_with_messages.sort(
-            key=lambda item: item['last_message']['timestamp'] if item['last_message']['timestamp'] is not None else timezone_aware_min,
-            reverse=True  # Sort in descending order by timestamp
+            key=lambda item: item['last_message']['timestamp'] or timezone_aware_min,
+            reverse=True
         )
-
-        # Debug: Print the friends after sorting
-        print("Friends after sorting:")
-        for friend in friends_with_messages:
-            print(f"Friend ID: {friend['friend'].id}, Last message: {friend['last_message']['message']}, Timestamp: {friend['last_message']['timestamp']}")
 
         # Serialize the data using the appropriate serializer
         serialized_data = FriendWithLastMessageSerializer(friends_with_messages, many=True).data
 
-        # Debug: Print the serialized data to verify the result before sending response
         print("Serialized data to be returned:")
         print(serialized_data)
 
@@ -214,7 +146,7 @@ class ListUsersView(FriendshipListView):
         return Response(serialized_data)
 
 
-# ********************* methode 2  *****************************
+# ********************* end methode 2  *****************************
 
 
 
