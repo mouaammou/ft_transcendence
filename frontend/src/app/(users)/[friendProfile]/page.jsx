@@ -6,10 +6,19 @@ import { notFound, usePathname } from 'next/navigation';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
-import { FaUserCircle, FaHistory, FaClock, FaTrophy } from 'react-icons/fa';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import { IoPersonRemove } from 'react-icons/io5';
 import { MdDoNotDisturbOff } from 'react-icons/md';
+import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdUpdate } from 'react-icons/md';
+import { IoMdPhonePortrait } from 'react-icons/io';
+import { GrHistory } from 'react-icons/gr';
+import { CiUser } from 'react-icons/ci';
+import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
+import { GiBattleAxe } from 'react-icons/gi';
+import Image from 'next/image';
+import DoughnutChart from '@/components/userStats/userStatsCharts';
+import Link from 'next/link';
+import { FaTrophy } from 'react-icons/fa';
 
 export default function FriendProfile({ params }) {
 	const { pageNotFound, setPageNotFound } = useWebSocketContext();
@@ -132,102 +141,212 @@ export default function FriendProfile({ params }) {
 	}, [lastJsonMessage, isConnected, profile.username]);
 
 	return (
-		profile?.id && (
-		<div className="profile container max-md:p-3 overflow-hidden">
-			{/* user avatar and infos */}
-			<div className="profile-top-infos flex justify-evenly items-center gap-1 max-2xl:gap-10 max-sm:gap-6 mt-[6rem] max-md:mt-0 flex-wrap w-full">
-			<div className="profile-pic-name flex justify-center flex-col gap-4 items-center">
-				{/* avatar */}
-				<div className="flex items-start gap-4 max-md:items-center max-md:flex-col max-md:justify-center max-md:gap-1">
-				{/* the avatar */}
-				<div className="w-40 h-40 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
-					{/* avatar */}
-					<img
-					className="w-full h-full object-cover"
-					src={profile?.avatar}
-					alt="profile picture"
+		profile && (
+			<div className="min-h-screen bg-gray-900 text-white">
+			{/* Hero Section with Background */}
+				<div className="relative h-72 w-full overflow-hidden">
+					<Image
+						src="/gaming-demo.jpeg"
+						alt="profile background"
+						width={1920}
+						height={1080}
+						className="w-full h-full object-cover object-center filter brightness-50"
 					/>
-					{/* username */}
-				</div>
-				<div className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-1 text-center inline-flex items-center">
-					{profile?.username}
-				</div>
-				</div>
-
-				<div className="profile-update-button w-full">
-				<button className="edit-btn flex items-center space-x-2 rounded-md bg-white px-6 py-3 text-[1rem] shadow-md">
-					<span className="text-gray-700">{profile?.status}</span>
-					<span
-					className={`h-3 w-3 rounded-full ${profile?.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}
-					></span>
-				</button>
-				</div>
+				<div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
 			</div>
 
-			
-			{/* display user infos */}
-			<div className="user-infos">
-				<div className="info-section rounded-md text-lg font-roboto max-sm:text-unset flex items-start justify-center flex-col px-8 h-60">
-				<div className="flex justify-start items-center gap-7 py-3 w-full">
-					<MdOutlineEmail className="bg-indigo-500 text-white w-8 h-8 p-1.5 rounded-full" />
-					<span className="">Email: {profile?.email}</span>
-				</div>
-				<div className="flex justify-start items-center gap-7 py-3 w-full">
-					<FaUserCircle className="bg-emerald-500 text-white w-8 h-8 p-1.5 rounded-full" />
-					<span className="">First Name: {profile?.first_name}</span>
-				</div>
-				<div className="flex justify-start items-center gap-7 py-3 w-full">
-					<MdPerson className="bg-amber-500 text-white w-8 h-8 p-1.5 rounded-full" />
-					<span className="">Last Name: {profile?.last_name}</span>
-				</div>
-				<div className="flex justify-start items-center gap-7 py-3 w-full">
-					<MdPhone className="bg-rose-500 text-white w-8 h-8 p-1.5 rounded-full" />
-					<span className="">Phone: {profile?.phone || '06666666666'}</span>
-				</div>
-				</div>
-			</div>
-			</div>
-			{/* user level */}
-			<div className="profile-level h-full mt-4 mx-auto w-[83%] max-xl:w-[95%]">
-			<div className="bg-gray-200 rounded-md h-10 text-center overflow-hidden border border-white">
-				<div
-				className="bg-darkgreen text-white text-center p-0.5 h-full"
-				style={{ width: '45%' }}
-				>
-				<div className="leading-9">Level 45%</div>
-				</div>
-			</div>
-			</div>
+			{/* Main Content */}
+			<div className="container mx-auto px-4 -mt-32 relative z-10">
+				{/* Profile Header */}
+				<div className="flex items-center mb-12 justify-around w-full">
+					{/* USER PROFILE */}
+					<div className='user-profile w-96'>
+						<div className="relative w-fit">
+							<img
+								src={profile.avatar}
+								alt="profile avatar"
+								className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
+							/>
+							<div className="absolute -bottom-1 -right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+								Level 5
+							</div>
+						</div>
+						
+						<div className="mt-4 text-center">
+							<h1 className="text-3xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h1>
+							<p className="text-sky-400">@{profile.username}</p>
+						</div>
 
-			{/* for stats charts and history */}
-			<div className="user-stats-history flex justify-between items-start flex-wrap pt-9 mt-10">
-			{/* user history: games 1v1 */}
-			<div className="user-history mx-auto p-4">
-				<div className="flex justify-between items-center mb-1">
-				<div className="flex items-center bg-gray-800 hover:bg-gray-600 transition-all text-white py-3 px-4 rounded-lg shadow-md">
-					<FaHistory className="mr-3" />
-					Match History
-				</div>
+						{/* Level Progress Bar */}
+						<div className="w-full max-w-md mt-6">
+							<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
+								<div 
+									className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
+									style={{ width: '45%' }}
+								>
+								</div>
+							</div>
+							<div className="flex justify-between text-sm mt-1">
+								<span>Level 5</span>
+								<span>45/100 XP</span>
+							</div>
+						</div>
+					</div>
+
+					{/* USER ACTIONS */}
+					<div className="actions max-w-96 w-full  bg-gray-800 rounded-2xl p-6 shadow-lg">
+						<h2 className="text-xl font-semibold mb-6 flex items-center">
+							<FaUserPlus className="mr-2" /> Actions
+						</h2>
+						{friendStatusRequest === 'no' && (
+							<button
+								onClick={sendFriendRequest}
+								className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+							>
+								<FaUserPlus className="mr-2" /> Add Friend
+							</button>
+						)}
+
+						{friendStatusRequest === 'accepted' && (
+							<>
+								<button
+									// onClick={inviteToTournament}
+									className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+								>
+									<FaTrophy className="mr-2" /> Add to Tournament
+								</button>
+								<button
+									// onClick={inviteToGame}
+									className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+								>
+									<FaGamepad className="mr-2" /> Add to Game
+								</button>
+								<button
+									onClick={blockFriend}
+									className="w-full mt-6 bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+								>
+									<FaBan className="mr-2" /> Block
+								</button>
+								<button
+									onClick={removeFriend}
+									className="w-full mt-6 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+								>
+									<IoPersonRemove className="mr-2" /> Remove Friend
+								</button>
+							</>
+						)}
+
+						{friendStatusRequest === 'pending' && (
+							<div className="flex items-center space-x-2">
+								<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+								<span className="text-yellow-400">Friend Request Pending</span>
+							</div>
+						)}
+
+						{friendStatusRequest === 'blocked' && (
+							<button
+								onClick={removeBlock}
+								className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+							>
+								<MdDoNotDisturbOff className="mr-2" /> Remove Block
+							</button>
+						)}
+
+						{friendStatusRequest === 'rejected' && (
+							<span className="text-red-400">Friend Request Rejected</span>
+						)}
+					</div>
 				</div>
 
-				<div className="max-h-96 overflow-y-auto p-1 scrollbar-thin scrollbar-thumb-[#ffffff70] scrollbar-track-transparent scroll-smooth">
-								history
-				</div>
-			</div>
+				{/* Grid Layout for Info Cards */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+					{/* User Info Card */}
+					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+						<h2 className="text-xl font-semibold mb-6 flex items-center">
+							<FaUser className="mr-2" /> Profile Information
+						</h2>
+					
+						<div className="space-y-4">
+							{[
+								{ icon: <FaUserCheck />, label: "Username", value: profile.username },
+								{ icon: <MdEmail />, label: "Email", value: profile.email },
+								{ icon: <MdPhone />, label: "Phone", value: profile.phone || "No phone number" },
+							].map((item, index) => (
+								<div key={index} className="flex items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+								<span className="text-sky-400 mr-3">{item.icon}</span>
+								<div>
+									<div className="text-sm text-gray-400">{item.label}</div>
+									<div className="font-medium">{item.value}</div>
+								</div>
+								</div>
+							))}
+						</div>
+					</div>
 
-			{/* user statistics */}
-			<div className="user-stats mx-auto p-4 max-md:mt-10">
-				<div className="stats-icon text-xl font-medium lg:text-center max-lg:mt-10">
-				<TfiStatsUp className="inline-block mx-2" />
-				Your Stats
-				</div>
+					{/* Match History Card */}
+					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+						<h2 className="text-xl font-semibold mb-6 flex items-center">
+							<FaHistory className="mr-2" /> Recent Matches
+						</h2>
+					
+						<div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+							{[1, 2, 3, 4, 5, 6].map((match, index) => (
+								<div key={index} className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300">
+								<div className="flex justify-between items-center">
+									{/* Player 1 */}
+									<div className="flex items-center space-x-3">
+										<img
+										src="https://randomuser.me/api/portraits/men/1.jpg"
+										alt="Player 1"
+										className="w-12 h-12 rounded-full border-2 border-green-500"
+										/>
+										<div>
+										<div className="font-medium">John Doe</div>
+										<div className="text-green-400 text-lg font-bold">21</div>
+										</div>
+									</div>
 
-				<div className="user-stats-details flex justify-center items-center flex-wrap gap-5 p-5 mt-14 rounded-lg px-8">
-							statistics chart
+									{/* VS */}
+									<div className="flex flex-col items-center">
+										<GiBattleAxe className="text-gray-400 text-xl" />
+										<div className="text-sm text-gray-400 mt-1">VS</div>
+									</div>
+
+									{/* Player 2 */}
+									<div className="flex items-center space-x-3">
+										<div className="text-right">
+										<div className="font-medium">Jane Smith</div>
+										<div className="text-red-400 text-lg font-bold">18</div>
+										</div>
+										<img
+										src="https://randomuser.me/api/portraits/women/3.jpg"
+										alt="Player 2"
+										className="w-12 h-12 rounded-full border-2 border-red-500"
+										/>
+									</div>
+								</div>
+								
+								<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
+									<MdUpdate className="mr-1" />
+									2023-09-07 • 3:00 PM
+								</div>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+				
+				{/* Stats Section */}
+				<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
+					<h2 className="text-xl font-semibold mb-6 flex items-center">
+						<TfiStatsUp className="mr-2" /> Statistics
+					</h2>
+					<div className="max-w-3xl mx-auto">
+						<DoughnutChart />
+					</div>
 				</div>
 			</div>
 			</div>
-		</div>
 		)
 	);
 }

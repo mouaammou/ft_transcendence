@@ -15,33 +15,33 @@ import '@/styles/globalsTailwind.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
-  if (!WebSocketProvider || !NotificationProvider || !LoginProvider) {
-    throw new Error(
-      'RootLayout must be used within a WebSocketProvider, NotificationProvider, and LoginProvider'
-    );
-  }
+	if (!WebSocketProvider || !NotificationProvider || !LoginProvider) {
+		throw new Error(
+		'RootLayout must be used within a WebSocketProvider, NotificationProvider, and LoginProvider'
+		);
+	}
 
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <WebSocketProvider url="ws://localhost:8000/ws/online/">
-          <LoginProvider>
-            <NotificationProvider>
-              <div className="parent">
-                <div className="SIDE-NAV">
-                  <Sidebar />
-                </div>
-                <div className="OTHERS">
-                  <Navbar />
-                  {children}
-                </div>
-              </div>
-            </NotificationProvider>
-          </LoginProvider>
-        </WebSocketProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+		<body className={inter.className}>
+			<WebSocketProvider url="ws://localhost:8000/ws/online/">
+			<LoginProvider>
+				<NotificationProvider>
+				<div className="parent">
+					<div className="SIDE-NAV">
+						<Sidebar />
+					</div>
+					<div className="OTHERS">
+						<Navbar />
+						{children}
+					</div>
+				</div>
+				</NotificationProvider>
+			</LoginProvider>
+			</WebSocketProvider>
+		</body>
+		</html>
+	);
 }
 
 
