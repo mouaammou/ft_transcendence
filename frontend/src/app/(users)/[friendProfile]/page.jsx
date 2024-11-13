@@ -156,7 +156,7 @@ export default function FriendProfile({ params }) {
 			</div>
 
 			{/* Main Content */}
-			<div className="container mx-auto px-4 -mt-32 relative z-10">
+			<div className="container mx-auto px-4 -mt-32 relative z-1">
 				{/* Profile Header */}
 				<div className="flex items-center mb-12 justify-around w-full">
 					{/* USER PROFILE */}
