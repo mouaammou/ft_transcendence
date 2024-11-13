@@ -3,8 +3,12 @@
 import { useState, useEffect } from 'react';
 import { fetchTournaments } from '@/services/apiCalls';
 import Pagination from './Pagination';
+import { BsTypeH1 } from 'react-icons/bs';
+import { useRouter } from 'next/navigation';
+
 
 const TournamentList = () => {
+    const router = useRouter();
     const [tournaments, setTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -32,12 +36,17 @@ const TournamentList = () => {
         return <div>Loading tournaments...</div>;
     }
 
+    const handleTournamentDetail = (id) => (
+        router.push(`/tournament/${id}/`)
+    );
+
     return (
         <div className="flex flex-col w-full max-w-screen-lg bg-white/5 justify-between mx-auto">
             <div className="-m-1.5 overflow-x-auto">
                 <div className="p-1.5 min-w-full inline-block align-middle">
                     <div className="overflow-hidden">
                         <table className="min-w-full divide-y divide-white/20">
+
                         <thead>
                             <tr>
                             <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">title</th>
@@ -47,7 +56,7 @@ const TournamentList = () => {
                         </thead>
                         <tbody className="divide-y divide-white/10">
                             {tournaments.map((tournament) => (
-                                <tr key={tournament.id} className="hover:bg-white/10">
+                                <tr key={tournament.id} className="hover:bg-white/10" onClick={()=>handleTournamentDetail(tournament.id)}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-50">{tournament.title}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">{tournament.id}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">{tournament.finished?'True':'False'}</td>

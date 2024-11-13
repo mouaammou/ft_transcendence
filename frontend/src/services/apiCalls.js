@@ -55,30 +55,50 @@ export const deleteData = async endPoint => {
 
 //# by samjaaabo
 
-const getCSRFToken = () => {
+const getTournamentDetail = () => {
 	const matches = document.cookie.match(/csrftoken=([\w-]+)/);
 	return matches ? matches[1] : '';
   };
   
-  const api = axios.create({
-	baseURL: 'http://localhost:8000/game/local-tournaments/',  // Base URL for your Django API
-	timeout: 10000,
-	withCredentials: true,  // Include cookies (credentials)
-  });
+const api = axios.create({
+baseURL: 'http://localhost:8000/game/local-tournaments/',  // Base URL for your Django API
+timeout: 10000,
+withCredentials: true,  // Include cookies (credentials)
+});
   
-  export const fetchTournaments = async (page = 1) => {
+export const fetchTournaments = async (page = 1) => {
 	try {
-	  const response = await api.get('/', {
+		const response = await api.get('/', {
 		params: { page },  // Attach pagination params
 		// headers: {
 		//   'X-CSRFToken': getCSRFToken(),  // Attach the CSRF token to the request headers
 		// },
-	  });
-	  return response.data;  // Returns the response data (count, next, previous, results)
+		});
+		return response.data;  // Returns the response data (count, next, previous, results)
 	} catch (error) {
-	  console.error('Error fetching tournaments:', error);
-	  return { results: [] };  // Return an empty array in case of error
+		console.error('Error fetching tournaments:', error);
+		return { results: [] };  // Return an empty array in case of error
 	}
-  };
+};
+
+export const fetchTournamentDetail = async (id) => {
+	try {
+		const response = await api.get(`/${id}/`);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching tournaments:', error);
+		return {};
+	}
+};
+
+export const fetchTournamentMatchPlayers = async (id) => {
+	try {
+		const response = await api.get(`/next-match-players/${id}/`);
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournaments:', error);
+		return {'error': 'Error fetching tournaments'};
+	}
+};
 
   

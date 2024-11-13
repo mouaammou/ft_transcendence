@@ -2,22 +2,25 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { fetchTournamentDetail } from '@/services/apiCalls';
 
 const TournamentList = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
   const [tournaments, setTournaments] = useState([]);
 
   // Fetch all tournaments
   const fetchTournaments = async () => {
     try {
-      const response = await fetch('http://localhost:8000/game/ local-tournaments/', {
-        method: 'GET',
-      });
+      const response = await fetchTournamentDetail(id);
 
       if (response.ok) {
         const data = await response.json();
-        setTournaments(data); // Assuming data is an array of tournaments
+        setTournaments(data);
       } else {
-        console.error('Error fetching tournaments');
+        console.error('Error fetching tournament details');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -26,7 +29,7 @@ const TournamentList = () => {
 
   useEffect(() => {
     fetchTournaments();
-  }, []);
+  }, [id]);
 
   return (
     <div className="tournament-container">
@@ -47,3 +50,4 @@ const TournamentList = () => {
 };
 
 export default TournamentList;
+

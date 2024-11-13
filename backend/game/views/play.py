@@ -11,7 +11,7 @@ from game.models import LocalTournament
 
 class PlayTounament(APIView):
     """used to paly next match in a tournament"""
-    permission_classes = [IsAuthenticated, ]
+    # permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
