@@ -94,17 +94,18 @@
   font-size: 25px;
 }
 
-.link_selectedUser_profile{
+.link_selectedUser_profile {
   width: 65px;
   height: 65px;
 }
 
-.img-section-profile{
-    width: 65px;
-    height: 65px;border-radius: 50%;
+.img-section-profile {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
 }
 
-.img-section-profile:hover{
+.img-section-profile:hover {
   border: 3px solid rgb(241, 250, 238);
 }
 
@@ -129,11 +130,10 @@
   display: none;
 }
 
-.groupe_msg_date{
+.groupe_msg_date {
   display: flex;
   flex-direction: column;
 }
-
 
 .message_date {
   text-align: center;
@@ -172,7 +172,7 @@
 
 /* end */
 
-.par_date span{
+.par_date span {
   background: rgb(73, 143, 173);
   font-weight: bold;
   padding: 2px 10px;
@@ -203,7 +203,6 @@
   display: flex;
 } */
 
-
 .center-chat .div_text_message {
   /* background-color: rgb(179, 193, 190); */
   display: flex;
@@ -228,7 +227,7 @@
   background-color: rgb(7 8 40);
 }
 
-.message_time{
+.message_time {
   font-size: 12px;
   /* color: rgb(156, 154, 160); */
   /* color: #abb4d2; */
@@ -308,20 +307,15 @@ input placeholder {
   /* margin-top: auto; */
 }
 
-
-
 .send-icon {
   /* background-color: white; */
   color: white;
   font-size: 20px;
 }
 
-
 /* .send-icon.send-icon:hove {
   color: rgb(12, 76, 92);
 } */
-
-
 
 .user-not-select {
   background-color: rgba(163, 218, 232, 0.2);

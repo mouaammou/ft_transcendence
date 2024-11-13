@@ -103,7 +103,7 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
       ball.y += ball.velocityY * ball.speed;
       console.log('ball.velocityX * ball.speed --> ', ball.velocityX * ball.speed);
       console.log('ball.velocityX * ball.speed --> ', ball.velocityY * ball.speed);
-      computer.y = (ball.y * 1) - computer.height / 2; // 1 is the level of the computer and it is the hardest level
+      computer.y = ball.y * 1 - computer.height / 2; // 1 is the level of the computer and it is the hardest level
       // Check for collision with the top edge of the table
       if (ball.y - ball.radius <= 0) {
         // Only reverse if the ball was moving up
@@ -132,12 +132,10 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
         resetBall();
       }
 
-      if ((keys['ArrowUp'] || keys['w']) && player.y > 0) 
-		player.y -= player.speed;
+      if ((keys['ArrowUp'] || keys['w']) && player.y > 0) player.y -= player.speed;
       else if ((keys['ArrowDown'] || keys['s']) && player.y + player.height <= canvas.height)
         player.y += player.speed;
-      if (computer.y <= 0) 
-		computer.y = 0;
+      if (computer.y <= 0) computer.y = 0;
       else if (computer.y + computer.height > canvas.height)
         computer.y = canvas.height - computer.height;
 
@@ -161,14 +159,14 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
       }
 
       if (player.score >= 7) {
-		computer.score = 0;
-		player.score = 0;
+        computer.score = 0;
+        player.score = 0;
         resetBall();
         gameOn = false;
         setShowLoseModal(true);
       } else if (computer.score >= 7) {
-		computer.score = 0;
-		player.score = 0;
+        computer.score = 0;
+        player.score = 0;
         resetBall();
         gameOn = false;
         setShowWinModal(true);
@@ -222,29 +220,26 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
       // how to get the window width and height
       if (event.clientX >= rect.left && event.clientX < rect.right) {
         player.y = event.clientY - rect.top - player.height / 2;
-        if (player.y <= 0) 
-			player.y = 0;
-        else if (player.y + player.height >= rect.height)
-          player.y = rect.height - player.height;
-      } 
+        if (player.y <= 0) player.y = 0;
+        else if (player.y + player.height >= rect.height) player.y = rect.height - player.height;
+      }
     };
 
-	const handleTouchMove = event => {
-		const rect = canvas.getBoundingClientRect();
-		const touch = event.touches[0];
-		if (touch.clientX >= rect.left && touch.clientX < rect.left ) {
-			player.y = touch.clientY - rect.top - player.height / 2;
-			if (player.y <= 0) player.y = 0;
-			else if (player.y + player.height >= canvas.height)
-				player.y = canvas.height - player.height;
-		}
-	};
-
+    const handleTouchMove = event => {
+      const rect = canvas.getBoundingClientRect();
+      const touch = event.touches[0];
+      if (touch.clientX >= rect.left && touch.clientX < rect.left) {
+        player.y = touch.clientY - rect.top - player.height / 2;
+        if (player.y <= 0) player.y = 0;
+        else if (player.y + player.height >= canvas.height)
+          player.y = canvas.height - player.height;
+      }
+    };
 
     // Move the paddle2 with the mouse too
     // Attach event listeners
-	document.addEventListener('touchmove', handleTouchMove);
-    document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('mousemove', handleMouseMove); // add event listener to the document object when the mouse is moved
     document.addEventListener('keydown', handleKeyDown); // add event listener to the document object when a key is pressed
     document.addEventListener('keyup', handleKeyUp);
 
@@ -263,10 +258,10 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
 
     // Cleanup event listeners
     return () => {
-		document.removeEventListener('touchmove', handleTouchMove);
-		document.removeEventListener('mousemove', handleMouseMove);
-		document.removeEventListener('keydown', handleKeyDown);
-		document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
       // document.removeEventListener('visibilitychange', sendVisibilityStatus);
     };
   }, []);

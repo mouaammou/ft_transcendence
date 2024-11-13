@@ -3,9 +3,7 @@ import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
 
 const YouWin = ({ onClose }) => {
-
   useEffect(() => {
-
     const timer = setTimeout(() => {
       onClose();
     }, 9000);

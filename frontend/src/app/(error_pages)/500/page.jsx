@@ -1,9 +1,9 @@
 'use client';
 import Image from 'next/image';
 const InternalServerError = () => {
-	return (
-		<div>
-			{/* <Image src="/500.svg" 
+  return (
+    <div>
+      {/* <Image src="/500.svg" 
 				width={800}
 				height={800}
 				priority
@@ -15,9 +15,9 @@ const InternalServerError = () => {
 					// width: 'auto',
 					height: 'auto'
 					}}/> */}
-					THE SERVER IS SHUT DOWN :(
-		</div>
-	);
+      THE SERVER IS SHUT DOWN :(
+    </div>
+  );
 };
 
 export default InternalServerError;

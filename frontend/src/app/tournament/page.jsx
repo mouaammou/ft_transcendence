@@ -32,12 +32,12 @@ const TournamentList = () => {
     <div className="tournament-container">
       <h1>Tournament List</h1>
       <ul>
-        {tournaments.map((tournament) => (
+        {tournaments.map(tournament => (
           <li key={tournament.id}>
             <Link href={`/tournament/details?id=${tournament.id}`}>
-            <div className="match">
-            <span>{tournament.title}</span>
-          </div>
+              <div className="match">
+                <span>{tournament.title}</span>
+              </div>
             </Link>
           </li>
         ))}

@@ -8,15 +8,15 @@ import MobileSidebar from '@/components/sidebar/MobileSidebar';
 import { ChatProvider } from './chat_context/ChatContext';
 
 const Chat = () => {
-	return (
-		<ChatProvider>
-			<div className="main-chat">
-				<Listchat />
-				<Msgchat />
-				<MobileSidebar />
-			</div>
-		</ChatProvider>
-	);
+  return (
+    <ChatProvider>
+      <div className="main-chat">
+        <Listchat />
+        <Msgchat />
+        <MobileSidebar />
+      </div>
+    </ChatProvider>
+  );
 };
 
 export default Chat;

@@ -11,19 +11,18 @@ import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
-
 const list_chat = () => {
-  const { isChatVisible, allUsers, handleSearch} = useContext(ChatContext);
+  const { isChatVisible, allUsers, handleSearch } = useContext(ChatContext);
   const onlineUser = allUsers.slice(0, 4);
 
-  const { profileData: data} = useAuth();
+  const { profileData: data } = useAuth();
 
   return (
     // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`} ref={scrollRef}>
     <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
       <div className="user-chat">
         <div className="info-user">
-           <img
+          <img
             // src="/med.jpeg"
             // alt="mohammed"
             src={data.avatar}

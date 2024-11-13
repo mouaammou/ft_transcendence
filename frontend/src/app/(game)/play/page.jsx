@@ -5,19 +5,16 @@ import { useRouter } from 'next/navigation';
 import mysocket from '@/utils/WebSocketManager';
 
 const PlayMode = () => {
-
-
   const router = useRouter();
   const [name, setName] = useState('');
 
   const handlePlayTournament = () => {
     router.push('/create_join_tournament');
-  }
+  };
 
   const handlePlayRandomGame = () => {
     router.push('/mode');
   };
-
 
   const handleSaveBtn = () => {
     fetch('http://localhost:8000/play/update_tournament_name', {
@@ -33,9 +30,7 @@ const PlayMode = () => {
     // .then(data => console.log(data));
   };
 
-
   mysocket.sendMessage(JSON.stringify({ init: 'game' }));
-
 
   return (
     <div className="main-page">
@@ -50,7 +45,7 @@ const PlayMode = () => {
             <img className="images" src="mode2.svg" alt="remote-game" />
             <p>LOCAL GAME</p>
           </div>
-          <div className="right-mode"  onClick={handlePlayTournament} >
+          <div className="right-mode" onClick={handlePlayTournament}>
             <img className="images" src="mode3.svg" alt="remote-game" />
             <p>TOURNAMENT</p>
           </div>
