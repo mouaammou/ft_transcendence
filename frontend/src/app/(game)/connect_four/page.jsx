@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
+import Hoome from "./animation";
 
 
 const ConnectFour = () => {
@@ -19,23 +20,33 @@ const ConnectFour = () => {
         // window.addEventListener('resize', updateImage);
         // updateImage();
 
-        return () =>  {
+        return () => {
             // window.removeEventListener('resize', updateImage);
-    }
+        }
     }, [])
 
 
     return (
-        <div className="flex flex-col gap-10">
-            <div className="flex justify-center items-center flex-wrap gap-[15%]">
-                <div className="order-1 ml-auto w-fit ">player1</div>
-                <div className="order-2 mx-[58px] my-8 ">
-                    <MyGrid/>
-                </div>
-                <div className="order-1 w-fit mr-auto md:order-3">player2</div>
+<div className="flex flex-col gap-10">
+    <div className="flex flex-row flex-wrap justify-center items-center gap-8 ">
+        <div className="w-fit order-1 ">
+            <div className="flex flex-col gap-5 bg-red-800 p-3 rounded-md">
+                <img src="avatar3.jpeg" className="rounded-full h-12 w-12 lg:h-[90px] lg:w-[90px] md:w-16 md:h-16" alt="" />
+                <p className="text-center font-cabine">USER_1</p>
             </div>
-            {/* <div className="flex bg-red-800 m-auto">Player's Turn</div> */}
         </div>
+        <div className="w-full md:w-auto order-3 lg:order-2 my-8">
+            <MyGrid />
+        </div>
+        <div className="w-fit order-2 lg:order-3 ">
+            <div className="flex flex-col gap-5 bg-yellow-600 p-3 rounded-md">
+                <img src="avatar4.jpeg" className="rounded-full h-12 w-12 lg:h-[90px] lg:w-[90px] md:w-16 md:h-16" alt="" />
+                <p className="text-center font-cabine">USER_2</p>
+            </div>
+        </div>
+    </div>
+    {/* <div className="flex bg-red-800 m-auto">Player's Turn</div> */}
+</div>
     );
 }
 
