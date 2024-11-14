@@ -110,10 +110,10 @@
 		<div className="notifications">
 			<div className="relative border border-gray-400 p-2 rounded-full transition duration-200 cursor-pointer">
 			<IoIosNotificationsOutline
-				className="text-[2.2rem] text-black"
+				className="text-[1.7rem] text-black"
 				onClick={() => setIsOpen(prev => !prev)}
 			/>
-			<span className={`absolute top-0 left-10 text-white rounded-full px-2 ${
+			<span className={`absolute top-0 left-8 text-white rounded-full px-2 text-sm ${
 				unreadCount > 0 ? 'bg-red-600' : 'bg-gray-300'
 			}`}>
 				{unreadCount}

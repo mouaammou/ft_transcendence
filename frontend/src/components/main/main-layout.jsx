@@ -13,6 +13,7 @@ const MainLayout = ({ children }) => {
 			>
 				{isAuth && 
 					<div className="SIDE-NAV">
+						
 						<Sidebar />
 					</div>
 				}
