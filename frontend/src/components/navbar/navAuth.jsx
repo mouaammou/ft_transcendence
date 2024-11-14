@@ -17,7 +17,7 @@
 			height={1}
 			alt="logo"
 			priority={true}
-			className="h-20 w-20 sm:h-16 sm:w-16 md:h-24 md:w-24"
+			className="h-20 w-16 sm:h-16 sm:w-16 md:h-24 md:w-24 p-2"
 		/>
 		</Link>
 	</div>
@@ -98,7 +98,7 @@
 		<div>
 		<Link
 			href={loginPage === 'Login' ? '/login' : '/signup'}
-			className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300"
+			className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300 max-md:px-10 text-sm"
 		>
 			{loginPage}
 		</Link>
