@@ -4,13 +4,24 @@
     justify-content: center;
 }
 
+.mohamed {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+
 .gridMobileImage {
+    display: none;
+}
+
+.gridMediumImage {
     display: none;
 }
 
 .gridImage {
     position: absolute;
-    top: -16px;
+    top: -14px;
     left: 84px;
     pointer-events: none;
     z-index: 2;
@@ -34,36 +45,63 @@
 .cell {
     width: 64px;
     height: 60px;
-    background-color: pink;
+    background-color: transparent;
     cursor: pointer;
     border-radius: 9999px;
 }
 
 .disc {
-    width: 64px;
-    height: 60px;
+    width: 68px;
+    height: 68px;
     border-radius: 9999px;
     border: 1px solid black;
-}
+
+
+    border: 7px solid #4c4b4b5b;
+
+    box-shadow: 
+    inset -10px -10px 20px rgba(0, 0, 0, 0.3),
+    inset 10px 10px 20px rgba(255, 255, 255, 0.3);
+    }
 
 .turnIndicator {
-    width: fit-content;
-    margin: 1rem auto;
+    text-align: center;
+    border-radius: 10px;
+    width: 200px;
+    height: 100px;
+    font-family: 'Cabin', sans-serif;
+    padding: 10px;
+}
+
+.timer {
+    font-size: xx-large;
 }
 
 @media (max-width: 1024px) {
-    .gridImage {
-        left: 27px;
-        top: -10px;
+
+    .gridMobileImage {
+        display: none;
     }
     
-    .gridImage img {
-        width: 330px;
+
+    .gridImage {
+        display: none;
     }
+
+
+    .gridMediumImage {
+        display: block;
+        position: absolute;
+        top: -13px;
+        left: 26px;
+        z-index: 100;
+        pointer-events: none;
+    }
+    
 
     .grid {
         margin: 0 2.5rem;
-        gap: 10px;
+        gap: 13px;
     }
 
     .cell {
@@ -72,35 +110,39 @@
     }
 
     .disc {
-        width: 35px;
-        height: 35px;
+        width: 42px;
+        height: 42px;
+    border: 6px solid #4c4b4b5b;
+
     }
 }
 
 @media (max-width: 768px) {
-    .gridImage {
-        left: 100px;
-    }
+
 
     .gridMobileImage {
         display: block;
         position: absolute;
-        top: -5px;
+        top: -11px;
+        z-index: 100;
+        pointer-events: none;
     }
     .gridMobileImage img {
-        height: 220px;
         width: fit-content;
+        left: -17px;
+
+    }
+
+    .gridMediumImage {
+        display: none;
     }
     
-    .gridImage img {
-        display: none;
-        width: 280px;
-    }
 
     .grid {
         margin: 0 1.5rem;
-        /* gap: 8px; */
+        gap: 10px;
         max-width: 280px;
+        margin-left: 27px;
     }
 
     .cell {
@@ -111,5 +153,17 @@
     .disc {
         width: 26px;
         height: 26px;
+        border: 3px solid #4c4b4b5b;
+
+    }
+
+    .turnIndicator {
+        width: 120px;
+        padding: 6px;
+        height: 70px;
+    }
+
+    .timer {
+        font-size: x-large;
     }
 }
