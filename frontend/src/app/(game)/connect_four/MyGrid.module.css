@@ -1,0 +1,115 @@
+.gridWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.gridMobileImage {
+    display: none;
+}
+
+.gridImage {
+    position: absolute;
+    top: -16px;
+    left: 84px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.gridImage img {
+    width: 100%;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 15px;
+    max-width: 1000px;
+    border-radius: 0.5rem;
+    margin: 0 6rem;
+    z-index: 1;
+}
+
+.cell {
+    width: 64px;
+    height: 60px;
+    background-color: pink;
+    cursor: pointer;
+    border-radius: 9999px;
+}
+
+.disc {
+    width: 64px;
+    height: 60px;
+    border-radius: 9999px;
+    border: 1px solid black;
+}
+
+.turnIndicator {
+    width: fit-content;
+    margin: 1rem auto;
+}
+
+@media (max-width: 1024px) {
+    .gridImage {
+        left: 27px;
+        top: -10px;
+    }
+    
+    .gridImage img {
+        width: 330px;
+    }
+
+    .grid {
+        margin: 0 2.5rem;
+        gap: 10px;
+    }
+
+    .cell {
+        width: 35px;
+        height: 35px;
+    }
+
+    .disc {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gridImage {
+        left: 100px;
+    }
+
+    .gridMobileImage {
+        display: block;
+        position: absolute;
+        top: -5px;
+    }
+    .gridMobileImage img {
+        height: 220px;
+        width: fit-content;
+    }
+    
+    .gridImage img {
+        display: none;
+        width: 280px;
+    }
+
+    .grid {
+        margin: 0 1.5rem;
+        /* gap: 8px; */
+        max-width: 280px;
+    }
+
+    .cell {
+        width: 26px;
+        height: 26px;
+    }
+
+    .disc {
+        width: 26px;
+        height: 26px;
+    }
+}
