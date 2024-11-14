@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from game.local_game.eventloop import EventLoopManager
+
 
 class LocalTournamentViewSet(ModelViewSet):
     queryset = LocalTournament.objects.all()
@@ -26,8 +28,26 @@ class TournamentNextMatchPlayersView(APIView):
         try:
             tournament = LocalTournament.objects.get(id=id)
             players = tournament.get_match_players(tournament.match_index)
-            return Response({"left": players[0], "right": players[1], 'title': tournament.title}, status=status.HTTP_200_OK)
+            # EventLoopManager.add(
+            #     request.unique_key,
+            #     tourn_obj=tournament
+            # )
+            # EventLoopManager.play(request.unique_key)
+            if tournament.finished:
+                return Response({"left": 'None', "right": 'None', 'title': tournament.title, 'finished': tournament.finished}, status=status.HTTP_200_OK)
+            return Response({"left": players[0], "right": players[1], 'title': tournament.title, 'finished': tournament.finished}, status=status.HTTP_200_OK)
 
         except LocalTournament.DoesNotExist:
-            return Response({"detail": "Tournament not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Tournament not found."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request, id):
+        try:
+            EventLoopManager.add(
+                request.unique_key,
+                tourn_obj=LocalTournament.objects.get(id=id)
+            )
+            EventLoopManager.play(request.unique_key)
+            return Response({"success": "Match Started."}, status=status.HTTP_200_OK)
+        except LocalTournament.DoesNotExist:
+            pass
+        return Response({"fail": "Tournament Does Not Exist."}, status=status.HTTP_200_OK)
 

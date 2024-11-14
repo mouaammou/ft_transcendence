@@ -42,6 +42,12 @@ const ChoseGame = () => {
                 >
                     tournament
                 </Link>
+                <Link
+                    href={"/tournament/create"}
+                    className='bg-white w-56 text-black px-4 py-2 rounded-full font-bold font-mono hover:opacity-90 active:ring active:ring-white/50 uppercase text-center'
+                >
+                    create
+                </Link>
             </div>
         </div>
     );

@@ -55,15 +55,14 @@ export const deleteData = async endPoint => {
 
 //# by samjaaabo
 
-const getTournamentDetail = () => {
-	const matches = document.cookie.match(/csrftoken=([\w-]+)/);
-	return matches ? matches[1] : '';
-  };
-  
+
 const api = axios.create({
 baseURL: 'http://localhost:8000/game/local-tournaments/',  // Base URL for your Django API
 timeout: 10000,
 withCredentials: true,  // Include cookies (credentials)
+headers: {
+  'Content-Type': 'application/json',
+},
 });
   
 export const fetchTournaments = async (page = 1) => {
@@ -78,6 +77,15 @@ export const fetchTournaments = async (page = 1) => {
 	} catch (error) {
 		console.error('Error fetching tournaments:', error);
 		return { results: [] };  // Return an empty array in case of error
+	}
+};
+
+export const createTournament = async (data) => {
+	try {
+		const response = await api.post('/', data);
+		return response;
+	} catch (error) {
+		return { status: 422 };
 	}
 };
 
@@ -100,5 +108,16 @@ export const fetchTournamentMatchPlayers = async (id) => {
 		return {'error': 'Error fetching tournaments'};
 	}
 };
+
+export const fetchStartPlayTournament = async (id) => {
+	try {
+		const response = await api.post(`/next-match-players/${id}/`);
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournaments:', error);
+		return {'error': 'Error fetching tournaments'};
+	}
+};
+
 
   
