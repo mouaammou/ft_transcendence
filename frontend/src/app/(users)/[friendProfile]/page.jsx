@@ -19,21 +19,24 @@ import Image from 'next/image';
 import DoughnutChart from '@/components/userStats/userStatsCharts';
 import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
+import { useAuth } from '@/components/auth/loginContext';
+import { useRouter } from 'next/navigation';
 
 export default function FriendProfile({ params }) {
-	const { pageNotFound, setPageNotFound } = useWebSocketContext();
 	const {
 		isConnected,
 		notificationType,
 		NOTIFICATION_TYPES,
 		lastJsonMessage,
 		sendMessage,
-		lastMessage,
 	} = useNotificationContext();
+
+	const { profileData: data } = useAuth();
 
 	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
-	const pathname = usePathname();
+	const [pageNotFound, setPageNotFound] = useState(false);
+	const router = useRouter();
 
 	const removeFriend = useCallback(() => {
 		//http request to remove friend
@@ -104,22 +107,27 @@ export default function FriendProfile({ params }) {
 	// Fetch initial profile and friend status
 	useEffect(() => {
 		const fetchFriendProfile = async params => {
-		const unwrappedParams = await params;
-		if (!unwrappedParams.friendProfile) {
-			setPageNotFound(true);
-			return;
-		}
-		try {
-			const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
-			if (response.status === 200) {
-			setProfile(response.data);
-			setFriendStatusRequest(response.data.friend);
-			} else {
-			setPageNotFound(true);
+			const unwrappedParams = await params;
+			if (!unwrappedParams.friendProfile) {
+				setPageNotFound(true);
+				return;
 			}
-		} catch (error) {
-			setPageNotFound(true);
-		}
+			
+			if (data.username === unwrappedParams.friendProfile) {
+				router.push('/profile');
+				return ;
+			}
+			try {
+				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
+				if (response.status === 200) {
+					setProfile(response.data);
+					setFriendStatusRequest(response.data.friend);
+				} else {
+					setPageNotFound(true);
+				}
+			} catch (error) {
+				setPageNotFound(true);
+			}
 		};
 		fetchFriendProfile(params);
 	}, []);
@@ -140,8 +148,15 @@ export default function FriendProfile({ params }) {
 		}
 	}, [lastJsonMessage, isConnected, profile.username]);
 
+	useEffect(() => {
+		if (pageNotFound) {
+			setPageNotFound(false);
+			notFound();
+		}
+	}, [pageNotFound]);
+
 	return (
-		profile && (
+		profile && (data.username !== profile.friendProfile) && !pageNotFound && (
 			<div className="min-h-screen bg-gray-900 text-white">
 			{/* Hero Section with Background */}
 				<div className="relative h-72 w-full overflow-hidden">
