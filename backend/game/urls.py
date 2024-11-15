@@ -5,6 +5,11 @@ from .views.play import PlayTounament, PlayRegular
 
 urlpatterns = [
     path(
+        'local-tournaments/filter/<str:filter_keyword>/',
+        LocalTournamentViewSet.as_view({'get': 'list', 'post': 'create'}),
+        name='local-tournaments',
+    ),
+    path(
         'local-tournaments/',
         LocalTournamentViewSet.as_view({'get': 'list', 'post': 'create'}),
         name='local-tournaments',
