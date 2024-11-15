@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import NotFound_404 from '@/components/error_pages/404';
 import { getData } from '@/services/apiCalls';
+import useNotificationContext from '@/components/navbar/useNotificationContext';
 
 
 const Friends = () => {
@@ -21,10 +22,17 @@ const Friends = () => {
 		setUsers
 	} = useWebSocketContext();
 
+	const {
+		isConnected,
+		NOTIFICATION_TYPES,
+		sendMessage,
+	} = useNotificationContext();
+
 	const [pageNumber, setPageNumber] = useState(1);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
+	const [addFriend, setAddFriend] = useState(false);
 
 	const fetchAllUsers = useCallback( async (pageNumber = 1, endpoint = 'allusers') => {
 		try {
@@ -44,6 +52,17 @@ const Friends = () => {
 		}
 	},[]);
 
+	const sendFriendRequest = useCallback((user) => {
+		console.log('Sending friend request to:', user);
+		if (isConnected && user?.id) {
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.FRIENDSHIP,
+					to_user_id: user.id,
+				})
+			);
+		}
+	}, [isConnected]);
 
 	useEffect(() => {
 		fetchAllUsers();
@@ -133,21 +152,126 @@ const Friends = () => {
 								: 'bg-gray-700 text-white hover:bg-gray-600'}`}
 					>
 					<span>Next</span>
-					<MdNavigateNext className="text-xl" />
+						<MdNavigateNext className="text-xl" />
 					</button>
 				</div>
 				</div>
 
 				{/* User Cart */}
 				<div className='flex justify-center items-start'>
-				<UserCart user={selectedUser} />
+					<UserCart user={selectedUser} sendFriendRequest={sendFriendRequest} />
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const UserCart = ({ user }) => {
+const UserCart = ({ user, sendFriendRequest}) => {
+	if (!user) {
+		return (
+		<div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-xl shadow-2xl w-full max-w-96
+						border border-gray-700/50 flex items-center justify-center min-h-[600px]">
+			<p className="text-gray-400 text-center">Select a user to view details</p>
+		</div>
+		);
+	}
+	const [friendRequests, setFriendRequests] = useState({});
+
+    const handleFriendRequest = (userId) => {
+        sendFriendRequest(user);
+        setFriendRequests(prev => ({
+            ...prev,
+            [userId]: true
+        }));
+    };
+	return (
+		<div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-xl shadow-2xl w-full max-w-96
+						transform transition-all duration-300
+						border border-gray-700/50">
+			<div>
+				<div className="border-b border-gray-700/50 pb-8">
+					<h1 className="text-2xl font-bold text-gray-100 mb-6">
+						{user.username}
+					</h1>
+					
+					<div className="relative flex justify-center">
+						<img 
+							src={user.avatar}
+							alt="Profile"
+							className="w-32 h-32 rounded-xl object-cover ring-4 ring-blue-500/30 shadow-xl"
+						/>
+					</div>
+					
+					<div className="mt-6 flex flex-col items-center gap-2">
+						{user.status === 'online' && 
+							<span className="flex items-center gap-2 px-4 py-1.5 bg-green-500/10 text-green-400 rounded-full text-sm">
+								online
+								<div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+							</span>
+						}
+
+						{user.status === 'offline' &&
+							<span className="flex items-center gap-2 px-4 py-1.5 bg-red-500/10 text-red-400 rounded-full text-sm">
+								offline
+								<div className="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
+							</span>
+						}
+							
+						<span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-sm">
+							In game
+						</span>
+					</div>
+				</div>
+
+				<div className="mt-6 space-y-3">
+					<Link href={user.username}
+						className="flex items-center w-full px-6 py-3 rounded-2xl
+								bg-gray-700/50 hover:bg-gray-600/50 
+								text-gray-200 
+								transition-all duration-200
+								group focus:outline-none focus:ring-2 focus:ring-blue-500"
+					>
+						<span className="flex items-center justify-center w-8 h-8 
+									text-gray-300 group-hover:text-white
+									transition-colors duration-200">
+							<AiFillProfile className="text-xl" />
+						</span>
+						<span className="flex-1 text-center text-sm font-medium">
+							View friend profile
+						</span>
+					</Link>
+					<button
+						className="flex items-center w-full px-6 py-3 rounded-2xl
+								bg-gray-700/50 hover:bg-gray-600/50 
+								text-gray-200 
+								transition-all duration-200
+								group focus:outline-none focus:ring-2 focus:ring-blue-500"
+					>
+						<span className="flex items-center justify-center w-8 h-8 
+									text-gray-300 group-hover:text-white
+									transition-colors duration-200">
+							<FaUserFriends className="text-xl" />
+						</span>
+						{!friendRequests[user.id] ? (
+							<span 
+								className="flex-1 text-center text-sm font-medium" 
+								onClick={() => handleFriendRequest(user.id)}
+							>
+								Add friend
+							</span>
+						) : (
+							<div className="flex items-center space-x-2">
+								<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+								<span className="text-yellow-400">Friend Request sent</span>
+							</div>
+						)}
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+};
+const UserCart2 = ({ user }) => {
 	if (!user) {
 		return (
 		<div className="bg-gray-800/30 backdrop-blur-sm p-6 rounded-xl shadow-2xl w-full max-w-96

@@ -1,5 +1,4 @@
 'use client';
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
