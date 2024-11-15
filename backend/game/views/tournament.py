@@ -40,13 +40,13 @@ class LocalTournamentViewSet(ModelViewSet):
         elif filter_keyword == 'finished':
             queryset = queryset.filter(finished=True)  # Adjust to your model field
         elif filter_keyword == 'started':
-            queryset = queryset.filter(match_index__gt=1)  # Adjust to your model field
+            queryset = queryset.filter(match_index__gt=1, finished=False)  # Adjust to your model field
         elif filter_keyword == 'oldest-to-newest':
             queryset = queryset.order_by('created_at')
         elif filter_keyword == 'newest-to-oldest':
             queryset = queryset.order_by('-created_at')
         elif filter_keyword == 'recently-played':
-            queryset = queryset.order_by('-updated_at')
+            queryset = queryset.order_by('-updated_at').filter(finished=False)
         
         # Add more filters as needed
         return queryset
