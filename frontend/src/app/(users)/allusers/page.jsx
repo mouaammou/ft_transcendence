@@ -2,23 +2,19 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { MdNavigateNext, MdNavigateBefore, MdBlock } from 'react-icons/md';
-import { GiThreeFriends } from "react-icons/gi";
 import { AiFillProfile } from "react-icons/ai";
 import { FaUserFriends, FaGamepad } from "react-icons/fa";
 import { TbTournament } from "react-icons/tb";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import Link from 'next/link';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import NotFound_404 from '@/components/error_pages/404';
 import { getData } from '@/services/apiCalls';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
+import { FaUsers } from "react-icons/fa6";
 
 
 const Friends = () => {
 	const {
 		users,
-		pageNotFound,
-		setPageNotFound,
 		setUsers
 	} = useWebSocketContext();
 
@@ -32,7 +28,6 @@ const Friends = () => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
-	const [addFriend, setAddFriend] = useState(false);
 
 	const fetchAllUsers = useCallback( async (pageNumber = 1, endpoint = 'allusers') => {
 		try {
@@ -73,9 +68,6 @@ const Friends = () => {
 		setSelectedUser(user);
 	};
 
-	if (pageNotFound) {
-		return <NotFound_404 gobackPage="/friends" setPageNotFound={setPageNotFound} />;
-	}
 
 	return (
 		<div className="min-h-screen py-32 w-full relative">
@@ -83,7 +75,7 @@ const Friends = () => {
 							shadow-lg w-fit flex items-center space-x-3 lg:mb-6 
 							absolute top-10 left-10 transition-transform hover:scale-105
 							border border-gray-700/50">
-				<GiThreeFriends className='text-2xl text-blue-400'/>
+				<FaUsers className='text-2xl text-blue-400'/>
 				<span className="font-medium">All users</span>
 			</div>
 

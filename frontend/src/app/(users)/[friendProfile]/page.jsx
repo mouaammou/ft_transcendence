@@ -53,7 +53,7 @@ export default function FriendProfile({ params }) {
 	}, [profile?.id]);
 
 	const blockFriend = useCallback(() => {
-		//http request to block friend
+
 		if (profile?.id)
 		postData(`/blockFriend/${profile.id}`)
 			.then(response => {
@@ -224,18 +224,16 @@ export default function FriendProfile({ params }) {
 
 						{friendStatusRequest === 'accepted' && (
 							<>
-								<button
-									// onClick={inviteToTournament}
+								<Link href="/create_join_tournament"
 									className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 								>
 									<FaTrophy className="mr-2" /> Add to Tournament
-								</button>
-								<button
-									// onClick={inviteToGame}
+								</Link>
+								<Link href="/mode"
 									className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 								>
 									<FaGamepad className="mr-2" /> Add to Game
-								</button>
+								</Link>
 								<button
 									onClick={blockFriend}
 									className="w-full mt-6 bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
