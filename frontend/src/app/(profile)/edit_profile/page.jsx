@@ -1,218 +1,281 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/components/auth/loginContext';
-import { postData } from '@/services/apiCalls';
-import { SiAuthentik } from 'react-icons/si';
+	'use client';
+	import { useCallback, useState } from 'react';
+	import { useAuth } from '@/components/auth/loginContext';
+	import { postData } from '@/services/apiCalls';
+	import { Toaster, toast } from 'react-hot-toast';
+	import { FiUser, FiLock, FiCamera } from 'react-icons/fi';
 
 const EditProfile = () => {
-  const [errors, setErrors] = useState({});
-  const [userData, setUserData] = useState({
-    username: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    avatar: '',
-    password: '',
-  });
+	const { profileData: data, setProfileData } = useAuth();
+	const [isLoading, setIsLoading] = useState({
+		avatar: false,
+		info: false,
+		password: false
+	});
 
-  const { profileData: data, setProfileData } = useAuth();
+	const [formData, setFormData] = useState({
+		username: data?.username || '',
+		email: data?.email || '',
+		first_name: data?.first_name || '',
+		last_name: data?.last_name || '',
+		current_password: '',
+		new_password: '',
+		confirm_password: ''
+	});
 
-  const handleChange = e => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
-  };
+	const [errors, setErrors] = useState({});
 
-  const handle_avatar = e => {
-    const file = e.target.files[0];
+	const handleChange = useCallback((e) => {
+		const { name, value } = e.target;
+		setFormData(prev => ({ ...prev, [name]: value }));
+		setErrors(prev => ({ ...prev, [name]: '' }));
+	}, []);
 
-    // Check if a file is selected
-    if (file) {
-      const reader = new FileReader();
+	const handleAvatarChange = useCallback(async (e) => {
+		const file = e.target.files[0];
+		if (!file) return;
 
-      reader.onloadend = () => {
-        setProfileData({ ...data, avatar: reader.result });
-      };
-      reader.readAsDataURL(file); // Convert the file to a base64 string for preview
+		if (file.size > 5 * 1024 * 1024) {
+			toast.error('File size must be less than 5MB');
+			return;
+		}
 
-      // Set the avatar file in userData state
-      setUserData({ ...userData, avatar: file });
-    }
-  };
+		setIsLoading(prev => ({ ...prev, avatar: true }));
 
-  const UpdateProfile = async e => {
-    e.preventDefault();
+		const formData = new FormData();
+		formData.append('avatar', file);
 
-    const updatedData = {
-      username: userData.username,
-      email: userData.email,
-      first_name: userData.first_name,
-      last_name: userData.last_name,
-      avatar: userData.avatar,
-      password: userData.password,
-    };
+		try {
+			const res = await postData('profile/update', formData, {
+				headers: { 'Content-Type': 'multipart/form-data' },
+			});
 
-    console.log(updatedData.avatar);
-    // Check if all fields are empty
-    const isEmpty = Object.values(updatedData).every(
-      value => !value || (typeof value === 'object' && !value.name)
-    );
+			if (res.status === 200) {
+				setProfileData(prev => ({ ...prev, avatar: res.data.avatar }));
+				toast.success('Avatar updated successfully');
+			}
+			else {
+				throw new Error('Failed to update avatar');
+			}
+		} catch (err) {
+			toast.error('Failed to update avatar');
+		} finally {
+			setIsLoading(prev => ({ ...prev, avatar: false }));
+		}
+	}, [setProfileData]);
 
-    if (isEmpty) {
-      setErrors({ Error: 'At least one field must be provided.' });
-      return;
-    }
-    try {
-      const res = await postData('profile/update', updatedData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (res.status == 200) {
-        if (res.data.avatar) setProfileData(res.data);
-        setErrors({ success: 'updated successfully' });
-      } else if (res.response?.status == 400) {
-        // console.log(erro);
-        setErrors(res.response.data.errors);
-      }
-    } catch (err) {
-      // console.log("catch block : ",err.response.data?.errors);
-      setErrors(err.response.data.errors);
-    }
-  };
+	const handleInfoSubmit = useCallback(async (e) => {
+		e.preventDefault();
+		setIsLoading(prev => ({ ...prev, info: true }));
 
-  return (
-    <div className="edit-profile-page container ">
-      <div className="edit-profile ">
-        <form onSubmit={UpdateProfile} method="POST" encType="multipart/form-data">
-          <div className="avatar_field_update flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 max-md:mt-10">
-            <div className="w-40 h-40 max-md:w-40 max-md:h-40 border-2 border-white rounded-full overflow-hidden">
-              <img className="w-full h-full object-cover" src={data.avatar} alt="profile picture" />
-            </div>
+		try {
+			const res = await postData('profile/update',
+			{
+				username: formData.username,
+				email: formData.email,
+				first_name: formData.first_name,
+				last_name: formData.last_name
+			});
 
-            <div className="flex justify-center items-center gap-10 max-lg:gap-4 flex-wrap mt-14 max-md:mt-0">
-              <div className="relative inline-block">
-                {/* <!-- Custom Button --> */}
-                <button className="rounded-md bg-white text-black px-6 py-3 text-[1rem] hover:bg-blue-600 focus:outline-none">
-                  Change Avatar
-                </button>
-                {/* <!-- Hidden File Input --> */}
-                <input
-                  type="file"
-                  name="avatar"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={handle_avatar}
-                />
-              </div>
-              <div className="primary-button">
-                <SiAuthentik className="inline text-[1.8rem]" />
-                <span className="p-3">Activate 2FA</span>
-              </div>
-            </div>
-          </div>
+			if (res.status === 200) {
+				setProfileData(res.data);
+				toast.success('Profile information updated successfully');
+			}
+			else {
+				throw new Error('Failed to update profile information');
+			}
+		} catch (err) {
+			setErrors(err.response?.data?.errors || {});
+			toast.error('Failed to update profile information');
+		} finally {
+			setIsLoading(prev => ({ ...prev, info: false }));
+		}
+	}, [formData, setProfileData]);
 
-          {/*======== change user data */}
-          <div className="change-user-data mt-[5rem]">
-            {/* fistname & lastname */}
-            <div className="firtname_lastname flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full my-6">
-              {/* valid input */}
-              <div className="input_field w-full">
-                <label className="block font-medium mb-2">Firstname</label>
-                <input
-                  type="text"
-                  placeholder="Enter your Firstname"
-                  name="first_name"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-              {/* valid input */}
-              <div className="input_field w-full">
-                <label className="block font-medium mb-2">Lastname</label>
-                <input
-                  type="text"
-                  placeholder="Enter your lastname"
-                  name="last_name"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-            </div>
-            {/* email & username */}
-            <div className="email_username flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full my-6">
-              {/* valid input */}
-              <div className="input_field mb-4 w-full">
-                <label className="block font-medium mb-2">Email</label>
-                <input
-                  type="text"
-                  placeholder="Enter your Email"
-                  name="email"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-              {/* valid input */}
-              <div className="input_field mb-4 w-full">
-                <label className="block font-medium mb-2">Username</label>
-                <input
-                  type="text"
-                  placeholder="Enter your username"
-                  name="username"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-            </div>
+	const handlePasswordSubmit = useCallback(async (e) => {
+		e.preventDefault();
 
-            {/* pass & confirm pass */}
-            <div className="password_confirpass flex justify-center items-center max-md:flex-wrap gap-20 max-md:gap-5 w-full">
-              {/* valid input */}
-              <div className="input_field mb-4 w-full">
-                <label className="block font-medium mb-2">Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  name="password"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-              {/* valid input */}
-              <div className="input_field mb-4 w-full">
-                <label className="block font-medium mb-2">Confirm password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your confirm password"
-                  name="confirm password"
-                  onChange={handleChange}
-                  className="edit-input-field"
-                />
-              </div>
-              {/* end valid input */}
-            </div>
+		if (!formData.new_password || !formData.confirm_password) {
+			toast.error('All fields are required');
+			return;
+		}
 
-            <button type="submit" className="black-button w-40 mt-5">
-              Save Changes
-            </button>
-          </div>
+		if (formData.new_password !== formData.confirm_password) {
+			toast.error('Passwords do not match');
+			return;
+		}
 
-          {/*======== change user data */}
-          <div>
-            {errors.success}
-            <br />
-            {errors.username}
-            <br />
-            {errors.email}
-            <br />
-            {errors.Error}
-            <br />
-            {errors.avatar}
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+		setIsLoading(prev => ({ ...prev, password: true }));
 
-export default EditProfile;
+		try {
+			const res = await postData('profile/update',
+			{
+				password: formData.new_password
+			});
+			if (res.status === 200){
+				toast.success('Password updated successfully');
+				setFormData(prev => ({
+					...prev,
+					current_password: '',
+					new_password: '',
+					confirm_password: ''
+				}));
+			}
+			else {
+				toast.error('Failed to update password');
+			}
+			} catch (err) {
+				setErrors(err.response?.data?.errors || {});
+				toast.error('Failed to update password');
+		} finally {
+			setIsLoading(prev => ({ ...prev, password: false }));
+		}
+	}, [formData]);
+
+	return (
+		<>
+			<Toaster />
+			<div className="max-w-6xl mx-auto px-4 py-8">
+			<div className="grid grid-cols-1 gap-8">
+				{/* Avatar Section */}
+				<section className="bg-white/10 rounded-2xl shadow-lg p-6 transform hover:scale-[1.02] transition-transform duration-300">
+					<div className="flex flex-col items-center space-y-6">
+						<div className="relative group">
+							<div className="w-40 h-40 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
+								<img
+								src={data.avatar || '/default-avatar.png'}
+								alt="Profile"
+								className="w-full h-full object-cover"
+								/>
+							</div>
+							<label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 rounded-full cursor-pointer transition-opacity duration-300">
+								<FiCamera className="w-8 h-8" />
+								<input
+									type="file"
+									accept="image/*"
+									className="hidden"
+									onChange={handleAvatarChange}
+									disabled={isLoading.avatar}
+								/>
+							</label>
+						</div>
+						{isLoading.avatar && (
+						<div className="text-blue-600">Updating avatar...</div>
+						)}
+					</div>
+				</section>
+
+				{/* Profile Information Section */}
+				<section className="bg-white/10 rounded-2xl shadow-lg p-6">
+					<div className="flex items-center space-x-3 mb-6">
+						<FiUser className="w-6 h-6 text-blue-600" />
+						<h2 className="text-2xl font-semibold">Profile Information</h2>
+					</div>
+					<form onSubmit={handleInfoSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<InputField
+							label="First Name"
+							name="first_name"
+							value={formData.first_name}
+							onChange={handleChange}
+							error={errors.first_name}
+						/>
+						<InputField
+							label="Last Name"
+							name="last_name"
+							value={formData.last_name}
+							onChange={handleChange}
+							error={errors.last_name}
+						/>
+						<InputField
+						label="Email"
+							name="email"
+							type="email"
+							value={formData.email}
+							onChange={handleChange}
+							error={errors.email}
+						/>
+						<InputField
+							label="Username"
+							name="username"
+							value={formData.username}
+							onChange={handleChange}
+							error={errors.username}
+						/>
+						<div className="md:col-span-2 flex justify-end">
+						<button
+							type="submit"
+							disabled={isLoading.info}
+							className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+									disabled:bg-gray-400 disabled:cursor-not-allowed
+									transition duration-200 ease-in-out"
+						>
+							{isLoading.info ? 'Updating...' : 'Update Information'}
+						</button>
+						</div>
+					</form>
+				</section>
+
+				{/* Password Section */}
+				<section className="bg-white/10 rounded-2xl shadow-lg p-6">
+				<div className="flex items-center space-x-3 mb-6">
+					<FiLock className="w-6 h-6 text-blue-600" />
+					<h2 className="text-2xl font-semibold">Change Password</h2>
+				</div>
+				<form onSubmit={handlePasswordSubmit} className="space-y-6">
+					<InputField
+						label="New Password"
+						name="new_password"
+						type="password"
+						value="********"
+						onChange={handleChange}
+						error={errors.new_password}
+					/>
+					<InputField
+						label="Confirm New Password"
+						name="confirm_password"
+						type="password"
+						value="********"
+						onChange={handleChange}
+						error={errors.confirm_password}
+					/>
+					<div className="flex justify-end">
+					<button
+						type="submit"
+						disabled={isLoading.password}
+						className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+								disabled:bg-gray-400 disabled:cursor-not-allowed
+								transition duration-200 ease-in-out"
+					>
+						{isLoading.password ? 'Updating...' : 'Update Password'}
+					</button>
+					</div>
+				</form>
+				</section>
+			</div>
+			</div>
+		</>
+	);
+	};
+
+	const InputField = ({ label, name, type = 'text', value, onChange, error }) => (
+		<div className="space-y-2">
+			<label className="block text-sm font-medium text-white">
+				{label}
+			</label>
+			<input
+				type={type}
+				name={name}
+				placeholder={value}
+				onChange={onChange}
+				className={`text-white w-full px-4 py-3 rounded-lg border ${
+					error ? 'border-red-500' : 'border-gray-700 bg-white/10'
+				} focus:ring-2 focus:ring-blue-500 focus:border-transparent
+				transition-colors duration-200 text-gray-600`}
+			/>
+			{error && (
+				<p className="text-red-500 text-sm">{error}</p>
+			)}
+		</div>
+	);
+
+	export default EditProfile;

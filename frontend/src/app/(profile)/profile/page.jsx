@@ -1,5 +1,4 @@
 'use client';
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
@@ -31,7 +30,7 @@ const Profile = () => {
 			</div>
 
 			{/* Main Content */}
-			<div className="container mx-auto px-4 -mt-32 relative z-10">
+			<div className="container mx-auto px-4 -mt-32 relative z-1">
 				{/* Profile Header */}
 				<div className="flex flex-col items-center mb-12">
 					<div className="relative">

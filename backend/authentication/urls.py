@@ -50,11 +50,16 @@ urlpatterns = [
 	path("allusers", views.AllUser.as_view(), name="all users"),
 
 	# for Friend profile
+	### forget && reset password
+	path('forgot-password', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password', views.ResetPasswordView.as_view(), name='reset-password'),
+
 	path("friendProfile/<str:username>", views.FriendProfile.as_view(), name="friend profile"),
 	path("userById/<int:id>", views.GetUserById.as_view(), name="friend profile"),
 
 	# for search
 	path("searchItems/<str:searchedQuery>", views.SearchClass.as_view(), name="search"),
+
 
 ]
 

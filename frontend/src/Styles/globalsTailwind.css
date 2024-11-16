@@ -69,9 +69,15 @@ h6 {
 		
 		/* for friend profile */
 
-	.parent {
+	.parent-authenticated {
 		display: grid;
 		grid-template-columns: 7rem 3fr;
+		grid-template-rows: 1fr;
+	}
+
+	.parent-not-authenticated {
+		display: grid;
+		grid-template-columns: 1fr;
 		grid-template-rows: 1fr;
 	}
 

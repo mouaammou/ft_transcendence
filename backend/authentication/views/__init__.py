@@ -6,3 +6,4 @@ from .friends       import  FriendshipListView, RejectFriendshipView ,Friendship
 from .notifications import  ListNotifications, UnreadNotifications, MarkNotificationRead, AcceptFriendRequest, PendingFrienshipRequest
 from .allusers      import  AllUser
 from .search        import  SearchClass
+from .forget_reset_pass      import  ForgotPasswordView, ResetPasswordView
