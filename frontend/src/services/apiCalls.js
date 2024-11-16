@@ -65,9 +65,9 @@ headers: {
 },
 });
   
-export const fetchTournaments = async (page = 1) => {
+export const fetchTournaments = async (page = 1, filter='recently-played') => {
 	try {
-		const response = await api.get('/', {
+		const response = await api.get('filter/'+filter, {
 		params: { page },  // Attach pagination params
 		// headers: {
 		//   'X-CSRFToken': getCSRFToken(),  // Attach the CSRF token to the request headers

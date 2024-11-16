@@ -7,7 +7,7 @@ import { BsTypeH1 } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
 
 
-const TournamentList = () => {
+const TournamentList = ({filter}) => {
     const router = useRouter();
     const [tournaments, setTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,21 +16,19 @@ const TournamentList = () => {
     const [nextPage, setnextPage] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
 
-    // Fetch data when the page loads or when the currentPage changes
-    useEffect(() => {
-        const getTournaments = async () => {
-            setLoading(true);
-            const data = await fetchTournaments(currentPage);
-            setTournaments(data.results);
-            setPrevPage(data.previous);
-            setnextPage(data.next);
-            // console.log(data.results);
-            setTotalPages(Math.ceil(data.count / 21)); // Assuming page size of 10
-            setLoading(false);
-        };
+    const getTournaments = async () => {
+        setLoading(true);
+        const data = await fetchTournaments(currentPage, filter);
+        setTournaments(data.results);
+        setPrevPage(data.previous);
+        setnextPage(data.next);
+        setTotalPages(Math.ceil(data.count / 21));
+        setLoading(false);
+    };
 
+    useEffect(() => {
         getTournaments();
-    }, [currentPage]);
+    }, [currentPage, filter]);
 
     if (loading) {
         return <div>Loading tournaments...</div>;
@@ -39,6 +37,19 @@ const TournamentList = () => {
     const handleTournamentDetail = (id) => (
         router.push(`/tournament/${id}/`)
     );
+
+    const formatDate = (date) => {
+        const options = { 
+        //   weekday: 'short', // e.g., "Mon"
+          year: 'numeric', // e.g., "2024"
+          month: 'short', // e.g., "Nov"
+        //   day: 'numeric', // e.g., "15"
+        //   hour: '2-digit', // e.g., "12"
+        //   minute: '2-digit', // e.g., "30"
+        };
+        
+        return new Date(date).toLocaleDateString('en-US', options);
+      };
 
     return (
         <div className="flex flex-col w-full max-w-screen-lg bg-white/5 justify-between mx-auto">
@@ -50,16 +61,25 @@ const TournamentList = () => {
                         <thead>
                             <tr>
                             <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">title</th>
-                            <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">id</th>
                             <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
                             {tournaments.map((tournament) => (
-                                <tr key={tournament.id} className="hover:bg-white/10" onClick={()=>handleTournamentDetail(tournament.id)}>
+                                <tr
+                                key={tournament.id}
+                                onClick={()=>handleTournamentDetail(tournament.id)}
+                                className="hover:bg-white/10 cursor-pointer"
+                                >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-50">{tournament.title}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">{tournament.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-50">{tournament.finished?'True':'False'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-50">
+                                        {tournament.finished === false && <div className="flex w-full h-1.5 bg-white/20 rounded-full overflow-hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+                                        <div className="flex flex-col justify-center rounded-full overflow-hidden bg-white/80 text-xs text-white text-center whitespace-nowrap transition duration-500" style={{width: ((tournament.match_index-1)*100/7) + '%'}}></div>
+                                        </div>}
+                                        {
+                                            tournament.finished === true && <div className="flex flex-1">&#10004; {formatDate(tournament.updated_at)}</div>
+                                        }
+                                    </td>
                                 </tr>
                             ))}
                             

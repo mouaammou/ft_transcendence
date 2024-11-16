@@ -28,7 +28,7 @@ const ChoseGame = () => {
     };
 
     return (
-        <div className="w-full max-w-full h-full gap-4 flex flex-col justify-center items-center mx-auto ring">
+        <div className="w-full max-w-full min-h-max h-[calc(100vh-90px)] gap-4 flex flex-col justify-center items-center mx-auto">
             <div className='flex flex-col justify-between gap-4 w-fit h-fit'>
                 <button
                     onClick={handleClick}

@@ -1,20 +1,34 @@
 'use client';
 import TournamentList from '@/components/local_tournament/TournamentList';
-// import { fetchTournaments } from '@/services/apiCalls';
+import DropDown from '@/components/local_tournament/DropDown';
+import { useState } from 'react';
 
 const HomePage = () => {
-    // const handleClick = async (e) => {
-    //     // e.preventDefault();
-    //     // setLoading(true);
-    //     const data = await fetchTournaments(1);
-    //     // setTournaments(data.results);
-    //     console.log(data.results);
-    //     // setTotalPages(Math.ceil(data.count / 10)); // Assuming page size of 10
-    //     // setLoading(false);
-    // };
+    const [filterKeyword, setFilterKeyword] = useState('All');
+   const keywords = ['All','Recently-played', 'Pending', 'Started'];
+
+    
+
     return (
         <div className="container">
-            <TournamentList />
+            <div className="flex flex-col justify-center items-center gap-y-4 mx-auto w-full max-w-96 py-4">
+                
+                <DropDown
+                    filterKeyword={filterKeyword}
+                    filterKeywords={keywords}
+                    setFilterKeyword={setFilterKeyword}
+                />
+                {/* Search Input */}
+                <input
+                    type="text"
+                    className="max-w-96 px-4 py-2 w-full rounded-full bg-white/30 border-none outline-none focus:ring focus:ring-white/10"
+                    placeholder="Search"
+                />
+            </div>
+
+            {/* Tournament List */}
+            <div className="flex bg-white/50"></div>
+            <TournamentList filter={filterKeyword} />
         </div>
     );
 };

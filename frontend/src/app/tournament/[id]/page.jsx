@@ -98,11 +98,13 @@ export default function Board({ params })
       <h1 className="flex justify-center items-center font-bold mt-14">
         {title} 
       </h1>
-      <div className="overflow-x-auto max-w-full">
-        <div className="min-w-max mt-16">
+      <div className="overflow-x-auto max-w-full scrollbar scrollbar-thumb-rounded-none scrollbar-track-white/10 scrollbar-thumb-white/50">
+
+        <div className="mt-16 max-w-max mx-auto">
+
       
           <svg
-            className="mx-auto bg-white/10 p-8 rounded-lg "
+            className="mx-auto bg-white/10 p-8 lg:rounded-lg"
             width="1010"
             height="700"
             viewBox="0 0 1310 741"
@@ -476,6 +478,12 @@ export default function Board({ params })
             <Image src="/vs.svg" className='filter invert mx-2' alt="vs" width={30} height={30}/>
             <div>{rightUser}</div>
           </Link>}
+        {tournament.match_index > 7 &&
+          <div className="flex justify-center items-center text-xl font-bold ">
+            <div className="bg-white/15 py-2 px-4 rounded">🎉👑 {tournament.match7_winner} 👑🎉</div>
+            
+          </div>
+        }
       </div>
     </div>
   );

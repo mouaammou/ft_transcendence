@@ -30,6 +30,7 @@ class LocalTournamentViewSet(ModelViewSet):
         
         # Get the filter keyword from the URL
         filter_keyword = self.kwargs.get('filter_keyword', None)
+        filter_keyword = filter_keyword.lower() if filter_keyword else None
         print('#'*30)
         print(filter_keyword)
         print('#'*30)
@@ -46,7 +47,7 @@ class LocalTournamentViewSet(ModelViewSet):
         elif filter_keyword == 'newest-to-oldest':
             queryset = queryset.order_by('-created_at')
         elif filter_keyword == 'recently-played':
-            queryset = queryset.order_by('-updated_at').filter(finished=False)
+            queryset = queryset.order_by('-updated_at').filter(finished=False, match_index__gt=1)
         
         # Add more filters as needed
         return queryset
