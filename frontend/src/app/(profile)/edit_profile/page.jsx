@@ -101,7 +101,7 @@ const EditProfile = () => {
 		}
 
 		if (formData.new_password !== formData.confirm_password) {
-			setErrors({ confirm_password: 'Passwords do not match' });
+			toast.error('Passwords do not match');
 			return;
 		}
 

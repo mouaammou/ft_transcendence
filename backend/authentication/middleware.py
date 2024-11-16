@@ -23,6 +23,7 @@ class TokenVerificationMiddleWare:
 			"/auth/login/42", "/auth/callback/42",
 			"/signup", "/login", "/logout",
 			"/token", "/token/refresh",
+			"/reset-password","/forgot-password"
 		]
 
 		if request.path.startswith("/admin") or request.path in unrestricted_paths:

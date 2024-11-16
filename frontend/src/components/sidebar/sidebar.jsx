@@ -58,7 +58,7 @@ isAuth && (
 				<div className="min-w-[4rem] h-14 flex items-center justify-center relative">
 					{item.icon}
 					{isActive && (
-					<div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full"></div>
+						<div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full"></div>
 					)}
 				</div>
 				{/* Removed hover effect */}

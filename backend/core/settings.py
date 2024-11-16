@@ -4,7 +4,9 @@ from pathlib import Path
 from datetime import timedelta
 
 load_dotenv()
+import certifi
 
+os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -68,7 +70,19 @@ OAUTH42_REDIRECT_URI = os.getenv("OAUTH42_REDIRECT_URI")
 OAUTH42_AUTH_URL = os.getenv("OAUTH42_AUTH_URL")
 OAUTH42_TOKEN_URL = os.getenv("OAUTH42_TOKEN_URL")
 OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
-# Application definition
+
+## Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+# Frontend URL for reset link
+FRONTEND_URL = os.getenv('FRONTEND_URL', default='http://localhost:3000')
+# Create token expiry time
+PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 INSTALLED_APPS = [
 	'daphne',
