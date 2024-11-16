@@ -62,9 +62,6 @@ isAuth && (
 					)}
 				</div>
 				{/* Removed hover effect */}
-				<span className="hidden whitespace-nowrap font-medium">
-					{item.label}
-				</span>
 				{!isActive && (
 					<div className="absolute left-0 w-1 h-8 bg-blue-500 rounded-r-full opacity-0"></div>
 				)}
