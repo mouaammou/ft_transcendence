@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { fetchTournaments } from '@/services/apiCalls';
+import { fetchTournaments, searchTournaments } from '@/services/apiCalls';
 import Pagination from './Pagination';
 import { BsTypeH1 } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
 
 
-const TournamentList = ({filter}) => {
+const TournamentList = ({filter, searchQuery}) => {
     const router = useRouter();
     const [tournaments, setTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,9 +26,36 @@ const TournamentList = ({filter}) => {
         setLoading(false);
     };
 
+    const handleSearch = async (query) => {
+        setLoading(true);
+        try {
+            const data = await searchTournaments(query); // API call
+            console.log('Search data:', data);
+            setTournaments(data.results);
+            setPrevPage(data.previous);
+            setnextPage(data.next);
+            setTotalPages(Math.ceil(data.count / 21));
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
+        if (searchQuery.trim()) {
+            const delayDebounceFn = setTimeout(() => {
+                if (searchQuery.trim()) {
+                    handleSearch(searchQuery);
+                } else {
+                    setTournaments([]); // Clear results if query is empty
+                }
+            }, 500); // Debounce time: 500ms
+    
+            return () => clearTimeout(delayDebounceFn); // Cleanup timeout
+        }
         getTournaments();
-    }, [currentPage, filter]);
+    }, [currentPage, filter, searchQuery]);
 
     if (loading) {
         return <div>Loading tournaments...</div>;

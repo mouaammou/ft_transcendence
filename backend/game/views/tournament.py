@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from game.local_game.eventloop import EventLoopManager
 
+from django.db.models import Q
+
 
 class LocalTournamentViewSet(ModelViewSet):
     # queryset = LocalTournament.objects.all().order_by('-created_at')
@@ -82,3 +84,23 @@ class TournamentNextMatchPlayersView(APIView):
             pass
         return Response({"fail": "Tournament Does Not Exist."}, status=status.HTTP_200_OK)
 
+
+
+
+class SearchLocalTournament(ModelViewSet):
+    serializer_class = TournamentSerializer
+    pagination_class = TournamentPagination
+    
+    def get_queryset(self):
+        """
+        Filters the queryset based on the filter_keyword from the URL.
+        """
+        query = self.request.GET.get('search', '')
+        print('#q'*30)
+        print(query)
+        print('#q'*30)
+
+        if not query:
+            return LocalTournament.objects.none()
+
+        return LocalTournament.objects.filter(title__icontains=query)

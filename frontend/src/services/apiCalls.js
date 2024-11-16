@@ -119,5 +119,14 @@ export const fetchStartPlayTournament = async (id) => {
 	}
 };
 
+export const searchTournaments  = async (search) => {
+	try {
+		const response = await api.get(`search/`, { params: { search } });
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching tournaments:', error);
+		return { results: [] };
+	}
+}
 
   
