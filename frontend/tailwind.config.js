@@ -57,6 +57,7 @@ module.exports = {
 			  },
 			animation: {
 			brightening: 'brightening 1.5s infinite',
+			'bounce-3s' : 'bounce 3s'
 			},
 		},
 	},

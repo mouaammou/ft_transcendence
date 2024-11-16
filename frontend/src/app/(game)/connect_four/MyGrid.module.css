@@ -2,13 +2,7 @@
     position: relative;
     display: flex;
     justify-content: center;
-}
-
-.mohamed {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    align-items: center;
+    margin-top: 70px;
 }
 
 .gridMobileImage {

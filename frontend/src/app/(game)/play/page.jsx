@@ -43,16 +43,16 @@ const PlayMode = () => {
         <div className="title">Play Pong with others</div>
         <div className="modes-container">
           <div onClick={handlePlayRandomGame} className="left-mode">
-            <img className="images" src="mode1.svg" alt="remote-game" />
+            <img className="" src="mode1.svg" alt="remote-game" />
             <p>REMOTE GAME</p>
           </div>
           <div className="middle-mode">
-            <img className="images" src="mode2.svg" alt="remote-game" />
+            <img className="" src="mode2.svg" alt="remote-game" />
             <p>LOCAL GAME</p>
           </div>
           <div className="right-mode"  onClick={handlePlayTournament} >
-            <img className="images" src="mode3.svg" alt="remote-game" />
-            <p>TOURNAMENT</p>
+            <img className="brightness-75 " src="1111.svg" alt="connect4-game" />
+            <p>CONNECT FOUR</p>
           </div>
         </div>
       </div>
