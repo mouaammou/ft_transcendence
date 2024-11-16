@@ -8,7 +8,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { TiArrowBack } from 'react-icons/ti';
 // import Picker from 'emoji-picker-react';
-import React, { useContext , useRef, useEffect} from 'react';
+import React, { useContext , useState, useRef, useEffect} from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 import { useAuth } from '@/components/auth/loginContext.jsx';
@@ -38,8 +38,7 @@ const Msg_chat = () => {
 	
   } = useContext(ChatContext);
 
-  const { profileData: data } = useAuth();  // Current logged-in user
-		  
+	const { profileData: data } = useAuth();  // Current logged-in user
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -77,15 +76,12 @@ const Msg_chat = () => {
 
 
 				{/* Group messages by date */}
-				{messages[selectedUser?.id] && Object.keys(messages[selectedUser.id]).map((date, index) => (
+				{/* {messages[selectedUser?.id] && Object.keys(messages[selectedUser.id]).map((date, index) => (
 					<div key={index} className='groupe_msg_date'>
-						{/* Display the date */}
 						<div className="message_date">
-							{/* <h1 className='par_date'> <span>{date}</span> </h1> */}
 							<p className='par_date'> <span>{date}</span> </p>
 						</div>
 
-						{/* Display messages for the current date */}
 						{messages[selectedUser.id][date].map((msg, msgIndex) => (
 						<div
 							key={msgIndex}
@@ -102,9 +98,7 @@ const Msg_chat = () => {
 							/>
 							)}
 							<div className='div_text_message'>
-								{/* {console.log('msg.message', msg.message)} */}
 								<p className='text_message'>{msg.message}</p>
-								{/* Display the time for each message */}
 								<span className="message_time">{formatTime(msg.timestamp)}</span>
 							</div>
 							{msg.sender === data.username && (
@@ -121,7 +115,85 @@ const Msg_chat = () => {
 						</div>
 						))}
 					</div>
-				))}
+				))} */}
+
+				{/*  **************** new ************* */}
+
+				{/* Group messages by date */}
+				{/* {messages[selectedUser?.id] &&
+					Object.entries(messages[selectedUser.id]).map(([date, dateMessages], index) => (
+						<div key={index} className="groupe_msg_date">
+							<div className="message_date">
+								<p className="par_date"> <span>{date}</span> </p>
+							</div>
+
+							{dateMessages.map((msg, msgIndex) => (
+								<div
+									key={msgIndex}
+									className={msg.sender === data.username ? 'my-message' : 'message'}
+								>
+									{msg.sender !== data.username && (
+										<img
+											src={selectedUser.avatar}
+											alt={selectedUser.username}
+											className="img_msg"
+											style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
+										/>
+									)}
+									<div className="div_text_message">
+										<p className="text_message">{msg.message}</p>
+										<span className="message_time">{formatTime(msg.timestamp)}</span>
+									</div>
+									{msg.sender === data.username && (
+										<img
+											src={data.avatar}
+											alt={data.username}
+											className="img_my_message"
+											style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
+										/>
+									)}
+								</div>
+							))}
+						</div>
+					))} */}
+
+					{messages[selectedUser?.id] &&
+					Object.entries(messages[selectedUser.id]).map(([date, dateMessages], index) => (
+						<div key={index} className="groupe_msg_date">
+						<div className="message_date">
+							<p className="par_date"> <span>{date}</span> </p>
+						</div>
+
+						{dateMessages.map((msg, msgIndex) => (
+							<div
+							key={msgIndex}
+							className={msg.sender === data.username ? 'my-message' : 'message'}
+							>
+							{msg.sender !== data.username && (
+								<img
+								src={selectedUser.avatar}
+								alt={selectedUser.username}
+								className="img_msg"
+								style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
+								/>
+							)}
+							<div className="div_text_message">
+								<p className="text_message">{msg.message}</p>
+								<span className="message_time">{formatTime(msg.timestamp)}</span>
+							</div>
+							{msg.sender === data.username && (
+								<img
+								src={data.avatar}
+								alt={data.username}
+								className="img_my_message"
+								style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
+								/>
+							)}
+							</div>
+						))}
+						</div>
+					))}
+
 
 					
 				{/* Scroll to the bottom of the chat */}

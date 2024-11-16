@@ -34,6 +34,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         mark_read = data.get('mark_read', False)  # Detect mark as read request
 
         receiver = await self.get_user_by_username(receiver_username)
+        print('receiver =>'  ,receiver)
+        print('receiver_username =>' ,receiver_username)
 
 
 
@@ -43,8 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Handle the message
-        if message:
-            if receiver:
+        if message and receiver:
                 await self.save_message(self.user, receiver, message)
                 await self.send_message_to_groups(self.user.id, receiver.id, receiver_username, message)
 
@@ -61,20 +62,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send_mark_read_status(friend.id, friend_username)
 
     async def send_mark_read_status(self, friend_id, receiver_username):
-        # Notify the frontend that messages have been marked as read
         print('USE chat_mark_read TO RESPONCE TO HE FRANT  read_status in database')
+         # Notify both sender and receiver that messages have been marked as read
         await self.channel_layer.group_send(
             f'{self.GROUP_PREFIX}{friend_id}',
             {
                 'type': 'chat_mark_read',
                 'receiver': receiver_username,
-                # 'user': self.user.username,
                 'mark_read': True,
             }
-            # {
-            #     'type': 'chat_mark_read',
-            #     'user': self.user.username,
-            # }
+        )
+        await self.channel_layer.group_send(
+            f'{self.GROUP_PREFIX}{self.user.id}',
+            {
+                'type': 'chat_mark_read',
+                'receiver': receiver_username,
+                'mark_read': True,
+            }
         )
 
     async def chat_mark_read(self, event):
@@ -134,6 +138,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Get the current timestamp
         timestamp = timezone.now().isoformat()  # ISO format for easy parsing in JS
 
+        # Calculate unread count for receiver
+        unread_count = await self.get_unread_count(receiver_id)
+
         # Prepare message data
         message_data = {
             'sender': self.user.username,
@@ -141,7 +148,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'receiver': receiver_username,
             'receiver_id': receiver_id,
             'message': message,
-            'timestamp': timestamp
+            'timestamp': timestamp,
+            'unread_count': unread_count
         }
 
         # # Send message to sender's group
@@ -157,6 +165,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         })
 
     async def chat_message(self, event):
+        print('Send message using chat_message methode' )
         await self.send(text_data=json.dumps({
             'sender': event['sender'],
             'sender_id': event['sender_id'],
@@ -164,6 +173,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'receiver_id': event['receiver_id'],
             'message': event['message'],
             'timestamp': event['timestamp'],
+            'unread_count': event.get('unread_count', 0),
         }))
 
     @database_sync_to_async
@@ -176,6 +186,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, sender, receiver, message):
         return Message.objects.create(sender=sender, receiver=receiver, message=message)
+    
+    @database_sync_to_async
+    def get_unread_count(self, user_id):
+        # Get count of unread messages for a specific user
+        return Message.objects.filter(receiver_id=user_id, is_read=False).count()
 
 
 

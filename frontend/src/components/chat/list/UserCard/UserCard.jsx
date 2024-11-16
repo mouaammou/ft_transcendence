@@ -145,10 +145,31 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
     ? formatDistanceToNow(new Date(lastMessage.timestamp))
     : '';
 
+
+  //  ************ old methode ************
+
   // Determine message display based on is_read status
-  const messageDisplay = lastMessage.is_read
-    ? <span>{lastMessage.message} ✓✓</span>  // Double checkmark for read
-    : <span style={{ fontWeight: 'bold' }}>{lastMessage.message} (New)</span>;  //
+  // const messageDisplay = lastMessage.is_read
+  //   ? <span>{lastMessage.message} ✓✓</span>  // Double checkmark for read
+  //   : <span style={{ fontWeight: 'bold' }}>{lastMessage.message} (New)</span>;  //
+
+  // ******
+
+
+
+
+   // Display the unread message count if there are unread messages, otherwise show the last message
+   const messageDisplay = lastMessage.is_read
+   ? <span>{lastMessage.message} ✓✓</span> // Double checkmark for read messages
+   : (
+       <span style={{ fontWeight: 'bold' }}>
+         {lastMessage.message}
+         {console.log('lastMessage.unreadCount', lastMessage.unreadCount)}
+         {lastMessage.unreadCount > 0 && `${lastMessage.unreadCount}`}
+       </span>
+     );
+
+    
 
   // console.log('Determine message display based on is_read status => ',messageDisplay)
   console.log('lastMessage.is_read ==> ',lastMessage.is_read)

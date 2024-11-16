@@ -8,11 +8,19 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 
 
-/// update 
 
-export const ChatContext = createContext({
-  value: 'true',
-});
+
+// somtimes : TypeError: Cannot read properties of null (reading 'useContext')
+
+/// update 
+// export const ChatContext = createContext({
+    //   value: 'true',
+    // });
+    
+    
+// NEW 
+
+export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
 
@@ -126,13 +134,12 @@ export const ChatProvider = ({ children }) => {
         // setIsChatVisible(true);
         fetchChatHistory(user.id); // Fetch chat history for selected user
 
-        // add 
 
-        // Send a WebSocket message to mark messages as read
         if (socket) {
-                console.log('we send a mark_read: to the backand')
-                socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
-            // Update `is_read` status in the frontend immediately for the selected user
+            console.log('Sending mark_read to backend');
+            socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
+    
+            // Reset unread count for this user by setting unreadCount to 0 in last_message
             setAllUsers((prevUsers) =>
                 prevUsers.map((friend) =>
                     friend.friend.id === user.id
@@ -140,12 +147,17 @@ export const ChatProvider = ({ children }) => {
                             ...friend,
                             last_message: {
                                 ...friend.last_message,
-                                is_read: true,  // Mark as read immediately
-                            },
+                                is_read: true,
+                                unreadCount: 0, // Reset unread count to 0
+                            }
                         }
                         : friend
                 )
             );
+
+            // last update
+
+            // updateLastMessage(user.id, null, true, null); // Only update `is_read` for the selected user
         }
 
     };
@@ -160,13 +172,6 @@ export const ChatProvider = ({ children }) => {
     console.log('Text:', text.trim());
     console.log('Socket:', socket);
     console.log('Socket Ready State:', socket ? socket.readyState : 'Socket is null');
-
-    // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
-    //   const messageData = {
-    //     sender: currentUser.username,  // Send the username, not ID
-    //     receiver: selectedUser.username,
-    //     message: text.trim(),
-    //   };
 
     if (text.trim() && selectedUser && socket) {
         const messageData = {
@@ -240,16 +245,66 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
+    // *******  old methode ****** 
     // Update the `last_message` field in `allUsers` when a new message is sent or received
+    // const updateLastMessage = (userId, message, is_read, timestamp) => {
+    //     setAllUsers((prevUsers) =>
+    //         prevUsers.map((user) =>
+    //             user.friend.id === userId
+    //                 ? { ...user, last_message: { message, is_read, timestamp } }
+    //                 : user
+    //         )
+    //     );
+    // };
+
+    // *********** end old methode ********
+
     const updateLastMessage = (userId, message, is_read, timestamp) => {
         setAllUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.friend.id === userId
-                    ? { ...user, last_message: { message, is_read, timestamp } }
-                    : user
-            )
+            prevUsers.map((user) => {
+                if (user.friend.id === userId) {
+                    // Update unreadCount based on whether the message is read or unread
+                    const unreadCount = is_read ? 0 : (user.last_message?.unreadCount || 0) + 1;
+    
+                    return {
+                        ...user,
+                        last_message: { 
+                            message, 
+                            is_read, 
+                            timestamp, 
+                            unreadCount // Place unreadCount inside last_message
+                        },
+                    };
+                }
+                return user;
+            })
         );
     };
+
+
+    // last update
+
+    // const updateLastMessage = (userId, message, is_read, timestamp) => {
+    //     setAllUsers((prevUsers) =>
+    //         prevUsers.map((user) => {
+    //             if (user.friend.id === userId) {
+    //                 const unreadCount = is_read ? 0 : (user.last_message?.unreadCount || 0) + 1;
+    //                 return {
+    //                     ...user,
+    //                     last_message: {
+    //                         ...user.last_message,
+    //                         message: message || user.last_message?.message, // Preserve previous message if not provided
+    //                         is_read,
+    //                         timestamp: timestamp || user.last_message?.timestamp, // Preserve timestamp if not provided
+    //                         unreadCount,
+    //                     },
+    //                 };
+    //             }
+    //             return user;
+    //         })
+    //     );
+    // };
+    
     // ************************ end ***********************
 
     // ************************ Manage WebSocket connection ************************
@@ -272,60 +327,168 @@ export const ChatProvider = ({ children }) => {
 
             // Handle incoming messages
             if (message) {
-                console.log('message => ', message)
+            
+        
+                //  new
+
+
+            //     setMessages((prevMessages) => {
+            //         const updatedMessages = { ...prevMessages };
+
+            //         // Ensure the structure for the receiver exists
+            //         if (!updatedMessages[receiver_id]) {
+            //             updatedMessages[receiver_id] = {};
+            //         }
+
+            //         // Determine the date of the message
+            //         const messageDate = formatDate(receivedData.timestamp);
+
+            //         // Ensure the structure for the date exists
+            //         if (!updatedMessages[receiver_id][messageDate]) {
+            //             updatedMessages[receiver_id][messageDate] = [];
+            //         }
+
+            //         // Append the new message to the correct date group
+            //         updatedMessages[receiver_id][messageDate].push(receivedData);
+
+            //         console.log('Updated Messages:', updatedMessages);
+            //         return updatedMessages;
+            //     });
+
+
+            //     if (sender_id === currentUser.id) {
+            //         updateLastMessage(receiver_id, message, false, receivedData.timestamp); // Sent message, mark as read for sender
+            //     } else {
+            //         updateLastMessage(sender_id, message, false, receivedData.timestamp); // Received message, mark as unread for receiver
+            //     }
+                
+            // }
+
+            // console.log(' mark_read befor condition => ', mark_read)
+            // console.log(' this is receiver  => ', receiver)
+            // if (mark_read && receiver) {
+            //     // Update the read status of messages from this user
+            //     console.log(' mark_read inside condition => ', mark_read)
+            //     setAllUsers((prevUsers) =>
+            //         prevUsers.map((friend) => {
+            //             if (friend.username === receiver) {
+            //                 // Update the `is_read` status of the `last_message`
+            //         return {
+            //             ...friend,
+            //             last_message: {
+            //                 ...friend.last_message,
+            //                 is_read: true
+            //             }
+            //         };
+            //             }
+            //             return friend;
+            //         })
+            //     );
+            //     updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
+            // }
+
+
+            //   last update 
+
+                console.log('Incoming message:', message);
+
+
+                const isSender = sender_id === currentUser.id;
+                const targetId = isSender ? receiver_id : sender_id;
+
+                // Update messages for the selected user
+                // setMessages((prevMessages) => {
+                // const updatedMessages = { ...prevMessages };
+
+                // if (!updatedMessages[targetId]) {
+                //     updatedMessages[targetId] = {};
+                // }
+
+                // const messageDate = formatDate(receivedData.timestamp);
+
+                // if (!updatedMessages[targetId][messageDate]) {
+                //     updatedMessages[targetId][messageDate] = [];
+                // }
+
+                // updatedMessages[targetId][messageDate].push(receivedData);
+
+                // // Special case: if the sender is the current user, update their messages too
+                // // Ensure the message also appears for the sender immediately
+                // // if (isSender) {
+                // //     const senderMessages = updatedMessages[currentUser.id] || {};
+                // //     if (!senderMessages[messageDate]) {
+                // //     senderMessages[messageDate] = [];
+                // //     }
+                // //     senderMessages[messageDate].push(receivedData);
+                // //     updatedMessages[currentUser.id] = senderMessages;
+                // // }
+
+                // console.log('Updated Messages:', updatedMessages);
+                // return updatedMessages;
+                // });
+
+
+                //   ---------- the last  new -------------
+                
                 setMessages((prevMessages) => {
                     const updatedMessages = { ...prevMessages };
-                    // const userId = sender_id === currentUser.id ? receiver_id : sender_id;
-                    // Check if the current user is the sender or receiver and set userId accordingly
-                    let userId;
-                    if (sender_id === currentUser.id) {
-                        // If the current user is the sender, use the receiver_id
-                        userId = receiver_id;
-                    } else {
-                        // If the current user is the receiver, use the sender_id
-                        userId = sender_id;
+        
+                    // Ensure that both sender and receiver messages are updated correctly
+                    if (!updatedMessages[sender_id]) {
+                        updatedMessages[sender_id] = {};
                     }
-
-                    if (!updatedMessages[userId]) {
-                        updatedMessages[userId] = {};
+        
+                    if (!updatedMessages[receiver_id]) {
+                        updatedMessages[receiver_id] = {};
                     }
-
+        
                     const messageDate = formatDate(receivedData.timestamp);
-                    if (!updatedMessages[userId][messageDate]) {
-                        updatedMessages[userId][messageDate] = [];
+        
+                    // Add message to the correct date bucket for both sender and receiver
+                    if (!updatedMessages[sender_id][messageDate]) {
+                        updatedMessages[sender_id][messageDate] = [];
                     }
-
-                    updatedMessages[userId][messageDate].push(receivedData);
+        
+                    if (!updatedMessages[receiver_id][messageDate]) {
+                        updatedMessages[receiver_id][messageDate] = [];
+                    }
+        
+                    updatedMessages[sender_id][messageDate].push(receivedData); // Sender's message
+                    updatedMessages[receiver_id][messageDate].push(receivedData); // Receiver's message
+                    
+                    console.log('Updated Messages:', updatedMessages);
                     return updatedMessages;
                 });
-                if (sender_id === currentUser.id) {
-                    updateLastMessage(receiver_id, message, true, receivedData.timestamp); // Sent message, mark as read for sender
-                } else {
-                    updateLastMessage(sender_id, message, false, receivedData.timestamp); // Received message, mark as unread for receiver
-                }
-                
+
+                // Update last message for both sender and receiver
+                updateLastMessage(sender_id, message, false, receivedData.timestamp);
+                updateLastMessage(receiver_id, message, false, receivedData.timestamp);
             }
 
-            console.log(' mark_read befor condition => ', mark_read)
-            console.log(' this is receiver  => ', receiver)
             if (mark_read && receiver) {
-                // Update the read status of messages from this user
-                console.log(' mark_read inside condition => ', mark_read)
-                setAllUsers((prevUsers) =>
-                    prevUsers.map((friend) => {
-                        if (friend.username === receiver) {
-                            // Update the `is_read` status of the `last_message`
-                    return {
-                        ...friend,
-                        last_message: {
-                            ...friend.last_message,
-                            is_read: true
-                        }
-                    };
-                        }
-                        return friend;
-                    })
-                );
+                console.log('Marking messages as read for receiver:', receiver);
+
+                // Mark messages as read for the receiver
+                // setAllUsers((prevUsers) =>
+                //     prevUsers.map((friend) => {
+                //         if (friend.username === receiver) {
+                //             return {
+                //                 ...friend,
+                //                 last_message: {
+                //                     ...friend.last_message,
+                //                     is_read: true,
+                //                     unreadCount: 0,
+                //                 },
+                //             };
+                //         }
+                //         return friend;
+                //     })
+                // );
+
+                
+                updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
+                
+                // updateLastMessage(sender_id, null, true, null); // Mark as read for sender
             }
             else {
                 console.log("Skipping mark_read update as conditions are not met.");
@@ -409,7 +572,7 @@ export const ChatProvider = ({ children }) => {
             const response = await getData(url);
             
             if (response.status === 200) {
-                console.log('response => ', response)
+                // console.log('response => ', response)
                 console.log('response.data => ', response.data)
                 // const newUsers = response.data.results;
                 const newUsers = response.data;

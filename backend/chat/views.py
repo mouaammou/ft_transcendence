@@ -89,20 +89,29 @@ class ListUsersView(FriendshipListView):
                 Q(sender=custom_user, receiver=friend) | Q(sender=friend, receiver=custom_user)
             ).order_by('-timestamp').first()
 
+             # Count unread messages for this friend
+            unread_count = Message.objects.filter(
+                sender=friend,
+                receiver=custom_user,
+                is_read=False
+            ).count()
+
             if latest_message:
                 # Store the latest message, timestamp, and is_read status
                 friend_latest_map[friend.id] = {
                     "message": latest_message.message,
                     "timestamp": latest_message.timestamp,
                     # "is_read": latest_message.is_read
-                    "is_read": latest_message.is_read if latest_message.receiver == custom_user else True
+                    "is_read": latest_message.is_read if latest_message.receiver == custom_user else True,
+                    "unread_count": unread_count  # Add unread message count
                 }
             else:
                 # No message found
                 friend_latest_map[friend.id] = {
                     "message": '',
                     "timestamp": None,
-                    "is_read": True  # Default as read if no messages are found
+                    "is_read": True,  # Default as read if no messages are found
+                    "unread_count": 0  # Default to 0 if no messages
                 }
 
         # Prepare a list with friends and their last message details
@@ -113,13 +122,15 @@ class ListUsersView(FriendshipListView):
                 last_message = {
                     "message": latest_message.get('message', 'No message'),
                     "timestamp": latest_message.get('timestamp', None),
-                    "is_read": latest_message.get('is_read', True)
+                    "is_read": latest_message.get('is_read', True),
+                    "unread_count": latest_message.get('unread_count', 0)  # Include unread_count
                 }
             else:
                 last_message = {
                     "message": 'No message',
                     "timestamp": None,
-                    "is_read": True  # Default to read if no message
+                    "is_read": True,
+                    "unread_count": 0
                 }
 
             # Append friend and their last message to the list
