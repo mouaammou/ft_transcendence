@@ -1,16 +1,19 @@
 'use client';
 
 import '@/styles/game/game.css';
-import mysocket from '@/utils/WebSocketManager';
+
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 
 // i have a repeted function here which is fetchPlayer
 
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
   const router = useRouter();
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,
@@ -40,7 +43,7 @@ export default function CreateJoinTournamentPage() {
 
   const handleJoinTournament = () => {
     if (selectedTournamentId !== '') {
-      mysocket.sendMessage(
+      sendMessage(
         JSON.stringify({
           type: 'JOIN_TOURNAMENT',
           data: {
@@ -60,7 +63,7 @@ export default function CreateJoinTournamentPage() {
         setTournamentName('');
         return;
       }
-      mysocket.sendMessage(
+      sendMessage(
         JSON.stringify({
           type: 'CREATE_TOURNAMENT',
           data: {
@@ -74,7 +77,7 @@ export default function CreateJoinTournamentPage() {
 
   useEffect(() => {
     // Get all tournaments from the backend when the page is loaded
-    mysocket.sendMessage(
+    sendMessage(
       JSON.stringify({
         type: 'GET_TOURNAMENTS',
       })
@@ -120,9 +123,9 @@ export default function CreateJoinTournamentPage() {
         setPlayers(playersAvatar);
       }
     };
-    mysocket.registerMessageHandler(messageHandler);
+    registerMessageHandler(messageHandler);
     return () => {
-      mysocket.unregisterMessageHandler(messageHandler);
+      unregisterMessageHandler(messageHandler);
     };
   }, [inputError.tournamentFull]);
 
@@ -131,7 +134,7 @@ export default function CreateJoinTournamentPage() {
   };
 
   return (
-    <div className="bg-whitetrspnt m-auto w-fit lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
+    <div className="bg-whitetrspnt m-auto my-6 w-fit lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
       <div className="flex flex-col items-center lg:items-start">
         <p className="text-[26px] font-ibm font-semibold m-auto w-fit my-2 lg:text-[40px]  lg:m-0 lg:mb-11">
           Create tournament

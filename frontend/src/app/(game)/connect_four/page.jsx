@@ -3,12 +3,14 @@ import { useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
 import styles from './connect_four.module.css';
 import PlayerCard from './PlayerCard'
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 
 
 
 const ConnectFour = () => {
 
     const imgRef = useRef(null);
+	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
     useEffect(() => {
         const updateImage = () => {

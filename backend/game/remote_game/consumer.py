@@ -28,16 +28,17 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
     
     game_engine = EventLoopManager
     
-    async def connect(self):
+    async def connect(self):   
+        await self.accept()
         self.user = self.scope['user']
         self.player_id = self.scope['user'].id
-        if self.user.is_anonymous:
-            return await self.close() 
-        await self.accept()
-        self.is_focused = True
-        self.in_game_page = False # if False the user loses when the game starts, if True the user may start the game with the other player
-        self.in_board_page = False
-        self.game_engine.connect(self)
+        # if self.user.is_anonymous:
+        #     return await self.close()
+        if self.user and self.user.is_authenticated:
+            self.is_focused = True
+            self.in_game_page = False # if False the user loses when the game starts, if True the user may start the game with the other player
+            self.in_board_page = False
+            self.game_engine.connect(self)
         # dont forget to set timout callback
 
     async def disconnect(self, *arg, **kwrags):

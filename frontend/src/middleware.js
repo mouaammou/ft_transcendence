@@ -55,6 +55,8 @@ export async function middleware(request) {
 	return response;
 }
 
+// protect paths here:
+
 export const config = {
 	matcher: [
 		"/",
@@ -65,5 +67,6 @@ export const config = {
 		"/profile/:path*",
 		"/game/:path*",
 		"/chat/:path*",
+		"/create_join_tournament/:path*"
 	],
 };

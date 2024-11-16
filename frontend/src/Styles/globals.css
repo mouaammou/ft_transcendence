@@ -176,7 +176,7 @@ html {
     radial-gradient(farthest-side, #000 90%, #fff) 0 5px/8px 8px content-box,
     #fff;
   background-repeat: no-repeat;
-  animation: l3 0.5s infinite linear;
+  animation: l3 3s infinite linear;
 }
 @keyframes l3 {
   25% {

@@ -2,16 +2,17 @@
 import '@/styles/game/mode.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import mysocket from '@/utils/WebSocketManager';
+
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 
 const PlayMode = () => {
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
-
-  const router = useRouter();
+  const router = useRouter(); 
   const [name, setName] = useState('');
 
-  const handlePlayTournament = () => {
-    router.push('/create_join_tournament');
+  const handlePlayFour = () => {
+    router.push('/connect_four');
   }
 
   const handlePlayRandomGame = () => {
@@ -33,8 +34,8 @@ const PlayMode = () => {
     // .then(data => console.log(data));
   };
 
-
-  mysocket.sendMessage(JSON.stringify({ init: 'game' }));
+  if (isConnected)
+    sendMessage(JSON.stringify({ init: 'game' }));
 
 
   return (
@@ -48,15 +49,19 @@ const PlayMode = () => {
           </div>
           <div className="middle-mode">
             <img className="" src="mode2.svg" alt="remote-game" />
-            <p>LOCAL GAME</p>
+            <p>LOCAL GasdfasdAME</p>
           </div>
-          <div className="right-mode"  onClick={handlePlayTournament} >
-            <img className="brightness-75 " src="1111.svg" alt="connect4-game" />
-            <p>CONNECT FOUR</p>
+          <div className="right-mode" onClick={handlePlayFour}  >
+            <img style={{
+              borderRadius: '20px',
+              filter: 'brightness(80%)',
+            }} src="1111.svg" alt="connect4-game" />
+            <p className='relative'>CONNECT FOUR</p>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default PlayMode;

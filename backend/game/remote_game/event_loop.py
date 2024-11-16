@@ -23,7 +23,7 @@ from authentication.consumers import NotificationConsumer
 
 # we should use as channel name: f"player_id_{user_id}"
 # and then call this method on the consumer: send_message(self, event) 
-# and then use the key 'game_message' to get the message from event
+# and then use the key 'game_message' to get the message from event    
 
 
 
@@ -45,7 +45,7 @@ class EventLoopManager:
     tournament_task = None
     game_class = RemoteGameLogic
 
-    @classmethod
+    @classmethod #are you sure
     def connect(cls, consumer):
         print("in the connect methode")
         player_id = consumer.scope['user'].id

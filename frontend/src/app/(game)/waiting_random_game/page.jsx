@@ -6,11 +6,14 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { Modal } from '@/components/modals/Modal';
-import mysocket from '@/utils/WebSocketManager';
+
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+
 
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
 const WaitingPage = () => {
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
   const { profileData: user_data } = useAuth();
   const [opponent, setOpponent] = useState(null);
   const router = useRouter();
@@ -55,13 +58,13 @@ const WaitingPage = () => {
   };
 
   useEffect(() => {
-    mysocket.registerMessageHandler(handleMessage);
-    mysocket.sendMessage(JSON.stringify({ type: 'RANDOM_GAME' }));
+    registerMessageHandler(handleMessage);
+    sendMessage(JSON.stringify({ type: 'RANDOM_GAME' }));
 
     return () => {
       clearTimeout(timer);
-      mysocket.unregisterMessageHandler(handleMessage);
-      mysocket.sendMessage(JSON.stringify({ type: 'LEAVE_RANDOM_PAGE' }));
+      unregisterMessageHandler(handleMessage);
+      sendMessage(JSON.stringify({ type: 'LEAVE_RANDOM_PAGE' }));
     };
   }, []);
 

@@ -8,8 +8,11 @@ import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
 import { Modal } from '@/components/modals/Modal';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+
 
 export default function TournamentBoardPage() {
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
   const [players, setPlayers] = useState([]);
   const [fulfilled, setFulfilled] = useState(false);
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
@@ -31,7 +34,7 @@ export default function TournamentBoardPage() {
   };
 
   const startTournament = () => {
-    mysocket.sendMessage(
+    sendMessage(
       JSON.stringify({
         type: 'START_TOURNAMENT',
       })
@@ -39,7 +42,7 @@ export default function TournamentBoardPage() {
   };
 
   const leaveTournament = () => {
-    mysocket.sendMessage(
+    sendMessage(
       JSON.stringify({
         type: 'LEAVE_TOURNAMENT',
       })
@@ -99,9 +102,9 @@ export default function TournamentBoardPage() {
 
   useEffect(() => {
 
-  mysocket.sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
+  sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    mysocket.sendMessage(JSON.stringify({ inBoardPage: true }));
+    sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {
       // data = {round1: Array(1), round2: null, round3: null}
@@ -114,11 +117,11 @@ export default function TournamentBoardPage() {
       return players;
     };
 
-    mysocket.registerMessageHandler(handleMessage);
+    registerMessageHandler(handleMessage);
 
     return () => {
-      mysocket.unregisterMessageHandler(handleMessage);
-      mysocket.sendMessage(JSON.stringify({ inBoardPage: false }));
+      unregisterMessageHandler(handleMessage);
+      sendMessage(JSON.stringify({ inBoardPage: false }));
     };
   }, []);
 

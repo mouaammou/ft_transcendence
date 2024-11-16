@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import mysocket from '@/utils/WebSocketManager';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 import Modal from '@/components/modals/Modal';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import '@/styles/game/waitingFriendPage.css';
@@ -16,6 +16,8 @@ const WaitingFriendPage = () => {
   const [msgDescription, setMsgDescription] = useState('');
   const router = useRouter();
   const { lastJsonMessage, NOTIFICATION_TYPES } = useNotificationContext();
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+
 
   const handleMessage = async (message) => {
     const data = JSON.parse(message.data);
@@ -47,7 +49,7 @@ const WaitingFriendPage = () => {
   };
 
   useEffect(() => {
-    mysocket.registerMessageHandler(handleMessage);
+    registerMessageHandler(handleMessage);
 
     const selectedFriend = localStorage.getItem('selectedFriend');
     if (selectedFriend) {
@@ -55,7 +57,7 @@ const WaitingFriendPage = () => {
     }
 
     return () => {
-      mysocket.unregisterMessageHandler(handleMessage);
+      unregisterMessageHandler(handleMessage);
     };
   }, []);
 
@@ -63,7 +65,7 @@ const WaitingFriendPage = () => {
     if (lastJsonMessage) {
       if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_GAME) {
         localStorage.setItem('opponent', JSON.stringify(myfriend));
-        mysocket.sendMessage(JSON.stringify({
+        sendMessage(JSON.stringify({
           type: 'FRIEND_GAME_REQUEST',
           player_1_id: user_data?.id,
           player_2_id: myfriend?.id,

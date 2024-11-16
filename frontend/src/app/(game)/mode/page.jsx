@@ -20,7 +20,7 @@ const Mode = () => {
   };
 
   const goBack = () => {
-    router.push('/play');
+    router.push('/create_join_tournament');
   }
 
 
@@ -31,30 +31,30 @@ const Mode = () => {
       <div className="flex flex-col w-fit mx-2 ">
         <Selector
           title="RANDOM GAME"
-          description="Have fun playing exciting online with friends!"
+          description="Enjoy a game with unknown pals"
           Svgvar={RandomSvg}
           onclick={handleRandomGame}
         ></Selector>
         <Selector
           title="PLAY VS FRIEND"
-          description="Online ping pong game with a friend!"
+          description="Online ping pong game with a friend"
           Svgvar={VsfriendSvg}
           onclick={friendsGame}
         ></Selector>
       </div>
       <div className="flex flex-col w-fit mx-2">
+        <Selector 
+          title="TOURNAMENT" 
+          description="Join or host a grand tournament"
+          Svgvar={ExitSvg}
+          onclick={goBack}
+        ></Selector>
         <Selector
           title="PLAY VS BOT"
-          description="Challenge a bot in a thrilling ping pong game!"
+          description="Ready to test your skills against a bot!"
           Svgvar={VsbotSvg}
           onclick={botGame}
         ></Selector>
-        <Selector 
-          title="GO BACK" 
-          description={<br></br>}
-          Svgvar={ExitSvg}
-          onclick={goBack}
-          ></Selector>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef} from 'react';
-import socket from '@/utils/WebSocketManager';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter , useSearchParams, usePathname } from 'next/navigation';
@@ -11,6 +11,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 	const [showLoseModal, setShowLoseModal] = useState(false);
 	const router = useRouter();
 	const pathname = usePathname();
+	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+
     const searchParams = useSearchParams();
 	const previousPathnameRef = useRef(pathname);
 
@@ -20,7 +22,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		var start = true;
 
 		if (start) {
-			socket.sendMessage(JSON.stringify({launch: start}));
+			sendMessage(JSON.stringify({launch: start}));
 			start = false;
 		}
 		// ball object
@@ -105,18 +107,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 			// console.log("Visibility: ")
 				// console.log(document.visibilityState)
 				let isTabFocused = document.visibilityState === 'visible';
-				socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
+				sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
 		}
 
-		if (socket.readyState === WebSocket.OPEN) {
-			console.log('WebSocket connection is open');
-			conectionOn = true;
-			// create new game EVENT
-		} else {
-			console.log('WebSocket connection is not open');
-			conectionOn = false;
-		  }
-		// socket.addEventListener('open', (event) => {
+		// if (readyState === WebOPEN) {
+		// 	console.log('WebSocket connection is open');
+		// 	conectionOn = true;
+		// 	// create new game EVENT
+		// } else {
+		// 	console.log('WebSocket connection is not open');
+		// 	conectionOn = false;
+		//   }
+		// addEventListener('open', (event) => {
 		// 	// console.log(socketState);
 		// 	console.log('Connected to WS Server');
 		// });
@@ -215,13 +217,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 					drawGame();
 				}
 		}
-		socket.registerMessageHandler(handleMessage);
+		registerMessageHandler(handleMessage);
 		// Game state
 		// Keyboard state
 		const keys = {};
 		// Update game logic
 		let setconfig = false;
-		// socket.onmessage
+		// onmessage
 		const updateGame = () => {
 		}
 
@@ -250,12 +252,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		// Keyboard event handlers  // ArrowUp ArrowDown q s
 		// add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
 		const handleKeyDown = (event) => {
-			socket.sendMessage(JSON.stringify({"onPress" : event.key.trim()}));
+			sendMessage(JSON.stringify({"onPress" : event.key.trim()}));
 			keys[event.key] = true;
 			// if (event.key === ' ')
 			// {
 			// 	// create new game if space key is created
-			// 	socket.sendMessage(JSON.stringify(
+			// 	sendMessage(JSON.stringify(
 			// 		{
 			// 			"create":
 			// 			{
@@ -268,7 +270,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 
 		// set the key to false when the key is released
 		const handleKeyUp = (event) => {
-			socket.sendMessage(JSON.stringify({"onRelease" : event.key.trim()}));
+			sendMessage(JSON.stringify({"onRelease" : event.key.trim()}));
 			keys[event.key] = false;
 		};
 
@@ -324,12 +326,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 	useEffect(() => {
 		// This code will run when the component is mounted
 		// console.log('Game page entered:', pathname);
-		socket.sendMessage(JSON.stringify({"inGamePage" : true}));
+		sendMessage(JSON.stringify({"inGamePage" : true}));
 	
 		return () => {
 			// This code will run when the component is unmounted
 			console.log('Game page left:', pathname);
-			socket.sendMessage(JSON.stringify({"inGamePage" : false}));
+			sendMessage(JSON.stringify({"inGamePage" : false}));
 		};
 	}, []);
 

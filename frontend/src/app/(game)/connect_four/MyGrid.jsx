@@ -7,7 +7,7 @@ const MyGrid = () => {
     const [yourTurn, setYourTurn] = useState(true);
     const [winner, setWinner] = useState(null);
     const [isWin, setIsWin] = useState(false);
-    const [locator, setLocator] = useState(0);
+    const [locator, setLocator] = useState(350);
     const gridRef = useRef(null);
     const [timer, setTimer] = useState(30);
 

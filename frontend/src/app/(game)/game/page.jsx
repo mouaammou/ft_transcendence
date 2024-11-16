@@ -5,7 +5,7 @@ import '@/styles/game/game.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import { getData } from '@/services/apiCalls';
-import mysocket from '@/utils/WebSocketManager';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 import { useRouter } from 'next/navigation';
 
 const GamePage = () => {
@@ -17,6 +17,8 @@ const GamePage = () => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
   const [gameType, setGameType] = useState(null);
+	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+
 
   const Skeleton = () => (
     <div className="flex flex-col items-center m-auto">
@@ -60,8 +62,8 @@ const GamePage = () => {
   }, [player1_id, player2_id]);
 
   useEffect(() => {
-    mysocket.registerMessageHandler(handle_message);
-    mysocket.sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
+    registerMessageHandler(handle_message);
+    sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
   }, []);
 
   return (

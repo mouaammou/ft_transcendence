@@ -1,66 +1,59 @@
-class WebSocketManager {
-    constructor(url) {
-        if (!WebSocketManager.instance) {
-            this.url = url;
-            this.socket = new WebSocket(url);
-            WebSocketManager.instance = this;
-            this.messageHandlers = [];
-            this.isConnected = false;
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import useWebSocket from 'react-use-websocket';
 
-            this.socket.onopen = () => {
-                console.log('WebSocket /global connection opened');
-                this.isConnected = true;
-            };
+const GlobalWebSocket = createContext(null);
 
-            this.socket.onclose = () => {
-                console.log('WebSocket /global connection closed');
-                this.isConnected = false;
-                WebSocketManager.instance = null; // Reset instance on close
-            };
+export const GlobalWebSocketProvider = ({ url, children }) => {
+    const [messageHandlers, setMessageHandlers] = useState([]);
+    const [isConnected, setIsConnected] = useState(false);
 
-            this.socket.onmessage = (event) => {
-                this.messageHandlers.forEach(handler => handler(event)); // Call all handlers
-            };
+    const { sendMessage, lastMessage, readyState } = useWebSocket(url, {
+        onOpen: () => {
+            console.log('WebSocket connection opened');
+            setIsConnected(true);
+        },
+        onClose: () => {
+            console.log('WebSocket connection closed');
+            setIsConnected(false);
+        },
+        onError: (error) => {
+            // console.log('WebSocket error:', error);
+        },
+        shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
+    });
 
-            this.socket.onerror = (error) => {
-                // console.error('WebSocket error:', error);
-            };
+    useEffect(() => {
+        if (lastMessage !== null) {
+            messageHandlers.forEach(handler => handler(lastMessage));
         }
-        return WebSocketManager.instance;
-    }
+    }, [lastMessage, messageHandlers]);
 
-    sendMessage(message) {
-        if (this.isConnected && this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(message);
-            return true;
-        } else {
-            console.log('WebSocket is not open. Attempting to reconnect...');
-            this.socket = new WebSocket(this.url);
+    const registerMessageHandler = (handler) => {
+        setMessageHandlers(prevHandlers => [...prevHandlers, handler]);
+    };
 
-            this.socket.onopen = () => {
-                console.log('WebSocket reconnected and message sent:', message);
-                this.isConnected = true;
-                setTimeout(() => this.socket.send(message), 1500); // Try again after 1 second
-            };
-            return false;
-        }
-    }
+    const unregisterMessageHandler = (handler) => {
+        setMessageHandlers(prevHandlers => prevHandlers.filter(h => h !== handler));
+    };
 
-    close() {
-        if (this.socket) {
-            this.socket.close();
-            this.isConnected = false;
-        }
-    }
+    const contextValue = useMemo(
+        () => ({
+            isConnected,
+            sendMessage,
+            registerMessageHandler,
+            unregisterMessageHandler,
+            lastMessage,
+        }),
+        [isConnected, sendMessage, lastMessage, messageHandlers]
+    );
 
-    registerMessageHandler(handler) {
-        this.messageHandlers.push(handler);
-    }
+    return (
+        <GlobalWebSocket.Provider value={contextValue}>
+            {children}
+        </GlobalWebSocket.Provider>
+    );
+};
 
-    unregisterMessageHandler(method) {
-        this.messageHandlers = this.messageHandlers.filter(handler => handler !== method);
-    }
-}
-
-const instance = new WebSocketManager('ws://localhost:8000/ws/global/');
-export default instance;
+export const useGlobalWebSocket = () => {
+    return useContext(GlobalWebSocket);
+};
