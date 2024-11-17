@@ -1,55 +1,87 @@
-"use client";
-import { useEffect, useRef } from "react";
+'use client';
+import { useState, useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
 import styles from './connect_four.module.css';
-import PlayerCard from './PlayerCard'
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
-
+import PlayerCard from './PlayerCard';
+import { getData } from '@/services/apiCalls'; // Assuming this exists
+import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 
 
 const ConnectFour = () => {
-
     const imgRef = useRef(null);
-	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+    const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
+
+    const [player1, setPlayer1] = useState(null);
+    const [player2, setPlayer2] = useState(null);
+    const [dataFetched, setDataFetched] = useState(false);
+  
+    const fetchPlayerData = async (playerId, setPlayer) => {
+        try {
+            const response = await getData(`/userById/${playerId}`);
+            if (response.status === 200) {
+                setPlayer(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch player data:', error);
+        }
+    };
+
 
     useEffect(() => {
-        const updateImage = () => {
-            if (window.innerWidth >= 1560) {
-                imgRef.current.src = 'BigGrid.svg'
-            } else {
-                imgRef.current.src = 'Subtract.svg'
-            }
+        if (lastMessage !== null && !dataFetched) {
+          const data = JSON.parse(lastMessage.data);
+          if (data.status === 'GAME_DATA') {
+            // Fetch player details
+            fetchPlayerData(data.player_1, setPlayer1);
+            fetchPlayerData(data.player_2, setPlayer2);
+            setDataFetched(true); // Set dataFetched to true to prevent further fetching
+          }
         }
+      }, [lastMessage, dataFetched]);
 
-        // window.addEventListener('resize', updateImage);
-        // updateImage();
+    useEffect(() => {
+        sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
+    }, []);
 
-        return () => {
-            // window.removeEventListener('resize', updateImage);
-        }
-    }, [])
+    // useEffect(() => {
+    //     const updateImage = () => {
+    //         if (window.innerWidth >= 1560) {
+    //             imgRef.current.src = 'BigGrid.svg';
+    //         } else {
+    //             imgRef.current.src = 'Subtract.svg';
+    //         }
+    //     };
 
+    //     updateImage(); // Call on mount
+    //     window.addEventListener('resize', updateImage);
+
+    //     return () => window.removeEventListener('resize', updateImage); // Cleanup on unmount
+    // }, []);
 
     return (
         <div className={styles.container}>
             <div className={styles.playersContainer}>
+                {/* Player 1 */}
                 <PlayerCard
-                    avatar="avatar3.jpeg"
-                    name="USER_1"
+                    avatar={player1?.avatar || "avatar3.jpeg"} // Fallback avatar
+                    name={player1?.username || "Player 1"} // Fallback name
                     cardStyle={styles.player1Card}
                 />
+
+                {/* Game Grid */}
                 <div className={styles.gridContainer}>
                     <MyGrid />
                 </div>
+
+                {/* Player 2 */}
                 <PlayerCard
-                    avatar="avatar4.jpeg"
-                    name="USER_2"
+                    avatar={player2?.avatar || "avatar4.jpeg"} // Fallback avatar
+                    name={player2?.username || "Player 2"} // Fallback name
                     cardStyle={styles.player2Card}
                 />
             </div>
-            {/* <div className="flex bg-red-800 m-auto">Player's Turn</div> */}
         </div>
     );
-}
+};
 
 export default ConnectFour;

@@ -17,7 +17,7 @@ export const GlobalWebSocketProvider = ({ url, children }) => {
             setIsConnected(false);
         },
         onError: (error) => {
-            // console.log('WebSocket error:', error);
+            console.log('WebSocket error:', error);
         },
         shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
     });

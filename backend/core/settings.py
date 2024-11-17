@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
     "chat",
+    "connect_four",
 ]
 
 MIDDLEWARE = [

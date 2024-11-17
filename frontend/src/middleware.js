@@ -67,6 +67,8 @@ export const config = {
 		"/profile/:path*",
 		"/game/:path*",
 		"/chat/:path*",
-		"/create_join_tournament/:path*"
+		"/create_join_tournament/:path*",
+		"/waiting_random_game/:path*",
+		"/waiting_random_c4/:path*",
 	],
 };
