@@ -5,6 +5,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import {useRouter} from 'next/navigation';
 import { getData, postData } from '@/services/apiCalls';
+import Card from '@/components/local_tournament/Card';
+
 
 
 const ChoseGame = () => {
@@ -30,6 +32,7 @@ const ChoseGame = () => {
     return (
         <div className="w-full max-w-full min-h-max h-[calc(100vh-90px)] gap-4 flex flex-col justify-center items-center mx-auto">
             <div className='flex flex-col justify-between gap-4 w-fit h-fit'>
+                {/* <Card tournament={[]}></Card> */}
                 <button
                     onClick={handleClick}
                     className='bg-white w-56 text-black px-4 py-2 rounded-full font-bold font-mono hover:opacity-90 active:ring active:ring-white/50 uppercase text-center'

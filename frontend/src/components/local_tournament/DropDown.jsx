@@ -15,7 +15,9 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword}) => {
     }
 
     return (
-        <div className="max-w-96 w-full relative inline-flex" onMouseLeave={closeDropdown}>
+        <div 
+            className={`max-w-96 w-full relative inline-flex`}
+            onMouseLeave={closeDropdown}>
             <button
                 onClick={toggleDropdown} // Toggle visibility
                 type="button"
@@ -43,7 +45,7 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword}) => {
 
             {/* Dropdown Menu */}
             <div
-                className={`absolute right-0 mt-2 w-full bg-white shadow-md rounded-lg z-10 transition-opacity duration-300 ${
+                className={`absolute right-0 mt-3 w-full bg-white shadow-md rounded-lg z-10 transition-opacity duration-300 ${
                     dropdown ? 'opacity-100' : 'opacity-0 pointer-events-none'
 
                 }`}
