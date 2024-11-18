@@ -82,12 +82,14 @@ const Card = ({tournament={}}) => {
     return (
         <div
             onClick={()=>handleTournamentDetail(tournament.id)}
-            className="flex flex-col justify-center items-center mx-auto w-full bg-transparent border hover:ring hover:ring-white/50  rounded-t-lg rounded-b-lg shadow-lg cursor-pointer"
+            className="  p-1 flex flex-col justify-center items-center mx-auto w-full bg-transparent hover:bg-white/20  rounded-t-lg rounded-b-lg cursor-pointer"
         >
             {/* image */}
+            <div className="w-full h-fit bg-black rounded-t-lg">
             <Image src={`/tournament/${tournament.id%17+1}.png`} className="w-full h-auto rounded-t-lg" alt="tourn" width={566} height={202} />
             {/* data */}
-            <div className="flex flex-col justify-center items-start gap-y-4 mx-auto w-full p-4 rounded-b-lg bg-gradient-to-t from-black to-black/0">
+            </div>
+            <div className="flex flex-col justify-center items-start gap-y-4 mx-auto w-full p-4 rounded-br-lg bg-gradient-to-t from-black to-black/0">
                 <div className='flex items-center text-white/50 gap-x-1'>
                     <svg width="24px" height="24px" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.81672 11.1334L9.3695 11.357L9.3695 11.357L9.81672 11.1334ZM9.5 10.5L9.94721 10.2764C9.86252 10.107 9.68939 10 9.5 10V10.5ZM5.5 10.5V10C5.31061 10 5.13748 10.107 5.05279 10.2764L5.5 10.5ZM14 5.5V10.0279H15V5.5H14ZM10.2639 10.9098L9.94721 10.2764L9.05279 10.7236L9.3695 11.357L10.2639 10.9098ZM9.5 10H5.5V11H9.5V10ZM5.05279 10.2764L4.73607 10.9098L5.6305 11.357L5.94721 10.7236L5.05279 10.2764ZM1 10.0279V5.5H0V10.0279H1ZM3.5 3H11.5V2H3.5V3ZM2.97214 12C1.88296 12 1 11.117 1 10.0279H0C0 11.6693 1.33067 13 2.97214 13V12ZM12.0279 12C11.2809 12 10.598 11.578 10.2639 10.9098L9.3695 11.357C9.87296 12.364 10.9021 13 12.0279 13V12ZM14 10.0279C14 11.117 13.117 12 12.0279 12V13C13.6693 13 15 11.6693 15 10.0279H14ZM4.73607 10.9098C4.402 11.578 3.71913 12 2.97214 12V13C4.0979 13 5.12704 12.364 5.6305 11.357L4.73607 10.9098ZM15 5.5C15 3.567 13.433 2 11.5 2V3C12.8807 3 14 4.11929 14 5.5H15ZM1 5.5C1 4.11929 2.11929 3 3.5 3V2C1.567 2 0 3.567 0 5.5H1ZM3 7H6V6H3V7ZM4 5V8H5V5H4ZM11 6H12V5H11V6ZM9 8H10V7H9V8Z" fill="currentColor"/>
@@ -108,10 +110,17 @@ const Card = ({tournament={}}) => {
                     <g strokeWidth="0"></g><g strokeLinecap="round" strokeLinejoin="round"></g>
                     <g> <path d="M9 2H2v2h5v4H2v2h7V7h5v10H9v-3H2v2h5v4H2v2h7v-3h7v-6h6v-2h-6V5H9V2z" fill="currentColor"></path> </g>
                 </svg>
-                <span className='capitalize text-white font-extralight'>{ getNextMatch(tournament)}</span>
+                <span className='capitalize text-white font-extralight' >{ getNextMatch(tournament)}</span>
                 </div>
                 
+                
             </div>
+            <div
+                className="mr-auto w-1/3 h-3 rounded-bl-lg  bg-black"
+                style={{
+                    clipPath: 'polygon(0 -2%, 100% -2%, 93% 100%, 0% 100%)',
+                  }}
+            ></div>
         </div>
     );
 };

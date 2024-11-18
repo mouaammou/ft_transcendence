@@ -8,11 +8,11 @@ import { useRouter } from 'next/navigation';
 import Card from './Card';
 
 
-const TournamentList = ({filter, searchQuery}) => {
+const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
     const router = useRouter();
     const [tournaments, setTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
+    // const [currentPage, setCurrentPage] = useState(pageNumber);
     const [prevPage, setPrevPage] = useState(null);
     const [nextPage, setnextPage] = useState(null);
     const [totalPages, setTotalPages] = useState(1);

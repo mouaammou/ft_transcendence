@@ -94,7 +94,7 @@ export default function Board({ params })
   }, []);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full h-auto">
       <h1 className="flex justify-center items-center font-bold mt-14">
         {title} 
       </h1>

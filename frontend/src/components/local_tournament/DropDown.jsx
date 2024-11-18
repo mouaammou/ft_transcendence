@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword}) => {
+const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPage}) => {
     const [dropdown, setDropdown] = useState(false);
     const toggleDropdown = () => {
         setDropdown(!dropdown); // Toggle the dropdown visibility
@@ -11,6 +11,7 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword}) => {
 
     const handleFilter = (keyword) => {
         setFilterKeyword(keyword);
+        setCurrentPage(1); // Reset pagination
         setDropdown(false);
     }
 

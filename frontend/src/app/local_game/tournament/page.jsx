@@ -9,6 +9,7 @@ const HomePage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterKeyword, setFilterKeyword] = useState('All');
     const keywords = ['All','Recently-played', 'Pending', 'Started', 'Oldest-to-newest', 'Newest-to-oldest', 'finished'];
+    const [currentPage, setCurrentPage] = useState(1);
 
     return (
         <div className="container">
@@ -18,6 +19,7 @@ const HomePage = () => {
                     filterKeyword={filterKeyword}
                     filterKeywords={keywords}
                     setFilterKeyword={setFilterKeyword}
+                    setCurrentPage={setCurrentPage}
                 />
                 
                 <input
@@ -30,7 +32,7 @@ const HomePage = () => {
 
             {/* Tournament List */}
             <div className="flex bg-white/50"></div>
-            <TournamentList filter={filterKeyword} searchQuery={searchQuery}/>
+            <TournamentList currentPage={currentPage} setCurrentPage={setCurrentPage} filter={filterKeyword} searchQuery={searchQuery}/>
         </div>
     );
 };

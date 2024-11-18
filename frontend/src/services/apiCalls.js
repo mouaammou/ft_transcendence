@@ -64,8 +64,8 @@ headers: {
   'Content-Type': 'application/json',
 },
 });
-  
-export const fetchTournaments = async (page = 1, filter='recently-played') => {
+
+export const fetchTournaments = async (page = 1, filter='all') => {
 	try {
 		const response = await api.get('filter/'+filter, {
 		params: { page },  // Attach pagination params
