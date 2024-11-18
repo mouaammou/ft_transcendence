@@ -1,12 +1,20 @@
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState} from 'react';
 import GamePage from './page';
+import { useRouter } from 'next/navigation';
+import YouWin from '@/components/modals/YouWin';
 
-export default function PongGame({ score1, score2, setScore1, setScore2, setLeftUser, setRightUser}) {
+export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 	const canvasRef = useRef(null);
-	const [socketState, setSocketState] = useState(false);
+	const router = useRouter();
+	const [winner, setWinner] = useState('');
+	// const [leftUser, setLeftUser] = useState("default");
+	// const [rightUser, setRightUser] = useState("default");
+	// const [socket, setSocket] = useRef(null);
 
 	useEffect(() => {
+		let leftUser = 'Player 1';
+		let rightUser = 'Player 2';
 		const canvas = canvasRef.current;
 		const context = canvas.getContext('2d');
 
@@ -124,6 +132,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
+				// console.log(data.update);
 				if (data.update.left_paddle_pos)
 				{
 					user.x = data.update.left_paddle_pos[0];
@@ -147,13 +156,21 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 					setScore2(score2 => data.update.left_player_score);
 				}
 				if (data.update.right_player_score)
-					{
-						computer.score = data.update.right_player_score;
-						setScore1(score1 => data.update.right_player_score);
-					}
-					drawGame();
+				{
+					computer.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
 				}
-				else if (data.config)
+				if (data.update.finished)
+				{
+					if (data.update.finished === 'left_player')
+						setWinner(leftUser);
+					else if (data.update.finished === 'right_player')
+						setWinner(rightUser);
+				}
+				drawGame();
+
+			}
+			else if (data.config)
 			{
 				// setScore1(score1 => data.config.right_player_score);
 				// setScore2(score2 => data.config.left_player_score);
@@ -185,14 +202,14 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 				setScore1(score1 => gameConfig.right_player_score);
 
 
-				// if (data.config.left_nickname)
-				// {
-				// 	setLeftUser(data.config.left_nickname);
-				// }
-				// if (data.config.right_nickname)
-				// {
-				// 	setRightUser(data.config.right_nickname);
-				// }
+				if (data.config.left_nickname)
+				{
+					leftUser = data.config.left_nickname;
+				}
+				if (data.config.right_nickname)
+				{
+					rightUser=data.config.right_nickname;
+				}
 				drawGame();
 			}
 			// else if (data.tournament)
@@ -308,6 +325,18 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 		// 	}
 		// 	// handle the paddle going out of the canvas
 		// }
+		const closeSocket = () => {
+			if (socket.readyState === WebSocket.OPEN) {
+				socket.close();
+			}
+		}
+
+		const handleRouteChange = (url) => {
+            console.log('Navigating to: ', url);
+            closeSocket();  // Close the socket when navigating to another page
+        };
+
+        // router.events.on('routeChangeStart', handleRouteChange);
 
 		// Move the paddle2 with the mouse too
 		// Attach event listeners
@@ -315,6 +344,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
+		// document.addEventListener('beforeunload', closeSocket);
 
 		// Animation loop
 		// const animate = () => {
@@ -329,14 +359,46 @@ export default function PongGame({ score1, score2, setScore1, setScore2, setLeft
 
 		// Cleanup event listeners
 		return () => {
+			if (conectionOn)
+			{
+
+				socket.close();
+			}
+			// router.events.off('routeChangeStart', handleRouteChange);
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+			// document.removeEventListener('beforeunload', closeSocket);
 		};
 	}, []);
 	return (
+		<>
 		<canvas className="play-ground" ref={canvasRef} >
 			
 		</canvas>
+		{winner && 
+			<YouWin
+				winner={winner}
+				onClose={() => {
+					setWinner('');
+					// if (gameType === 'tournament') {
+					// router.push('/tournament_board');
+					// }else {
+					// 	router.push('/play');
+					// }
+					if (tournament_id > 0)
+					{
+						router.push(`/tournament/${tournament_id}`);
+					}
+					else
+					{
+						router.push('/local_game');
+					}
+				}
+				}
+				// stats={{ score1, score2 }} // Pass stats as needed
+			/>
+		}
+		</>
 	);
 }

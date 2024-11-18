@@ -473,10 +473,10 @@ export default function Board({ params })
       </div>
       <div className="flex flex-col justify-between w-full h-full mt-16">
         {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight text-black bg-white rounded-full w-96 mx-auto mt-8 p-4">
-          <div className="font-bold pr-4 capitalize">play</div>
-           <div>{leftUser}</div>
+          <div className="font-bold pr-4 capitalize">{(leftUser && rightUser) && 'Play' || 'play next match'}</div>
+           {(leftUser && rightUser) && <> <div>{leftUser}</div>
             <Image src="/vs.svg" className='filter invert mx-2' alt="vs" width={30} height={30}/>
-            <div>{rightUser}</div>
+            <div>{rightUser}</div></>}
           </Link>}
         {tournament.match_index > 7 &&
           <div className="flex justify-center items-center text-xl font-bold ">

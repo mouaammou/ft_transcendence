@@ -15,6 +15,7 @@ const GamePage = ({params}) => {
 	const [leftUser, setLeftUser] = useState("default");	
 	const [rightUser, setRightUser] = useState("default");
 	const [title, setTitle] = useState("default");
+	const [tournament_id, setTournament_id] = useState(0);
 
 	const redirectFinishedTournament = async () => {
 		const identical = await params;
@@ -25,6 +26,7 @@ const GamePage = ({params}) => {
         const fetchTournaments = async () => {
           const identical = await params;
           try {
+			setTournament_id(identical.id);
             let response = await fetchTournamentMatchPlayers(identical.id);
             // console.log(response);
             setLeftUser(response.left);
@@ -36,6 +38,7 @@ const GamePage = ({params}) => {
 				//post request to start the game
 				console.log('start game');
             	response = await fetchStartPlayTournament(identical.id);
+				// setLeftUser(response);
 				console.log(response);
 			} else 
 			{
@@ -73,7 +76,7 @@ const GamePage = ({params}) => {
 					<div className="font-bold text-lg">{leftUser}</div>
 				</div>
 				<div className="bg-[#264653] border rounded-md flex-1 w-auto">
-					<PongGame  score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2}/>
+					<PongGame leftUser={leftUser} rightUser={rightUser} score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} tournament_id={tournament_id}/>
 				</div>
 				<div className="pl-8">
 					<div className="font-bold text-lg">{rightUser}</div>

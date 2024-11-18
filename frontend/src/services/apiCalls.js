@@ -68,15 +68,17 @@ headers: {
 export const fetchTournaments = async (page = 1, filter='all') => {
 	try {
 		const response = await api.get('filter/'+filter, {
-		params: { page },  // Attach pagination params
-		// headers: {
-		//   'X-CSRFToken': getCSRFToken(),  // Attach the CSRF token to the request headers
-		// },
+			params: { page },
 		});
 		return response.data;  // Returns the response data (count, next, previous, results)
 	} catch (error) {
-		console.error('Error fetching tournaments:', error);
-		return { results: [] };  // Return an empty array in case of error
+		// console.error('Error fetching tournaments:', error);
+		return {
+			results: [],
+			count: 0,
+			next: null,
+			previous: null,
+		};
 	}
 };
 
@@ -101,6 +103,7 @@ export const fetchTournamentDetail = async (id) => {
 
 export const fetchTournamentMatchPlayers = async (id) => {
 	try {
+		// throw new Error('Error fetching tournaments');
 		const response = await api.get(`/next-match-players/${id}/`);
 		return response.data;
 	} catch (error) {
@@ -111,6 +114,7 @@ export const fetchTournamentMatchPlayers = async (id) => {
 
 export const fetchStartPlayTournament = async (id) => {
 	try {
+		// throw new Error('Error fetching tournaments');
 		const response = await api.post(`/next-match-players/${id}/`);
 		return response.data;
 	} catch (error) {
@@ -121,11 +125,17 @@ export const fetchStartPlayTournament = async (id) => {
 
 export const searchTournaments  = async (search) => {
 	try {
+		// throw new Error('Error fetching tournaments');
 		const response = await api.get(`search/`, { params: { search } });
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching tournaments:', error);
-		return { results: [] };
+		return {
+			results: [],
+			count: 0,
+			next: null,
+			previous: null,
+		};
 	}
 }
 

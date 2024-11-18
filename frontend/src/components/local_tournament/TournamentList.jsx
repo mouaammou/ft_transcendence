@@ -3,16 +3,12 @@
 import { useState, useEffect } from 'react';
 import { fetchTournaments, searchTournaments } from '@/services/apiCalls';
 import Pagination from './Pagination';
-import { BsTypeH1 } from 'react-icons/bs';
-import { useRouter } from 'next/navigation';
 import Card from './Card';
 
 
 const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
-    const router = useRouter();
     const [tournaments, setTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
-    // const [currentPage, setCurrentPage] = useState(pageNumber);
     const [prevPage, setPrevPage] = useState(null);
     const [nextPage, setnextPage] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -62,10 +58,6 @@ const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
         return <div>Loading tournaments...</div>;
     }
 
-    const handleTournamentDetail = (id) => (
-        router.push(`/tournament/${id}/`)
-    );
-
     const formatDate = (date) => {
         const options = { 
         //   weekday: 'short', // e.g., "Mon"
@@ -94,28 +86,11 @@ const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
                         </thead> */}
                         {/* <tbody className="divide-y divide-white/10"> */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                            {tournaments.map((tournament) => (
+                            {tournaments && tournaments.map((tournament) => (
                                 <Card
                                     key={tournament.id}
                                     tournament={tournament}
-                                    // handleTournamentDetail={handleTournamentDetail}
-                                    // formatDate={formatDate}
                                 />
-                                // <tr
-                                // key={tournament.id}
-                                // onClick={()=>handleTournamentDetail(tournament.id)}
-                                // className="hover:bg-white/10 cursor-pointer"
-                                // >
-                                //     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-50">{tournament.title}</td>
-                                //     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-50">
-                                //         {tournament.finished === false && <div className="flex w-full h-1.5 bg-white/20 rounded-full overflow-hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
-                                //         <div className="flex flex-col justify-center rounded-full overflow-hidden bg-white/80 text-xs text-white text-center whitespace-nowrap transition duration-500" style={{width: ((tournament.match_index-1)*100/7) + '%'}}></div>
-                                //         </div>}
-                                //         {
-                                //             tournament.finished === true && <div className="flex flex-1">&#10004; {formatDate(tournament.updated_at)}</div>
-                                //         }
-                                //     </td>
-                                // </tr>
                             ))}
                         </div>
                             
