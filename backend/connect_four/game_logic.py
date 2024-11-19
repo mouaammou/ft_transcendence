@@ -26,7 +26,8 @@ class GameLogic:
             
             if remaining == 0:
                 # Switch turns when timer runs out
-                self.switch_turn()
+                player_id = self.player1_id if self.current_turn == self.player2_id else self.player2_id
+                self.switch_turn(player_id)
                 self.last_move_time = current_time
                 
             # Broadcast timer to both players
@@ -39,17 +40,22 @@ class GameLogic:
             
             await asyncio.sleep(1)
 
-    def switch_turn(self):
-        self.current_turn = self.player2_id if self.current_turn == self.player1_id else self.player1_id
+    def switch_turn(self, player_id):
+        self.current_turn = self.player2_id if player_id == self.player1_id else self.player1_id
         self.last_move_time = time.time()
         
         # Notify players about turn change
-        data = {
+
+        data1 = {
             'status': 'TURN_CHANGE',
-            'current_turn': self.current_turn
+            'current_turn': True,
         }
-        FourGameOutput._send_to_consumer_group(self.player1_id, data)
-        FourGameOutput._send_to_consumer_group(self.player2_id, data)
+        FourGameOutput._send_to_consumer_group(self.current_turn, data1)
+        data2 = {
+            'status': 'TURN_CHANGE',
+            'current_turn': False,
+        }
+        FourGameOutput._send_to_consumer_group(player_id, data2)
 
     def make_move(self, player_id, column):
         if not self.game_active or self.winner:
@@ -80,7 +86,7 @@ class GameLogic:
                 FourGameOutput._send_to_consumer_group(self.player1_id, data)
                 FourGameOutput._send_to_consumer_group(self.player2_id, data)
                 
-                self.switch_turn()
+                self.switch_turn(player_id)
                 return True
 
         return False

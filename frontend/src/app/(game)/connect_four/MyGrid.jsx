@@ -36,7 +36,7 @@ const MyGrid = () => {
                 gridElement.removeEventListener('mousemove', handleMouseMove);
             }
         };
-    }, [yourTurn]);
+    }, []);
 
 
     // Handle incoming WebSocket messages
@@ -62,14 +62,15 @@ const MyGrid = () => {
                         alert("Not your turn!");
                         break;
                     case 'TIMER_UPDATE':
-                        console.log("timer update", data.time);
+                        // console.log("timer update", data.time);
                         setTimer(data.time);
                         break;
                     case 'WINNER':
                         celebration(data.winner_color);
                         break;
                     case 'TURN_CHANGE':
-                        setYourTurn(data.current_turn === playerId);
+                        console.log("current turn ------>  ", data.current_turn);
+                        setYourTurn(data.current_turn);
                         break;
                 }
             } catch (error) {

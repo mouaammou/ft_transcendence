@@ -23,6 +23,8 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
               
     async def receive(self, text_data):
         try: 
+            if not self.player_id:
+                return
             parsed_data = json.loads(text_data)
             self.games_manager.receive(self.player_id, parsed_data)
         except json.JSONDecodeError as ex:

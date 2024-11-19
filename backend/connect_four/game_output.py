@@ -25,7 +25,7 @@ class FourGameOutput:
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
-        print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
+        # print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         group = cls.consumer_group.get(player_id)
         if group is None:  
             print(f"Group is None for player {player_id}")  
