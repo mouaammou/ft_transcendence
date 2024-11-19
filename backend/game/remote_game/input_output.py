@@ -41,7 +41,7 @@ class RemoteGameOutput:
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
-        print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
+        # print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
         if sendConfig:   
             cls.send_config(player_id, game_obj or RemoteGameLogic())
 

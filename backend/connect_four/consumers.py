@@ -18,7 +18,7 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
     
     
     async def disconnect(self, close_code):
-        self.games_manager.disconnect(self.player_id)
+        self.games_manager.disconnect(self.player_id)    
         # logging.info(f"Player {self.player_id} disconnected with code {close_code}")
               
     async def receive(self, text_data):

@@ -12,7 +12,7 @@ const PlayMode = () => {
   const [name, setName] = useState('');
 
   const handlePlayFour = () => {
-    router.push('/connect_four');
+    router.push('/waiting_random_c4');
   }
 
   const handlePlayRandomGame = () => {
@@ -49,7 +49,7 @@ const PlayMode = () => {
           </div>
           <div className="middle-mode">
             <img className="" src="mode2.svg" alt="remote-game" />
-            <p>LOCAL GasdfasdAME</p>
+            <p>LOCAL GAME</p>
           </div>
           <div className="right-mode" onClick={handlePlayFour}  >
             <img style={{

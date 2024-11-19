@@ -50,7 +50,7 @@ const WaitingPage = () => {
   }, [lastMessage]);
 
   useEffect(() => {
-    sendMessage(JSON.stringify({ type: 'CONNECT_FOUR_GAME' }));
+    sendMessage(JSON.stringify({ type: 'PLAY_RANDOM' }));
   }, []);
 
   return (

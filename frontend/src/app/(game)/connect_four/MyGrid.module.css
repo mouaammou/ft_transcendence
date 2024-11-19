@@ -42,13 +42,13 @@
     background-color: transparent;
     cursor: pointer;
     border-radius: 9999px;
+    
 }
 
 .disc {
     width: 68px;
     height: 68px;
     border-radius: 9999px;
-    border: 1px solid black;
 
 
     border: 7px solid #4c4b4b5b;

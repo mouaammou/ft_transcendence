@@ -14,7 +14,7 @@ class FourGameOutput:
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
-        print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
+        # print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
 
     @classmethod
     def send_update(cls, player_id, frame) -> None:
@@ -27,9 +27,11 @@ class FourGameOutput:
     def _send_to_consumer_group(cls, player_id, data) -> None:
         print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         group = cls.consumer_group.get(player_id)
-        if group is None:    
+        if group is None:  
+            print(f"Group is None for player {player_id}")  
             return   
         for consumer in group: 
+            # print(f"Sending data to consumer data {data}")
             consumer.send_game_message(data)
             
     @classmethod

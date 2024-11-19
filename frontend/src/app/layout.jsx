@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
 								<NotificationProvider>
 									<div>
 										{/* <Sidebar /> */}
-										{/* <Navbar /> */}
+										<Navbar />
 										{children}
 									</div>
 								</NotificationProvider>
