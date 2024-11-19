@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from './MyGrid.module.css'
+import styles from '@/Styles/game/connect_four/MyGrid.module.css'
+
 
 const MyGrid = () => {
     const [circleColor, setCircleColor] = useState(Array(42).fill('#1C4E8E'));

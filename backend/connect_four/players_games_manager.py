@@ -53,7 +53,7 @@ class PlayersGamesManager:
                     'status': 'GAME_DATA',
                     'player_1': game.player1_id,
                     'player_2': game.player2_id,
-                    'your_turn': game.current_turn == player_id,
+                    'your_turn': game.current_turn,
                 }
                 FourGameOutput._send_to_consumer_group(player_id, data)
             elif 'type' in data and data['type'] == 'WIN':
@@ -65,7 +65,7 @@ class PlayersGamesManager:
                     winner = game.player2_id
                 game.update_winner(winner)
             elif 'type' in data and data['type'] == 'MAKE_MOVE':
-                print(f"Player {player_id} will make a move")
+                print(f"Player {player_id} will make a move manager")
                 game_id = cls.players.get(player_id)
                 game = cls.games[game_id]
                 column = data['column']

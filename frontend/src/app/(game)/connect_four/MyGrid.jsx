@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from './MyGrid.module.css'
+import styles from '@/Styles/game/connect_four/MyGrid.module.css'
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
+
 
 const MyGrid = () => {
     const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
     const [circleColor, setCircleColor] = useState(Array(42).fill('#1C4E8E'));
-    const [yourTurn, setYourTurn] = useState(false);
+    const [yourTurn, setYourTurn] = useState(null);
     const [winner, setWinner] = useState(null);
     const [locator, setLocator] = useState(350);
     const gridRef = useRef(null);
@@ -59,7 +60,7 @@ const MyGrid = () => {
                         // setTimer(30);
                         break;
                     case 'NOT_YOUR_TURN':
-                        alert("Not your turn!");
+                        // alert("Not your turn!");
                         break;
                     case 'TIMER_UPDATE':
                         // console.log("timer update", data.time);
@@ -227,7 +228,7 @@ const MyGrid = () => {
     return (
         <div className="relative flex flex-col gap-[20px] md:gap-[30px] items-center">
             <div style={{ left: locator }}
-                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden lg:block md:w-5 md:h-6 rounded-sm rounded-bl-3xl rounded-br-3xl border-black animate-bounce ${yourTurn ? 'bg-[#BD3B57]' : 'bg-[#FFCE67]'}`}>
+                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden lg:block md:w-5 md:h-6 rounded-sm rounded-bl-3xl rounded-br-3xl border-black animate-bounce ${yourTurn == 'red' ? 'bg-[#BD3B57]' : 'bg-[#FFCE67]'}`}>
             </div>
             <div ref={gridRef} className={styles.gridWrapper} >
                 <div className={styles.gridImage}>
@@ -266,8 +267,8 @@ const MyGrid = () => {
                     ))}
                 </div>
             </div>
-            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn ? '#BD3B57' : '#FFCE67' }}>
-                <p>{yourTurn ? <span>Red</span> : <span>Yellow</span>} Turn</p>
+            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn === 'red'? '#BD3B57' : '#FFCE67' }}>
+                <p>{yourTurn === 'red' ? <span>Red</span> : <span>Yellow</span>} Turn</p>
                 <p className={styles.timer}>{timer} s</p>
             </div>
         </div>

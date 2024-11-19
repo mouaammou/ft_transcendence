@@ -10,8 +10,8 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
     games_manager = PlayersGamesManager 
     async def connect(self):
         await self.accept()
+        self.player_id = self.scope['user'].id
         if self.scope['user'].is_authenticated:
-            self.player_id = self.scope['user'].id
             print(f"Player {self.player_id} connected")
             self.games_manager.connect(self, self.player_id)
             

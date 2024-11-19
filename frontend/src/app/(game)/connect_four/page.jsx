@@ -1,13 +1,13 @@
 'use client';
-import YouLose from '@/components/modals/YouLose';
-import YouWin from '@/components/modals/YouWin';
+
 import { useState, useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
-import styles from './connect_four.module.css';
+import styles from '@/Styles/game/connect_four/connect_four.module.css';
 import PlayerCard from './PlayerCard';
 import { getData } from '@/services/apiCalls'; // Assuming this exists
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 import { useRouter } from 'next/navigation';
+import Modal from 'react-modal'
 
 
 const ConnectFour = () => {
@@ -54,8 +54,8 @@ const ConnectFour = () => {
             } else if (data.status === 'WINNER_BY_DISCONNECTION') {
                 // inform the player that the opponent disconnected
                 console.log('Opponent disconnected');
-                router.push('/play');
-                // setShowWinModal(true);
+                // router.push('/play');
+                setShowWinModal(true);
             } else if (data.status === 'LOSE') {
                 setShowLoseModal(true);
             } else if (data.status === 'DISCONNECTED') {
@@ -64,10 +64,10 @@ const ConnectFour = () => {
                 setShowLoseModal(true);
             } else if (data.status === 'DRAW') {
                 // inform the player that the game is a draw
-                
+
             } else if (data.status === 'NOT_YOUR_TURN') {
                 // inform the player that it is not his turn
-                 
+
             } else if (data.status === 'GAME_OVER') {
                 // inform the player that the game is over
                 let winner = data.winner;
@@ -122,27 +122,35 @@ const ConnectFour = () => {
                     cardStyle={styles.player2Card}
                 />
             </div>
-            {showWinModal && (
-                <YouWin
-                    onClose={() => {
-                        setShowWinModal(false);
-                        router.push('/play');
-                    }
-                    }
-                // stats={{ score1, score2 }} // Pass stats as needed
-                />
-            )}
-
-            {showLoseModal && (
-                <YouLose
-                    onClose={() => {
-                        setShowLoseModal(false);
-                        router.push('/play');
-                    }
-                    }
-                // stats={{ score1, score2 }} // Pass stats as needed
-                />
-            )}
+            <Modal
+                isOpen={showWinModal}
+                onRequestClose={() => {
+                    setShowWinModal(false);
+                    router.push('/play');
+                }}
+                ariaHideApp={false}
+                className="absolute top-[20%] left-[20%] flex flex-col w-[70%] h-[70%] bg-white rounded-lg p-4 z-40">
+                <h1 className="text-3xl font-bold text-center">Congratulations! You won!</h1>
+                <button onClick={() => {
+                    setShowWinModal(false);
+                    router.push('/play');
+                }} className="p-6 border-black rounded-lg">close</button>
+            </Modal>
+            <Modal
+                isOpen={showWinModal}
+                onRequestClose={() => {
+                    setShowLoseModal(false);
+                    router.push('/play');
+                }}
+                ariaHideApp={false}
+                className="absolute top-[20%] left-[20%] flex flex-col w-[70%] h-[70%] bg-white rounded-lg p-4 z-40">
+                <h1 className="text-3xl font-bold text-center">unfortunalely you lose mf</h1>
+                <button onClick={() => {
+                    setShowLoseModal(false);
+                    router.push('/play');
+                }} className="p-6 border-black rounded-lg">close</button>
+            </Modal>
+            {/* overlayClassName={styles.overlay} */}
         </div>
     );
 };
