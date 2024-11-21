@@ -82,6 +82,7 @@ const Msg_chat = () => {
 
 						{/* {(Array.isArray(dateMessages) ? dateMessages : []).map((msg, msgIndex) => ( */}
 						{/* {Array.isArray(dateMessages) && dateMessages.map((msg, msgIndex) => ( */}
+						
 						{dateMessages.map((msg, msgIndex) => (
 							<div
 							key={msgIndex}

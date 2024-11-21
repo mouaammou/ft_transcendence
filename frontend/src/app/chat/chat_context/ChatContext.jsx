@@ -50,31 +50,28 @@ export const ChatProvider = ({ children }) => {
 
     const [nextPage, setNextPage] = useState(null); // Store the next page URL
 
-    // const [debouncedNextPage, setDebouncedNextPage] = useDebounce(nextPage, 300); // Debounce nextPage change by 1000ms
     const isFetchingRef = useRef(false); // To prevent multiple fetches at once
     const scrollTimeoutRef = useRef(null);
 
     const chatContainerRef = useRef(null); // Ref for the chat container
     const [prevScrollHeight, setPrevScrollHeight] = useState(0); // To store the scroll height before fetching
-
-
-    // const [debouncedNextPage] = useDebounce(nextPage, 1000); // Debounced nextPage changes
-
+    const [debouncedSearchTerm] = useDebounce(searchTerm, 400); // Delay of 300ms
 
 
     // ************************ end ***********************
 
 
     //  ************************  Handle search functionality  ************************
-     const handleSearch = (event) => {
-        const term = event.target.value.toLowerCase();
-        setSearchTerm(term);
 
-        // Fetch the users based on the search term, starting from page 1
-        // fetchFriends(1, term);
-        fetchFriends(term);
+    // Update search term
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value); // Update the search term as the user types
     };
 
+    // Effect to fetch friends when debounced search term changes
+    useEffect(() => {
+        fetchFriends(debouncedSearchTerm); // Only fetch when debouncedSearchTerm changes
+    }, [debouncedSearchTerm]);
 
     // ************************ end ***********************
 
@@ -135,6 +132,36 @@ export const ChatProvider = ({ children }) => {
     //     }
     //   };
 
+    const mergeAndSortMessages = (existing, incoming) => {
+        const merged = { ...existing }; // Start with existing messages
+    
+        // Merge incoming messages
+        for (const [date, newMessages] of Object.entries(incoming)) {
+            const currentMessages = merged[date] || []; // Get existing messages for the date
+            const combined = [...currentMessages, ...newMessages]; // Combine old and new messages
+    
+            // Sort messages within the date by timestamp (oldest to newest)
+            merged[date] = combined.sort(
+                (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+            );
+        }
+    
+        // Sort the dates themselves (keys) in ascending order
+        const sortedDates = Object.keys(merged).sort(
+            (a, b) => new Date(a) - new Date(b)
+        );
+    
+        // Rebuild the sorted object
+        const sortedMessages = {};
+        for (const date of sortedDates) {
+            sortedMessages[date] = merged[date];
+        }
+    
+        return sortedMessages;
+    };
+    
+    
+
 
     // Fetch chat history (handles both initial and pagination requests)
     const fetchChatHistory = async (receiver_id, page = 1) => {
@@ -153,30 +180,20 @@ export const ChatProvider = ({ children }) => {
 
             // Check if the response is valid and contains results
             if (response.status === 200 && response.data.results) {
-                console.log('*** response *** => ', response)
                 const messagesList = response.data.results;
                 const groupedMessages = groupMessagesByDate(messagesList);
                 console.log('****** groupedMessages *** => ', groupedMessages)
-                
-                // If it's the first fetch (page 1), replace the messages state
                 if (page === 1) {
                     setMessages((prevMessages) => ({
                         ...prevMessages,
-                        [receiver_id]: groupedMessages,
+                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
                     }));
                 } else {
-                    // If it's a subsequent fetch (pagination), append to existing messages
                     setMessages((prevMessages) => ({
                         ...prevMessages,
-                        [receiver_id]: {
-                            ...(groupedMessages || {}),
-                            ...prevMessages[receiver_id], // Keep existing messages and prepend new ones
-                        },
+                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
                     }));
                 }
-
-                // Update the next page URL
-                // setNextPage(response.data.next);
 
                 // Correctly update the nextPage state
                 const nextPageUrl = response.data.next;
@@ -184,7 +201,6 @@ export const ChatProvider = ({ children }) => {
                     ? new URL(nextPageUrl).searchParams.get('page')
                     : null;
                 setNextPage(nextPageNumber ? Number(nextPageNumber) : null);
-                console.log("setNextPage(response.data.next) :::::> ", response.data.next)
                 console.log("Next page set to:", nextPageNumber);
             }
             else {
@@ -227,6 +243,11 @@ export const ChatProvider = ({ children }) => {
         // Reset nextPage for this user
         setNextPage(null);
 
+        // add new
+        // Scroll to bottom after messages load
+        setTimeout(() => {
+            if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+        }, 100);
 
         if (socket) {
             console.log('Sending mark_read to backend');
@@ -450,7 +471,13 @@ export const ChatProvider = ({ children }) => {
                 // Always update the sender's view of the receiver's last message
                 updateLastMessage(receiver_id, message, true, receivedData.timestamp);
 
-                }
+                // add new 
+                // we have to change selectedUser?.id when we are aleady in the page contact replace selectedUser?.id with => contact 
+                if (selectedUser?.id === sender_id)
+                    scrollToEnd();
+                // add new 
+                // we have to change selectedUser?.id when we are aleady in the page contact replace selectedUser?.id with => contact
+            }
 
             if (mark_read && receiver) {
                 console.log('Marking messages as read for receiver:', receiver);
@@ -608,51 +635,43 @@ export const ChatProvider = ({ children }) => {
     // };
 
  // Function to handle fetching and restoring scroll
- const handleFetchOlderMessages = async () => {
-    console.log('isFetchingRef.current   =>>', isFetchingRef.current)
-    // if (isFetchingRef.current || !nextPage) {
-    if (!nextPage) {
-        console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
-        return;
-    }
+    const handleFetchOlderMessages = async () => {
+        // if (isFetchingRef.current || !nextPage) {
+        if (!nextPage) {
+            console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
+            return;
+        }
+            
+        const chatContainer = chatContainerRef.current;
         
-    const chatContainer = chatContainerRef.current;
-    
-    // Save the current scroll height before fetching
-    setPrevScrollHeight(chatContainer.scrollHeight);
-    
-    try {
-        await fetchChatHistory(selectedUser.id, nextPage);
-        // Restore scroll position to the first newly fetched message
-        const scrollDelta = chatContainer.scrollHeight - prevScrollHeight;
-        chatContainer.scrollTop = scrollDelta; // Adjust scroll to compensate for new content
-    } catch (error) {
-        console.error("Failed to fetch chat history:", error);
-    } finally {
-        isFetchingRef.current = false; // Allow further fetches
-        console.log("Fetch completed, isFetchingRef.current reset to:", isFetchingRef.current);
-    }
-};
+        // Save the current scroll height before fetching
+        setPrevScrollHeight(chatContainer.scrollHeight);
+        
+        try {
+            await fetchChatHistory(selectedUser.id, nextPage);
+            // Restore scroll position to the first newly fetched message
+            const scrollDelta = chatContainer.scrollHeight - prevScrollHeight;
+            chatContainer.scrollTop = scrollDelta; // Adjust scroll to compensate for new content
+        } catch (error) {
+            console.error("Failed to fetch chat history:", error);
+        } finally {
+            isFetchingRef.current = false; // Allow further fetches
+            console.log("Fetch completed, isFetchingRef.current reset to:", isFetchingRef.current);
+        }
+    };
 
-    // // Handle scroll event
-    // const handleScroll = (event) => {
-    //     const chatContainer = event.target;
-
-    //     if (chatContainer.scrollTop <= 50) {
-    //         handleFetchOlderMessages();
-    //     }
-    // };
-
-    // newwww
-
-    let scrollTimeout = null;
 
     const handleScroll = (event) => {
         const chatContainer = event.target;
 
-        if (scrollTimeout) clearTimeout(scrollTimeout);
+        // if (scrollTimeout) clearTimeout(scrollTimeout);
+        if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+        }
 
-        scrollTimeout = setTimeout(() => {
+        // Set a new timeout to fetch the next page after a delay (e.g., 300ms)
+        // scrollTimeout = setTimeout(() => {
+        scrollTimeoutRef.current = setTimeout(() => {
             if (chatContainer.scrollTop <= 50) {
                 handleFetchOlderMessages();
             }
@@ -664,42 +683,17 @@ export const ChatProvider = ({ children }) => {
 
 
     // ************************ Scroll to the end of the messages ************************
-    useEffect(() => {
-        if (endRef.current) {
-        // endRef.current.scrollIntoView({ behavior: 'smooth' });
-        endRef.current?.scrollIntoView({ behavior: 'auto' });
-        }
-    }, [messages, selectedUser]); // Trigger on messages or user change
+    // useEffect(() => {
+    //     if (endRef.current) {
+    //     // endRef.current.scrollIntoView({ behavior: 'smooth' });
+    //     endRef.current?.scrollIntoView({ behavior: 'auto' });
+    //     }
+    // }, [messages, selectedUser]); // Trigger on messages or user change
 
-
-    // 
-// ************************ Scroll to the end of the messages ************************
-// useEffect(() => {
-//     if (!selectedUser) return;
-
-//     const chatContainer = endRef.current?.parentNode; // Assuming `endRef` is at the bottom of the chat container
-
-//     if (!chatContainer) return;
-
-//     if (nextPage && isFetchingRef.current) {
-//         // Fetching older messages - preserve scroll position
-//         const previousScrollHeight = chatContainer.scrollHeight;
-//         const previousScrollTop = chatContainer.scrollTop;
-
-//         // Wait for the next rendering (after fetching messages)
-//         const timeout = setTimeout(() => {
-//             const newScrollHeight = chatContainer.scrollHeight;
-//             chatContainer.scrollTop = newScrollHeight - previousScrollHeight + previousScrollTop;
-//         }, 0);
-
-//         return () => clearTimeout(timeout);
-//     } else {
-//         // New messages arrived or chat user changed - scroll to the bottom
-//         // endRef.current?.scrollIntoView({ behavior: 'smooth' });
-//         endRef.current?.scrollIntoView({ behavior: 'auto' });
-//     }
-// }, [messages, selectedUser, nextPage]);
-
+    // new  methode 
+    const scrollToEnd = () => {
+        if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+    };
 
     // ************************ end ***********************
 
