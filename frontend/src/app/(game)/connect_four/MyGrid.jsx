@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from '@/Styles/game/connect_four/MyGrid.module.css'
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
+import './mypage.css'
 
 
 const MyGrid = () => {
@@ -58,9 +59,6 @@ const MyGrid = () => {
                         setCircleColor(newCircleColor);
                         setYourTurn(data.your_turn);
                         // setTimer(30);
-                        break;
-                    case 'NOT_YOUR_TURN':
-                        // alert("Not your turn!");
                         break;
                     case 'TIMER_UPDATE':
                         // console.log("timer update", data.time);
@@ -125,7 +123,9 @@ const MyGrid = () => {
                 circleColor[index] === circleColor[index + 3]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 1, index + 2, index + 3]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 1, index + 2, index + 3]);
+                },500);
                 winFound = true;
                 break;
             }
@@ -139,7 +139,9 @@ const MyGrid = () => {
                 circleColor[index] === circleColor[index + 21]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 7, index + 14, index + 21]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 7, index + 14, index + 21]);
+                },500);
                 winFound = true;
                 break;
             }
@@ -154,7 +156,9 @@ const MyGrid = () => {
                 circleColor[index] === circleColor[index + 24]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 8, index + 16, index + 24]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 8, index + 16, index + 24]);
+                },500);
                 winFound = true;
                 break;
             }
@@ -169,7 +173,9 @@ const MyGrid = () => {
                 circleColor[index] === circleColor[index + 18]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 6, index + 12, index + 18]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 6, index + 12, index + 18]);
+                },500);
                 winFound = true;
                 break;
             }
@@ -183,9 +189,47 @@ const MyGrid = () => {
 
     function markWinningDiscs(indices) {
         const newCircleColor = [...circleColor];
+        const winningColor = circleColor[indices[0]];
+        
         indices.forEach((index) => {
-            newCircleColor[index] = 'green';
+            // Apply winning styles
+            newCircleColor[index] = winningColor;
+            
+            // Find the disc element
+            const discElement = document.querySelector(`.${styles.cell}:nth-child(${index + 1}) .${styles.disc}`);
+            
+            if (discElement) {
+                // Add flash animation class
+                discElement.style.animation = 'flash 1s infinite';
+                
+                // Create inner white circle
+                const innerCircle = document.createElement('div');
+                innerCircle.style.cssText = `
+                    position: absolute;
+                    top: 45%;
+                    left: 45%;
+                    width: 70%;
+                    height: 70%;
+                    background-color: #EAE6E6;
+                    border-radius: 50%;
+                    z-index: 99;
+                    animation: innerCircleFadeIn 0.5s forwards;
+                `;
+                
+                // Remove any existing inner circle before adding new one
+                const existingInnerCircle = discElement.querySelector('.inner-circle');
+                if (existingInnerCircle) {
+                    existingInnerCircle.remove();
+                }
+                
+                innerCircle.classList.add('inner-circle');
+                discElement.appendChild(innerCircle);
+                // setTimeout(() => {
+                //     discElement.style.animation = '';
+                // }, 2000);
+            }
         });
+    
         setCircleColor(newCircleColor);
     }
 

@@ -99,14 +99,12 @@ class GameLogic:
         self.game_active = False
         self.loser = self.player1_id if winner_id == self.player2_id else self.player2_id
         # Notify players about the winner
-        data1 = {
-            'status': 'WIN',
+        data = {
+            'status': 'GAME_OVER',
+            'winner': self.winner
         }
-        FourGameOutput._send_to_consumer_group(winner_id, data1)
-        data2 = {
-            'status': 'LOSE',
-        }
-        FourGameOutput._send_to_consumer_group(self.loser, data2)
+        FourGameOutput._send_to_consumer_group(self.player1_id, data)
+        FourGameOutput._send_to_consumer_group(self.player2_id, data)
         asyncio.create_task(self.save_game())
         
     async def save_game(self):

@@ -51,6 +51,10 @@ const WaitingPage = () => {
 
   useEffect(() => {
     sendMessage(JSON.stringify({ type: 'PLAY_RANDOM' }));
+    
+    return(() => {
+    sendMessage(JSON.stringify({ type: 'LEAVE_PLAY_RANDOM' }));
+  });
   }, []);
 
   return (

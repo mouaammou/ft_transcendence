@@ -18,7 +18,7 @@ class PlayersGamesManager:
 
 
     @classmethod
-    def disconnect(cls, player_id):
+    async def disconnect(cls, player_id):
         try:
             if player_id in cls.waiting_queue:
                 cls.waiting_queue.remove(player_id)
@@ -34,6 +34,7 @@ class PlayersGamesManager:
                 FourGameOutput._send_to_consumer_group(winner, data2)
                 game.game_active = False
                 cls.games.pop(game_id)
+                await asyncio.sleep(10)
         except Exception as e:
             logger.error(f"Error disconnecting player with ID: {player_id}: {e}")
             raise
@@ -46,6 +47,9 @@ class PlayersGamesManager:
             if player_id not in cls.waiting_queue:
                 cls.add_to_waiting_queue(player_id)
         game_id = cls.players.get(player_id)
+        if 'type' in data and data['type'] == 'LEAVE_PLAY_RANDOM':
+            if player_id in cls.waiting_queue:
+                cls.waiting_queue.remove(player_id)
         if game_id is not None:
             if 'type' in data and data['type'] == 'GET_CONNECT_FOUR_DATA':
                 game = cls.games[game_id]
