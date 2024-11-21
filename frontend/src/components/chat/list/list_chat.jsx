@@ -12,11 +12,11 @@ import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
 const list_chat = () => {
-  const { isChatVisible, allUsers, handleSearch} = useContext(ChatContext);
+  const { isChatVisible, allUsers, handleSearch, currentUser} = useContext(ChatContext);
   // const { isChatVisible, allUsers = [], handleSearch} = useContext(ChatContext);
   const onlineUser = allUsers.slice(0, 6);
 
-  const { profileData: data} = useAuth();
+  // const { profileData: currentuser} = useAuth();
 
   return (
     // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`} ref={scrollRef}>
@@ -26,15 +26,15 @@ const list_chat = () => {
            <img
             // src="/med.jpeg"
             // alt="mohammed"
-            src={data.avatar}
-            alt={data?.username}
+            src={currentUser.avatar}
+            alt={currentUser?.username}
             className="img-info-user"
             width={65}
             height={65}
             style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
           />
           {/* <p> mohammed </p> */}
-          <p> {data?.username} </p>
+          <p> {currentUser?.username} </p>
         </div>
         <div>
           <HiBell className="HiBell" />
@@ -46,7 +46,7 @@ const list_chat = () => {
       <div className="initial-active-users">
         <h2>Online Now</h2>
         <div className="user-grid">
-          <UserList users={onlineUser} listType="online" />
+          <UserList users={onlineUser} currentUser={currentUser} listType="online" />
         </div>
       </div>
       <div>

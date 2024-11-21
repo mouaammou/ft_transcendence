@@ -135,9 +135,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const UserList = ({ users, listType }) => {
+const UserList = ({ users, listType , currentUser}) => {
   const { handleUserClick, typingUsers } = useContext(ChatContext);
-  console.log('hay users  => ' , users)
+
+  // console.log('hay users  => ' , users)
+
+  // console.log(' ***** currentUser data ***  => ' , currentUser)
+  
   return (
     <>
       {listType === 'online' ? (
@@ -165,6 +169,7 @@ const UserList = ({ users, listType }) => {
                   listType={listType}
                   typingUsers={typingUsers}
                   onUserSelect={handleUserClick}
+                  currentUser={currentUser}
                 />
               </CarouselItem>
             ))}

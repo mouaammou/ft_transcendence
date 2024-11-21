@@ -6,6 +6,7 @@ import { getData } from '@/services/apiCalls';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
 
+import { useDebounce } from 'use-debounce'; // Import from use-debounce
 
 
 
@@ -42,12 +43,26 @@ export const ChatProvider = ({ children }) => {
     const { profileData: currentUser } = useAuth(); // Current authenticated user
     // const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const endRef = useRef(null); // Reference to scroll to bottom of chat
-    const [typingUsers, setTypingUsers] = useState([]); // Track users currently typing
+    const [typingUsers, setTypingUsers] = useState([]); // Track users currently typingUb&Medkpro
     const typingTimeoutRef = useRef(null); // To manage typing timeout
     const emojiPickerRef = useRef(null); // Reference for the emoji picker container
 
-    // ************************ end ***********************
 
+    const [nextPage, setNextPage] = useState(null); // Store the next page URL
+
+    // const [debouncedNextPage, setDebouncedNextPage] = useDebounce(nextPage, 300); // Debounce nextPage change by 1000ms
+    const isFetchingRef = useRef(false); // To prevent multiple fetches at once
+    const scrollTimeoutRef = useRef(null);
+
+    const chatContainerRef = useRef(null); // Ref for the chat container
+    const [prevScrollHeight, setPrevScrollHeight] = useState(0); // To store the scroll height before fetching
+
+
+    // const [debouncedNextPage] = useDebounce(nextPage, 1000); // Debounced nextPage changes
+
+
+
+    // ************************ end ***********************
 
 
     //  ************************  Handle search functionality  ************************
@@ -97,27 +112,93 @@ export const ChatProvider = ({ children }) => {
         return groupedMessages;
     };
 
+
     // ************************ end ***********************
 
 
     //  ************************ Fetch chat history ************************
 
-    const fetchChatHistory = async (receiver_id) => {
-        try {
-          console.log("Fetching chat history for user:", receiver_id);
-          const response = await getData(`/chat-history/${receiver_id}`);
-          if (response.status === 200) {
-            const groupedMessages = groupMessagesByDate(response.data); // Grouping messages by date
-            console.log('groupedMessages => ', groupedMessages)
-            setMessages((prevMessages) => ({
-              ...prevMessages,
-              [receiver_id]: groupedMessages, // Store grouped chat history under the receiver's ID
-            }));
-          }
-        } catch (error) {
-          console.error('Error fetching chat history:', error);
+    // const fetchChatHistory = async (receiver_id) => {
+    //     try {
+    //       console.log("Fetching chat history for user:", receiver_id);
+    //       const response = await getData(`/chat-history/${receiver_id}`);
+    //       if (response.status === 200) {
+    //         const groupedMessages = groupMessagesByDate(response.data); // Grouping messages by date
+    //         console.log('groupedMessages => ', groupedMessages)
+    //         setMessages((prevMessages) => ({
+    //           ...prevMessages,
+    //           [receiver_id]: groupedMessages, // Store grouped chat history under the receiver's ID
+    //         }));
+    //       }
+    //     } catch (error) {
+    //       console.error('Error fetching chat history:', error);
+    //     }
+    //   };
+
+
+    // Fetch chat history (handles both initial and pagination requests)
+    const fetchChatHistory = async (receiver_id, page = 1) => {
+        console.log('***** FetchChatHistoryi sFetchingRef.current   =>>', isFetchingRef.current)
+        if (isFetchingRef.current) 
+        {
+            console.log("Fetch skipped: another fetch is in progress.");
+            return; // Prevent multiple requests at once
         }
-      };
+        try {
+            isFetchingRef.current = true;
+            console.log("Starting fetch for page:", page);
+
+            const url = `/chat-history/${receiver_id}?page=${page}`;
+            const response = await getData(url);
+
+            // Check if the response is valid and contains results
+            if (response.status === 200 && response.data.results) {
+                console.log('*** response *** => ', response)
+                const messagesList = response.data.results;
+                const groupedMessages = groupMessagesByDate(messagesList);
+                console.log('****** groupedMessages *** => ', groupedMessages)
+                
+                // If it's the first fetch (page 1), replace the messages state
+                if (page === 1) {
+                    setMessages((prevMessages) => ({
+                        ...prevMessages,
+                        [receiver_id]: groupedMessages,
+                    }));
+                } else {
+                    // If it's a subsequent fetch (pagination), append to existing messages
+                    setMessages((prevMessages) => ({
+                        ...prevMessages,
+                        [receiver_id]: {
+                            ...(groupedMessages || {}),
+                            ...prevMessages[receiver_id], // Keep existing messages and prepend new ones
+                        },
+                    }));
+                }
+
+                // Update the next page URL
+                // setNextPage(response.data.next);
+
+                // Correctly update the nextPage state
+                const nextPageUrl = response.data.next;
+                const nextPageNumber = nextPageUrl
+                    ? new URL(nextPageUrl).searchParams.get('page')
+                    : null;
+                setNextPage(nextPageNumber ? Number(nextPageNumber) : null);
+                console.log("setNextPage(response.data.next) :::::> ", response.data.next)
+                console.log("Next page set to:", nextPageNumber);
+            }
+            else {
+                console.warn("No results in response or invalid response format.");
+                setNextPage(null); // Explicitly set nextPage to null if no more pages
+            }
+        } catch (error) {
+            console.error('Error fetching chat history:', error);
+        } finally {
+            isFetchingRef.current = false;
+            console.log("Fetch completed, isFetchingRef.current reset to false.");
+        }
+    };
+    
     // ************************ end ***********************
 
 
@@ -125,14 +206,26 @@ export const ChatProvider = ({ children }) => {
     const handleUserClick = (user) => {
         setSelectedUser(user);
         setIsChatVisible(true);
+
+        console.log("******************** user component in handleUserClick: ***** ", user.id);
+        if (selectedUser && selectedUser?.id ) {
+            console.log("******************** selectedUser after initialize it in handleUserClick: ***** ", selectedUser.id);
+        }
+        else
+            console.log("******************** selectedUser is not initialized yet in handleUserClick: ***** ");
+
         if (selectedUser && selectedUser.id === user.id) {
         //   // If the selected user is already the same, don't  Fetch chat history
         return;
         }
-        
-        // setSelectedUser(user);
-        // setIsChatVisible(true);
-        fetchChatHistory(user.id); // Fetch chat history for selected user
+
+        // fetchChatHistory(user.id, 1, false); // Fetch chat history for selected user
+        // setNextPage(null); // Reset nextPage for the selected user
+        // fetchChatHistory(user.id, 1);
+        fetchChatHistory(user.id, 1); // Always start with page 1
+
+        // Reset nextPage for this user
+        setNextPage(null);
 
 
         if (socket) {
@@ -281,32 +374,6 @@ export const ChatProvider = ({ children }) => {
         );
     };
 
-
-    // last update
-
-    // const updateLastMessage = (userId, message, is_read, timestamp) => {
-    //     setAllUsers((prevUsers) =>
-    //         prevUsers.map((user) => {
-    //             if (user.friend.id === userId) {
-    //                 const unreadCount = is_read ? 0 : (user.last_message?.unreadCount || 0) + 1;
-    //                 return {
-    //                     ...user,
-    //                     last_message: {
-    //                         ...user.last_message,
-    //                         message: message || user.last_message?.message, // Preserve previous message if not provided
-    //                         is_read,
-    //                         timestamp: timestamp || user.last_message?.timestamp, // Preserve timestamp if not provided
-    //                         unreadCount,
-    //                     },
-    //                 };
-    //             }
-    //             return user;
-    //         })
-    //     );
-    // };
-    
-    // ************************ end ***********************
-
     // ************************ Manage WebSocket connection ************************
     const connectWebSocket = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
@@ -327,108 +394,8 @@ export const ChatProvider = ({ children }) => {
 
             // Handle incoming messages
             if (message) {
-            
-        
-                //  new
-
-
-            //     setMessages((prevMessages) => {
-            //         const updatedMessages = { ...prevMessages };
-
-            //         // Ensure the structure for the receiver exists
-            //         if (!updatedMessages[receiver_id]) {
-            //             updatedMessages[receiver_id] = {};
-            //         }
-
-            //         // Determine the date of the message
-            //         const messageDate = formatDate(receivedData.timestamp);
-
-            //         // Ensure the structure for the date exists
-            //         if (!updatedMessages[receiver_id][messageDate]) {
-            //             updatedMessages[receiver_id][messageDate] = [];
-            //         }
-
-            //         // Append the new message to the correct date group
-            //         updatedMessages[receiver_id][messageDate].push(receivedData);
-
-            //         console.log('Updated Messages:', updatedMessages);
-            //         return updatedMessages;
-            //     });
-
-
-            //     if (sender_id === currentUser.id) {
-            //         updateLastMessage(receiver_id, message, false, receivedData.timestamp); // Sent message, mark as read for sender
-            //     } else {
-            //         updateLastMessage(sender_id, message, false, receivedData.timestamp); // Received message, mark as unread for receiver
-            //     }
-                
-            // }
-
-            // console.log(' mark_read befor condition => ', mark_read)
-            // console.log(' this is receiver  => ', receiver)
-            // if (mark_read && receiver) {
-            //     // Update the read status of messages from this user
-            //     console.log(' mark_read inside condition => ', mark_read)
-            //     setAllUsers((prevUsers) =>
-            //         prevUsers.map((friend) => {
-            //             if (friend.username === receiver) {
-            //                 // Update the `is_read` status of the `last_message`
-            //         return {
-            //             ...friend,
-            //             last_message: {
-            //                 ...friend.last_message,
-            //                 is_read: true
-            //             }
-            //         };
-            //             }
-            //             return friend;
-            //         })
-            //     );
-            //     updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
-            // }
-
-
-            //   last update 
 
                 console.log('Incoming message:', message);
-
-
-                const isSender = sender_id === currentUser.id;
-                const targetId = isSender ? receiver_id : sender_id;
-
-                // Update messages for the selected user
-                // setMessages((prevMessages) => {
-                // const updatedMessages = { ...prevMessages };
-
-                // if (!updatedMessages[targetId]) {
-                //     updatedMessages[targetId] = {};
-                // }
-
-                // const messageDate = formatDate(receivedData.timestamp);
-
-                // if (!updatedMessages[targetId][messageDate]) {
-                //     updatedMessages[targetId][messageDate] = [];
-                // }
-
-                // updatedMessages[targetId][messageDate].push(receivedData);
-
-                // // Special case: if the sender is the current user, update their messages too
-                // // Ensure the message also appears for the sender immediately
-                // // if (isSender) {
-                // //     const senderMessages = updatedMessages[currentUser.id] || {};
-                // //     if (!senderMessages[messageDate]) {
-                // //     senderMessages[messageDate] = [];
-                // //     }
-                // //     senderMessages[messageDate].push(receivedData);
-                // //     updatedMessages[currentUser.id] = senderMessages;
-                // // }
-
-                // console.log('Updated Messages:', updatedMessages);
-                // return updatedMessages;
-                // });
-
-
-                //   ---------- the last  new -------------
                 
                 setMessages((prevMessages) => {
                     const updatedMessages = { ...prevMessages };
@@ -460,32 +427,33 @@ export const ChatProvider = ({ children }) => {
                     return updatedMessages;
                 });
 
-                // Update last message for both sender and receiver
-                updateLastMessage(sender_id, message, false, receivedData.timestamp);
-                updateLastMessage(receiver_id, message, false, receivedData.timestamp);
-            }
+                // // Update last message for both sender and receiver
+                // updateLastMessage(sender_id, message, false, receivedData.timestamp);
+                // updateLastMessage(receiver_id, message, true, receivedData.timestamp);
+
+
+                // Check if the message should be marked as read immediately
+                if (selectedUser)
+                    console.log('******************** selectedUser.id in on message ************************* ', selectedUser.id)
+                else
+                    console.log('**** \\\ selectedUser is not exist in on message \\\ ****')
+                console.log('******************** sender_id in on message *************************', sender_id)
+                if (currentUser.id === receiver_id && selectedUser && selectedUser.id === sender_id) {
+                    // Mark the message as read since the receiver is actively viewing this chat
+                    console.log("Marking message as read immediately.");
+                    updateLastMessage(sender_id, message, true, receivedData.timestamp);
+                } else {
+                    // Update last message as unread
+                    updateLastMessage(sender_id, message, false, receivedData.timestamp);
+                }
+
+                // Always update the sender's view of the receiver's last message
+                updateLastMessage(receiver_id, message, true, receivedData.timestamp);
+
+                }
 
             if (mark_read && receiver) {
                 console.log('Marking messages as read for receiver:', receiver);
-
-                // Mark messages as read for the receiver
-                // setAllUsers((prevUsers) =>
-                //     prevUsers.map((friend) => {
-                //         if (friend.username === receiver) {
-                //             return {
-                //                 ...friend,
-                //                 last_message: {
-                //                     ...friend.last_message,
-                //                     is_read: true,
-                //                     unreadCount: 0,
-                //                 },
-                //             };
-                //         }
-                //         return friend;
-                //     })
-                // );
-
-                
                 updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
                 
                 // updateLastMessage(sender_id, null, true, null); // Mark as read for sender
@@ -594,7 +562,7 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
 
-    // ************* Handle scrolling to fetch more users (Infinite scroll) ************
+    // ************* old  Handle scrolling to fetch more users (Infinite scroll) ************
     // const handleScroll = (event) => {
     //     const { scrollTop, scrollHeight, clientHeight } = event.target;
     //     if (scrollHeight - scrollTop === clientHeight) {
@@ -605,15 +573,134 @@ export const ChatProvider = ({ children }) => {
     //     }
     //     }
     // };
+
+
+
+     // ************************ new  Handle scroll for infinite scrolling ************************
+    //  const handleScroll = (event) => {
+    //     const { scrollTop, scrollHeight, clientHeight } = event.target;
+
+    //     // If scrolled to the bottom, do nothing
+    //     if (scrollTop + clientHeight >= scrollHeight - 5) {
+    //         return;
+    //     }
+
+    //     // If user is near the top and there is a next page to fetch
+    //     if (scrollTop <= 50 && !isFetchingRef.current && nextPage && selectedUser) {
+    //         console.log('** IS REACH TO THE TOP CALL TO fetchChatHistory');
+    //         console.log('*** nextPage ', nextPage)
+    //         if (scrollTimeoutRef.current) {
+    //             clearTimeout(scrollTimeoutRef.current);
+    //         }
+
+    //          // Set a new timeout to fetch the next page after a delay (e.g., 500ms)
+    //         scrollTimeoutRef.current = setTimeout(() => {
+    //         // Clear previous timeout if any
+    //         // methode 2 
+    //         // const nextPageUrl = nextPage ? `/chat-history/${selectedUser.id}?page=${nextPage}` : null;
+    //         // if (nextPageUrl) {
+    //         //     fetchChatHistory(selectedUser.id, nextPage); // Fetch next page of messages
+    //         // }
+
+    //             fetchChatHistory(selectedUser.id, nextPage); // Fetch next page of messages
+    //         }, 500); // Timeout delay in milliseconds (e.g., 500ms)
+    //     }
+    // };
+
+ // Function to handle fetching and restoring scroll
+ const handleFetchOlderMessages = async () => {
+    console.log('isFetchingRef.current   =>>', isFetchingRef.current)
+    // if (isFetchingRef.current || !nextPage) {
+    if (!nextPage) {
+        console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
+        return;
+    }
+        
+    const chatContainer = chatContainerRef.current;
+    
+    // Save the current scroll height before fetching
+    setPrevScrollHeight(chatContainer.scrollHeight);
+    
+    try {
+        await fetchChatHistory(selectedUser.id, nextPage);
+        // Restore scroll position to the first newly fetched message
+        const scrollDelta = chatContainer.scrollHeight - prevScrollHeight;
+        chatContainer.scrollTop = scrollDelta; // Adjust scroll to compensate for new content
+    } catch (error) {
+        console.error("Failed to fetch chat history:", error);
+    } finally {
+        isFetchingRef.current = false; // Allow further fetches
+        console.log("Fetch completed, isFetchingRef.current reset to:", isFetchingRef.current);
+    }
+};
+
+    // // Handle scroll event
+    // const handleScroll = (event) => {
+    //     const chatContainer = event.target;
+
+    //     if (chatContainer.scrollTop <= 50) {
+    //         handleFetchOlderMessages();
+    //     }
+    // };
+
+    // newwww
+
+    let scrollTimeout = null;
+
+    const handleScroll = (event) => {
+        const chatContainer = event.target;
+
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+
+        scrollTimeout = setTimeout(() => {
+            if (chatContainer.scrollTop <= 50) {
+                handleFetchOlderMessages();
+            }
+        }, 300); // Debounce interval (300ms)
+    };
+
+
     // ************************ end ***********************
 
 
     // ************************ Scroll to the end of the messages ************************
     useEffect(() => {
         if (endRef.current) {
-        endRef.current.scrollIntoView({ behavior: 'smooth' });
+        // endRef.current.scrollIntoView({ behavior: 'smooth' });
+        endRef.current?.scrollIntoView({ behavior: 'auto' });
         }
     }, [messages, selectedUser]); // Trigger on messages or user change
+
+
+    // 
+// ************************ Scroll to the end of the messages ************************
+// useEffect(() => {
+//     if (!selectedUser) return;
+
+//     const chatContainer = endRef.current?.parentNode; // Assuming `endRef` is at the bottom of the chat container
+
+//     if (!chatContainer) return;
+
+//     if (nextPage && isFetchingRef.current) {
+//         // Fetching older messages - preserve scroll position
+//         const previousScrollHeight = chatContainer.scrollHeight;
+//         const previousScrollTop = chatContainer.scrollTop;
+
+//         // Wait for the next rendering (after fetching messages)
+//         const timeout = setTimeout(() => {
+//             const newScrollHeight = chatContainer.scrollHeight;
+//             chatContainer.scrollTop = newScrollHeight - previousScrollHeight + previousScrollTop;
+//         }, 0);
+
+//         return () => clearTimeout(timeout);
+//     } else {
+//         // New messages arrived or chat user changed - scroll to the bottom
+//         // endRef.current?.scrollIntoView({ behavior: 'smooth' });
+//         endRef.current?.scrollIntoView({ behavior: 'auto' });
+//     }
+// }, [messages, selectedUser, nextPage]);
+
+
     // ************************ end ***********************
 
 
@@ -686,12 +773,14 @@ export const ChatProvider = ({ children }) => {
         handleEmojiClick,
         handleKeyPress,
         endRef,
-        // handleScroll,
+        handleScroll,
+        chatContainerRef,
         // getChatId,
 
         formatTime,
         typingUsers,
         emojiPickerRef,
+        currentUser
         // groupMessagesByDate
         }}
         >

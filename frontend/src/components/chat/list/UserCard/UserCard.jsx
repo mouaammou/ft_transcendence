@@ -133,11 +133,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import '@/styles/chat/UserCard.css';
 import { formatDistanceToNow } from 'date-fns'; // Optionally for formatting the timestamp
 
-const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) => {
+const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , currentUser}) => {
   const borderColor = user.active ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
 
-  console.log('user. username => ', user.username)
+  // console.log('user. username => ', user.username)
   // Check if the user is typing
   const isTyping = typingUsers.includes(user.username);
 
@@ -164,7 +164,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
    : (
        <span style={{ fontWeight: 'bold' }}>
          {lastMessage.message}
-         {console.log('lastMessage.unreadCount', lastMessage.unreadCount)}
+         {/* {console.log('lastMessage.unreadCount', lastMessage.unreadCount)} */}
          {lastMessage.unreadCount > 0 && `${lastMessage.unreadCount}`}
        </span>
      );
@@ -172,7 +172,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage }) =>
     
 
   // console.log('Determine message display based on is_read status => ',messageDisplay)
-  console.log('lastMessage.is_read ==> ',lastMessage.is_read)
+  // console.log('lastMessage.is_read ==> ',lastMessage.is_read)
 
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType

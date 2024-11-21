@@ -35,10 +35,12 @@ const Msg_chat = () => {
 	formatTime,
 	typingUsers, // Include typingUsers to access typing status
 	emojiPickerRef,
+	handleScroll,
+	chatContainerRef
 	
   } = useContext(ChatContext);
 
-	const { profileData: data } = useAuth();  // Current logged-in user
+	const { profileData: currentuser } = useAuth();  // Current logged-in user
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -69,94 +71,8 @@ const Msg_chat = () => {
 				</div>
 			</div>
 
-			<div className="body-message-chat">
-				<div className="center-chat">
-
-				{/* new code */}
-
-
-				{/* Group messages by date */}
-				{/* {messages[selectedUser?.id] && Object.keys(messages[selectedUser.id]).map((date, index) => (
-					<div key={index} className='groupe_msg_date'>
-						<div className="message_date">
-							<p className='par_date'> <span>{date}</span> </p>
-						</div>
-
-						{messages[selectedUser.id][date].map((msg, msgIndex) => (
-						<div
-							key={msgIndex}
-							className={msg.sender === data.username ? 'my-message' : 'message'}
-						>
-							{msg.sender !== data.username && (
-							<img
-								src={selectedUser.avatar}
-								alt={selectedUser.username}
-								className="img_msg"
-								// width={45}
-								// height={45}
-								style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-							/>
-							)}
-							<div className='div_text_message'>
-								<p className='text_message'>{msg.message}</p>
-								<span className="message_time">{formatTime(msg.timestamp)}</span>
-							</div>
-							{msg.sender === data.username && (
-							<img
-								src={data.avatar}
-								alt={data.username}
-								className="img_my_message"
-								// width={45}
-								// height={45}
-								style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-							/>
-							)}
-							
-						</div>
-						))}
-					</div>
-				))} */}
-
-				{/*  **************** new ************* */}
-
-				{/* Group messages by date */}
-				{/* {messages[selectedUser?.id] &&
-					Object.entries(messages[selectedUser.id]).map(([date, dateMessages], index) => (
-						<div key={index} className="groupe_msg_date">
-							<div className="message_date">
-								<p className="par_date"> <span>{date}</span> </p>
-							</div>
-
-							{dateMessages.map((msg, msgIndex) => (
-								<div
-									key={msgIndex}
-									className={msg.sender === data.username ? 'my-message' : 'message'}
-								>
-									{msg.sender !== data.username && (
-										<img
-											src={selectedUser.avatar}
-											alt={selectedUser.username}
-											className="img_msg"
-											style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-										/>
-									)}
-									<div className="div_text_message">
-										<p className="text_message">{msg.message}</p>
-										<span className="message_time">{formatTime(msg.timestamp)}</span>
-									</div>
-									{msg.sender === data.username && (
-										<img
-											src={data.avatar}
-											alt={data.username}
-											className="img_my_message"
-											style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-										/>
-									)}
-								</div>
-							))}
-						</div>
-					))} */}
-
+			<div className="body-message-chat" >
+				<div className="center-chat"   onScroll={handleScroll}  ref={chatContainerRef}>
 					{messages[selectedUser?.id] &&
 					Object.entries(messages[selectedUser.id]).map(([date, dateMessages], index) => (
 						<div key={index} className="groupe_msg_date">
@@ -164,12 +80,14 @@ const Msg_chat = () => {
 							<p className="par_date"> <span>{date}</span> </p>
 						</div>
 
+						{/* {(Array.isArray(dateMessages) ? dateMessages : []).map((msg, msgIndex) => ( */}
+						{/* {Array.isArray(dateMessages) && dateMessages.map((msg, msgIndex) => ( */}
 						{dateMessages.map((msg, msgIndex) => (
 							<div
 							key={msgIndex}
-							className={msg.sender === data.username ? 'my-message' : 'message'}
+							className={msg.sender === currentuser.username ? 'my-message' : 'message'}
 							>
-							{msg.sender !== data.username && (
+							{msg.sender !== currentuser.username && (
 								<img
 								src={selectedUser.avatar}
 								alt={selectedUser.username}
@@ -181,10 +99,10 @@ const Msg_chat = () => {
 								<p className="text_message">{msg.message}</p>
 								<span className="message_time">{formatTime(msg.timestamp)}</span>
 							</div>
-							{msg.sender === data.username && (
+							{msg.sender === currentuser.username && (
 								<img
-								src={data.avatar}
-								alt={data.username}
+								src={currentuser.avatar}
+								alt={currentuser.username}
 								className="img_my_message"
 								style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
 								/>

@@ -14,6 +14,9 @@ from authentication.serializers import UserSerializer
 from datetime import datetime
 from django.utils import timezone  # Make sure to import timezone
 
+from rest_framework.pagination import PageNumberPagination
+
+
 # Create your views here.
 
 
@@ -161,31 +164,69 @@ class ListUsersView(FriendshipListView):
 
 
 
-# API to get chat history between the current user and a specific receiver
+# # API to get chat history between the current user and a specific receiver
+# class ChatHistoryView(APIView):
+#     # Optionally remove the permission for testing purposes
+#     # permission_classes = [IsAuthenticated]
+
+#     def get(self, request, receiver_id, *args, **kwargs):
+#         # Check if the customUser is set and authenticated
+#         print("request ->", request)
+#         print("request.customUser ->", request.customUser)
+#         if request.customUser.is_anonymous:
+#             return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+#         try:
+#             # Try to get the receiver
+#             receiver = User.objects.get(id=receiver_id)
+#         except User.DoesNotExist:
+#             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#         # Retrieve chat history between the authenticated user and the receiver
+#         chat_history = Message.objects.filter(
+#             sender=request.customUser, receiver=receiver
+#         ) | Message.objects.filter(
+#             sender=receiver, receiver=request.customUser
+#         ).order_by('timestamp')
+
+#         serializer = MessageSerializer(chat_history, many=True)
+#         print('ChatHistoryView data = ->',serializer.data)
+#         return Response(serializer.data)
+    
+
+
+
+# Custom Pagination class
+class ChatPagination(PageNumberPagination):
+    page_size = 15  # Messages per page
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
+
 class ChatHistoryView(APIView):
-    # Optionally remove the permission for testing purposes
-    # permission_classes = [IsAuthenticated]
-
     def get(self, request, receiver_id, *args, **kwargs):
-        # Check if the customUser is set and authenticated
-        print("request ->", request)
-        print("request.customUser ->", request.customUser)
         if request.customUser.is_anonymous:
-            return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "User is not authenticated"}, status=401)
 
+        # Validate receiver
         try:
-            # Try to get the receiver
             receiver = User.objects.get(id=receiver_id)
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found"}, status=404)
 
-        # Retrieve chat history between the authenticated user and the receiver
+        # Fetch messages
         chat_history = Message.objects.filter(
-            sender=request.customUser, receiver=receiver
-        ) | Message.objects.filter(
-            sender=receiver, receiver=request.customUser
-        ).order_by('timestamp')
+            Q(sender=request.customUser, receiver=receiver) |
+            Q(sender=receiver, receiver=request.customUser)
+        ).order_by('-timestamp')  # Most recent messages first
 
-        serializer = MessageSerializer(chat_history, many=True)
-        print('ChatHistoryView data = ->',serializer.data)
-        return Response(serializer.data)
+        # Paginate messages
+        paginator = ChatPagination()
+        paginated_messages = paginator.paginate_queryset(chat_history, request)
+        serialized_messages = MessageSerializer(paginated_messages, many=True)
+
+
+        print('Next page URL:', paginator.get_next_link())  # Check next URL
+        
+        print('ChatHistoryView data = ->',serialized_messages.data)
+        return paginator.get_paginated_response(serialized_messages.data)

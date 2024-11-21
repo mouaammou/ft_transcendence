@@ -135,7 +135,7 @@
 }
 
 .center-chat::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
 }
 
 .groupe_msg_date{
