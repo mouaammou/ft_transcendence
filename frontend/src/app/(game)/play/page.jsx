@@ -3,10 +3,8 @@ import '@/styles/game/mode.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 
 const PlayMode = () => {
-  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
   const router = useRouter(); 
   const [name, setName] = useState('');
@@ -33,9 +31,6 @@ const PlayMode = () => {
     }).then(response => response.json());
     // .then(data => console.log(data));
   };
-
-  if (isConnected)
-    sendMessage(JSON.stringify({ init: 'game' }));
 
 
   return (

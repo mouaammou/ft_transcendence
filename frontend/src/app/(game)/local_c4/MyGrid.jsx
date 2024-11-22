@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from '@/Styles/game/connect_four/MyGrid.module.css'
+import { Modal } from '@/components/modals/Modal';
+import { useRouter } from "next/navigation";
 
 
-const MyGrid = () => {
+const MyGrid = ({username}) => {
     const [circleColor, setCircleColor] = useState(Array(42).fill('#1C4E8E'));
     const [yourTurn, setYourTurn] = useState(true);
     const [winner, setWinner] = useState(null);
@@ -11,6 +13,11 @@ const MyGrid = () => {
     const [locator, setLocator] = useState(350);
     const gridRef = useRef(null);
     const [timer, setTimer] = useState(30);
+    const router = useRouter();
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [msgDescription, setMsgDescription] = useState('');
 
     useEffect(() => {
         const handleMouseMove = (event) => {
@@ -50,10 +57,18 @@ const MyGrid = () => {
     }, [yourTurn]);
 
     function celebration(color) {
-        if (color !== 'draw')
-            setTimeout(() => alert(`Congratulations ${color} player wins`), 1000)
+        let winner = ''
+        if (color === '#BD3B57')
+            winner = username
         else
-            setTimeout(() => alert(`drawwwwwwwww`), 1000)
+            winner = 'Your Friend'
+
+        setTimeout(() => {
+            setModalOpen(true);
+            setModalMessage('Game over!');
+            setMsgDescription(`🎉 Congratulations to ${winner} ! 🎉`
+            );
+        },2000)
         setCircleColor(circleColor);
     }
 
@@ -135,9 +150,47 @@ const MyGrid = () => {
     
     function markWinningDiscs(indices) {
         const newCircleColor = [...circleColor];
+        const winningColor = circleColor[indices[0]];
+        
         indices.forEach((index) => {
-            newCircleColor[index] = 'green';
+            // Apply winning styles
+            newCircleColor[index] = winningColor;
+            
+            // Find the disc element
+            const discElement = document.querySelector(`.${styles.cell}:nth-child(${index + 1}) .${styles.disc}`);
+            
+            if (discElement) {
+                // Add flash animation class
+                discElement.style.animation = 'flash 1s infinite';
+                
+                // Create inner white circle
+                const innerCircle = document.createElement('div');
+                innerCircle.style.cssText = `
+                    position: absolute;
+                    top: 23%;
+                    left: 23%;
+                    width: 50%;
+                    height: 50%;
+                    background-color: #EAE6E6;
+                    border-radius: 50%;
+                    z-index: 99;
+                    animation: innerCircleFadeIn 0.5s forwards;
+                `;
+                
+                // Remove any existing inner circle before adding new one
+                const existingInnerCircle = discElement.querySelector('.inner-circle');
+                if (existingInnerCircle) {
+                    existingInnerCircle.remove();
+                }
+                
+                innerCircle.classList.add('inner-circle');
+                discElement.appendChild(innerCircle);
+                // setTimeout(() => {
+                //     discElement.style.animation = '';
+                // }, 2000);
+            }
         });
+    
         setCircleColor(newCircleColor);
     }
 
@@ -223,6 +276,16 @@ const MyGrid = () => {
                 <p>{yourTurn ? <span>Red</span> : <span>Yellow</span>} Turn</p>
                 <p className={styles.timer}>{timer} s</p>
             </div>
+            <Modal
+                isOpen={modalOpen}
+                title={modalMessage}
+                description={msgDescription}
+                action={() => {
+                    setModalOpen(false);
+                    router.push('/play');
+                    // router.refresh()
+                }}
+            />
         </div>
     );
 }

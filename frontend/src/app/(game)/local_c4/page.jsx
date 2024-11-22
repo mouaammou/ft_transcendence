@@ -3,12 +3,12 @@ import { useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
 import styles from '@/Styles/game/connect_four/connect_four.module.css';
 import PlayerCard from './PlayerCard'
-
+import { useAuth } from '@/components/auth/loginContext.jsx';
 
 
 const ConnectFour = () => {
-
     const imgRef = useRef(null);
+    const { profileData: user_data } = useAuth();
 
     useEffect(() => {
         const updateImage = () => {
@@ -32,20 +32,20 @@ const ConnectFour = () => {
         <div className={styles.container}>
             <div className={styles.playersContainer}>
                 <PlayerCard
-                    avatar="avatar3.jpeg"
-                    name="USER_1"
+                    avatar={user_data?.avatar || 'avatar3.jpeg'}
+                    name={user_data?.username || 'USER_1'}
                     cardStyle={styles.player1Card}
                 />
                 <div className={styles.gridContainer}>
-                    <MyGrid />
+                    <MyGrid username={user_data?.username}/>
                 </div>
                 <PlayerCard
                     avatar="avatar4.jpeg"
-                    name="USER_2"
+                    name="A Friend"
                     cardStyle={styles.player2Card}
                 />
             </div>
-            {/* <div className="flex bg-red-800 m-auto">Player's Turn</div> */}
+
         </div>
     );
 }

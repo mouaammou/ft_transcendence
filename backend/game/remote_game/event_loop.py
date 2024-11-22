@@ -661,6 +661,9 @@ class EventLoopManager:
         player_1_id = event_dict['player_1_id']
         player_2_id = event_dict['player_2_id']
         print(f"player 1 id {player_1_id} player 2 id {player_2_id}")
+        if player_1_id is None or player_2_id is None:
+            print("Error: Missing player IDs in event_dict")
+            return None
         if (cls.already_in_game(player_id)):
             return None
         if (player_2_id in cls.players_in_tournaments):
