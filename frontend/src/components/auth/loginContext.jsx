@@ -39,6 +39,11 @@ export const LoginProvider = ({ children }) => {
 		try {
 			const res = await postData(endpoint, formData);
 			if (res?.status === 200 || res?.status === 201) {
+				if (res?.data?.totp) {
+					// this means user has enabled 2fa
+					// and we need to send totp code with credentials
+					return {"totp":"send credentials with totp code", msg:res?.data?.msg};
+				}
 				setIsAuth(true);
 				Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
 
@@ -52,6 +57,7 @@ export const LoginProvider = ({ children }) => {
 		} catch (error) {
 			console.error('Error during authentication:', error);
 		}
+		return {};
 	};
 
 	const handleError = (res) => {

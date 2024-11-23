@@ -102,7 +102,7 @@ MIDDLEWARE = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	"authentication.middleware.TokenVerificationMiddleWare",
-	"authentication.totp.middleware.TwoFactorAuthenticationMiddleware",
+	# "authentication.totp.middleware.TwoFactorAuthenticationMiddleware", 2fa middleware
 ]
 
 ROOT_URLCONF = 'core.urls'

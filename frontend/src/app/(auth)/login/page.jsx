@@ -8,9 +8,11 @@ import Image from 'next/image';
 import '@/styles/auth/login.css';
 
 export default function LoginPage() {
+	const [totp, setTotp] = useState(false);
 	const [formData, setFormData] = useState({
 		username: '',
 		password: '',
+		// 2fa_code: '', will be added if user enabled 2fa
 	});
 
 	const { errors, AuthenticateTo } = useAuth();
@@ -21,7 +23,13 @@ export default function LoginPage() {
 	const LoginTo = async e => {
 		e.preventDefault();
 		console.log('formData: in login::  ', formData);
-		await AuthenticateTo('/login', formData);edf C
+		let resp = await AuthenticateTo('/login', formData);
+		if (resp?.totp) {
+			setTotp(true);
+			// setFormData({...formData, 2fa_code: '123456'});
+			// resp = await AuthenticateTo('/login', formData);
+		}
+		console.log('resp: in login::  ', resp);
 	};
 
 	return (
@@ -37,6 +45,7 @@ export default function LoginPage() {
 				name="username"
 				placeholder="Enter Your Username"
 				onChange={handleChange}
+				disabled={totp}
 			/>
 			<input
 				type="password"
@@ -44,9 +53,17 @@ export default function LoginPage() {
 				name="password"
 				placeholder="Enter Your Password"
 				onChange={handleChange}
+				disabled={totp}
 			/>
+			{ totp && <input
+				type="text"
+				className="form-control"
+				name="totp_code"
+				placeholder="Enter Two Factor Code"
+				onChange={handleChange}
+			/>}
 			<button type="submit" className="">
-				Login
+				{totp ? 'Verify 2FA Code' : 'Login'}
 			</button>
 			<img src="/login-with.svg" alt="login-with" className="sign-wit" />
 			<div className="logos">
