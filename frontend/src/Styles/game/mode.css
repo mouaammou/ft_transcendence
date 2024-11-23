@@ -53,18 +53,7 @@
   height: 100%;
 }
 
-.big-button {
-  font-family: 'fredoka';
-  font-weight: 600;
-  font-size: 30px;
-  color: var(--wt);
-  background-color: var(--principaleColor);
-  width: 282px;
-  height: 92px;
-  border-radius: 14px;
-  border: 1px solid white;
-  cursor: pointer;
-}
+
 
 @media (max-width: 1550px) {
   .main-page .transparent {

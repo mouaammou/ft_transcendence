@@ -10,7 +10,7 @@ const PlayMode = () => {
   const [name, setName] = useState('');
 
   const handlePlayFour = () => {
-    router.push('/waiting_random_c4');
+    router.push('/connect_four_mode');
   }
 
   const handlePlayRandomGame = () => {
@@ -47,10 +47,13 @@ const PlayMode = () => {
             <p>LOCAL GAME</p>
           </div>
           <div className="right-mode" onClick={handlePlayFour}  >
-            <img style={{
-              borderRadius: '20px',
+            <img 
+            className='rounded-lg'
+            style={{
+              borderRadius: '20px !important',
               filter: 'brightness(80%)',
-            }} src="1111.svg" alt="connect4-game" />
+            }} 
+            src="1111.svg" alt="connect4-game" />
             <p className='relative'>CONNECT FOUR</p>
           </div>
         </div>
