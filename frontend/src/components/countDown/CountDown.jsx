@@ -21,7 +21,7 @@ const CountdownTimer = () => {
   const remainingSeconds = seconds % 60;
 
   return (
-    <div className="vs-time">
+    <div className="w-fit">
       {minutes}:{remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}
     </div>
   );

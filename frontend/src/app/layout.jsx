@@ -26,9 +26,9 @@ export default function RootLayout({ children }) {
 				<WebSocketProvider url="ws://localhost:8000/ws/online/">
 					<LoginProvider>
 						<NotificationProvider>
-							<div className='w-full h-full'>
+							<div className='w-full h-full max-w-[100vw]'>
 								{/* <Sidebar /> */}
-								<Navbar />
+								{/* <Navbar /> */}
 								{children}
 							</div>
 						</NotificationProvider>

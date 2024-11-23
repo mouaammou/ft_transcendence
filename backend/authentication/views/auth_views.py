@@ -46,6 +46,8 @@ class Login(APIView):
 
 		if user is not None:
 			refresh = RefreshToken.for_user(user)
+			if user.totp_enabled:
+				refresh["2fa_validated"] = False
 			response = set_jwt_cookies(Response(), refresh)
 			response.status_code = status.HTTP_200_OK
 			response.data = UserSerializer(user).data

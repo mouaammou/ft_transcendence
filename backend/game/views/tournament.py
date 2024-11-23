@@ -68,7 +68,14 @@ class TournamentNextMatchPlayersView(APIView):
             # EventLoopManager.play(request.unique_key)
             if tournament.finished:
                 return Response({"left": 'None', "right": 'None', 'title': tournament.title, 'finished': tournament.finished}, status=status.HTTP_200_OK)
-            return Response({"left": players[0], "right": players[1], 'title': tournament.title, 'finished': tournament.finished}, status=status.HTTP_200_OK)
+            return Response({
+                    "left": players[0],
+                    "right": players[1],
+                    'title': tournament.title,
+                    'finished': tournament.finished,
+                    'match_index': tournament.match_index
+                },
+                status=status.HTTP_200_OK)
 
         except LocalTournament.DoesNotExist:
             return Response({"error": "Tournament not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -21,6 +21,44 @@ import Image from 'next/image';
 // import Image from 'next/image';
 
 // const board = '/board.svg';
+const MATCHES = {
+  1: ['match1_nickname1', 'match1_nickname2', 'match1_winner'],
+  2: ['match2_nickname1', 'match2_nickname2', 'match2_winner'],
+  3: ['match3_nickname1', 'match3_nickname2', 'match3_winner'],
+  4: ['match4_nickname1', 'match4_nickname2', 'match4_winner'],
+  5: ['match1_winner', 'match2_winner', 'match5_winner'],
+  6: ['match3_winner', 'match4_winner', 'match6_winner'],
+  7: ['match5_winner', 'match6_winner', 'match7_winner'],
+}
+
+const getNextMatch = (tournament) => {
+  const match_index = tournament.match_index;
+  if (tournament.finished)
+      return tournament.match7_winner;
+  const match = MATCHES[match_index];
+  const [nickname1, nickname2, _] = match;
+
+  return {left: tournament[nickname1] ,right: tournament[nickname2]};
+}
+
+const rounds = [
+  'Opening Matches',
+  'Semifinals',
+  'Finals',
+  'Champion'
+]
+
+const getRound = (match_index) => {
+  if (match_index <= 4) {
+      return rounds[0];
+  } else if (match_index <= 6) {
+      return rounds[1];
+  } else if (match_index === 7) {
+      return rounds[2];
+  } else {
+      return rounds[3];
+  }
+}
 
 
 
@@ -78,14 +116,11 @@ export default function Board({ params })
         let response = await fetchTournamentDetail(identical.id);
         // console.log(response);
         setTournament(response);
-        response = await fetchTournamentMatchPlayers(identical.id);
-        console.log("======>");
-        console.log(response);
-        setLeftUser(response.left);
-        setRightUser(response.right);
         setTitle(response.title);
         setFinished(response.finished);
-  
+        const next_match = getNextMatch(response);
+        setLeftUser(next_match.left);
+        setRightUser(next_match.right);
       } catch (error) {
         console.log('Error:', error);
       }
@@ -100,11 +135,16 @@ export default function Board({ params })
       </h1>
       <div className="overflow-x-auto max-w-full scrollbar scrollbar-thumb-rounded-none scrollbar-track-white/10 scrollbar-thumb-white/50">
 
-        <div className="mt-16 max-w-max mx-auto">
+        <div className="mt-16 h-auto max-w-max w-[1010px] mx-auto">
 
-      
+          <div className="flex justify-center items-center font-thin mt-14 px-8 pt-4 bg-white/10 lg:rounded-t-lg ">
+            <div className="flex-1"><span className='ml-4'>{rounds[0]}</span></div>
+            <div className="flex-1 "><span className='ml-14'>{rounds[1]}</span></div>
+            <div className="flex-1"><span className='ml-24'>{rounds[2]}</span></div>
+            <div className="flex-1"><span className='ml-11'>{rounds[3]}</span></div>
+          </div>
           <svg
-            className="mx-auto bg-white/10 p-8 lg:rounded-lg"
+            className="mx-auto bg-white/10 p-8 lg:rounded-b-lg"
             width="1010"
             height="700"
             viewBox="0 0 1310 741"
@@ -472,7 +512,7 @@ export default function Board({ params })
         </div>
       </div>
       <div className="flex flex-col justify-between w-full h-full mt-16">
-        {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight text-black bg-white rounded-full w-96 mx-auto mt-8 p-4">
+        {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight text-black bg-white rounded-full max-w-96 w-full mx-auto mt-8 p-4">
           <div className="font-bold pr-4 capitalize">{(leftUser && rightUser) && 'Play' || 'play next match'}</div>
            {(leftUser && rightUser) && <> <div>{leftUser}</div>
             <Image src="/vs.svg" className='filter invert mx-2' alt="vs" width={30} height={30}/>

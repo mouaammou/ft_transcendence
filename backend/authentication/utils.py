@@ -31,6 +31,15 @@ def set_jwt_cookies(response, refresh):
 		httponly=True,
 		max_age= api_settings.ACCESS_TOKEN_LIFETIME,  # 24 hours
 	)
+	if refresh.get('2fa_validated') is not None:
+		# max age inifinite
+		response.set_cookie(
+			key="2fa_validated",
+			value=str(refresh['2fa_validated']),
+			samesite="Lax",#??
+			httponly=True,
+			max_age= 60*60*24*365*100,  # 100 years
+		)
 	return response
 
 
