@@ -1,10 +1,12 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { apiValidateTwoFactorAuth } from '@/services/twoFactorAuthApi';
+import { useRouter } from 'next/navigation';
 
 const TwoFactorAuthPage = () => {
+    const router = useRouter();
     const [code, setCode] = useState("");
 
     const handleInputChange = (event) => {
@@ -15,6 +17,12 @@ const TwoFactorAuthPage = () => {
     const handleValidate = async () => {
         const response = await apiValidateTwoFactorAuth(code);
         console.log(response);
+        if (response.status === 200) {
+            router.push('/profile');
+        }
+        else if (response.status === 401) {
+            router.push('/profile');
+        }
     }
 
     return (

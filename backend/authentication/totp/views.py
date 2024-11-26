@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
+from authentication.utils import set_jwt_cookies
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 import re
 import pyotp
@@ -11,6 +14,14 @@ import qrcode
 import io
 import base64
 from PIL import Image
+import secrets
+
+
+
+import hmac
+import hashlib
+import base64
+import time
 
 
 User = get_user_model()
@@ -113,7 +124,7 @@ class TwoFactorAuthView(APIView):
         try:
             data = JSONParser().parse(request)
         except Exception:
-            return Response({"msg": "Invalid JSON data!"}, status=400)
+            return Response({"msg": "Invalid JSON data!"}, status=status.HTTP_400_BAD_REQUEST)
         
         code = data.get("code")
         if not code:
@@ -137,4 +148,102 @@ class TwoFactorAuthView(APIView):
         data = {}
         data["msg"] = "2FA is not enabled!"
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class User2faVerificationView(APIView):
+    # SECRET_KEY = secrets.token_bytes(32)
+    SECRET_KEY = b"2fa_secret_key"
+    TOKEN_LIFETIME = 120.0 # 2 minutes
+    TOKEN_NAME = "2fa_token" # cookie name
+    DELAY_RESPONSE_TIME = 1.0 # seconds to avoid bruteforce attacks
+
+    def post(self, request):
+        token = request.COOKIES.get(__class__.TOKEN_NAME)
+        is_valid, message_or_userid = self.verify_userid(token)
+        user_id = __class__.decode_userid(token)
+        if not is_valid or user_id is None:
+            # invlaid token so remove the cookie
+            # and front end will redirect to login page
+            response = Response(status=status.HTTP_401_UNAUTHORIZED)
+            response.delete_cookie(__class__.TOKEN_NAME) 
+            response.data = {"msg": message_or_userid}
+            return response
+
+        user = User.objects.get(id=user_id)
+        if user is None or user.is_anonymous:
+            return Response({"msg": "User not found!"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.totp_enabled:
+            return Response({"msg": "You dont have the permissions to call this endpoint!"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        totp_code = request.data.get("totp_code")
+        if not totp_code:
+            return Response({"msg": "totp_code is required!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        time.sleep(__class__.DELAY_RESPONSE_TIME)
+
+        if not validate_totp(user.totp_secret, totp_code):
+            return Response({"msg": "invalid totp code!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # set jwt cookies
+        response = Response()
+        response.delete_cookie(__class__.TOKEN_NAME)
+        response = set_jwt_cookies(response, RefreshToken.for_user(user))
+        response.status_code = status.HTTP_200_OK
+        response.data = {"success":"2fa verified"}
+        return response
+
+    @staticmethod
+    def encode_userid(userid, expiration_time=None):
+        """Encode the userid with a secure HMAC signature and expiration."""
+        if expiration_time is None:
+            expiration_time = int(time.time()) + __class__.TOKEN_LIFETIME
+        data = f"{userid}:{expiration_time}"
+        signature = hmac.new(__class__.SECRET_KEY, data.encode(), hashlib.sha256).digest()
+
+        token = f"{data}:{base64.urlsafe_b64encode(signature).decode()}"
+        return base64.urlsafe_b64encode(token.encode()).decode(), signature
+
+    @staticmethod
+    def verify_userid(token):
+        """Verify the token and check the expiration."""
+        try:
+            decoded_token = base64.urlsafe_b64decode(token).decode()
+            userid, expiration_time, provided_signature = decoded_token.rsplit(":", 2)
+
+            if float(expiration_time) < time.time():
+                return False, "Token expired"
+            
+            provided_signature = base64.urlsafe_b64decode(provided_signature)
+            _, expected_signature = __class__.encode_userid(userid, expiration_time)
+
+            if hmac.compare_digest(expected_signature, provided_signature):
+                return True, userid
+            else:
+                return False, "Invalid signature"
+        except Exception as e:
+            return False, "Invalid 2fa token format"
     
+    @staticmethod
+    def decode_userid(token):
+        """Decode the token and return the userid."""
+        try:
+            decoded_token = base64.urlsafe_b64decode(token).decode()
+            userid, _, _ = decoded_token.rsplit(":", 2)
+            int(userid)
+            return userid
+        except Exception as e:
+            return None
+    
+
+def get_2fa_cookie_token_for_user(user_id) -> dict:
+    # valid for __class__.TOKEN_LIFETIME seconds
+    # add max age to cookie
+    return {
+        "key": User2faVerificationView.TOKEN_NAME,
+        "value": User2faVerificationView.encode_userid(user_id)[0], # return (token, signature)
+        "max_age": User2faVerificationView.TOKEN_LIFETIME,
+        "httponly": True,
+        "samesite": "Lax",
+    }

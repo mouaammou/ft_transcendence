@@ -22,7 +22,8 @@ class TokenVerificationMiddleWare:
 		unrestricted_paths = [
 			"/auth/login/42", "/auth/callback/42",
 			"/signup", "/login", "/logout",
-			"/token", "/token/refresh"
+			"/token", "/token/refresh",
+			'/2fa/verify/user/', '/2fa'
 		]
 		request.customUser = AnonymousUser()
 		# request.jwt_payload = {}

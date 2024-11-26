@@ -41,7 +41,7 @@ export default function LoginPage() {
 			<p>Sign in to your account</p>
 			<input
 				type="text"
-				className="form-control"
+				className="form-control  disabled:opacity-50"
 				name="username"
 				placeholder="Enter Your Username"
 				onChange={handleChange}
@@ -49,7 +49,7 @@ export default function LoginPage() {
 			/>
 			<input
 				type="password"
-				className="form-control"
+				className="form-control  disabled:opacity-50"
 				name="password"
 				placeholder="Enter Your Password"
 				onChange={handleChange}

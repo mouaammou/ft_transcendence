@@ -10,8 +10,23 @@ from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+from authentication.totp.views import get_2fa_cookie_token_for_user
+
+import hmac
+import hashlib
+import base64
+
+
 CustomUser = get_user_model()
 logger = logging.getLogger(__name__)
+
+import hmac
+import hashlib
+import base64
+import time
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 
 class OAuth42Login(APIView):
 	def get(self, request):
@@ -67,6 +82,12 @@ class OAuth42Callback(APIView):
 				user = CustomUser.objects.get(user42=user_data['login'])
 				response.status = status.HTTP_200_OK
 				response.data = {"success":"already exists"}
+				if user is not None and user.totp_enabled:
+					response.data = {"totp":"2fa verification is required!"}
+					cookie_data = get_2fa_cookie_token_for_user(user.id)
+					response.set_cookie(**cookie_data)
+					return response
+					
 			except CustomUser.DoesNotExist:
 				try:
 					user = CustomUser.objects.create(**user_data_set)

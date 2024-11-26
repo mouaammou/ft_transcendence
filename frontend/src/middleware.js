@@ -6,6 +6,12 @@ export async function middleware(request) {
 
 	const response = NextResponse.next();
 
+	//check if cookie 2fa is set, khlih idoz
+	const is2fa = request.cookies.get("2fa_token");
+	console.log("is2fa: ", is2fa);
+	if (is2fa)
+		return response
+
 
 	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
 	const isRoot = request.nextUrl.pathname === "/";
@@ -65,5 +71,6 @@ export const config = {
 		"/profile/:path*",
 		"/game/:path*",
 		"/chat/:path*",
+		"/2fa/:path*"
 	],
 };
