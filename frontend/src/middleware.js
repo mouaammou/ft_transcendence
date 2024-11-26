@@ -8,9 +8,10 @@ export async function middleware(request) {
 
 	//check if cookie 2fa is set, khlih idoz
 	const is2fa = request.cookies.get("2fa_token");
-	console.log("is2fa: ", is2fa);
-	if (is2fa)
-		return response
+	
+	if (is2fa && !request.nextUrl.pathname !== "/2fa") {
+		return NextResponse.redirect(new URL("/2fa", request.url));
+	}
 
 
 	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
@@ -71,6 +72,6 @@ export const config = {
 		"/profile/:path*",
 		"/game/:path*",
 		"/chat/:path*",
-		"/2fa/:path*"
+		// "/2fa/:path*"
 	],
 };

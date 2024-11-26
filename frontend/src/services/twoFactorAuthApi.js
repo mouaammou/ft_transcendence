@@ -13,28 +13,7 @@ const api = axios.create({
     }
 });
 
-export const apiEnableTwoFactorAuth = async (code) => {
-    let data = null;
-    try {
-        const response = await api.post('enable/', {code: code});
-        response.data['status'] = response.status;
-        data = response.data;
-        return response.data;
-    } catch (error) {
-        if (error.response) {
-            error.response.data['status'] = error.response.status;
-            data = error.response.data;
-            return error.response.data
-        } else {
-            data = {status: 500, msg: "No response from server"};
-            return data;
-        }
-    }
-    finally {
-        console.log("--response--");
-        console.log(data);
-    }
-};
+
 
 export const apiValidateTwoFactorAuth = async (code) => {
     let data = null;
@@ -58,6 +37,30 @@ export const apiValidateTwoFactorAuth = async (code) => {
         console.log(data);
     }
 };
+
+export const apiEnableTwoFactorAuth = async (code) => {
+    let data = null;
+    try {
+        const response = await api.post('enable/', {code: code});
+        response.data['status'] = response.status;
+        data = response.data;
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            error.response.data['status'] = error.response.status;
+            data = error.response.data;
+            return error.response.data
+        } else {
+            data = {status: 500, msg: "No response from server"};
+            return data;
+        }
+    }
+    finally {
+        console.log("--response--");
+        console.log(data);
+    }
+};
+
 
 export const apiDisableTwoFactorAuth = async (code) => {
     let data = null;

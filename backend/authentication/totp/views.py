@@ -152,8 +152,8 @@ class TwoFactorAuthView(APIView):
 
 
 class User2faVerificationView(APIView):
-    # SECRET_KEY = secrets.token_bytes(32)
-    SECRET_KEY = b"2fa_secret_key"
+    SECRET_KEY = secrets.token_bytes(32)
+    # SECRET_KEY = b"2fa_secret_key"
     TOKEN_LIFETIME = 120.0 # 2 minutes
     TOKEN_NAME = "2fa_token" # cookie name
     DELAY_RESPONSE_TIME = 1.0 # seconds to avoid bruteforce attacks

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { apiValidateTwoFactorAuth } from '@/services/twoFactorAuthApi';
 import { useRouter } from 'next/navigation';
 
