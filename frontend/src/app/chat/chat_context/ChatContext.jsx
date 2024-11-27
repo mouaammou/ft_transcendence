@@ -58,6 +58,12 @@ export const ChatProvider = ({ children }) => {
     const [debouncedSearchTerm] = useDebounce(searchTerm, 400); // Delay of 300ms
 
 
+    const [contactUsername, setContactUsername] = useState(null); // Store contact username
+
+    const [onlineUsers, setOnlineUsers] = useState([]); // Separate list for online users
+
+    const selectedUserRef = useRef(null);
+
     // ************************ end ***********************
 
 
@@ -132,35 +138,279 @@ export const ChatProvider = ({ children }) => {
     //     }
     //   };
 
+    // const mergeAndSortMessages = (existing, incoming) => {
+    //     const merged = { ...existing }; // Start with existing messages
+
+        
+    //     console.log('existing message befor merge', existing);
+    //     console.log('incoming message befor merge', incoming);
+    //     // Merge incoming messages
+    //     for (const [date, newMessages] of Object.entries(incoming)) {
+    //         const currentMessages = merged[date] || []; // Get existing messages for the date
+    //         const combined = [...currentMessages, ...newMessages]; // Combine old and new messages
+    
+    //         // Sort messages within the date by timestamp (oldest to newest)
+    //         merged[date] = combined.sort(
+    //             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //         );
+    //     }
+    
+    //     // Sort the dates themselves (keys) in ascending order
+    //     const sortedDates = Object.keys(merged).sort(
+    //         (a, b) => new Date(a) - new Date(b)
+    //     );
+    
+    //     // Rebuild the sorted object
+    //     const sortedMessages = {};
+    //     for (const date of sortedDates) {
+    //         sortedMessages[date] = merged[date];
+    //     }
+    //     console.log('sortedMessages after merge', sortedMessages);
+    //     return sortedMessages;
+    // };
+
+
+    // old the first methode  
+    // const mergeAndSortMessages = (existing, incoming) => {
+    //     const merged = { ...existing }; // Start with existing messages
+    
+    //     console.log('existing message before merge', existing);
+    //     console.log('incoming message before merge', incoming);
+    
+    //     // Merge incoming messages
+    //     for (const [date, newMessages] of Object.entries(incoming)) {
+    //         const currentMessages = merged[date] || []; // Get existing messages for the date
+    //         const combined = [
+    //             ...currentMessages,
+    //             ...newMessages.filter(
+    //                 (newMessage) =>
+    //                     !currentMessages.some(
+    //                         (existingMessage) => existingMessage.timestamp === newMessage.timestamp
+    //                     ) // Avoid adding duplicate messages based on timestamp
+    //             ),
+    //         ]; // Combine old and new messages without duplicates
+    
+    //         // Sort messages within the date by timestamp (oldest to newest)
+    //         merged[date] = combined.sort(
+    //             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //         );
+    //     }
+    
+    //     // Sort the dates themselves (keys) in ascending order
+    //     const sortedDates = Object.keys(merged).sort(
+    //         (a, b) => new Date(a) - new Date(b)
+    //     );
+    
+    //     // Rebuild the sorted object
+    //     const sortedMessages = {};
+    //     for (const date of sortedDates) {
+    //         sortedMessages[date] = merged[date];
+    //     }
+    
+    //     console.log('sortedMessages after merge', sortedMessages);
+    //     return sortedMessages;
+    // };
+
+
+    // ----------- the new mehode duplicate 1 in chat other no ----------------
+
+
+    // const normalizeMessage = (message) => {
+    //     // Normalize the message to ensure it has the same structure for comparison
+    //     return {
+    //         message: message.message,
+    //         sender: message.sender,
+    //         receiver: message.receiver,
+    //         timestamp: new Date(message.timestamp).toISOString(), // Normalize to ISO string in UTC
+    //     };
+    // };
+    
     const mergeAndSortMessages = (existing, incoming) => {
         const merged = { ...existing }; // Start with existing messages
-    
+        
+        console.log('existing message before merge', existing);
+        console.log('incoming message before merge', incoming);
+
+        
         // Merge incoming messages
         for (const [date, newMessages] of Object.entries(incoming)) {
             const currentMessages = merged[date] || []; // Get existing messages for the date
-            const combined = [...currentMessages, ...newMessages]; // Combine old and new messages
+            
+            // Normalize both existing and new messages before comparing
+            // const normalizedCurrentMessages = currentMessages.map(normalizeMessage);
+            // const normalizedNewMessages = newMessages.map(normalizeMessage);
+
+
+            // console.log('normalizedCurrentMessages', normalizedCurrentMessages);
+            // console.log('normalizedNewMessages', normalizedNewMessages);
     
+            // const combined = [
+            //     ...normalizedCurrentMessages,
+            //     ...normalizedNewMessages.filter(
+            //         (newMessage) =>
+            //             !normalizedCurrentMessages.some(
+            //                 (existingMessage) =>
+            //                     existingMessage.timestamp === newMessage.timestamp && 
+            //                     existingMessage.message === newMessage.message &&
+            //                     existingMessage.sender === newMessage.sender &&
+            //                     existingMessage.receiver === newMessage.receiver
+            //             )
+            //     ),
+            // ]; // Combine old and new messages without duplicates
+            const combined = [...currentMessages, ...newMessages];
+        
             // Sort messages within the date by timestamp (oldest to newest)
             merged[date] = combined.sort(
                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
             );
         }
-    
+        
         // Sort the dates themselves (keys) in ascending order
         const sortedDates = Object.keys(merged).sort(
             (a, b) => new Date(a) - new Date(b)
         );
-    
+        
         // Rebuild the sorted object
         const sortedMessages = {};
         for (const date of sortedDates) {
             sortedMessages[date] = merged[date];
         }
-    
+        
+        console.log('sortedMessages after merge', sortedMessages);
         return sortedMessages;
     };
     
     
+    // ----------------   the last methode  ----------------
+
+    // const mergeAndSortMessages = (existing, incoming, selectedUserRef, receiver_id) => {
+    //     const merged = { ...existing }; // Start with existing messages
+    //     const shouldMerge = selectedUserRef.current && selectedUserRef.current.id === receiver_id;
+    
+    //     console.log('existing message before merge', existing);
+    //     console.log('incoming message before merge', incoming);
+    
+    //     for (const [date, newMessages] of Object.entries(incoming)) {
+    //         const currentMessages = merged[date] || []; // Get existing messages for the date
+    
+    //         if (shouldMerge) {
+    //             const combined = [
+    //                 ...currentMessages,
+    //                 ...newMessages.filter(
+    //                     (newMessage) =>
+    //                         !currentMessages.some(
+    //                             (existingMessage) =>
+    //                                 existingMessage.timestamp === newMessage.timestamp &&
+    //                                 existingMessage.message === newMessage.message &&
+    //                                 existingMessage.sender === newMessage.sender &&
+    //                                 existingMessage.receiver === newMessage.receiver
+    //                         )
+    //                 ),
+    //             ];
+    //             // Sort messages within the date by timestamp (oldest to newest)
+    //             merged[date] = combined.sort(
+    //                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //             );
+    //         } else {
+    //             // Skip merging; just sort existing messages
+    //             merged[date] = currentMessages.sort(
+    //                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //             );
+    //         }
+    //     }
+    
+    //     // Sort the dates themselves (keys) in ascending order
+    //     const sortedDates = Object.keys(merged).sort(
+    //         (a, b) => new Date(a) - new Date(b)
+    //     );
+    
+    //     // Rebuild the sorted object
+    //     const sortedMessages = {};
+    //     for (const date of sortedDates) {
+    //         sortedMessages[date] = merged[date];
+    //     }
+    
+    //     console.log('sortedMessages after merge', sortedMessages);
+    //     return sortedMessages;
+    // };
+    
+
+    // Duplicate Messages in groupMessagesByDate
+    // const mergeAndSortMessages = (existing, incoming) => {
+    //     // Check if the incoming messages are from WebSocket (based on structure)
+    //     const isWebSocketMessage = Object.values(existing).some(messages =>
+    //         messages.some(msg => 'sender_id' in msg || 'receiver_id' in msg || 'unread_count' in msg)
+    //     );
+    
+    //     // If incoming messages are WebSocket-style, skip merging
+    //     if (isWebSocketMessage) {
+    //         console.log('skip merging inside mergeAndSortMessages');
+    //         return incoming; // Use incoming as-is, skipping the merge
+    //     }
+    //     console.log('she dont skip merging inside mergeAndSortMessages');
+    //     // Otherwise, proceed with the normal merge logic
+    //     const merged = { ...existing };
+    
+    //     for (const [date, newMessages] of Object.entries(incoming)) {
+    //         const currentMessages = merged[date] || [];
+    
+    //         // Combine and sort
+    //         merged[date] = [...currentMessages, ...newMessages].sort(
+    //             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //         );
+    //     }
+    
+    //     // Sort dates and rebuild the messages object
+    //     const sortedDates = Object.keys(merged).sort((a, b) => new Date(a) - new Date(b));
+    //     const sortedMessages = {};
+    //     sortedDates.forEach(date => {
+    //         sortedMessages[date] = merged[date];
+    //     });
+    
+    //     return sortedMessages;
+    // };
+
+    // const mergeAndSortMessages = (existing, incoming) => {
+    //     // Check if the incoming messages are from WebSocket (based on structure)
+
+    //     console.log("existing mesasge inside mergeAndSortMessages", existing);
+    //     console.log("incoming message inside mergeAndSortMessages", incoming);
+    //     const isWebSocketMessage = Object.values(existing).some(messages =>
+    //         messages.some(msg => 'sender_id' in msg || 'receiver_id' in msg || 'unread_count' in msg)
+    //     );
+    
+    //     // If WebSocket messages, skip the merge
+    //     const merged = isWebSocketMessage ? incoming : { ...existing };
+    
+    //     // Perform the merge if not WebSocket messages
+    //     if (!isWebSocketMessage) {
+    //         console.log("the merge is done");
+    //         for (const [date, newMessages] of Object.entries(incoming)) {
+    //             const currentMessages = merged[date] || [];
+    //             // const combined = [...currentMessages, ...newMessages]; // Combine old and new messages
+    //             merged[date] = [...currentMessages, ...newMessages];
+                
+    //             // // Sort messages within the date by timestamp (oldest to newest)
+    //             // merged[date] = combined.sort(
+    //             //     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    //             // );
+    //         }
+    //     }
+    //     else
+    //         console.log("the merge didn't happen.");
+    //     // Sort messages within each date by timestamp
+    //     Object.keys(merged).forEach(date => {
+    //         merged[date] = merged[date].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    //     });
+    //     // return sortedMessages;
+    //     const sortedDates = Object.keys(merged).sort((a, b) => new Date(a) - new Date(b));
+    //     const sortedMessages = {};
+    //     sortedDates.forEach(date => {
+    //         sortedMessages[date] = merged[date];
+    //     });
+
+    //     return sortedMessages;
+    // };
 
 
     // Fetch chat history (handles both initial and pagination requests)
@@ -178,22 +428,47 @@ export const ChatProvider = ({ children }) => {
             const url = `/chat-history/${receiver_id}?page=${page}`;
             const response = await getData(url);
 
+
+            
             // Check if the response is valid and contains results
             if (response.status === 200 && response.data.results) {
                 const messagesList = response.data.results;
                 const groupedMessages = groupMessagesByDate(messagesList);
                 console.log('****** groupedMessages *** => ', groupedMessages)
+                console.log('this is in fetchChatHistory');
                 if (page === 1) {
-                    setMessages((prevMessages) => ({
-                        ...prevMessages,
-                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
-                    }));
+                    
+                    // setMessages((prevMessages) => ({
+                    //     ...prevMessages,
+                    //     [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages, selectedUserRef, receiver_id),
+                    // }));
+
+                    setMessages({
+                        [receiver_id]: mergeAndSortMessages({}, groupedMessages, selectedUserRef, receiver_id),
+                    });
                 } else {
                     setMessages((prevMessages) => ({
                         ...prevMessages,
-                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
+                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages, selectedUserRef, receiver_id),
                     }));
                 }
+                console.log('end in fetchChatHistory');
+
+                // // for debuge  prevMessages
+                // setMessages((prevMessages) => {
+                //     // Log the previous messages for debugging
+                //     console.log('****** prevMessages (before merge) *** => ', prevMessages);
+    
+                //     const updatedMessages = {
+                //         ...prevMessages,
+                //         [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
+                //     };
+    
+                //     // Log the updated messages for debugging
+                //     console.log('****** updatedMessages (after merge) *** => ', updatedMessages);
+    
+                //     return updatedMessages;
+                // });
 
                 // Correctly update the nextPage state
                 const nextPageUrl = response.data.next;
@@ -224,21 +499,25 @@ export const ChatProvider = ({ children }) => {
         setIsChatVisible(true);
 
         console.log("******************** user component in handleUserClick: ***** ", user.id);
-        if (selectedUser && selectedUser?.id ) {
-            console.log("******************** selectedUser after initialize it in handleUserClick: ***** ", selectedUser.id);
-        }
-        else
-            console.log("******************** selectedUser is not initialized yet in handleUserClick: ***** ");
+        // if (selectedUser && selectedUser?.id ) {
+        //     console.log("******************** selectedUser after initialize it in handleUserClick: ***** ", selectedUser.id);
+        // }
+        // else
+        //     console.log("******************** selectedUser is not initialized yet in handleUserClick: ***** ");
 
         if (selectedUser && selectedUser.id === user.id) {
         //   // If the selected user is already the same, don't  Fetch chat history
         return;
         }
 
-        // fetchChatHistory(user.id, 1, false); // Fetch chat history for selected user
-        // setNextPage(null); // Reset nextPage for the selected user
-        // fetchChatHistory(user.id, 1);
+        setIsChatVisible(true);
         fetchChatHistory(user.id, 1); // Always start with page 1
+
+
+
+        selectedUserRef.current = user; // Update the ref with the selected user
+
+        setContactUsername(user.username); // Store the username for reference
 
         // Reset nextPage for this user
         setNextPage(null);
@@ -246,12 +525,17 @@ export const ChatProvider = ({ children }) => {
         // add new
         // Scroll to bottom after messages load
         setTimeout(() => {
-            if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+            // if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+            scrollToEnd();
         }, 100);
 
         if (socket) {
             console.log('Sending mark_read to backend');
-            socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
+            // socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
+            
+            // add contact
+            socket.send(JSON.stringify({ mark_read: true, contact: user.username }));
+
     
             // Reset unread count for this user by setting unreadCount to 0 in last_message
             setAllUsers((prevUsers) =>
@@ -287,10 +571,14 @@ export const ChatProvider = ({ children }) => {
     console.log('Socket:', socket);
     console.log('Socket Ready State:', socket ? socket.readyState : 'Socket is null');
 
+
+    
     if (text.trim() && selectedUser && socket) {
+        console.log('selectedUser.username =>' , selectedUser.username)
         const messageData = {
             sender: currentUser.username,
             receiver: selectedUser.username,
+            // receiver: contactUsername,
             message: text.trim(),
         };
 
@@ -359,18 +647,6 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
-    // *******  old methode ****** 
-    // Update the `last_message` field in `allUsers` when a new message is sent or received
-    // const updateLastMessage = (userId, message, is_read, timestamp) => {
-    //     setAllUsers((prevUsers) =>
-    //         prevUsers.map((user) =>
-    //             user.friend.id === userId
-    //                 ? { ...user, last_message: { message, is_read, timestamp } }
-    //                 : user
-    //         )
-    //     );
-    // };
-
     // *********** end old methode ********
 
     const updateLastMessage = (userId, message, is_read, timestamp) => {
@@ -411,61 +687,77 @@ export const ChatProvider = ({ children }) => {
 
         ws.onmessage = (event) => {
             const receivedData = JSON.parse(event.data);
-            const { sender, receiver, message, receiver_id, sender_id, typing , mark_read} = receivedData;
+            const { sender, receiver, message, receiver_id, sender_id, typing , mark_read, contact } = receivedData;
 
             // Handle incoming messages
             if (message) {
 
                 console.log('Incoming message:', message);
+
                 
-                setMessages((prevMessages) => {
-                    const updatedMessages = { ...prevMessages };
-        
-                    // Ensure that both sender and receiver messages are updated correctly
-                    if (!updatedMessages[sender_id]) {
-                        updatedMessages[sender_id] = {};
-                    }
-        
-                    if (!updatedMessages[receiver_id]) {
-                        updatedMessages[receiver_id] = {};
-                    }
-        
-                    const messageDate = formatDate(receivedData.timestamp);
-        
-                    // Add message to the correct date bucket for both sender and receiver
-                    if (!updatedMessages[sender_id][messageDate]) {
-                        updatedMessages[sender_id][messageDate] = [];
-                    }
-        
-                    if (!updatedMessages[receiver_id][messageDate]) {
-                        updatedMessages[receiver_id][messageDate] = [];
-                    }
-        
-                    updatedMessages[sender_id][messageDate].push(receivedData); // Sender's message
-                    updatedMessages[receiver_id][messageDate].push(receivedData); // Receiver's message
+                // console.log('selectedUserRef.current.id =>', selectedUserRef.current);
+                // console.log('receiver_id =>', receiver_id);
+                // if (!selectedUserRef.current || selectedUserRef.current.id !== receiver_id) {
+                //     console.log('Receiver is different from selectedUserRef, not updating messages.');
+                //     return;
+                // }
+                
+                // ***** first methode
+                // setMessages((prevMessages) => {
+                //     const updatedMessages = { ...prevMessages };
                     
-                    console.log('Updated Messages:', updatedMessages);
-                    return updatedMessages;
-                });
+                //     console.log('prevMessages in onmessage', prevMessages);
 
-                // // Update last message for both sender and receiver
-                // updateLastMessage(sender_id, message, false, receivedData.timestamp);
-                // updateLastMessage(receiver_id, message, true, receivedData.timestamp);
+                //     // Ensure that both sender and receiver messages are updated correctly
+                //     if (!updatedMessages[sender_id]) {
+                //         updatedMessages[sender_id] = {};
+                //     }
+        
+                //     if (!updatedMessages[receiver_id]) {
+                //         updatedMessages[receiver_id] = {};
+                //     }
+        
+                //     const messageDate = formatDate(receivedData.timestamp);
+        
+                //     // Add message to the correct date bucket for both sender and receiver
+                //     if (!updatedMessages[sender_id][messageDate]) {
+                //         updatedMessages[sender_id][messageDate] = [];
+                //     }
+        
+                //     if (!updatedMessages[receiver_id][messageDate]) {
+                //         updatedMessages[receiver_id][messageDate] = [];
+                //     }
+        
+                //     updatedMessages[sender_id][messageDate].push(receivedData); // Sender's message
+                //     updatedMessages[receiver_id][messageDate].push(receivedData); // Receiver's message
+                    
+                //     console.log('Updated Messages:', updatedMessages);
+                //     return updatedMessages;
+                // });
 
+                // 
+
+                console.log('this is in onmessage');
 
                 // Check if the message should be marked as read immediately
-                if (selectedUser)
-                    console.log('******************** selectedUser.id in on message ************************* ', selectedUser.id)
-                else
-                    console.log('**** \\\ selectedUser is not exist in on message \\\ ****')
-                console.log('******************** sender_id in on message *************************', sender_id)
-                if (currentUser.id === receiver_id && selectedUser && selectedUser.id === sender_id) {
+                
+                if (selectedUserRef.current)
+                {
+                    console.log("selectedUserRef.current.id => ", selectedUserRef.current.id );
+                    console.log("sender_id =>", sender_id);
+                }
+                
+                    console.log("currentUser.id => ", currentUser.id );
+                    console.log("receiver_id =>", receiver_id);
+
+                if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                     // Mark the message as read since the receiver is actively viewing this chat
                     console.log("Marking message as read immediately.");
                     updateLastMessage(sender_id, message, true, receivedData.timestamp);
                 } else {
                     // Update last message as unread
                     updateLastMessage(sender_id, message, false, receivedData.timestamp);
+                    console.log("we not Marking message as rea");
                 }
 
                 // Always update the sender's view of the receiver's last message
@@ -473,8 +765,78 @@ export const ChatProvider = ({ children }) => {
 
                 // add new 
                 // we have to change selectedUser?.id when we are aleady in the page contact replace selectedUser?.id with => contact 
-                if (selectedUser?.id === sender_id)
+                if (contact === sender)
                     scrollToEnd();
+
+                // ------ last methode -----------------//
+                setMessages((prevMessages) => {
+                    // Use mergeAndSortMessages to update state and avoid duplicates
+                    const updatedMessages = { ...prevMessages };
+
+                    console.log('prevMessages in onmessage', prevMessages);
+        
+                    // Format the date of the message
+                    const messageDate = formatDate(receivedData.timestamp);
+        
+                    // Prepare the incoming message grouped by date
+                    const groupedMessages = {
+                        [messageDate]: [receivedData],
+                    };
+        
+                    // Update sender and receiver messages using mergeAndSortMessages
+                    updatedMessages[sender_id] = mergeAndSortMessages(
+                        updatedMessages[sender_id] || {},
+                        groupedMessages,
+                        selectedUserRef,
+                        receiver_id
+                    );
+        
+                    updatedMessages[receiver_id] = mergeAndSortMessages(
+                        updatedMessages[receiver_id] || {},
+                        groupedMessages,
+                        selectedUserRef,
+                        receiver_id
+                    );
+        
+                    console.log('Updated Messages:', updatedMessages);
+                    return updatedMessages;
+                });
+                console.log('end is in onmessage');
+
+                // setMessages((prevMessages) => {
+                //     const updatedMessages = { ...prevMessages };
+                
+                //     const messageDate = formatDate(receivedData.timestamp);
+                
+                //     // Initialize sender's message bucket if not already present
+                //     if (!updatedMessages[sender_id]) {
+                //         updatedMessages[sender_id] = {};
+                //     }
+                //     if (!updatedMessages[sender_id][messageDate]) {
+                //         updatedMessages[sender_id][messageDate] = [];
+                //     }
+                
+                //     // Add the message only to the sender's bucket
+                //     if (currentUser.id === receiver_id && selectedUser?.id === sender_id) {
+                //         // Receiver is actively viewing the chat
+                //         updatedMessages[sender_id][messageDate].push(receivedData);
+                //     } else {
+                //         // Update sender's bucket
+                //         if (!updatedMessages[receiver_id]) {
+                //             updatedMessages[receiver_id] = {};
+                //         }
+                //         if (!updatedMessages[receiver_id][messageDate]) {
+                //             updatedMessages[receiver_id][messageDate] = [];
+                //         }
+                //         updatedMessages[sender_id][messageDate].push(receivedData); // Sender's bucket
+                //         updatedMessages[receiver_id][messageDate].push(receivedData); // Receiver's bucket
+                //     }
+                
+                //     console.log('Updated Messages:', updatedMessages);
+                //     return updatedMessages;
+                // });
+
+                
                 // add new 
                 // we have to change selectedUser?.id when we are aleady in the page contact replace selectedUser?.id with => contact
             }
@@ -573,9 +935,12 @@ export const ChatProvider = ({ children }) => {
                 const newUsers = response.data;
     
                 // Reset user lists when fetching with a new search term
-                setOriginalUsers(newUsers);
+                if (!search) {
+                    // Store the full list for reference only when not searching
+                    setOriginalUsers(newUsers);
+                }
                 setAllUsers(newUsers);
-                console.log('users => ', allUsers)
+                // console.log('users => ', allUsers)
                 // setNextPage(null); // Clear next page state as it's no longer used
             } else {
                 console.error("Unexpected response status:", response.status);
@@ -585,54 +950,22 @@ export const ChatProvider = ({ children }) => {
         }
     };
 
+    const fetchOnlineUsers = async () => {
+        try {
+            const url = `/chat-friends`;
+            const response = await getData(url);
+
+            if (response.status === 200) {
+                setOnlineUsers(response.data); // Update only online users
+            } else {
+                console.error("Unexpected response status:", response.status);
+            }
+        } catch (error) {
+            console.error("Failed to fetch online users:", error);
+        }
+    };
 
     // ************************ end ***********************
-
-
-    // ************* old  Handle scrolling to fetch more users (Infinite scroll) ************
-    // const handleScroll = (event) => {
-    //     const { scrollTop, scrollHeight, clientHeight } = event.target;
-    //     if (scrollHeight - scrollTop === clientHeight) {
-    //     // We're at the bottom of the list, so load the next page
-    //     if (nextPage) {
-    //         const page = new URL(nextPage).searchParams.get('page'); // Extract the next page number from the URL
-    //         fetchFriends(page);
-    //     }
-    //     }
-    // };
-
-
-
-     // ************************ new  Handle scroll for infinite scrolling ************************
-    //  const handleScroll = (event) => {
-    //     const { scrollTop, scrollHeight, clientHeight } = event.target;
-
-    //     // If scrolled to the bottom, do nothing
-    //     if (scrollTop + clientHeight >= scrollHeight - 5) {
-    //         return;
-    //     }
-
-    //     // If user is near the top and there is a next page to fetch
-    //     if (scrollTop <= 50 && !isFetchingRef.current && nextPage && selectedUser) {
-    //         console.log('** IS REACH TO THE TOP CALL TO fetchChatHistory');
-    //         console.log('*** nextPage ', nextPage)
-    //         if (scrollTimeoutRef.current) {
-    //             clearTimeout(scrollTimeoutRef.current);
-    //         }
-
-    //          // Set a new timeout to fetch the next page after a delay (e.g., 500ms)
-    //         scrollTimeoutRef.current = setTimeout(() => {
-    //         // Clear previous timeout if any
-    //         // methode 2 
-    //         // const nextPageUrl = nextPage ? `/chat-history/${selectedUser.id}?page=${nextPage}` : null;
-    //         // if (nextPageUrl) {
-    //         //     fetchChatHistory(selectedUser.id, nextPage); // Fetch next page of messages
-    //         // }
-
-    //             fetchChatHistory(selectedUser.id, nextPage); // Fetch next page of messages
-    //         }, 500); // Timeout delay in milliseconds (e.g., 500ms)
-    //     }
-    // };
 
  // Function to handle fetching and restoring scroll
     const handleFetchOlderMessages = async () => {
@@ -641,6 +974,8 @@ export const ChatProvider = ({ children }) => {
             console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
             return;
         }
+
+        console.log("teeesssssttttt heeereeee");
             
         const chatContainer = chatContainerRef.current;
         
@@ -690,9 +1025,13 @@ export const ChatProvider = ({ children }) => {
     //     }
     // }, [messages, selectedUser]); // Trigger on messages or user change
 
+    useEffect(() =>{
+        scrollToEnd();
+    }, [messages])
     // new  methode 
     const scrollToEnd = () => {
-        if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+        if (endRef.current)
+            endRef.current.scrollIntoView({ behavior: "smooth" });
     };
 
     // ************************ end ***********************
@@ -716,6 +1055,8 @@ export const ChatProvider = ({ children }) => {
     // ************************ Fetch friends when component mounts and clean up WebSocket on unmount ************************
     useEffect(() => {
         fetchFriends();
+        fetchOnlineUsers(); // Fetch online users separately
+        console.log('currentUser hous connecting =>', currentUser);
     }, []);
     // ************************ end ***********************
 
@@ -774,7 +1115,8 @@ export const ChatProvider = ({ children }) => {
         formatTime,
         typingUsers,
         emojiPickerRef,
-        currentUser
+        currentUser,
+        onlineUsers
         // groupMessagesByDate
         }}
         >

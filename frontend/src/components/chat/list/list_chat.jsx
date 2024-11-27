@@ -12,9 +12,9 @@ import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
 const list_chat = () => {
-  const { isChatVisible, allUsers, handleSearch, currentUser} = useContext(ChatContext);
+  const { isChatVisible, allUsers, handleSearch, currentUser, onlineUsers} = useContext(ChatContext);
   // const { isChatVisible, allUsers = [], handleSearch} = useContext(ChatContext);
-  const onlineUser = allUsers.slice(0, 6);
+  const limitedOnlineUsers = onlineUsers.slice(0, 6);
 
   // const { profileData: currentuser} = useAuth();
 
@@ -46,7 +46,7 @@ const list_chat = () => {
       <div className="initial-active-users">
         <h2>Online Now</h2>
         <div className="user-grid">
-          <UserList users={onlineUser} currentUser={currentUser} listType="online" />
+          <UserList users={limitedOnlineUsers} currentUser={currentUser} listType="online" />
         </div>
       </div>
       <div>

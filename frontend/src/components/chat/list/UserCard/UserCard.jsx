@@ -164,7 +164,6 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
    : (
        <span style={{ fontWeight: 'bold' }}>
          {lastMessage.message}
-         {/* {console.log('lastMessage.unreadCount', lastMessage.unreadCount)} */}
          {lastMessage.unreadCount > 0 && `${lastMessage.unreadCount}`}
        </span>
      );
@@ -176,19 +175,25 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
 
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType
-    <Card className="usercard-card" onClick={() => onUserSelect(user)}>
-      <CardContent 
-        className="flex aspect-square items-center justify-center"
-      >
-        <img
-          src={user.avatar}
-          alt={user.username}
-          width={imageSize}
-          height={imageSize}
-          className="w-full h-full object-cover"
-        />
-      </CardContent>
-    </Card>
+    <div 
+      onClick={() => onUserSelect(user)} 
+      className="usercard-card-wrapper"
+      style={{ cursor: "pointer" }} // Optional: Add visual feedback for interactivity
+    >
+      <Card className="usercard-card" onClick={() => onUserSelect(user)}>
+        <CardContent 
+          className="flex aspect-square items-center justify-center"
+        >
+          <img
+            src={user.avatar}
+            alt={user.username}
+            width={imageSize}
+            height={imageSize}
+            className="w-full h-full object-cover"
+          />
+        </CardContent>
+      </Card>
+    </div>
   ) : (
     // Render default structure for "all" listType
     <div
