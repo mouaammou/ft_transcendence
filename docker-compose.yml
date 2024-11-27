@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - /var/lib/postgresql/data:/Users/mouaammo/goinfre/PgData
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    restart: on-failure
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: on-failure
+  frontend:
+    build: frontend
+    hostname: frontend
+    container_name: frontend
+    restart: on-failure
+  backend:
+    build: backend
+    hostname: backend
+    container_name: backend
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+  nginx:
+    build: nginx
+    hostname: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /Users/mouaammo/goinfre/PgData
+      o: bind
