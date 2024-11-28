@@ -8,20 +8,25 @@ services:
       - /var/lib/postgresql/data:/Users/mouaammo/goinfre/PgData
     ports:
       - "5432:5432"
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB: ft_transcendence
+      POSTGRES_USER: mouad
+      POSTGRES_PASSWORD: mouad
     restart: on-failure
+
   redis:
     image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"
     restart: on-failure
+
   frontend:
     build: frontend
     hostname: frontend
     container_name: frontend
     restart: on-failure
+
   backend:
     build: backend
     hostname: backend
@@ -30,8 +35,18 @@ services:
       - postgres
       - redis
     restart: on-failure
+    environment:
+      - DATABASE_URL=postgres://mouad:mouad@postgres:5432/your_database_name
+      - REDIS_URL=redis://redis:6379
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=admin123
+    env_file:
+      - .env
+
   nginx:
-    build: nginx
+    build: services/nginx
     hostname: nginx
     ports:
       - "443:443"
