@@ -20,7 +20,7 @@ def check_environment_variables():
 def wait_for_postgres():
     while True:
         try:
-            conn = psycopg2.connect(
+            conn = connect(
                 dbname="ft_transcendence",
                 user="mouad",
                 password="mouad",
@@ -52,20 +52,28 @@ def wait_for_redis():
 
 # Initialize Django
 def initialize_django():
-    import django
-    from django.conf import settings
+    print("Initializing Django...")
+
+    # Ensure the environment is set up
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+    django.setup()
 
     print("Checking PostgreSQL connection...")
     wait_for_postgres()
 
     print("Checking Redis connection...")
-    # Add similar logic if you need to wait for Redis
-    print("Redis is ready!")
+    wait_for_redis()
 
-    print("Applying migrations...")
-    call_command("migrate")
+    try:
+        print("Making migrations for 'authentication' app...")
+        call_command("makemigrations", "authentication")
 
-    print("Django setup complete.")
+        print("Applying all migrations...")
+        call_command("migrate")
+        print("Migrations applied successfully!")
+    except Exception as e:
+        print(f"Error during migrations: {e}")
+        sys.exit(1)
 
 # Create a default superuser if none exists
 def create_superuser():
@@ -87,19 +95,12 @@ def create_superuser():
 # Main function
 def main():
     check_environment_variables()
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-    wait_for_postgres()
-    wait_for_redis()
-
-    django.setup()
-
     initialize_django()
+    create_superuser()
     print("Initialization complete.")
 
 if __name__ == "__main__":
-    import os
-
-    for var in ["DATABASE_URL", "REDIS_URL", "DJANGO_SETTINGS_MODULE"]:
+    for var in REQUIRED_ENV_VARS:
         if var not in os.environ:
             raise RuntimeError(f"Required environment variable {var} is missing")
     main()
