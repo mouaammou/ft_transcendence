@@ -9,7 +9,33 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
 import { Modal } from '@/components/modals/Modal';
 import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import confetti from 'canvas-confetti';
 
+
+function winner_celebration() {
+  let end = Date.now() + (5 * 1000);
+
+  // go Buckeyes!
+  
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1}
+    });
+  
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  }());
+}
 
 export default function TournamentBoardPage() {
   const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
@@ -49,7 +75,7 @@ export default function TournamentBoardPage() {
     );
   };
 
-  const handleMessage = message => {
+  const handleMessage = message => { 
     const data = JSON.parse(message.data);
     console.log('data  ---> ', data);
     if (data.status === 'players') {
@@ -58,7 +84,7 @@ export default function TournamentBoardPage() {
     } else if (data.status === 'no_tournament_found') {
       console.log('the player does not exist in any tournament');
       router.push('/create_join_tournament');
-    } else if (data.status === 'fulfilled') {
+    } else if (data.status === 'fulfilled') { 
       setFulfilled(true);
     } else if (data.status === 'not_fulfilled') {
       setFulfilled(false);
@@ -86,16 +112,16 @@ export default function TournamentBoardPage() {
       Please remain available to address any issues and support the players throughout the tournament. Thank you for your commitment!'
       );
     } else if (data.status === 'celebration') {
-      setModalOpen(true);
+      winner_celebration()
       setModalMessage('Congratulations on Your Tournament Victory!');
       setMsgDescription(
         'You have emerged victorious in the tournament! Your hard work and dedication have paid off,\
          showcasing your exceptional skills. Celebrate this achievement and continue to strive for greatness!'
       );
       setExitTournament(true);
-      console.log(
-        ' celebration celebration celebration celebration celebration celebration celebration'
-      );
+      setTimeout(() => {
+        setModalOpen(true);
+      }, 15000);
     }
   };
 
@@ -213,6 +239,7 @@ export default function TournamentBoardPage() {
           setModalOpen(false);
           if (exitTournament) {
             pushToPlay();
+            setExitTournament(false);
           }
         }}
       />

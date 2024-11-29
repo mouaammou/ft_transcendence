@@ -8,7 +8,7 @@ const YouLose = ({onClose}) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
-        }, 15000);
+        }, 12000);
         return () => {
             clearTimeout(timer);
         };

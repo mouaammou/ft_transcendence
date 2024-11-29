@@ -14,16 +14,16 @@ class PlayersGamesManager:
     @classmethod
     def connect(cls, consumer, player_id):
         FourGameOutput.add_callback(player_id, consumer)
-        # cls.add_to_waiting_queue(player_id)
 
 
     @classmethod
     async def disconnect(cls, player_id):
         try:
+            print("in the disconnect method ")
             if player_id in cls.waiting_queue:
                 cls.waiting_queue.remove(player_id)
             if player_id in cls.players:
-                game_id = cls.players.pop(player_id)
+                game_id = cls.players.pop(player_id, None)
                 game = cls.games.get(game_id)
                 if game is None:
                     return
@@ -68,6 +68,9 @@ class PlayersGamesManager:
                 else:
                     winner = game.player2_id
                 game.update_winner(winner)
+                # cls.players.pop(game.player1_id, None)
+                # cls.players.pop(game.player2_id, None)
+                # cls.games.pop(game_id, None)
             elif 'type' in data and data['type'] == 'MAKE_MOVE':
                 print(f"Player {player_id} will make a move manager")
                 game_id = cls.players.get(player_id)

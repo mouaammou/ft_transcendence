@@ -53,7 +53,7 @@ const ConnectFour = () => {
             } else if (data.status === 'WINNER_BY_DISCONNECTION') {
                 setModalOpen(true);
                 setModalMessage('Game over!');
-                setMsgDescription('Your opponent disconnect from the game!!');
+                setMsgDescription('Because your opponent disconnect from the game, you considered the winner, congrats  🎉🎉🎉');
             } else if (data.status === 'DISCONNECTED') {
                 setModalOpen(true);
                 setModalMessage('Game over!');
@@ -74,8 +74,8 @@ const ConnectFour = () => {
                     setWinnerName(player2.username);
                 setTimeout(() => {
                     setModalOpen(true);
-                    setModalMessage('Game over!');
-                    setMsgDescription(`🎉 Congratulations to 🍀${winnerName} ! 🎉`
+                    setModalMessage('Game over 🍀!');
+                    setMsgDescription(`🎉 Congratulations to ${winnerName} ! 🎉`
                     );
                 },5000)
             }

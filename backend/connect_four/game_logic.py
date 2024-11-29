@@ -107,6 +107,7 @@ class GameLogic:
         FourGameOutput._send_to_consumer_group(self.player2_id, data)
         asyncio.create_task(self.save_game())
         
+        
     async def save_game(self):
         print("on save game function")
         try :
@@ -130,44 +131,3 @@ class GameLogic:
         except Exception as ex:
             logger.error(f"game is not saved {ex}")
             
-    # def check_winner(self, player_id, row, column):
-    #     # Check horizontal, vertical, and two diagonal directions
-    #     return (self.check_direction(player_id, row, column, 1, 0) or  # Horizontal
-    #             self.check_direction(player_id, row, column, 0, 1) or  # Vertical
-    #             self.check_direction(player_id, row, column, 1, 1) or  # Diagonal /
-    #             self.check_direction(player_id, row, column, 1, -1))   # Diagonal \
-
-    # def check_direction(self, player_id, row, column, delta_row, delta_col):
-    #     count = 0
-    #     for d in range(-3, 4):
-    #         r = row + d * delta_row
-    #         c = column + d * delta_col
-    #         if 0 <= r < self.ROWS and 0 <= c < self.COLUMNS:
-    #             index = r * self.COLUMNS + c
-    #             if self.board[index] == player_id:
-    #                 count += 1
-    #                 if count == 4:
-    #                     return True
-    #             else:
-    #                 count = 0
-    #     return False
-
-    # def get_board(self):
-    #     return self.board
-
-    # def get_current_turn(self):
-    #     return self.current_turn
-
-    # def get_winner(self):
-    #     return self.winner
-
-    # def format_board(self):
-    #     result = "   " + "   ".join(str(i) for i in range(self.COLUMNS)) + "\n"
-    #     result += "  +" + "---+" * self.COLUMNS + "\n"
-    #     for row in range(self.ROWS):
-    #         result += str(row) + " |"
-    #         for col in range(self.COLUMNS):
-    #             index = row * self.COLUMNS + col
-    #             result += f" {self.board[index]:2} |"
-    #         result += "\n  +" + "---+" * self.COLUMNS + "\n"
-    #     return result

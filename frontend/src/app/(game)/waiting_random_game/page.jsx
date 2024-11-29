@@ -24,7 +24,7 @@ const WaitingPage = () => {
 
   const handleMessage = async (message) => {
     const data = JSON.parse(message.data);
-
+    console.log('data -----> ', data.data);
     if (data.status === 'start') {
       const opponent_id = data.opponent;
       try {

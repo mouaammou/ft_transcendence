@@ -37,7 +37,6 @@ class RemoteGameOutput:
         """
         game_obj is None on connect, But a game instance on reconnect.
         """
-        cls.player_not_in_game_page(player_id)
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
@@ -47,17 +46,10 @@ class RemoteGameOutput:
 
 
     @classmethod
-    def player_not_in_game_page(cls, player_id):
-        print("player_not_in_game_page method")
-        group = cls.consumer_group.get(player_id)
-        if group is None:
-            return
-        for consumer in group:
-            consumer.in_game_page = False
-
-    @classmethod
     def send_update(cls, player_id, frame) -> None:
         # print(f"send method of remoteGameOutput class, frame --> {frame}")
+        if player_id is None or frame is None:
+            return
         data = {'update': frame}
         cls._send_to_consumer_group(player_id, data) 
     
@@ -70,6 +62,8 @@ class RemoteGameOutput:
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
         # print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
+        if player_id is None:
+            return
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return
@@ -95,6 +89,8 @@ class RemoteGameOutput:
     @classmethod
     def send_tournament_players(cls, players, data):
         print(f"send_tournament_players method {players} --> {data}")
+        if players is None or data is None:
+            return
         for player_id in players:
             if player_id == -1 or player_id is None:
                 continue
@@ -111,33 +107,22 @@ class RemoteGameOutput:
         group = cls.consumer_group.get(player_id)
         if group is None: 
             return False
-        return any(consumer.is_focused for consumer in group)   
-    
-    @classmethod
-    def player_in_game_page(cls, player_id):  
-        #print the length of the group
-        print("player_in_game_page method")
-        group = cls.consumer_group.get(player_id)
-        if group is None: 
-            return False
         for consumer in group:
-            if consumer.in_game_page is True:
+            if consumer.is_focused:
                 return True
-        # return any(consumer.in_game_page is True for consumer in group)
-        return False
+        print(f"there is no focus for this player {player_id}")
+        return False  
     
     @classmethod
     def player_in_board_page(cls, player_id):
-        print("player_in_board_page method")
         group = cls.consumer_group.get(player_id)
         if group is None:
             return False
         for consumer in group:
             if consumer.in_board_page is True:
                 return True
+        print(f"player not in board page --> {player_id}")
         return False
-    
-
 
 class RemoteGameInput:
 

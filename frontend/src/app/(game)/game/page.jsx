@@ -16,7 +16,6 @@ const GamePage = () => {
   const router = useRouter();
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-  const [gameType, setGameType] = useState(null);
 	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
 
@@ -30,12 +29,14 @@ const GamePage = () => {
 
   const handle_message = message => {
     const data = JSON.parse(message.data);
+    console.log('data -----> ', data.data);
     if (data.status == 'GAME_DATA') {
       setPlayer1_id(data.player_1);
       setPlayer2_id(data.player_2);
-      setGameType(data.game_type);
     } else if (data.status == 'NO_GAME_DATA') {
       router.push('/play');
+    } else if (data.status == 'PLAYER_IN_TOURNAMENT') {
+      router.push('/tournament_board');
     }
   };
 
@@ -94,7 +95,7 @@ const GamePage = () => {
           <Skeleton />
         )}
         <div className="self-game">
-          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} gameType={gameType} />
+          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} />
         </div>
         {player2 ? (
           <div className="right-user">

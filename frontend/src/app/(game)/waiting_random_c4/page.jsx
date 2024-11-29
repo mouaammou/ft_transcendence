@@ -9,7 +9,7 @@ import { Modal } from '@/components/modals/Modal';
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 
 
-const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 md:w-24 md:h-24 lg:w-36 lg:h-36 ml-2" />;
+const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 ml-2" />;
 
 const WaitingPage = () => {
   const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
@@ -58,18 +58,18 @@ const WaitingPage = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center p-4 mt-[10%]">
-      <div className="split-background rounded-lg max-w-3xl w-full p-4 md:p-12">
+    <div className="flex items-center justify-center p-4 mt-24">
+      <div className="split-background rounded-lg max-w-3xl w-fit p-4 md:p-12">
         <div className="flex items-center justify-center mb-4">
-          <img src={user_data?.avatar} alt="" className="w-16 h-16 md:w-24 md:h-24 lg:w-36 lg:h-36 rounded-full mr-2 bg-gray-700" />
-          <span className="text-sm sm:text-xl md:text-2xl lg:text-5xl  font-bold">VS</span>
+          <img src={user_data?.avatar} alt="" className="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full mr-2 bg-gray-700" />
+          <span className="text-sm sm:text-xl md:text-2xl lg:text-3xl  font-bold">VS</span>
           {opponent ? (
-            <img src={opponent?.avatar} alt="" className="w-16 h-16 md:w-24 md:h-24 lg:w-36 lg:h-36 rounded-full mx-2 bg-gray-700" />
+            <img src={opponent?.avatar} alt="" className="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full mx-2 bg-gray-700" />
           ) : (
             <Skeleton />
           )}
         </div>
-        <h2 className="text-center text-sm sm:text-xl md:text-2xl lg:text-5xl gradient-text">Waiting for another player to join...</h2>
+        <h2 className="text-center text-sm sm:text-xl md:text-2xl lg:text-3xl gradient-text">Waiting for another player to join...</h2>
       </div>
       <style jsx>{`
         .split-background {

@@ -28,18 +28,15 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
     
     game_engine = EventLoopManager
     
-    async def connect(self):   
-        await self.accept()
+    async def connect(self): 
         self.user = self.scope['user']
         self.player_id = self.scope['user'].id
-        # if self.user.is_anonymous:
-        #     return await self.close()
-        if self.user and self.user.is_authenticated:
-            self.is_focused = True
-            self.in_game_page = False # if False the user loses when the game starts, if True the user may start the game with the other player
-            self.in_board_page = False
-            self.game_engine.connect(self)
-        # dont forget to set timout callback
+        if self.user and not self.user.is_authenticated:  
+            return
+        await self.accept()
+        self.is_focused = False
+        self.in_board_page = False
+        self.game_engine.connect(self)
 
     async def disconnect(self, *arg, **kwrags):
         self.game_engine.disconnect(self.player_id)
@@ -53,14 +50,13 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
 
         self.is_focused = data.get('tabFocused', True) 
 
-        #check if the user send the inGamePage attribute
-        if data.get('inGamePage') is not None:
-            self.in_game_page = data.get('inGamePage')
         if data.get('inBoardPage') is not None:
             self.in_board_page = data.get('inBoardPage')
         print(f"dict data ---------->  {data}  user --------> {self.user.id}")
         
         # print(f"tab is focused --->  {self.is_focused}")
+        if self.player_id is None:
+            return
         self.game_engine.recieve(self.player_id, data, self)
     
     def send_game_message(self, event):

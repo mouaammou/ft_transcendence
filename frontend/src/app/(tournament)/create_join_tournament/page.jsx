@@ -95,7 +95,7 @@ export default function CreateJoinTournamentPage() {
         setInputError({ ...inputError, alreadyInGame: true });
         setTimeout(() => {
           router.push('/game');
-        }, 1000);
+        }, 2000);
         console.log('pushed to game');
       } else if (data.status === 'already_in_tournament_join') {
         setInputError({ ...inputError, alreadyInTournamentJoin: true });
@@ -105,9 +105,7 @@ export default function CreateJoinTournamentPage() {
       } else if (data.status === 'tournament_full') {
         setInputError({ ...inputError, tournamentFull: true });
       } else if (data.status === 'created_successfully' || data.status === 'joined_successfully') {
-        setTimeout(() => {
           router.push('/tournament_board');
-        }, 1000);
       }
       else if (data.tournaments !== undefined) {
         setTab(data.tournaments);
@@ -145,6 +143,8 @@ export default function CreateJoinTournamentPage() {
         <input
           type="text"
           value={tournament_name}
+          name='tournament_name'
+          autoComplete='off'
           onChange={handleInputChange}
           placeholder="my_tournament123..."
           className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]

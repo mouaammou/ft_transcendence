@@ -5,12 +5,13 @@ import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter , useSearchParams, usePathname } from 'next/navigation';
 
-export default function PongGame({ score1, score2, setScore1, setScore2, gameType }) {
+export default function PongGame({ score1, score2, setScore1, setScore2}) {
 	const canvasRef = useRef(null);
 	const [showWinModal, setShowWinModal] = useState(false);
 	const [showLoseModal, setShowLoseModal] = useState(false);
 	const router = useRouter();
 	const pathname = usePathname();
+	const [gameType, setGameType] = useState(null);
 	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
     const searchParams = useSearchParams();
@@ -21,10 +22,10 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		const context = canvas.getContext('2d');
 		var start = true;
 
-		if (start) {
-			sendMessage(JSON.stringify({launch: start}));
-			start = false;
-		}
+		// if (start) {
+		// 	sendMessage(JSON.stringify({launch: start}));
+		// 	start = false;
+		// }
 		// ball object
 		const ball = {
 			x: canvas.width / 2,
@@ -40,7 +41,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		const player_1 = {
 			x: 0,
 			y: canvas.height / 2 - 100 / 2,
-			width: 10,
+			width: 15,
 			height: 100,
 			color: 'white',
 			score: 0
@@ -57,7 +58,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		const player_2 = {
 			x: canvas.width - 10,
 			y: canvas.height / 2 - 100 / 2,
-			width: 10,
+			width: 15,
 			height: 100,
 			color: '#E9C46A',
 			score: 0
@@ -132,12 +133,15 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		let gameConfig = {};
 
 		const handleMessage = (message) => {
-			// console.log(message);
+			console.log(message.data);
 			if (!message) {
 				console.error('Received an undefined message or data:', message);
 				return; // Exit early if message is invalid
 			}
 			const data = JSON.parse(message.data);
+			if (data.status == 'GAME_DATA') {
+				setGameType(data.game_type);
+			  }
 			if (data.update)
 			{
 				// console.log(data);
@@ -173,11 +177,9 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 				}
 				if (data.update.status) {
 					if (data.update.status  === 'win') {
-						console.log('Congratulations, you win');
 						setShowWinModal(true);
 					}
 					else if (data.update.status  === 'lose') {
-						console.log('Unfortunately, you lost');
 						setShowLoseModal(true);
 					}
 				}
@@ -319,21 +321,11 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+			sendMessage(JSON.stringify({ tabFocused: false }));
+			// unregisterMessageHandler(handleMessage);
 		};
 	}, []);
 
-
-	useEffect(() => {
-		// This code will run when the component is mounted
-		// console.log('Game page entered:', pathname);
-		sendMessage(JSON.stringify({"inGamePage" : true}));
-	
-		return () => {
-			// This code will run when the component is unmounted
-			console.log('Game page left:', pathname);
-			sendMessage(JSON.stringify({"inGamePage" : false}));
-		};
-	}, []);
 
 	return (
 		<>
@@ -341,32 +333,16 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 
 			</canvas>
 				{showWinModal && (
-					<YouWin 
-						onClose={() => {
-							setShowWinModal(false);
-							if (gameType === 'tournament') {
-						    router.push('/tournament_board');
-							}else {
-								router.push('/play');
-							}
-						}
-						}
-						// stats={{ score1, score2 }} // Pass stats as needed
-					/>
+					<YouWin gameType={gameType} setShowWinModal={setShowLoseModal}/>
 				)}
 				
 				{showLoseModal && (
 					<YouLose 
 						onClose={() => {
 							setShowLoseModal(false);
-							// if (gameType === 'tournament') {
-							// 	router.push('/tournament_board');
-							// 	}else {
-									router.push('/play');
-								// }
+							router.push('/create_join_tournament');
 						}
 						}
-						// stats={{ score1, score2 }} // Pass stats as needed
 					/>
 				)}
 		</>

@@ -137,7 +137,7 @@ class TournamentManager:
     @classmethod
     def players_in_same_game_left_board_page(cls, tournament):
         for game in tournament.games:
-            if not RemoteGameOutput.player_in_board_page(game.player_1) and not RemoteGameOutput.player_in_board_page(game.player_2):
+            if game and not RemoteGameOutput.player_in_board_page(game.player_1) and not RemoteGameOutput.player_in_board_page(game.player_2):
                 game.finished = True
                 game.winner = game.player_1
                 game.loser = game.player_2
@@ -158,13 +158,9 @@ class TournamentManager:
                         cls._clean_finished_games(tournament)
                         cls.event_loop_manager.tournament_games.clear()
                         if not tournament.start_new_round():
-                            await asyncio.sleep(11)
-                            RemoteGameOutput._send_to_consumer_group(tournament.winner, {'status': 'celebration'})
-                            await asyncio.sleep(10)
+                            await asyncio.sleep(15)
                             cls.event_loop_manager.end_tournament(tournament.id)
-                            # RemoteGameOutput._send_to_consumer_group(tournament.winner, {'status': 'no_tournament_found'})
                             return
-                        #send notification to all players that the round has started
                         await asyncio.sleep(15)
                         # if cls.check_tournament_is_cancelled(tournament):
                         #     return
@@ -292,8 +288,9 @@ class Tournament:
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
         self.players[0] =  organizer
-        self.status = 'pending'
+        self.status = 'pending' # pending, started, finished, cancelled
         self.fulfilled = False
+        self.send_once = False
         self.notified = False
         self.round = None
         self.rounds = {
