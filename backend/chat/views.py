@@ -113,7 +113,7 @@ class ListUsersView(FriendshipListView):
                 friend_latest_map[friend.id] = {
                     "message": '',
                     "timestamp": None,
-                    "is_read": True,  # Default as read if no messages are found
+                    "is_read": False,  # Default as read if no messages are found
                     "unread_count": 0  # Default to 0 if no messages
                 }
 
@@ -132,7 +132,8 @@ class ListUsersView(FriendshipListView):
                 last_message = {
                     "message": 'No message',
                     "timestamp": None,
-                    "is_read": True,
+                    # "is_read": True,
+                    "is_read": False,
                     "unread_count": 0
                 }
 

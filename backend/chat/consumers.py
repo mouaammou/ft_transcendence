@@ -41,14 +41,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print('receiver =>'  ,receiver)
         print('receiver_username =>' ,receiver_username)
 
-
-
-        # if mark_read:
-        #     print('we receive the mark_read from the frant')
-        #     await self.mark_messages_as_read(receiver_username)
-        #     return
-        
-
         # Handle the message
         if message and receiver:
                 await self.save_message(self.user, receiver, message)
@@ -58,56 +50,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if 'typing' in data:
             typing_status = data['typing']
             await self.send_typing_indicator(self.user.id, receiver.id, self.user.username, receiver_username, typing_status)
-
-
-    # async def mark_messages_as_read(self, friend_username):
-    #     friend = await self.get_user_by_username(friend_username)
-    #     if friend:
-    #         await self.update_message_read_status(self.user, friend)
-    #         await self.send_mark_read_status(friend.id, friend_username)
-
-    # async def send_mark_read_status(self, friend_id, receiver_username):
-    #     print('USE chat_mark_read TO RESPONCE TO HE FRANT  read_status in database')
-    #      # Notify both sender and receiver that messages have been marked as read
-    #     await self.channel_layer.group_send(
-    #         f'{self.GROUP_PREFIX}{friend_id}',
-    #         {
-    #             'type': 'chat_mark_read',
-    #             'receiver': receiver_username,
-    #             'mark_read': True,
-    #         }
-    #     )
-    #     await self.channel_layer.group_send(
-    #         f'{self.GROUP_PREFIX}{self.user.id}',
-    #         {
-    #             'type': 'chat_mark_read',
-    #             'receiver': receiver_username,
-    #             'mark_read': True,
-    #         }
-    #     )
-
-    # async def chat_mark_read(self, event):
-    #     print('Send read status to WebSocket client')
-    #     # Send read status to WebSocket client
-    #     await self.send(text_data=json.dumps({
-    #         'mark_read': event['mark_read'],
-    #         'receiver': event['receiver'],
-    #         # 'mark_read': True,
-    #         # 'user': event['user'],
-    #     }))
-
-
-    # @database_sync_to_async
-    # def update_message_read_status(self, user, friend):
-    #     # Update message read status in the database
-    #     Message.objects.filter(sender=friend, receiver=user, is_read=False).update(is_read=True)
-    #     print('update read_status in database')
-
-
-
-    # ******************************************************
-    # *************** add conact *****************
-    # ******************************************************
 
         # Handle marking messages as read
         if mark_read and contact_username:
@@ -125,12 +67,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send_mark_read_status(contact_user.id, contact_username)
 
     async def send_mark_read_status(self, contact_id, contact_username):
+
+        # add
+        user_data = {
+        'id': self.user.id,
+        'username': self.user.username,
+        }
+        # end
+
         # Notify both sender and receiver about the read status
         await self.channel_layer.group_send(
             f'{self.GROUP_PREFIX}{contact_id}',
             {
                 'type': 'chat_mark_read',
                 'contact': contact_username,
+                # add
+                'session_user': user_data,
+                #end
                 'mark_read': True,
             }
         )
@@ -139,6 +92,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_mark_read',
                 'contact': contact_username,
+                # add
+                'session_user': user_data,
+                #end
                 'mark_read': True,
             }
         )
@@ -149,16 +105,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'mark_read': event['mark_read'],
             'contact': event['contact'],
+            'session_user': event['session_user'],
         }))
 
     @database_sync_to_async
     def update_message_read_status(self, user, contact_user):
         # Update unread messages in the database
         Message.objects.filter(sender=contact_user, receiver=user, is_read=False).update(is_read=True)
-
-    # ******************************************************
-    # ***************** end of add contact *****************
-    # ******************************************************
 
 
     async def send_typing_indicator(self, sender_id, receiver_id, sender_username, receiver_username, typing_status):
