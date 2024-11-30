@@ -96,66 +96,28 @@ export const ChatProvider = ({ children }) => {
             // Add the message to the array for the specific date
             groupedMessages[messageDate].push(message);
         });
-
         return groupedMessages;
     };
 
-
     // ************************ end ***********************
-
-    // ----------- the new mehode duplicate 1 in chat other no ----------------
-
-
-    // const normalizeMessage = (message) => {
-    //     // Normalize the message to ensure it has the same structure for comparison
-    //     return {
-    //         message: message.message,
-    //         sender: message.sender,
-    //         receiver: message.receiver,
-    //         timestamp: new Date(message.timestamp).toISOString(), // Normalize to ISO string in UTC
-    //     };
-    // };
     
+    // ************************  Merge and sort messages (both old and new) ***********************
+
     const mergeAndSortMessages = (existing, incoming) => {
         const merged = { ...existing }; // Start with existing messages
         
-        console.log('existing message before merge', existing);
-        console.log('incoming message before merge', incoming);
+        // console.log('existing message before merge', existing);
+        // console.log('incoming message before merge', incoming);
 
-        
         // Merge incoming messages
         for (const [date, newMessages] of Object.entries(incoming)) {
             const currentMessages = merged[date] || []; // Get existing messages for the date
-            
-            // Normalize both existing and new messages before comparing
-            // const normalizedCurrentMessages = currentMessages.map(normalizeMessage);
-            // const normalizedNewMessages = newMessages.map(normalizeMessage);
-
-
-            // console.log('normalizedCurrentMessages', normalizedCurrentMessages);
-            // console.log('normalizedNewMessages', normalizedNewMessages);
-    
-            // const combined = [
-            //     ...normalizedCurrentMessages,
-            //     ...normalizedNewMessages.filter(
-            //         (newMessage) =>
-            //             !normalizedCurrentMessages.some(
-            //                 (existingMessage) =>
-            //                     existingMessage.timestamp === newMessage.timestamp && 
-            //                     existingMessage.message === newMessage.message &&
-            //                     existingMessage.sender === newMessage.sender &&
-            //                     existingMessage.receiver === newMessage.receiver
-            //             )
-            //     ),
-            // ]; // Combine old and new messages without duplicates
             const combined = [...currentMessages, ...newMessages];
-        
             // Sort messages within the date by timestamp (oldest to newest)
             merged[date] = combined.sort(
                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
             );
         }
-        
         // Sort the dates themselves (keys) in ascending order
         const sortedDates = Object.keys(merged).sort(
             (a, b) => new Date(a) - new Date(b)
@@ -170,9 +132,10 @@ export const ChatProvider = ({ children }) => {
         console.log('sortedMessages after merge', sortedMessages);
         return sortedMessages;
     };
+    // ************************ end ***********************
 
 
-    // Fetch chat history (handles both initial and pagination requests)
+    // ************************ Fetch chat history (handles both initial and pagination requests) ************************
     const fetchChatHistory = async (receiver_id, page = 1) => {
         console.log('***** FetchChatHistoryi sFetchingRef.current   =>>', isFetchingRef.current)
         if (isFetchingRef.current) 
@@ -416,54 +379,20 @@ export const ChatProvider = ({ children }) => {
 
                 console.log('Incoming message:', message);
                 // Check if the message should be marked as read immediately
-                if (selectedUserRef.current)
-                {
-                    console.log("selectedUserRef.current.id => ", selectedUserRef.current.id );
-                    console.log("sender_id =>", sender_id);
+                // if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
+                if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
+                    // Mark the message as read since the receiver is actively viewing this chat
+                    console.log("Marking message as read immediately.");
+                    updateLastMessage(sender_id, message, true, receivedData.timestamp);
+                } else {
+                    // Update last message as unread
+                    updateLastMessage(sender_id, message, false, receivedData.timestamp);
+                    console.log("we not Marking message as rea");
                 }
-                // console.log("currentUser.id in message => ", currentUser);
-                // console.log("currentUser.id in message => ", currentUser.id);
-                // console.log("receiver_id in message =>", receiver_id);
-                // console.log("sender_id in message =>", sender_id);
 
-                if (currentUser)
-                {
-                    console.log('in onmessage currentUser.username', currentUser.username);
-                    console.log('in onmessage currentUser.username', currentUser.id);
+                // Always update the sender's view of the receiver's last message
+                updateLastMessage(receiver_id, message, true, receivedData.timestamp);
 
-                }
-                else
-                    console.log('currentUser is unnkown');
-                // ****************************************************
-
-
-                // Check if the message should be marked as read immediately
-                if (selectedUserRef.current)
-                    {
-                        console.log("selectedUserRef.current.id => ", selectedUserRef.current.id );
-                        console.log("sender_id =>", sender_id);
-                    }
-                    
-                        console.log("currentUser.id => ", currentUser.id );
-                        console.log("receiver_id =>", receiver_id);
-    
-                    // if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
-                    if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
-                        // Mark the message as read since the receiver is actively viewing this chat
-                        console.log("Marking message as read immediately.");
-                        updateLastMessage(sender_id, message, true, receivedData.timestamp);
-                    } else {
-                        // Update last message as unread
-                        updateLastMessage(sender_id, message, false, receivedData.timestamp);
-                        console.log("we not Marking message as rea");
-                    }
-    
-                    // Always update the sender's view of the receiver's last message
-                    updateLastMessage(receiver_id, message, true, receivedData.timestamp);
-                // ****************************************************
-
-                // add new 
-                // we have to change selectedUser?.id when we are aleady in the page contact replace selectedUser?.id with => contact 
                 if (contact === sender)
                     scrollToEnd();
 
@@ -502,20 +431,15 @@ export const ChatProvider = ({ children }) => {
                 });
             }
 
-            //********************************************************************** */
             // handle userclick do mark_read
             if (mark_read && contact) {
                     console.log('Marking messages as read for receiver:', receiver);
                     updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
-                
-                    // updateLastMessage(sender_id, null, true, null); // Mark as read for sender
-                }
-                else {
-                        console.log("Skipping mark_read update as conditions are not met.");
-                }
-            //********************************************************************** */
+            }else {
+                console.log("Skipping mark_read update as conditions are not met.");
+            }
                     
-                    // Handle typing indicator
+            // Handle typing indicator
             if (typing)
             {
                 // console.log('typing => ', typing)
@@ -726,7 +650,6 @@ export const ChatProvider = ({ children }) => {
         isChatVisible,
         handleUserClick,
         handleBackClick,
-        // onlineUser,
         allUsers,
         searchTerm,
         handleSearch,
