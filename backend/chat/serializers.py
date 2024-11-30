@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Message
 
+from authentication.serializers import UserSerializer
+
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.StringRelatedField()
     receiver = serializers.StringRelatedField()
@@ -10,3 +12,25 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['sender', 'receiver', 'message', 'timestamp']
+
+
+# New LastMessageSerializer for displaying the last message and timestamp
+class LastMessageSerializer(serializers.ModelSerializer):
+    message = serializers.CharField()
+    timestamp = serializers.DateTimeField()
+    is_read = serializers.BooleanField()
+    unread_count = serializers.IntegerField()
+    
+    class Meta:
+        model = Message
+        fields = ['message', 'timestamp', 'is_read', 'unread_count']
+
+
+
+# Serializer for wrapping friend data and their last message
+class FriendWithLastMessageSerializer(serializers.Serializer):
+    friend = UserSerializer()  # Use the existing UserSerializer
+    last_message = LastMessageSerializer()  # Use LastMessageSerializer for the last message
+
+    class Meta:
+        fields = ['friend', 'last_message']

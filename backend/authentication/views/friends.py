@@ -68,6 +68,14 @@ class FriendshipListView(generics.ListAPIView):
 		# Return paginated response
 		return paginator.get_paginated_response(serializer.data)
 	
+
+    # #Return all friends without pagination.
+	# def get_all_friends(self):
+	# 	friends_queryset = self.get_queryset()
+	# 	serializer = UserSerializer(friends_queryset, many=True)
+	# 	return serializer.data
+	
+
 class FriendshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Friendship.objects.all()
 	serializer_class = FriendsSerializer

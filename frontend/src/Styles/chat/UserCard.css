@@ -25,7 +25,7 @@
 
 .UserCardAll:hover {
   border: 1px solid #ffffff; /* Border on hover */
-  background-color: #0c7ef0;
+  background-color: #5faffe;
   /* background-color: #041921; */
 }
 
@@ -56,6 +56,12 @@
 .UserCardAll .status {
   bottom: 11px;
   left: 40px;
+}
+
+.typing_indicator_card {
+  font-style: italic;
+  position: absolute;
+  right: 20;
 }
 
 /* .img-usercard{

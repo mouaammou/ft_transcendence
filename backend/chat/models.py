@@ -15,5 +15,7 @@ class Message(models.Model):
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    is_read = models.BooleanField(default=False)  # track if the message has been read
+
     def __str__(self):
         return f'{self.sender} to {self.receiver}: {self.message[:20]}'

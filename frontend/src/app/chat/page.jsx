@@ -8,7 +8,9 @@ import MobileSidebar from '@/components/sidebar/MobileSidebar';
 import { ChatProvider } from './chat_context/ChatContext';
 
 const Chat = () => {
+
   return (
+    <>
     <ChatProvider>
       <div className="main-chat">
         <Listchat />
@@ -16,6 +18,7 @@ const Chat = () => {
         <MobileSidebar />
       </div>
     </ChatProvider>
+    </>
   );
 };
 
