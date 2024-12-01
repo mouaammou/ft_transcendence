@@ -16,7 +16,7 @@ const api = axios.create({
 
 
 export const apiValidateTwoFactorAuth = async (code) => {
-    let data = null;
+    let data = null; 
     try {
         const response = await api.post('verify/user/', {totp_code: code});
         response.data['status'] = response.status;

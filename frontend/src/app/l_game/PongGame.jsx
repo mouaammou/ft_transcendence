@@ -344,7 +344,7 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
-		canvasRef.current.addEventListener('touchmove', handleTouchMove);
+		// canvasRef.current.addEventListener('touchmove', handleTouchMove);
 		// document.addEventListener('beforeunload', closeSocket);
 
 		// Animation loop
