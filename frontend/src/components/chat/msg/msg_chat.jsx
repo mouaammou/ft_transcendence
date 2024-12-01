@@ -48,7 +48,6 @@ const Msg_chat = () => {
 
 	// Generate chatKey based on currentUser and selectedUser
     // const chatKey = selectedUser ? generateChatKey(currentuser.id, selectedUser.id) : null;
-
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
 		{selectedUser ? (

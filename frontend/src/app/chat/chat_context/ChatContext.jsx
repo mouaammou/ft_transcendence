@@ -240,8 +240,8 @@ export const ChatProvider = ({ children }) => {
             scrollToEnd();
         }, 100);
         
-        console.log('currentUser.username', currentUser.username);
-        if (socket) {
+        const userHasLastMessage = allUsers.some((friend) => friend.friend.id === user.id && friend.last_message && friend.last_message.message);
+        if (socket && userHasLastMessage) {
             console.log('Sending mark_read to backend');
             // socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
             

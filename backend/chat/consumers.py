@@ -60,11 +60,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def mark_messages_as_read(self, contact_username):
         contact_user = await self.get_user_by_username(contact_username)
         if contact_user:
-            # Update database to mark messages as read
-            await self.update_message_read_status(self.user, contact_user)
+        # Check if there are unread messages before updating
+            unread_messages = await database_sync_to_async(
+            lambda: Message.objects.filter(sender=contact_user, receiver=self.user, is_read=False).exists()
+            )()
+            print('unread_messages => ' , unread_messages)
+            if unread_messages:
+                # Update database to mark messages as read
+                await self.update_message_read_status(self.user, contact_user)
+                print('hello')
 
-            # Notify sender and receiver
-            await self.send_mark_read_status(contact_user.id, contact_username)
+                # Notify sender and receiver
+                await self.send_mark_read_status(contact_user.id, contact_username)
+            else:
+                print('no unread messages')
+            # old
+            # # Update database to mark messages as read
+            # await self.update_message_read_status(self.user, contact_user)
+
+            # # Notify sender and receiver
+            # await self.send_mark_read_status(contact_user.id, contact_username)
+        
+        #new 
 
     async def send_mark_read_status(self, contact_id, contact_username):
 
