@@ -323,4 +323,3 @@ class NotificationConsumer(BaseConsumer):
 # Channel Layer: channels_redis provides a Redis-backed channel layer that allows different consumers to communicate.
 # Groups: It manages groups of channels, enabling broadcasting messages to multiple consumers.
 # Message Passing: It handles the low-level details of passing messages between different WebSocket connections.
-

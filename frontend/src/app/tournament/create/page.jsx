@@ -1,13 +1,12 @@
-// app/tournament/create/page.jsx
 'use client';
-import { useState } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 
-const CreateTournament = () => {
-  const [tournament, setTournament] = useState({
+import { useState } from 'react';
+import { createTournament } from '@/services/apiCalls';
+
+
+export default function TournamentForm() {
+  const [formData, setFormData] = useState({
     title: '',
-    start_at: null,
     match1_nickname1: '',
     match1_nickname2: '',
     match2_nickname1: '',
@@ -15,92 +14,74 @@ const CreateTournament = () => {
     match3_nickname1: '',
     match3_nickname2: '',
     match4_nickname1: '',
-    match4_nickname2: '',
-    user: null,
+    match4_nickname2: ''
   });
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setTournament(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     try {
-      // Get JWT token from cookies
-      const token = Cookies.get('token'); // Assuming token is stored as 'token' in cookies
-
-      // Make the POST request using Axios
-      const response = await axios.post(
-        'http://localhost:8000/game/local-tournaments/',
-        tournament, // tournament data you want to send
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        }
-      );
-
-      console.log('Tournament:', tournament);
-
+      const response = await createTournament(JSON.stringify(formData));
       if (response.status === 201) {
-        console.log('Tournament created:', response.data);
-        // Optionally, redirect to the tournament details page or show a success message
+        alert('Tournament created successfully!');
+        // Reset form
+        setFormData({
+          title: '',
+          match1_nickname1: '',
+          match1_nickname2: '',
+          match2_nickname1: '',
+          match2_nickname2: '',
+          match3_nickname1: '',
+          match3_nickname2: '',
+          match4_nickname1: '',
+          match4_nickname2: ''
+        });
       } else {
-        console.error('Error creating tournament');
+        alert('Failed to create tournament');
       }
     } catch (error) {
       console.error('Error:', error);
+      alert('Error creating tournament');
     }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
-    <div className="create-tournament-container">
-      <h1>Create Tournament</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Tournament Title"
-          value={tournament.title}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="datetime-local"
-          name="start_at"
-          value={tournament.start_at}
-          onChange={e => setTournament({ ...tournament, start_at: e.target.value })}
-        />
-        {/* Match Nicknames */}
-        {[1, 2, 3, 4].map(match => (
-          <div key={match}>
-            <input
-              type="text"
-              name={`match${match}_nickname1`}
-              placeholder={`Match ${match} Player 1`}
-              value={tournament[`match${match}_nickname1`]}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="text"
-              name={`match${match}_nickname2`}
-              placeholder={`Match ${match} Player 2`}
-              value={tournament[`match${match}_nickname2`]}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        ))}
-        <button type="submit">Create Tournament</button>
+    <div className="max-w-3xl mx-auto p-4 mt-8">
+      <form onSubmit={handleSubmit} className="bg-white/10 shadow-md rounded-lg p-6 space-y-6">
+        <h2 className="text-2xl font-bold text-center text-white mb-6">
+          Create Local Tournament
+        </h2>
+        
+        <div className="space-y-4">
+          {Object.entries(formData).map(([key], index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    id={key}
+                    name={key}
+                    value={formData[key]}
+                    placeholder={key==='title'? key: `Nickname ${index}`}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 bg-transparent border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+          ))}
+
+          <button
+            type="submit"
+            className="w-full bg-white text-black py-2 px-4 rounded-md hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+          >
+            Create Tournament
+          </button>
+        </div>
       </form>
     </div>
   );
-};
-
-export default CreateTournament;
+}

@@ -1,4 +1,5 @@
 from . import views
+from .totp.views import TwoFactorAuthView, User2faVerificationView
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -61,6 +62,9 @@ urlpatterns = [
 	path("searchItems/<str:searchedQuery>", views.SearchClass.as_view(), name="search"),
 
 
+	#2fa
+	path("2fa/verify/user/", User2faVerificationView.as_view(), name="verify_2fa"),
+	path("2fa/<str:action>/", TwoFactorAuthView.as_view(), name="2fa"),
 ]
 
 if settings.DEBUG:

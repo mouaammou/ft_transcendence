@@ -1,21 +1,22 @@
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState } from 'react';
 import GamePage from './page';
+import { useRouter } from 'next/navigation';
+import YouWin from '@/components/modals/YouWin';
 
-export default function PongGame({
-  score1,
-  score2,
-  setScore1,
-  setScore2,
-  setLeftUser,
-  setRightUser,
-}) {
-  const canvasRef = useRef(null);
-  const [socketState, setSocketState] = useState(false);
+export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
+	const canvasRef = useRef(null);
+	const router = useRouter();
+	const [winner, setWinner] = useState('');
+	// const [leftUser, setLeftUser] = useState("default");
+	// const [rightUser, setRightUser] = useState("default");
+	// const [socket, setSocket] = useRef(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+	useEffect(() => {
+		let leftUser = 'Player 1';
+		let rightUser = 'Player 2';
+		const canvas = canvasRef.current;
+		const context = canvas.getContext('2d');
 
     // ball object
     const ball = {
@@ -127,96 +128,117 @@ export default function PongGame({
     //   resizeCanvas();
     let gameConfig = {};
 
-    socket.onmessage = function (message) {
-      const data = JSON.parse(message.data);
-      if (data.update) {
-        if (data.update.left_paddle_pos) {
-          user.x = data.update.left_paddle_pos[0];
-          user.y = data.update.left_paddle_pos[1];
-        }
-        if (data.update.right_paddle_pos) {
-          computer.x = data.update.right_paddle_pos[0];
-          computer.y = data.update.right_paddle_pos[1];
-        }
-        ball.radius = gameConfig.ball_size[0] / 2;
-        ball.x = data.update.ball_pos[0] + ball.radius;
-        ball.y = data.update.ball_pos[1] + ball.radius;
-        // rectBall.x = data.update.ball_pos[0];
-        // rectBall.y = data.update.ball_pos[1];
-        // console.log(rectBall.x);
-        // console.log(rectBall.y);
-        if (data.update.left_player_score) {
-          user.score = data.update.left_player_score;
-          setScore2(score2 => data.update.left_player_score);
-        }
-        if (data.update.right_player_score) {
-          computer.score = data.update.right_player_score;
-          setScore1(score1 => data.update.right_player_score);
-        }
-        drawGame();
-      } else if (data.config) {
-        // setScore1(score1 => data.config.right_player_score);
-        // setScore2(score2 => data.config.left_player_score);
-        console.log(data.config);
-        gameConfig = data.config;
-        canvas.width = gameConfig.window_size[0];
-        canvas.height = gameConfig.window_size[1];
-        // console.log(canvas.height);
-        net.x = canvas.width / 2 - 2;
-        computer.width = gameConfig.paddles_size[0];
-        computer.height = gameConfig.paddles_size[1];
-        user.width = gameConfig.paddles_size[0];
-        user.height = gameConfig.paddles_size[1];
-        user.x = gameConfig.left_paddle_pos[0];
-        user.y = gameConfig.left_paddle_pos[1];
-        computer.x = gameConfig.right_paddle_pos[0];
-        computer.y = gameConfig.right_paddle_pos[1];
-        ball.radius = gameConfig.ball_size[0] / 2;
-        ball.x = gameConfig.ball_pos[0] + ball.radius;
-        ball.y = gameConfig.ball_pos[1] + ball.radius;
-        ball.radius = gameConfig.ball_size[0] / 2;
-        // rectBall.x = gameConfig.ball_pos[0];
-        // rectBall.y = gameConfig.ball_pos[1];
-        // rectBall.width = gameConfig.ball_size[0];
-        // rectBall.height = gameConfig.ball_size[1];
-        user.score = gameConfig.left_player_score;
-        setScore2(score2 => gameConfig.left_player_score);
-        computer.score = gameConfig.right_player_score;
-        setScore1(score1 => gameConfig.right_player_score);
+		socket.onmessage = function (message) {
+			const data = JSON.parse(message.data);
+			if (data.update)
+			{
+				// console.log(data.update);
+				if (data.update.left_paddle_pos)
+				{
+					user.x = data.update.left_paddle_pos[0];
+					user.y = data.update.left_paddle_pos[1];
+				}
+				if (data.update.right_paddle_pos)
+				{
+					computer.x = data.update.right_paddle_pos[0];
+					computer.y = data.update.right_paddle_pos[1];
+				}
+				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.x = data.update.ball_pos[0] + ball.radius;
+				ball.y = data.update.ball_pos[1] + ball.radius;
+				// rectBall.x = data.update.ball_pos[0];
+				// rectBall.y = data.update.ball_pos[1];
+				// console.log(rectBall.x);
+				// console.log(rectBall.y);
+				if (data.update.left_player_score)
+				{
+					user.score = data.update.left_player_score;
+					setScore2(score2 => data.update.left_player_score);
+				}
+				if (data.update.right_player_score)
+				{
+					computer.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
+				}
+				if (data.update.finished)
+				{
+					if (data.update.finished === 'left_player')
+						setWinner(leftUser);
+					else if (data.update.finished === 'right_player')
+						setWinner(rightUser);
+				}
+				drawGame();
 
-        // if (data.config.left_nickname)
-        // {
-        // 	setLeftUser(data.config.left_nickname);
-        // }
-        // if (data.config.right_nickname)
-        // {
-        // 	setRightUser(data.config.right_nickname);
-        // }
-        drawGame();
-      }
-      // else if (data.tournament)
-      // {
-      // 	if (data.tournament.left)
-      // 	{
-      // 		setLeftUser(data.tournament.left);
-      // 	}
-      // 	if (data.tournament.right)
-      // 	{
-      // 		setRightUser(data.tournament.right);
-      // 	}
-      // 	console.log(data);
-      // }
-      else {
-        console.log(data);
-      }
-    };
-    // Game state
-    // Keyboard state
-    const keys = {};
-    // Update game logic
-    let setconfig = false;
-    // socket.onmessage
-    const updateGame = () => {};
+			}
+			else if (data.config)
+			{
+				// setScore1(score1 => data.config.right_player_score);
+				// setScore2(score2 => data.config.left_player_score);
+				console.log(data.config);
+				gameConfig = data.config;
+				canvas.width = gameConfig.window_size[0];
+				canvas.height = gameConfig.window_size[1];
+				// console.log(canvas.height);
+				net.x = canvas.width / 2 - 2;
+				computer.width = gameConfig.paddles_size[0];
+				computer.height = gameConfig.paddles_size[1];
+				user.width = gameConfig.paddles_size[0];
+				user.height = gameConfig.paddles_size[1];
+				user.x = gameConfig.left_paddle_pos[0];
+				user.y = gameConfig.left_paddle_pos[1];
+				computer.x = gameConfig.right_paddle_pos[0];
+				computer.y = gameConfig.right_paddle_pos[1];
+				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.x = gameConfig.ball_pos[0] + ball.radius;
+				ball.y = gameConfig.ball_pos[1] + ball.radius;
+				ball.radius = gameConfig.ball_size[0] / 2;
+				// rectBall.x = gameConfig.ball_pos[0];
+				// rectBall.y = gameConfig.ball_pos[1];
+				// rectBall.width = gameConfig.ball_size[0];
+				// rectBall.height = gameConfig.ball_size[1];
+				user.score = gameConfig.left_player_score;
+				setScore2(score2 => gameConfig.left_player_score);
+				computer.score = gameConfig.right_player_score;
+				setScore1(score1 => gameConfig.right_player_score);
+
+
+				if (data.config.left_nickname)
+				{
+					leftUser = data.config.left_nickname;
+				}
+				if (data.config.right_nickname)
+				{
+					rightUser=data.config.right_nickname;
+				}
+				drawGame();
+			}
+			// else if (data.tournament)
+			// {
+			// 	if (data.tournament.left)
+			// 	{
+			// 		setLeftUser(data.tournament.left);
+			// 	}
+			// 	if (data.tournament.right)
+			// 	{
+			// 		setRightUser(data.tournament.right);
+			// 	}
+			// 	console.log(data);
+			// }
+			else
+			{
+				console.log(data);
+			}
+		}
+		// Game state
+		// Keyboard state
+		const keys = {};
+		// Update game logic
+		let setconfig = false;
+		// socket.onmessage
+		const updateGame = () => {
+		}
+
+		
 
     // Draw game elements
     const drawGame = () => {
@@ -277,34 +299,48 @@ export default function PongGame({
       keys[event.key] = false;
     };
 
-    // Mouse event handlers
-    // const handleMouseMove = (event) => {
-    // 	const rect = canvas.getBoundingClientRect();
-    // 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
-    // 	// how to get the window width and height
-    // 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
-    // 		user.y = event.clientY - rect.top - user.height / 2;
-    // 		if (user.y <= 0)
-    // 			user.y = 0
-    // 		else if (user.y + user.height >= canvas.height)
-    // 			user.y = canvas.height - user.height;
-    // 	}
-    // 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
-    // 		computer.y = event.clientY - rect.top - computer.height / 2;
-    // 		if (computer.y <= 0)
-    // 			computer.y = 0
-    // 		else if (computer.y + computer.height >= canvas.height)
-    // 			computer.y = canvas.height - computer.height;
-    // 	}
-    // 	// handle the paddle going out of the canvas
-    // }
+		// Mouse event handlers
+		// const handleMouseMove = (event) => {
+		// 	const rect = canvas.getBoundingClientRect();
+		// 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
+		// 	// how to get the window width and height
+		// 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
+		// 		user.y = event.clientY - rect.top - user.height / 2;
+		// 		if (user.y <= 0)
+		// 			user.y = 0
+		// 		else if (user.y + user.height >= canvas.height)
+		// 			user.y = canvas.height - user.height;
+		// 	}
+		// 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
+		// 		computer.y = event.clientY - rect.top - computer.height / 2;
+		// 		if (computer.y <= 0)
+		// 			computer.y = 0
+		// 		else if (computer.y + computer.height >= canvas.height)
+		// 			computer.y = canvas.height - computer.height;
+		// 	}
+		// 	// handle the paddle going out of the canvas
+		// }
+		const closeSocket = () => {
+			if (socket.readyState === WebSocket.OPEN) {
+				socket.close();
+			}
+		}
 
-    // Move the paddle2 with the mouse too
-    // Attach event listeners
-    // document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
-    document.addEventListener('keydown', handleKeyDown); // add event listener to the document object when a key is pressed
-    document.addEventListener('keyup', handleKeyUp);
-    document.addEventListener('visibilitychange', sendVisibilityStatus);
+		const handleRouteChange = (url) => {
+            console.log('Navigating to: ', url);
+            closeSocket();  // Close the socket when navigating to another page
+        };
+
+        // router.events.on('routeChangeStart', handleRouteChange);
+
+		// Move the paddle2 with the mouse too
+		// Attach event listeners
+		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
+		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
+		document.addEventListener('keyup', handleKeyUp);
+		document.addEventListener('visibilitychange', sendVisibilityStatus);
+		// canvasRef.current.addEventListener('touchmove', handleTouchMove);
+		// document.addEventListener('beforeunload', closeSocket);
 
     // Animation loop
     // const animate = () => {
@@ -317,12 +353,16 @@ export default function PongGame({
     // animate();
     // setInterval(animate, 1000 / 60);
 
-    // Cleanup event listeners
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-      document.removeEventListener('visibilitychange', sendVisibilityStatus);
-    };
-  }, []);
-  return <canvas className="play-ground" ref={canvasRef}></canvas>;
+		// Cleanup event listeners
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
+			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+		};
+	}, []);
+	return (
+		<canvas className="play-ground" ref={canvasRef} >
+			
+		</canvas>
+	);
 }

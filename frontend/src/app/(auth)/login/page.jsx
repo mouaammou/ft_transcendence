@@ -1,16 +1,18 @@
-	'use client';
+'use client';
 
-	import { useAuth } from '@/components/auth/loginContext';
-	import { useState } from 'react';
-	import Link from 'next/link';
-	import Login42 from '@/components/auth/login42';
-	import Image from 'next/image';
-	import '@/styles/auth/login.css';
+import { useAuth } from '@/components/auth/loginContext';
+import { useState } from 'react';
+import Link from 'next/link';
+import Login42 from '@/components/auth/login42';
+import Image from 'next/image';
+import '@/styles/auth/login.css';
 
-	export default function LoginPage() {
+export default function LoginPage() {
+	const [totp, setTotp] = useState(false);
 	const [formData, setFormData] = useState({
 		username: '',
 		password: '',
+		// 2fa_code: '', will be added if user enabled 2fa
 	});
 	const [showPassword, setShowPassword] = useState(false);
 	const { errors, AuthenticateTo } = useAuth();
@@ -22,7 +24,14 @@
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await AuthenticateTo('/login', formData);
+		console.log('formData: in login::  ', formData);
+		let resp = await AuthenticateTo('/login', formData);
+		if (resp?.totp) {
+			setTotp(true);
+			// setFormData({...formData, 2fa_code: '123456'});
+			// resp = await AuthenticateTo('/login', formData);
+		}
+		console.log('resp: in login::  ', resp);
 	};
 
 	return (
@@ -58,11 +67,16 @@
 				placeholder="Username or Email"
 				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
 				required
+				disabled={totp}
 				/>
 			</div>
 
 			<div className="relative">
 				<input
+			/>
+			<input
+				// type="password"
+				// className="form-control  disabled:opacity-50"
 				name="password"
 				type={showPassword ? 'text' : 'password'}
 				value={formData.password}
@@ -70,8 +84,16 @@
 				placeholder="Password"
 				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
 				required
-				/>
-				<button
+				disabled={totp}
+			/>
+				{ totp && <input
+				type="text"
+				className="form-control"
+				name="totp_code"
+				placeholder="Enter Two Factor Code"
+				onChange={handleChange}
+			/>}
+			<button
 				type="button"
 				onClick={() => setShowPassword(!showPassword)}
 				className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
@@ -84,7 +106,7 @@
 				type="submit"
 				className="w-full py-4 text-2xl text-black bg-white rounded-full hover:bg-gray-100 transition-colors duration-300 font-medium"
 			>
-				Login
+				{totp ? 'Verify 2FA Code' : 'Login'}
 			</button>
 			</div>
 
@@ -121,4 +143,4 @@
 		</form>
 		</div>
 	);
-	}
+}

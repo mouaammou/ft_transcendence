@@ -19,7 +19,7 @@ def set_jwt_cookies(response, refresh):
 		key="refresh_token",
 		value=str(refresh),
 		httponly=True,
-		samesite="Lax",#??
+		samesite="Lax",# ?? 
 		max_age= api_settings.REFRESH_TOKEN_LIFETIME,  # 7 days
 	)
 	access_token = refresh.access_token

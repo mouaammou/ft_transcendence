@@ -144,6 +144,8 @@ class CustomUser(AbstractUser):
 	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
 	user42 = models.CharField(max_length=255, unique=True, blank=True, null=True)
 	email = models.EmailField(unique=True, blank=False, null=False)
+	totp_secret = models.CharField(max_length=32, blank=True, null=True)
+	totp_enabled = models.BooleanField(default=False)
 	first_name = models.CharField(max_length=255, blank=False)
 	last_name = models.CharField(max_length=255, blank=False)
 	phone = models.CharField(max_length=255, blank=True)

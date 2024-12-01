@@ -6,8 +6,16 @@ export async function middleware(request) {
 
   const response = NextResponse.next();
 
-  const isAuthPage = request.url.includes('/login') || request.url.includes('/signup');
-  const isRoot = request.nextUrl.pathname === '/';
+	//check if cookie 2fa is set, khlih idoz
+	const is2fa = request.cookies.get("2fa_token");
+	
+	if (is2fa && !request.nextUrl.pathname !== "/2fa") {
+		return NextResponse.redirect(new URL("/2fa", request.url));
+	}
+
+
+	const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
+	const isRoot = request.nextUrl.pathname === "/";
 
   if (isRoot) return response;
   else if (!refresh_token && !isAuthPage)

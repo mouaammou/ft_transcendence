@@ -7,6 +7,8 @@ from authentication.utils import set_jwt_cookies
 from rest_framework.views import APIView
 import logging
 
+from authentication.totp.utils import validate_totp
+
 logger = logging.getLogger(__name__)
 
 class SignUp(APIView):
@@ -43,6 +45,25 @@ class Login(APIView):
 			)
 
 		user = authenticate(username=username, password=password)
+		if user is not None and user.totp_enabled:
+			code = request.data.get("totp_code")
+			if not code:
+				return Response({
+							"msg": "send 2fa code with username and password, Or other authentication data",
+							"totp":"2fa is enabled by the user" # this key allows the frontend to know that 2fa is enabled
+						},
+						status=status.HTTP_200_OK
+					)
+				# 	if not validate_totp(user.totp_secret, code):
+                # return Response({"msg": "invalid code!"}, status=status.HTTP_400_BAD_REQUEST)
+			elif code and not validate_totp(user.totp_secret, code):
+				return Response({
+							"msg": "invalid 2fa code!",
+							"totp":"2fa is enabled by the user" # this key allows the frontend to know that 2fa is enabled
+						},
+						status=status.HTTP_200_OK
+					)
+
 
 		if user is not None:
 			refresh = RefreshToken.for_user(user)

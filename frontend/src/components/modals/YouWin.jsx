@@ -2,7 +2,8 @@ import React from 'react';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
 
-const YouWin = ({ onClose }) => {
+const YouWin = ({ onClose, winner='' }) => {
+
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -49,7 +50,7 @@ const YouWin = ({ onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
       <div className="text-center">
         <h1 className="text-white font-semibold font-balsamiq text-4xl md:text-5xl">
-          Congratulations You Win 🎉
+           {winner && <span className='pr-2 text-green-400'>{winner}</span>} Congratulations You Win 🎉
         </h1>
         <p className="text-white font-normal font-open text-lg mt-4">
           Great job! You’ve earned this victory!

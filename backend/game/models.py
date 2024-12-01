@@ -228,6 +228,7 @@ class LocalTournament(models.Model):
     created_at = models.DateTimeField(editable=False, auto_now_add=True)
     start_at = models.DateTimeField(default=teen_minutes_ahead)
     finished = models.BooleanField(default=False, editable=False)
+    updated_at = models.DateTimeField(editable=False, default=timezone.now)
 
     # round `1` players
     match1_nickname1 = models.CharField(max_length=250,)
@@ -261,6 +262,7 @@ class LocalTournament(models.Model):
             return ValueError("Invalid Match Index")
         left, right, match_winner = self.MATCHES[index]
         setattr(self, match_winner, winner)
+        self.updated_at = timezone.now()
         self.match_index = index + 1
         if index == 7:
             self.finished = True

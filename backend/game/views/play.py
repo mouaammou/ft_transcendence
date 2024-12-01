@@ -11,7 +11,7 @@ from game.models import LocalTournament
 
 class PlayTounament(APIView):
     """used to paly next match in a tournament"""
-    permission_classes = [IsAuthenticated, ]
+    # permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
@@ -40,10 +40,11 @@ class PlayTounament(APIView):
 
 class PlayRegular(APIView):
     """used to palyregular game"""
-    permission_classes = [IsAuthenticated, ]
+    # permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
+        print(f"\n -------- PlayRegular: {request.unique_key}")
         EventLoopManager.add(
             request.unique_key,
         )

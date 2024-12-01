@@ -34,24 +34,31 @@ export const LoginProvider = ({ children }) => {
     return () => setMounted(false);
   }, [pathname, router]);
 
-  // Authentication function with async/await for readability
-  const AuthenticateTo = async (endpoint, formData) => {
-    try {
-      const res = await postData(endpoint, formData);
-      if (res?.status === 200 || res?.status === 201) {
-        setIsAuth(true);
-        Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
+	// Authentication function with async/await for readability
+	const AuthenticateTo = async (endpoint, formData) => {
+		try {
+			const res = await postData(endpoint, formData);
+			if (res?.status === 200 || res?.status === 201) {
+				if (res?.data?.totp) {
+					// this means user has enabled 2fa
+					// and we need to send totp code with credentials
+					return {"totp":"send credentials with totp code", msg:res?.data?.msg};
+				}
+				setIsAuth(true);
+				Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
 
-        // Send WebSocket message if connected
-        if (isConnected) sendMessage(JSON.stringify({ online: 'online', user: res.data.username }));
-        router.push('/profile');
-      } else {
-        handleError(res);
-      }
-    } catch (error) {
-      console.error('Error during authentication:', error);
-    }
-  };
+				// Send WebSocket message if connected
+				if (isConnected)
+					sendMessage(JSON.stringify({ online: 'online', user: res.data.username }));
+				router.push('/profile');
+			} else {
+				handleError(res);
+			}
+		} catch (error) {
+			console.error('Error during authentication:', error);
+		}
+		return {};
+	};
 
   const handleError = res => {
     if (res?.response?.status === 500) {
