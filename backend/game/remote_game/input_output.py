@@ -61,7 +61,8 @@ class RemoteGameOutput:
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
-        # print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
+        # {'update': {'ball_pos': [29.5, 136.5]}}
+        print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         if player_id is None:
             return
         group = cls.consumer_group.get(player_id)
@@ -127,7 +128,7 @@ class RemoteGameOutput:
 class RemoteGameInput:
 
     @classmethod
-    def recieved_dict_text_data(cls, game_obj, side, dict_text_data, consumer):
+    def recieved_dict_text_data(cls, game_obj, side, dict_text_data):
         print("recieved_dict_text_data method")
         """
         dict_text_data: is the recieved text data as dict. as it is recieved

@@ -38,8 +38,10 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
         self.in_board_page = False
         self.game_engine.connect(self)
 
+
     async def disconnect(self, *arg, **kwrags):
         self.game_engine.disconnect(self.player_id)
+    
     
     async def receive(self, text_data, *args, **kwargs):
         data = {}
@@ -47,22 +49,17 @@ class RemoteGameConsumer(AsyncWebsocketConsumer):
             data = json.loads(text_data)
         except:      
             print('EXCEPTION: received invaled data from the socket')
-
         self.is_focused = data.get('tabFocused', True) 
-
         if data.get('inBoardPage') is not None:
             self.in_board_page = data.get('inBoardPage')
         print(f"dict data ---------->  {data}  user --------> {self.user.id}")
-        
-        # print(f"tab is focused --->  {self.is_focused}")
         if self.player_id is None:
             return
-        self.game_engine.recieve(self.player_id, data, self)
+        self.game_engine.recieve(self.player_id, data)
+    
     
     def send_game_message(self, event):
         try:
-            # dont await it
-            # print(f"send_game_message: {event}")
             asyncio.create_task(self.send(text_data=json.dumps(event)))
         except Exception as e:
             print(f"Exception: send_game_message: Failed {e}")
