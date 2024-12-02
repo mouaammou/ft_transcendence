@@ -74,8 +74,12 @@ def initialize_django():
         print("Applying all migrations...")
         call_command("migrate")
         print("Migrations applied successfully!")
+
+        print("Collecting static files...")
+        call_command("collectstatic", "--noinput")
+        print("Static files collected successfully!")
     except Exception as e:
-        print(f"Error during migrations: {e}")
+        print(f"Error during migrations or collectstatic: {e}")
         sys.exit(1)
 
 # Create a default superuser if none exists
