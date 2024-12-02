@@ -38,11 +38,27 @@
 
 	const NotificationItem = ({ data, notifStatus, handleAction, NOTIFICATION_TYPES }) => {
 	const { sendMessage } = useNotificationContext();
-
-	const sendAction = useCallback(
-		(action) => {
-		const messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
-		sendMessage(JSON.stringify({
+	const router = useRouter();
+	console.log('NotificationLayout:', data);
+	const sendAction = useCallback((action, notif_type) => {
+		console.log('sendAction:', action, notif_type);
+		let messageType = null;
+		if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
+		} else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
+			if (action === 'accepted'){
+				messageType = NOTIFICATION_TYPES.ACCEPT_GAME;
+				router.push('/game');
+			}
+			else {
+				messageType = NOTIFICATION_TYPES.REJECT_GAME;
+			}
+		} else if (notif_type === NOTIFICATION_TYPES.INVITE_TOURNAMENT) {
+			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_TOURNAMENT : NOTIFICATION_TYPES.REJECT_TOURNAMENT;
+		}
+		console.log('sendAction:', messageType)
+		messageType && sendMessage(JSON.stringify({
 			type: messageType,
 			to_user_id: data.sender,
 		}));
@@ -75,8 +91,36 @@
 			<div className="mb-3 mt-1 max-w-52 text-sm font-normal text-gray-300">
 			{data.message}
 			</div>
-			<NotificationActions notifStatus={notifStatus} onAction={onAction} data={data} />
-		</div>
+			
+			{/* Only show action buttons for pending status */}
+			{notifStatus === 'pending' && (
+				<div className="flex items-center gap-2">
+					<button
+					className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
+					onClick={() => onAction('accepted', data.id)}
+					>
+					Accept
+					</button>
+					<button
+					className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 active:scale-95"
+					onClick={() => onAction('rejected', data.id)}
+					>
+					Reject
+					</button>
+				</div>
+			)}
+			</div>
+
+			{/* Only show mark as read button for non-pending notifications */}
+			{notifStatus !== 'pending' && (
+			<button
+				className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg bg-gray-700 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-all duration-300 hover:bg-gray-600 group-hover:opacity-100"
+				onClick={handleMarkAsRead}
+			>
+				<IoCheckmarkOutline className="text-base" />
+				Mark as read
+			</button>
+			)}
 		</div>
 	);
 	};

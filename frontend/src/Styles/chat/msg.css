@@ -71,6 +71,7 @@
 }
 
 .LiaGamepadSolid {
+  cursor: pointer;
   font-size: 40px;
 }
 
@@ -326,7 +327,7 @@ input placeholder {
 
 /* .send-icon.send-icon:hove {
   color: rgb(12, 76, 92);
-} */
+} */ 
 
 .user-not-select {
   background-color: rgba(163, 218, 232, 0.2);

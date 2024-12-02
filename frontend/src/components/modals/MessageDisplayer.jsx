@@ -15,4 +15,4 @@ const Moijlkm = ({ isOpen, message, onClose }) => {
   );
 };
 
-export default Modal;
+export default Moijlkm;

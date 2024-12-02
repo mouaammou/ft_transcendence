@@ -1,65 +1,68 @@
-'use client';
-import { useEffect, useState, useRef } from 'react';
-import socket from '@/utils/WebSocketManager';
+"use client";
+import { useEffect, useState, useRef} from 'react';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-export default function PongGame({ score1, score2, setScore1, setScore2, gameType }) {
-  const canvasRef = useRef(null);
-  const [showWinModal, setShowWinModal] = useState(false);
-  const [showLoseModal, setShowLoseModal] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const previousPathnameRef = useRef(pathname);
+export default function PongGame({ score1, score2, setScore1, setScore2}) {
+	const canvasRef = useRef(null);
+	const [showWinModal, setShowWinModal] = useState(false);
+	const [showLoseModal, setShowLoseModal] = useState(false);
+	const router = useRouter();
+	const pathname = usePathname();
+	const [gameType, setGameType] = useState(null);
+	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+
+    const searchParams = useSearchParams();
+	const previousPathnameRef = useRef(pathname);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     var start = true;
 
-    if (start) {
-      socket.sendMessage(JSON.stringify({ launch: start }));
-      start = false;
-    }
-    // ball object
-    const ball = {
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      radius: 10,
-      speed: 8,
-      velocityX: 5,
-      velocityY: 5,
-      color: 'white',
-    };
+		// if (start) {
+		// 	sendMessage(JSON.stringify({launch: start}));
+		// 	start = false;
+		// }
+		// ball object
+		const ball = {
+			x: canvas.width / 2,
+			y: canvas.height / 2,
+			radius: 10,
+			speed: 8,
+			velocityX: 5,
+			velocityY: 5,
+			color: 'white'
+		}
 
-    // paddle object
-    const player_1 = {
-      x: 0,
-      y: canvas.height / 2 - 100 / 2,
-      width: 10,
-      height: 100,
-      color: 'white',
-      score: 0,
-    };
-    const rectBall = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      color: 'white',
-      score: 0,
-    };
-    // paddle object
-    const player_2 = {
-      x: canvas.width - 10,
-      y: canvas.height / 2 - 100 / 2,
-      width: 10,
-      height: 100,
-      color: '#E9C46A',
-      score: 0,
-    };
+		// paddle object
+		const player_1 = {
+			x: 0,
+			y: canvas.height / 2 - 100 / 2,
+			width: 15,
+			height: 100,
+			color: 'white',
+			score: 0
+		}
+		const rectBall = {
+			x: 0,
+			y: 0,
+			width: 0,
+			height: 0,
+			color: 'white',
+			score: 0
+		}
+		// paddle object
+		const player_2 = {
+			x: canvas.width - 10,
+			y: canvas.height / 2 - 100 / 2,
+			width: 15,
+			height: 100,
+			color: '#E9C46A',
+			score: 0
+		}
 
     const net = {
       x: canvas.width / 2 - 2,
@@ -108,14 +111,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
       socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
     }
 
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log('WebSocket connection is open');
-      conectionOn = true;
-      // create new game EVENT
-    } else {
-      console.log('WebSocket connection is not open');
-      conectionOn = false;
-    }
+
     // socket.addEventListener('open', (event) => {
     // 	// console.log(socketState);
     // 	console.log('Connected to WS Server');
@@ -206,7 +202,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
         drawGame();
       }
     };
-    socket.registerMessageHandler(handleMessage);
+    registerMessageHandler(handleMessage);
     // Game state
     // Keyboard state
     const keys = {};
@@ -294,62 +290,37 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
     // 	updateGame();
     // drawGame();
 
-    // 	requestAnimationFrame(animate);
-    // };
+		// Cleanup event listeners
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
+			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+			sendMessage(JSON.stringify({ tabFocused: false }));
+			unregisterMessageHandler(handleMessage);
+		};
+	}, []);
 
     // animate();
     // setInterval(animate, 1000 / 60);
 
-    // Cleanup event listeners
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-      document.removeEventListener('visibilitychange', sendVisibilityStatus);
-    };
-  }, []);
+	return (
+		<>
+			<canvas className="play-ground" ref={canvasRef}  width={900} height={400}>
 
-  useEffect(() => {
-    // This code will run when the component is mounted
-    // console.log('Game page entered:', pathname);
-    socket.sendMessage(JSON.stringify({ inGamePage: true }));
-
-    return () => {
-      // This code will run when the component is unmounted
-      console.log('Game page left:', pathname);
-      socket.sendMessage(JSON.stringify({ inGamePage: false }));
-    };
-  }, []);
-
-  return (
-    <>
-      <canvas className="play-ground" ref={canvasRef} width={900} height={400}></canvas>
-      {showWinModal && (
-        <YouWin
-          onClose={() => {
-            setShowWinModal(false);
-            if (gameType === 'tournament') {
-              router.push('/tournament_board');
-            } else {
-              router.push('/play');
-            }
-          }}
-          // stats={{ score1, score2 }} // Pass stats as needed
-        />
-      )}
-
-      {showLoseModal && (
-        <YouLose
-          onClose={() => {
-            setShowLoseModal(false);
-            // if (gameType === 'tournament') {
-            // 	router.push('/tournament_board');
-            // 	}else {
-            router.push('/play');
-            // }
-          }}
-          // stats={{ score1, score2 }} // Pass stats as needed
-        />
-      )}
-    </>
-  );
+			</canvas>
+				{showWinModal && (
+					<YouWin gameType={gameType} setShowWinModal={setShowLoseModal}/>
+				)}
+				
+				{showLoseModal && (
+					<YouLose 
+						onClose={() => {
+							setShowLoseModal(false);
+							router.push('/create_join_tournament');
+						}
+						}
+					/>
+				)}
+		</>
+	);
 }

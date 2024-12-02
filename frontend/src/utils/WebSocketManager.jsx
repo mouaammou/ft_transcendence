@@ -1,58 +1,59 @@
-class WebSocketManager {
-  constructor(url) {
-    if (!WebSocketManager.instance) {
-      this.socket = new WebSocket(url);
-      WebSocketManager.instance = this;
-      this.messageHandlers = [];
-      this.isConnected = false;
-      this.socket.onopen = () => {
-        // console.log('WebSocket connection opened');
-        this.isConnected = true;
-      };
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import useWebSocket from 'react-use-websocket';
 
-      this.socket.onclose = () => {
-        // console.log('WebSocket connection closed');
-        this.isConnected = false;
-      };
+const GlobalWebSocket = createContext(null);
 
-      this.socket.onmessage = event => {
-        // console.log('message from the server -->  ', event.data);
-        this.messageHandlers.forEach(handler => handler(event)); // call all handlers
-      };
-    }
-    return WebSocketManager.instance;
-  }
+export const GlobalWebSocketProvider = ({ url, children }) => {
+    const [messageHandlers, setMessageHandlers] = useState([]);
+    const [isConnected, setIsConnected] = useState(false);
 
-  // reconnect = false;
+    const { sendMessage, lastMessage, readyState } = useWebSocket(url, {
+        onOpen: () => {
+            console.log('WebSocket connection opened');
+            setIsConnected(true);
+        },
+        onClose: () => {
+            console.log('WebSocket connection closed');
+            setIsConnected(false);
+        },
+        onError: (error) => {
+            console.log('WebSocket error:', error);
+        },
+        shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
+    });
 
-  sendMessage(message) {
-    if (this.isConnected) {
-      this.socket.send(message);
-      // console.log("send a request to start remote random game");
-      return true;
-    } else {
-      console.log('websocket is not initialized');
-      return false;
-    }
-  }
+    useEffect(() => {
+        if (lastMessage !== null) {
+            messageHandlers.forEach(handler => handler(lastMessage));
+        }
+    }, [lastMessage, messageHandlers]);
 
-  close() {
-    if (this.socket) {
-      this.socket.close();
-      this.isConnected = false;
-    }
-  }
+    const registerMessageHandler = (handler) => {
+        setMessageHandlers(prevHandlers => [...prevHandlers, handler]);
+    };
 
-  registerMessageHandler(handler) {
-    // console.log('the message handler is registred');
-    this.messageHandlers.push(handler);
-  }
+    const unregisterMessageHandler = (handler) => {
+        setMessageHandlers(prevHandlers => prevHandlers.filter(h => h !== handler));
+    };
 
-  unregisterMessageHandler(method) {
-    // console.log('the handler deleted');
-    this.messageHandlers = this.messageHandlers.filter(handler => handler !== method);
-  }
-}
+    const contextValue = useMemo(
+        () => ({
+            isConnected,
+            sendMessage,
+            registerMessageHandler,
+            unregisterMessageHandler,
+            lastMessage,
+        }),
+        [isConnected, sendMessage, lastMessage, messageHandlers]
+    );
 
-const instance = new WebSocketManager('ws://localhost:8000/ws/global/');
-export default instance;
+    return (
+        <GlobalWebSocket.Provider value={contextValue}>
+            {children}
+        </GlobalWebSocket.Provider>
+    );
+};
+
+export const useGlobalWebSocket = () => {
+    return useContext(GlobalWebSocket);
+};

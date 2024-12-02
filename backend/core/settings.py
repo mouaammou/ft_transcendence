@@ -87,23 +87,24 @@ FRONTEND_URL = os.getenv('FRONTEND_URL', default='http://localhost:3000')
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 INSTALLED_APPS = [
-	'daphne',
-	'channels',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'pong',
-	'game',
-	# 'game.apps.GameConfig',
-	"authentication.apps.AuthenticationConfig",
-	"rest_framework",
-	"rest_framework_simplejwt",
-	"corsheaders",
-	"rest_framework_simplejwt.token_blacklist",
-	"chat",
+    'daphne',
+    'channels',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pong',
+    'game',
+    # 'game.apps.GameConfig',
+    "authentication.apps.AuthenticationConfig",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+    "chat",
+    "connect_four",
 ]
 
 MIDDLEWARE = [
@@ -144,9 +145,15 @@ CHANNEL_LAYERS = {
 	'default': {
 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
 		'CONFIG': {
-			"hosts": [('redis', 6379)],
+			"hosts": [('localhost', 6379)],
 		},
 	},
+#  'default': {
+# 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+# 		'CONFIG': {
+# 			"hosts": [('redis', 6379)],
+# 		},
+# 	},
 	# 'default': {
 	# 	'BACKEND': 'channels.layers.InMemoryChannelLayer',
 	# },
@@ -160,24 +167,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "ft_transcendence",
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT'),
-    }
-}
-
 # DATABASES = {
-	
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.sqlite3',
-# 		'NAME': BASE_DIR / 'db.sqlite3',
-# 	}
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "ft_transcendence",
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
+#         'PORT': os.getenv('POSTGRES_PORT'),
+#     }
 # }
+
+DATABASES = {
+	
+	'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': BASE_DIR / 'db.sqlite3',
+	}
+}
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost",

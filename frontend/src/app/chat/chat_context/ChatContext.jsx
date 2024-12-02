@@ -485,7 +485,7 @@ export const ChatProvider = ({ children }) => {
     };
 
     ws.onerror = error => {
-      console.error('WebSocket chat error:', error);
+      console.log('WebSocket chat error:', error);
     };
 
     setSocket(ws);

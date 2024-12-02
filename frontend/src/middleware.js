@@ -23,7 +23,7 @@ export async function middleware(request) {
   if (!isAuthPage) {
     // If you have at least the refresh token, then validate it in the backend
     try {
-      const backendResponse = await fetch('http://backend:8000/verifyTokens', {
+      const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,14 +56,21 @@ export async function middleware(request) {
   return response;
 }
 
+// protect paths here:
+
 export const config = {
-  matcher: [
-    '/',
-    '/login/:path*',
-    '/signup/:path*',
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/game/:path*',
-    '/chat/:path*',
-  ],
+	matcher: [
+		"/",
+		"/login/:path*",
+		// "/edit_profile/:path*", there is more routes that should be protected in (game) and (tournament)
+		"/signup/:path*",
+		"/dashboard/:path*",
+		"/profile/:path*",
+		"/game/:path*",
+		"/chat/:path*",
+		"/create_join_tournament/:path*",
+		"/tournament_board/:path*",
+		"/waiting_random_game/:path*",
+		"/waiting_random_c4/:path*",
+	],
 };

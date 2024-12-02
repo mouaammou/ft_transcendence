@@ -129,7 +129,7 @@ export const searchTournaments  = async (search) => {
 		const response = await api.get(`search/`, { params: { search } });
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching tournaments:', error);
+		console.log('Error fetching tournaments:', error);
 		return {
 			results: [],
 			count: 0,
