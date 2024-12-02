@@ -108,7 +108,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2}) {
       // console.log("Visibility: ")
       // console.log(document.visibilityState)
       let isTabFocused = document.visibilityState === 'visible';
-      socket.sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
+      sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
     }
 
 
@@ -234,7 +234,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2}) {
     // Keyboard event handlers  // ArrowUp ArrowDown q s
     // add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
     const handleKeyDown = event => {
-      socket.sendMessage(JSON.stringify({ onPress: event.key.trim() }));
+      sendMessage(JSON.stringify({ onPress: event.key.trim() }));
       keys[event.key] = true;
       // if (event.key === ' ')
       // {
@@ -252,7 +252,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2}) {
 
     // set the key to false when the key is released
     const handleKeyUp = event => {
-      socket.sendMessage(JSON.stringify({ onRelease: event.key.trim() }));
+      sendMessage(JSON.stringify({ onRelease: event.key.trim() }));
       keys[event.key] = false;
     };
 
