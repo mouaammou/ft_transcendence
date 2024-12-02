@@ -210,7 +210,7 @@ const UserCart = ({ user, sendFriendRequest}) => {
 				</div>
 
 				<div className="mt-6 space-y-3">
-					<Link href={user?.username}
+					<Link href={`friend/${user.username}`}
 						className="flex items-center w-full px-6 py-3 rounded-2xl
 								bg-gray-700/50 hover:bg-gray-600/50 
 								text-gray-200 

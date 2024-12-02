@@ -10,4 +10,5 @@ COPY . .
 
 ENV PYTHONPATH=/backend
 
-CMD ["python3", "tools/init.py"]
+# First run init script, then start Django server
+CMD sh -c "python3 tools/init.py && python3 manage.py runserver 0.0.0.0:8000"

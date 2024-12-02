@@ -122,6 +122,7 @@ export default function FriendProfile({ params }) {
 				if (response.status === 200) {
 					setProfile(response.data);
 					setFriendStatusRequest(response.data.friend);
+					console.log("friend user:: ==> ", response);
 				} else {
 					setPageNotFound(true);
 				}

@@ -36,16 +36,16 @@ def wait_for_postgres():
 
 # Wait for Redis to be ready
 def wait_for_redis():
-    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    redis_url = os.environ.get("REDIS_URL", "redis://redis:6379/0")  # Update default URL
     redis_client = Redis.from_url(redis_url)
-    for attempt in range(10):  # Retry for 10 attempts
+    for attempt in range(10):
         try:
-            print("Checking Redis connection...")
+            print(f"Checking Redis connection... (Attempt {attempt + 1}/10)")
             redis_client.ping()
             print("Redis is ready!")
             return
         except Exception as e:
-            print(f"Redis is not ready. Attempt {attempt + 1}/10. Retrying in 2 seconds...")
+            print(f"Redis is not ready. Error: {e}")
             time.sleep(2)
     print("Error: Redis did not become ready in time.")
     sys.exit(1)
@@ -65,8 +65,11 @@ def initialize_django():
     wait_for_redis()
 
     try:
-        print("Making migrations for 'authentication' app...")
+        print("Making migrations for app...")
         call_command("makemigrations", "authentication")
+        call_command("makemigrations", "chat")
+        call_command("makemigrations", "game")
+        call_command("makemigrations", "pong")
 
         print("Applying all migrations...")
         call_command("migrate")

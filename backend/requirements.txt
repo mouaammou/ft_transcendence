@@ -39,3 +39,5 @@ urllib3==2.2.1
 zope.interface==6.4.post2
 psycopg2-binary
 Faker==30.8.2
+pyotp
+qrcode
