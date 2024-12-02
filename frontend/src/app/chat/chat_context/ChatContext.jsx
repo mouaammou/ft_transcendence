@@ -69,7 +69,6 @@ export const ChatProvider = ({ children }) => {
                     setOriginalUsers(newUsers);
                 }
                 setAllUsers(newUsers);
-                // console.log('users => ', allUsers)
                 // setNextPage(null); // Clear next page state as it's no longer used
             } else {
                 console.error("Unexpected response status:", response.status);
@@ -94,10 +93,7 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
 
-    // ************************ Helper Functions to structur message ************************
-  // ************************ end ***********************
-
-  // ************************ Helper Functions ************************
+    // ************************ Helper Functions ************************
 
     const formatTime = (timestamp) => {
         const date = new Date(timestamp);
@@ -166,7 +162,6 @@ export const ChatProvider = ({ children }) => {
 
     // ************************ Fetch chat history (handles both initial and pagination requests) ************************
     const fetchChatHistory = async (receiver_id, page = 1) => {
-        console.log('***** FetchChatHistoryi sFetchingRef.current   =>>', isFetchingRef.current)
         if (isFetchingRef.current) 
         {
             console.log("Fetch skipped: another fetch is in progress.");
@@ -174,8 +169,6 @@ export const ChatProvider = ({ children }) => {
         }
         try {
             isFetchingRef.current = true;
-            console.log("Starting fetch for page:", page);
-
             const url = `/chat-history/${receiver_id}?page=${page}`;
             const response = await getData(url);
 
@@ -186,7 +179,6 @@ export const ChatProvider = ({ children }) => {
                 const messagesList = response.data.results;
                 const groupedMessages = groupMessagesByDate(messagesList);
                 console.log('****** groupedMessages *** => ', groupedMessages)
-                console.log('this is in fetchChatHistory');
                 if (page === 1) {
                     setMessages({
                         [receiver_id]: mergeAndSortMessages({}, groupedMessages, selectedUserRef, receiver_id),
@@ -247,10 +239,6 @@ export const ChatProvider = ({ children }) => {
             
             // add contact
             socket.send(JSON.stringify({ mark_read: true, contact: user.username }));
-    
-
-            //********************************************************************** */
-            // Reset unread count for this user by setting unreadCount to 0 in last_message
             setAllUsers((prevUsers) =>
                 prevUsers.map((friend) =>
                     friend.friend.id === user.id
@@ -259,18 +247,12 @@ export const ChatProvider = ({ children }) => {
                             last_message: {
                                 ...friend.last_message,
                                 is_read: true,
-                                unreadCount: 0, // Reset unread count to 0
+                                unread_count: 0,
                             }
                         }
                         : friend
                 )
             );
-
-            //********************************************************************** */
-
-            // last update
-
-            // updateLastMessage(user.id, null, true, null); // Only update `is_read` for the selected user
         }
 
     };
@@ -280,14 +262,7 @@ export const ChatProvider = ({ children }) => {
   //  ************************  ************************
   const handleSendMessage = () => {
     console.log('Sending message...');
-
-    // Log the current state of each condition
-    console.log('Text:', text.trim());
-    console.log('Socket:', socket);
-    console.log('Socket Ready State:', socket ? socket.readyState : 'Socket is null');
-
-
-    
+    // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
     if (text.trim() && selectedUser && socket) {
         console.log('selectedUser.username =>' , selectedUser.username)
         const messageData = {
@@ -320,7 +295,6 @@ export const ChatProvider = ({ children }) => {
         // Handle typing indication
         const handleTyping = () => {
             if (selectedUser && socket) {
-                // console.log('is going to typing write now')
                 const typingData = {
                     sender: currentUser.username,
                     receiver: selectedUser.username,
@@ -367,7 +341,7 @@ export const ChatProvider = ({ children }) => {
             prevUsers.map((user) => {
                 if (user.friend.id === userId) {
                     // Update unreadCount based on whether the message is read or unread
-                    const unreadCount = is_read ? 0 : (user.last_message?.unreadCount || 0) + 1;
+                    const unreadCount = is_read ? 0 : (user.last_message?.unread_count || 0) + 1;
     
                     return {
                         ...user,
@@ -375,7 +349,7 @@ export const ChatProvider = ({ children }) => {
                             message, 
                             is_read, 
                             timestamp, 
-                            unreadCount // Place unreadCount inside last_message
+                            unread_count : unreadCount
                         },
                     };
                 }
@@ -390,13 +364,15 @@ export const ChatProvider = ({ children }) => {
         // If there's already an open WebSocket, close it before opening a new one
         console.log('If there is already an open WebSocket, close it before opening a new one');
         socket.close(); 
+        }else {
+            console.log('WebSocket is not open');
         }
 
-    const ws = new WebSocket('ws://localhost:8000/ws/chat');
+        const ws = new WebSocket('ws://localhost:8000/ws/chat');
 
-    ws.onopen = () => {
-      console.log('WebSocket chat connected');
-    };
+        ws.onopen = () => {
+        console.log('WebSocket chat connected');
+        };
 
         ws.onmessage = (event) => {
             const receivedData = JSON.parse(event.data);
@@ -406,16 +382,20 @@ export const ChatProvider = ({ children }) => {
             if (message) {
 
                 console.log('Incoming message:', message);
-                // Check if the message should be marked as read immediately
                 // if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                 if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                     // Mark the message as read since the receiver is actively viewing this chat
-                    console.log("Marking message as read immediately.");
+                    if (ws.readyState === WebSocket.OPEN) {
+                    // Receiver is actively viewing the chat
+                        ws.send(JSON.stringify({ mark_read: true, contact: sender })); // Notify backend to mark messages as read
+                    }else {
+                        console.log('Socket:', ws);
+                        console.log('Socket Ready State:', ws ? ws.readyState : 'Socket is null');                          
+                    }
                     updateLastMessage(sender_id, message, true, receivedData.timestamp);
                 } else {
                     // Update last message as unread
                     updateLastMessage(sender_id, message, false, receivedData.timestamp);
-                    console.log("we not Marking message as rea");
                 }
 
                 // Always update the sender's view of the receiver's last message
@@ -429,7 +409,7 @@ export const ChatProvider = ({ children }) => {
                     // Use mergeAndSortMessages to update state and avoid duplicates
                     const updatedMessages = { ...prevMessages };
 
-                    console.log('prevMessages in onmessage', prevMessages);
+                    // console.log('prevMessages in onmessage', prevMessages);
         
                     // Format the date of the message
                     const messageDate = formatDate(receivedData.timestamp);
@@ -454,17 +434,14 @@ export const ChatProvider = ({ children }) => {
                         receiver_id
                     );
         
-                    console.log('Updated Messages:', updatedMessages);
+                    // console.log('Updated Messages:', updatedMessages);
                     return updatedMessages;
                 });
             }
 
             // handle userclick do mark_read
             if (mark_read && contact) {
-                    console.log('Marking messages as read for receiver:', receiver);
-                    updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
-            }else {
-                console.log("Skipping mark_read update as conditions are not met.");
+                updateLastMessage(sender_id, message, true, receivedData.timestamp); // Update sender's last_message
             }
                     
             // Handle typing indicator
@@ -479,17 +456,17 @@ export const ChatProvider = ({ children }) => {
             }
         };
 
-    ws.onclose = event => {
-      console.log(event);
-      console.log('WebSocket chat disconnected');
-    };
+        ws.onclose = event => {
+        console.log(event);
+        console.log('WebSocket chat disconnected');
+        };
 
-    ws.onerror = error => {
-      console.error('WebSocket chat error:', error);
-    };
+        ws.onerror = error => {
+        console.error('WebSocket chat error:', error);
+        };
 
-    setSocket(ws);
-  };
+        setSocket(ws);
+    };
   // ************************ end ***********************
 
     //  ************************ handle emoji selection and append the selected emoji to the message text ************************
@@ -530,10 +507,7 @@ export const ChatProvider = ({ children }) => {
         if (!nextPage) {
             console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
             return;
-        }
-
-        console.log("teeesssssttttt heeereeee");
-            
+        }            
         const chatContainer = chatContainerRef.current;
         
         // Save the current scroll height before fetching
@@ -610,7 +584,12 @@ export const ChatProvider = ({ children }) => {
         socket.close(); // Clean up WebSocket on unmount
         console.log('WebSocket is closed');
         setSocket(null); // Reset socket state
-      }
+    }
+    selectedUserRef.current = null; // Reset the reference
+    // setSelectedUser(null); // Clear selected user state
+    // we have to test this
+    // setMessages({}); // Clear messages for this route
+    
     };
   }, []); // Runs once on component mount
   // ************************ end ***********************
@@ -684,10 +663,10 @@ export const ChatProvider = ({ children }) => {
     );
 };
 
-export const useChatContext = () => {
-  const context = React.useContext(ChatContext);
-  if (!context) {
-    throw new Error('useChatContext must be used within a ChatProvider');
-  }
-  return context;
-};
+// export const useChatContext = () => {
+//   const context = React.useContext(ChatContext);
+//   if (!context) {
+//     throw new Error('useChatContext must be used within a ChatProvider');
+//   }
+//   return context;
+// };

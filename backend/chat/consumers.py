@@ -10,6 +10,11 @@ from django.utils import timezone  # Import timezone for getting the current tim
 
 User = get_user_model()
 
+# Add logging
+import logging
+logger = logging.getLogger(__name__)
+
+
 class ChatConsumer(AsyncWebsocketConsumer):
     GROUP_PREFIX = 'chat_'
 
@@ -29,17 +34,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data.get('message')
-        print('message received =>', message)
         receiver_username = data.get('receiver')
         mark_read = data.get('mark_read', False)  # Detect mark as read request
 
         # add conact
         contact_username = data.get('contact')  # Used for marking messages as read
-        print('contact_username =>', contact_username)
 
         receiver = await self.get_user_by_username(receiver_username)
-        print('receiver =>'  ,receiver)
-        print('receiver_username =>' ,receiver_username)
 
         # Handle the message
         if message and receiver:
@@ -61,27 +62,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         contact_user = await self.get_user_by_username(contact_username)
         if contact_user:
         # Check if there are unread messages before updating
-            unread_messages = await database_sync_to_async(
-            lambda: Message.objects.filter(sender=contact_user, receiver=self.user, is_read=False).exists()
-            )()
-            print('unread_messages => ' , unread_messages)
-            if unread_messages:
-                # Update database to mark messages as read
-                await self.update_message_read_status(self.user, contact_user)
-                print('hello')
+            try:
+                unread_messages_exist = await database_sync_to_async(
+                    lambda: Message.objects.filter(sender=contact_user, receiver=self.user, is_read=False).exists()
+                )()
 
-                # Notify sender and receiver
-                await self.send_mark_read_status(contact_user.id, contact_username)
-            else:
-                print('no unread messages')
-            # old
-            # # Update database to mark messages as read
-            # await self.update_message_read_status(self.user, contact_user)
-
-            # # Notify sender and receiver
-            # await self.send_mark_read_status(contact_user.id, contact_username)
+                if unread_messages_exist:
+                    await self.update_message_read_status(self.user, contact_user)
+                    # Notify sender and receiver
+                    await self.send_mark_read_status(contact_user.id, contact_username)
+            except Exception as e:
+                logger.error(f"Error marking messages as read: {e}")
         
-        #new 
 
     async def send_mark_read_status(self, contact_id, contact_username):
 
@@ -118,7 +110,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_mark_read(self, event):
         # Send read status back to WebSocket clients
-        print('--> event[contact]', event['contact'])
         await self.send(text_data=json.dumps({
             'mark_read': event['mark_read'],
             'contact': event['contact'],
@@ -201,13 +192,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # ****** test for evite the diplication ************
         # Send message to sender's group (excluding the receiver)
         if sender_id != receiver_id:
-            print('print whatis goin here 11' )
             await self.channel_layer.group_send(sender_group, {
                 'type': 'chat_message',
                 **message_data
             })
         # Send message to receiver's group
-        print('print whatis goin here 22' )
         await self.channel_layer.group_send(receiver_group, {
             'type': 'chat_message',
             **message_data
