@@ -95,12 +95,18 @@ def create_superuser():
     except Exception as e:
         print(f"Error creating superuser: {e}")
 
+def run_server():
+    os.system("python3 manage.py runserver 0.0.0.0:8000")
+
+
 # Main function
 def main():
     check_environment_variables()
     initialize_django()
     create_superuser()
     print("Initialization complete.")
+    run_server()
+
 
 if __name__ == "__main__":
     for var in REQUIRED_ENV_VARS:

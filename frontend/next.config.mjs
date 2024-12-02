@@ -1,22 +1,12 @@
 const nextConfig = {
-  reactStrictMode: false, // Set to true for stricter checks (optional)
+  reactStrictMode: false,
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://backend:8000/:path*', // Proxies requests to localhost:8000
+        destination: 'http://backend:8000/:path*', // Make sure to use the service name
       },
     ];
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'http', // Use 'http' for localhost
-        hostname: 'localhost', // Hostname
-        port: '8000', // Port number
-        pathname: '/media/avatars/**', // Allow any file in this path
-      },
-    ],
   },
 };
 
