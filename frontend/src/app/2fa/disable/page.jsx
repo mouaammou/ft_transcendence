@@ -87,7 +87,7 @@ const QrCodePage = () => {
 const Disable2fa = ({set2faIsEnabled}) => {
 
     const handleDisable = async () => {
-        const response = await apiDisableTwoFactorAuth(code);
+        const response = await apiDisableTwoFactorAuth();
         if (response.status === 200) {
             // router.push('/2fa/enable');
             // success 2fa is disabled now
