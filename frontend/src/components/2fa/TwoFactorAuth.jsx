@@ -1,19 +1,21 @@
 "use client";
 
-import Link from 'next/link';
+// import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { apiTwoFactorAuthQrcode, apiDisableTwoFactorAuth, apiEnableTwoFactorAuth, apiTwoFactorAuthIsEnabled } from '@/services/twoFactorAuthApi';
 // return {"img":img_base64, "type":"image/png", "encoding":"base64"}
-import Button from "@/components/twoFactorAuth/Button";
-import Form from "@/components/twoFactorAuth/Form";
-import Container from "@/components/twoFactorAuth/Container";
+// import Button from "@/components/twoFactorAuth/Button";
+// import Form from "@/components/twoFactorAuth/Form";
+// import Container from "@/components/twoFactorAuth/Container";
 import { useRouter } from 'next/navigation';
 import { Si2Fas } from "react-icons/si";
-import { TbAuth2Fa } from "react-icons/tb";
+// import { TbAuth2Fa } from "react-icons/tb";
 import { Modal } from "@components/modals/Modal";
+import { Toaster, toast } from 'react-hot-toast';
+
  
 
-const QrCodePage = () => {
+const TwoFactorAuth = () => {
     const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
     const [copied, setCopied] = useState(false);
     const [code, setCode] = useState(""); //2fa code value on enable
@@ -21,7 +23,6 @@ const QrCodePage = () => {
     const [is2faEnabled, setIs2faEnabled] = useState(false);
     const [toggleButton, setToggleButton] = useState(false);
     const [enableError, setEnableError] = useState(false);
-
 
     const handleToggleButton = () => {
         setToggleButton(!toggleButton);
@@ -82,8 +83,6 @@ const QrCodePage = () => {
 
 }
 
-    
-
 
 const Disable2fa = ({set2faIsEnabled}) => {
 
@@ -92,6 +91,7 @@ const Disable2fa = ({set2faIsEnabled}) => {
         if (response.status === 200) {
             // router.push('/2fa/enable');
             // success 2fa is disabled now
+            // toast.success("2fa now is disabled");
             set2faIsEnabled(false); 
         }
     }
@@ -120,11 +120,8 @@ const Disable2fa = ({set2faIsEnabled}) => {
 }
 
 const Enable2fa = ({qrCode, set2faIsEnabled}) => {
-    // const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
     const [copied, setCopied] = useState(false);
     const [code, setCode] = useState(""); //2fa code value on enable
-    // const router = useRouter();
-    // const [is2faEnabled, setIs2faEnabled] = useState(false);
     const [toggleButton, setToggleButton] = useState(false);
     const [enableError, setEnableError] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -143,16 +140,25 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
     };
 
     const handleEnable = async () => {
-        const response = await apiEnableTwoFactorAuth(code);
-        if (response.status === 200) {
-            //success 2fa is enabled
-            set2faIsEnabled(true);
-            setEnableError(false);
-            // router.push('/2fa/disable');
-        } else
+        if (code === "" || code.length != 6)
         {
             setEnableError(true);
+            toast.error("Please enter 6 digits code");
+            return ;
+        }
+        // const response = await apiEnableTwoFactorAuth(code);
+        const response = await apiEnableTwoFactorAuth(code)
+        if (response.status === 200) {
+            //success 2fa is enabled
+            // toast.success("2fa now is enabled");
+            set2faIsEnabled(true);
+            setEnableError(false);
+
+            // router.push('/2fa/disable');
+        } else {
+            setEnableError(true);
             setCode("");
+            toast.error("invalid code");
         }
     }
 
@@ -168,25 +174,6 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
             'Clipboard API not supported in this browser.';
         }
     };
-
-    // useEffect(() => {
-    //     const fetchQrCode = async () => {
-    //         let response = await apiTwoFactorAuthIsEnabled();
-    //         if (response.status !== 200) {
-    //             setIs2faEnabled(false); // desabled or not set yet
-    //             response = await apiTwoFactorAuthQrcode();
-    //             setQrCode(response);
-    //             return;
-    //         } else
-    //             setIs2faEnabled(true); // enabled
-    //     };
-
-    //     fetchQrCode();
-    // }, []);
-
-    
-    
-      
 
     return (
         <div className="bg-gray-800 rounded-2xl p-6 shadow-lg m-2">
@@ -235,6 +222,8 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                 title={"Your two-factor secret"}
                 description={qrCode.secret}
             />
+            <Toaster  />
+            
         </div>
     );
 }
@@ -255,28 +244,4 @@ const InputField = ({ name, type = 'text', value, placeholder, onChange, error }
     </div>
 );
 
-
-const Modale = () => {
-
-    // const handleClick = () => {
-
-    // }
-
-    return (
-    <>
-        <button className="btn" onClick={()=>document.getElementById('my_modal_3').showModal()}>open modal</button>
-        <dialog id="my_modal_3" className="modal">
-            <div className="modal-box">
-                <form method="dialog">
-                {/* if there is a button in form, it will close the modal */}
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                </form>
-                <h3 className="font-bold text-lg">Hello!</h3>
-                <p className="py-4">Press ESC key or click on ✕ button to close</p>
-            </div>
-        </dialog>
-    </>
-    );
-}
-
-export default QrCodePage;
+export default TwoFactorAuth;
