@@ -1,15 +1,6 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React from "react";
+import { useEffect } from "react";
 
-const YouLose = ({ onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, 15000);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
 
 const YouLose = ({onClose}) => {
 
@@ -17,7 +8,7 @@ const YouLose = ({onClose}) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
-        }, 12000);
+        }, 15000);
         return () => {
             clearTimeout(timer);
         };
@@ -39,6 +30,6 @@ const YouLose = ({onClose}) => {
             </div>
         </div>
     );
-}}
+};
 
 export default YouLose;

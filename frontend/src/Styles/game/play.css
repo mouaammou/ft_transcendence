@@ -72,6 +72,12 @@
   }
 }
 
+@media(max-width: 1054px){
+  .modes-container p {
+    font-size: 20px;
+  }
+}
+
 @media (max-width: 900px) {
   .main-page .transparent {
     padding: 40px;
@@ -110,10 +116,10 @@
   }
 
     .main-page .transparent .modes-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 50px;
-        width: 100%;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+      width: 100%;
     }
 
     .modes-container .left-mode,
@@ -130,7 +136,7 @@
     .modes-container p {
         font-family: 'fredoka';
         font-weight: 600;
-        font-size: 20px;
+        font-size: 16px;
         margin-top: -60px;
         margin-left: 0px;
         cursor: pointer;

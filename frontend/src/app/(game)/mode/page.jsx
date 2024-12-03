@@ -27,7 +27,7 @@ const Mode = () => {
 
 
   return (
-    <div className="flex flex-col lg:flex-row w-fit mx-6 sm:m-auto mt-56 sm:mt-56 lg:gap-10">
+    <div className="flex flex-col lg:flex-row w-fit mx-6 sm:m-auto md:max-w-[760px] lg:max-w-full mt-56 sm:mt-56 lg:gap-10">
       <div className="flex flex-col w-fit mx-2 ">
         <Selector
           title="RANDOM GAME"

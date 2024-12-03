@@ -8,7 +8,7 @@ const YouWin = ({ gameType, setShowWinModal }) => {
   const animationPlayed = useRef(false); // To prevent multiple runs
 
   const onClose = () => {
-    setShowWinModal(false); // Close the modal when the user clicks close
+    () => setShowWinModal(false); // Close the modal when the user clicks close
     if (gameType === 'tournament') {
       router.push('/tournament_board'); // Navigate to the tournament board
     } else {

@@ -737,6 +737,9 @@ class EventLoopManager:
     @classmethod
     def handle_friend_game_request(cls, player_id, event_dict): # add an init friend request method to check if the friend is in a game or not
         print("in the handle_friend_game_request methode")
+        if 'player_1_id' not in event_dict or 'player_2_id' not in event_dict:
+            print("Error: Missing player IDs in event_dict")
+            return None
         player_1_id = event_dict['player_1_id']
         player_2_id = event_dict['player_2_id']
         print(f"player 1 id {player_1_id} player 2 id {player_2_id}")
