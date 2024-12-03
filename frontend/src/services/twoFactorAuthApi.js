@@ -62,10 +62,10 @@ export const apiEnableTwoFactorAuth = async (code) => {
 };
 
 
-export const apiDisableTwoFactorAuth = async (code) => {
+export const apiDisableTwoFactorAuth = async () => {
     let data = null;
     try {
-        const response = await api.delete('disable/', {data: {code: code}});
+        const response = await api.delete('disable/');
         response.data['status'] = response.status;
         data = response.data;
         return response.data;

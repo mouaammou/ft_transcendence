@@ -69,22 +69,22 @@ const Profile = () => {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
 					{/* User Info Card */}
 					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
-					<h2 className="text-xl font-semibold mb-6 flex items-center">
-						<FaUser className="mr-2" /> Profile Information
-					</h2>
-					
-					<div className="space-y-4">
-						{[
-							{ icon: <FaUserCheck />, label: "Username", value: data.username },
-							{ icon: <MdEmail />, label: "Email", value: data.email },
-							{ icon: <MdPhone />, label: "Phone", value: data.phone || "No phone number" },
-						].map((item, index) => (
-							<div key={index} className="flex items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-							<span className="text-sky-400 mr-3">{item.icon}</span>
-							<div>
-								<div className="text-sm text-gray-400">{item.label}</div>
-								<div className="font-medium">{item.value}</div>
-							</div>
+						<h2 className="text-xl font-semibold mb-6 flex items-center">
+							<FaUser className="mr-2" /> Profile Information
+						</h2>
+						
+						<div className="space-y-4">
+							{[
+								{ icon: <FaUserCheck />, label: "Username", value: data.username },
+								{ icon: <MdEmail />, label: "Email", value: data.email },
+								{ icon: <MdPhone />, label: "Phone", value: data.phone || "No phone number" },
+							].map((item, index) => (
+								<div key={index} className="flex items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+								<span className="text-sky-400 mr-3">{item.icon}</span>
+								<div>
+									<div className="text-sm text-gray-400">{item.label}</div>
+									<div className="font-medium">{item.value}</div>
+								</div>
 							</div>
 						))}
 					</div>

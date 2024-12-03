@@ -2,29 +2,46 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { apiTwoFactorAuthQrcode, apiDisableTwoFactorAuth, apiTwoFactorAuthIsEnabled } from '@/services/twoFactorAuthApi';
+import { apiTwoFactorAuthQrcode, apiDisableTwoFactorAuth, apiEnableTwoFactorAuth, apiTwoFactorAuthIsEnabled } from '@/services/twoFactorAuthApi';
 // return {"img":img_base64, "type":"image/png", "encoding":"base64"}
 import Button from "@/components/twoFactorAuth/Button";
 import Form from "@/components/twoFactorAuth/Form";
 import Container from "@/components/twoFactorAuth/Container";
 import { useRouter } from 'next/navigation';
+import { Si2Fas } from "react-icons/si";
+import { TbAuth2Fa } from "react-icons/tb";
+
 
 const QrCodePage = () => {
     const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
     const [copied, setCopied] = useState(false);
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState(""); //2fa code value on enable
     const router = useRouter();
+    const [is2faEnabled, setIs2faEnabled] = useState(false);
+    const [toggleButton, setToggleButton] = useState(false);
+    const [enableError, setEnableError] = useState(false);
+
+
+    const handleToggleButton = () => {
+        setToggleButton(!toggleButton);
+        setEnableError(false);
+    }
 
     const handleInputChange = (event) => {
         const value = event.target.value.replace(/\D/g, "");
+        if (value.length > 6)
+            return ;
         setCode(value);
     };
 
-    const handleDisable = async () => {
-        const response = await apiDisableTwoFactorAuth(code);
+    const handleEnable = async () => {
+        const response = await apiEnableTwoFactorAuth(code);
         if (response.status === 200) {
-            router.push('/2fa/enable');
-        }
+            //success 2fa is enabled
+            setEnableError(false);
+            router.push('/2fa/disable');
+        } else
+            setEnableError(true);
     }
 
     const copyToClipboard = () => {
@@ -44,49 +61,182 @@ const QrCodePage = () => {
         const fetchQrCode = async () => {
             let response = await apiTwoFactorAuthIsEnabled();
             if (response.status !== 200) {
-                router.push('/2fa/enable');
+                setIs2faEnabled(false); // desabled or not set yet
+                response = await apiTwoFactorAuthQrcode();
+                setQrCode(response);
                 return;
-            }
-
-            response = await apiTwoFactorAuthQrcode();
-            setQrCode(response);
+            } else
+                setIs2faEnabled(true); // enabled
         };
 
         fetchQrCode();
-    }, [router]);
+    }, [is2faEnabled]);
+
+    return (
+        <>
+        {is2faEnabled && <Disable2fa set2faIsEnabled={setIs2faEnabled} />}
+        {!is2faEnabled && <Enable2fa set2faIsEnabled={setIs2faEnabled} qrCode={qrCode} />}
+        </>
+    );
+
+}
+
+    
+
+
+const Disable2fa = ({set2faIsEnabled}) => {
+
+    const handleDisable = async () => {
+        const response = await apiDisableTwoFactorAuth(code);
+        if (response.status === 200) {
+            // router.push('/2fa/enable');
+            // success 2fa is disabled now
+            set2faIsEnabled(false); 
+        }
+    }
+
+    return (
+        <div className="bg-gray-800 rounded-2xl p-6 shadow-lg m-2">
+            <h2 className="text-xl font-semibold mb-6 flex items-center capitalize">
+            two-factor authentication (2FA)
+            </h2>
+            <div className="space-y-4">
+                
+                    <div key={0} className="flex flex-wrap gap-1 items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+                        <span className="text-sky-400 mr-3">
+                            <Si2Fas />
+                        </span>
+                        <div className="text-sm text-white pr-2 flex-1">
+                            Two-factor authentication is enabled.
+                        </div>
+                        <button onClick={handleDisable} className={`w-full sm:w-fit bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
+                            Disable
+                        </button>
+                    </div>
+            </div>
+        </div>
+    );
+}
+
+const Enable2fa = ({qrCode, set2faIsEnabled}) => {
+    // const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
+    const [copied, setCopied] = useState(false);
+    const [code, setCode] = useState(""); //2fa code value on enable
+    // const router = useRouter();
+    // const [is2faEnabled, setIs2faEnabled] = useState(false);
+    const [toggleButton, setToggleButton] = useState(false);
+    const [enableError, setEnableError] = useState(false);
+
+
+    const handleToggleButton = () => {
+        setToggleButton(!toggleButton);
+        setEnableError(false);
+    }
+
+    const handleInputChange = (event) => {
+        const value = event.target.value.replace(/\D/g, "");
+        if (value.length > 6)
+            return ;
+        setCode(value);
+    };
+
+    const handleEnable = async () => {
+        const response = await apiEnableTwoFactorAuth(code);
+        if (response.status === 200) {
+            //success 2fa is enabled
+            set2faIsEnabled(true);
+            setEnableError(false);
+            // router.push('/2fa/disable');
+        } else
+            setEnableError(true);
+    }
+
+    const copyToClipboard = () => {
+        if (navigator?.clipboard) {
+            navigator.clipboard.writeText(qrCode.secret)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+            })
+            .catch(err => console.error('Failed to copy text:', err));
+        } else {
+            'Clipboard API not supported in this browser.';
+        }
+    };
+
+    // useEffect(() => {
+    //     const fetchQrCode = async () => {
+    //         let response = await apiTwoFactorAuthIsEnabled();
+    //         if (response.status !== 200) {
+    //             setIs2faEnabled(false); // desabled or not set yet
+    //             response = await apiTwoFactorAuthQrcode();
+    //             setQrCode(response);
+    //             return;
+    //         } else
+    //             setIs2faEnabled(true); // enabled
+    //     };
+
+    //     fetchQrCode();
+    // }, []);
 
     
     
       
 
     return (
-        <div className="relative flex flex-col items-center justify-center w-screen h-auto ">
-            <div className='m-4 flex flex-col items-start gap-3 justify-evenly flex-wrap w-fit h-fit  p-1  border-white/20'>
-                <div className='capitalize text-lg text-center'>turn off 2-step verification</div>
-                <div className='text-white/75'>open authenticator and scan qrcode</div>
-                <img className='max-w-96 w-full h-auto' src={`data:${qrCode.mime_type};${qrCode.encoding}, ${qrCode.img}`} width={192} height={192} alt="QR Code"></img>
-                <div className='w-full text-center'>OR enter code manually</div>
-                <Button onClick={copyToClipboard} className='flex flex-col justify-center font-mono items-center bg-white/50 text-white px-4 py-2'>
-                    <div className='bg-black/10 p-2'>{qrCode.secret}</div>
-                    <div className='w-fit h-fit flex items-center justify-center'>
-                        <div>{copied ? "Copied" : "Copy"}</div>
-                        <svg width={24} height={24} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
-                        </svg>
+        <div className="bg-gray-800 rounded-2xl p-6 shadow-lg m-2">
+            <h2 className="text-xl font-semibold mb-6 flex items-center capitalize">
+            two-factor authentication (2FA)
+            </h2>
+            <div className={ (toggleButton? "block ": "hidden ") + "flex-1 flex-wrap flex justify-between gap-2"}>
+                <div className='flex-1 p-1'>
+                    <h2 className='text-xl text-left'>Setup authenticator app</h2> 
+                    <span className='text-gray-400'> Authenticator apps and browser extensions like 1Password, Authy, Microsoft Authenticator, etc. generate one-time passwords that are used as a second factor to verify your identity when prompted during sign-in.</span>
+                    <h2 className='text-xl text-left'>Scan the QR code</h2>
+                    <span className='text-gray-400'> Use an authenticator app or browser extension to scan. Learn more about enabling 2FA.</span>
+                </div>
+                <img className='h-full w-full sm:max-w-48 aspect-square rounded-lg p-1' src={`data:${qrCode.mime_type};${qrCode.encoding}, ${qrCode.img}`} width={192} height={192} alt="QR Code"></img>
+            </div>
+            <div className="space-y-4">
+                
+                    <div key={0} className="flex flex-wrap gap-1 items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+                        {!toggleButton && <span className="text-sky-400 mr-3">
+                            <Si2Fas />
+                        </span>}
+                        {!toggleButton && <div className="text-sm text-white pr-2 flex-1">
+                            Two-factor authentication is not enabled yet.
+                        </div>}
+                        {toggleButton && <InputField error={enableError} onChange={handleInputChange} value={code} placeholder="6 digit code"  />}
+
+                        <div className="flex-1 flex justify-start sm:justify-end gap-1">
+                            <button onClick={handleToggleButton} className={`w-full sm:w-fit ${toggleButton? "bg-yellow-500/30 hover:bg-yellow-500":"bg-sky-500 hover:bg-sky-600"} text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
+                            {toggleButton ? "cancel":"enable"}
+                            </button>
+                            {toggleButton && <button onClick={handleEnable} className="w-full sm:w-fit bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                            verify
+                            </button>}
+                        </div>
 
                     </div>
-                </Button>
-                <div className="w-full bg-white/50 min-h-[1px] h-[1px] "></div>
-                <div className="flex w-full justify-center capitalize font-bold text-lg">
-                    verify authentication code.
-                </div>
-                <Form placeholder='Enter 6 digits code' onChange={handleInputChange} value={code} maxlength={6}>{qrCode.secret}</Form>
-                <Button onClick={handleDisable} className='flex justify-center font-mono items-center bg-red-600 hover:bg-white hover:text-black px-4 py-2'>
-                    Disable
-                </Button>
             </div>
         </div>
     );
 }
+
+const InputField = ({ name, type = 'text', value, placeholder, onChange, error }) => (
+    <div className="flex-1 space-y-2">
+        <input
+            value={value}
+            type={type}
+            name={name}
+            placeholder={placeholder}
+            onChange={onChange}
+            className={`w-full lg:max-w-64 min-w-48 text-white  px-4 py-3 bg-white/10 rounded-lg border ${
+                error ? 'border-red-500 ' : 'border-gray-700 '
+            } focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            transition-colors duration-200 text-gray-600 outline-none`}
+        />
+    </div>
+);
 
 export default QrCodePage;

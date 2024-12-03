@@ -120,21 +120,6 @@ class TwoFactorAuthView(APIView):
         user = request.customUser
         if not user.totp_enabled:
             return self.topt_not_enabed_response()
-        data = {}
-        try:
-            data = JSONParser().parse(request)
-        except Exception:
-            return Response({"msg": "Invalid JSON data!"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        code = data.get("code")
-        if not code:
-            return Response({"msg": "to disable 2fa, code confirmation is required!"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if not re.fullmatch(r"^\d{6}$", str(code)):
-            return Response({"msg": "Code must be a 6-digit number!"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if not validate_totp(user.totp_secret, code):
-            return Response({"msg": "invalid confirmation code!"}, status=status.HTTP_400_BAD_REQUEST)
         
         user.totp_secret = None
         user.totp_enabled = False

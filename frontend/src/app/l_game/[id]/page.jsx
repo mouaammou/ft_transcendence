@@ -24,7 +24,8 @@ const getRound = (match_index) => {
 	} else {
 		return rounds[3];
 	}
-  }
+}
+
 const GamePage = ({params}) => {
 	const router = useRouter();
 	const [score1, setScore1] = useState(0);
@@ -77,8 +78,8 @@ const GamePage = ({params}) => {
 	// 	setScore1(score1 + 1);
 	// }
 	return (
-		<div className="flex flex-col items-center justify-between max-w-[100vw] w-full h-full ">
-			<div className="flex flex-1 w-full justify-evenly items-center mt-24">
+		<div className="flex flex-col items-center justify-start max-w-[100vw] w-full h-full ">
+			<div className="flex w-full h-fit justify-evenly items-center my-24">
 				
 				<div className="w-fit h-fit flex-1 flex flex-col items-center justify-center text-xl font-bold">
 					<div className="mr-4 ml-1 sm:hidden">
@@ -105,11 +106,11 @@ const GamePage = ({params}) => {
 					{score1}
 				</div>
 			</div>
-			<div className="flex items-center flex-wrap w-auto">
+			<div className="flex items-center flex-wrap w-auto h-fit">
 				<div className="mx-8 max-sm:hidden">
 					<div className="font-bold text-lg">{leftUser}</div>
 				</div>
-				<div className="bg-[#264653] border rounded-md flex-1 w-auto mx-4 ">
+				<div className="bg-[#264653] border rounded-md flex-1 w-auto mx-4 min-w-[100px]">
 					<PongGame leftUser={leftUser} rightUser={rightUser} score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} tournament_id={tournament_id}/>
 				</div>
 				<div className="mx-8 max-sm:hidden">

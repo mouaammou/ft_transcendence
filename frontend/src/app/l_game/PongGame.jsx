@@ -265,6 +265,7 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
     const handleKeyDown = event => {
       console.log('hi');
       console.log(event.key);
+      event.preventDefault();
       socket.send(JSON.stringify({ onPress: event.key.trim() }));
       keys[event.key] = true;
       if (event.key === ' ') {
@@ -278,22 +279,23 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
           })
         );
       }
-      if (event.key === 't' || event.key === 'T') {
-        // create new game if space key is created
-        socket.send(
-          JSON.stringify({
-            'start-tournament': {
-              mode: 'local',
-              type: 'tournament',
-              id: 1,
-            },
-          })
-        );
-      }
+      // if (event.key === 't' || event.key === 'T') {
+      //   // create new game if space key is created
+      //   socket.send(
+      //     JSON.stringify({
+      //       'start-tournament': {
+      //         mode: 'local',
+      //         type: 'tournament',
+      //         id: 1,
+      //       },
+      //     })
+      //   );
+      // }
     };
 
     // set the key to false when the key is released
     const handleKeyUp = event => {
+      event.preventDefault();
       socket.send(JSON.stringify({ onRelease: event.key.trim() }));
       console.log(event.key);
       keys[event.key] = false;
@@ -361,7 +363,7 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 		};
 	}, []);
 	return (
-		<canvas className="play-ground" ref={canvasRef} >
+		<canvas className="min-w-[100px] w-auto h-auto" ref={canvasRef} >
 			
 		</canvas>
 	);
