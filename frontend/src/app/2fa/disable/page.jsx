@@ -10,7 +10,8 @@ import Container from "@/components/twoFactorAuth/Container";
 import { useRouter } from 'next/navigation';
 import { Si2Fas } from "react-icons/si";
 import { TbAuth2Fa } from "react-icons/tb";
-
+import { Modal } from "@components/modals/Modal";
+ 
 
 const QrCodePage = () => {
     const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
@@ -126,6 +127,7 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
     // const [is2faEnabled, setIs2faEnabled] = useState(false);
     const [toggleButton, setToggleButton] = useState(false);
     const [enableError, setEnableError] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
 
     const handleToggleButton = () => {
@@ -148,7 +150,10 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
             setEnableError(false);
             // router.push('/2fa/disable');
         } else
+        {
             setEnableError(true);
+            setCode("");
+        }
     }
 
     const copyToClipboard = () => {
@@ -194,6 +199,10 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                     <span className='text-gray-400'> Authenticator apps and browser extensions like 1Password, Authy, Microsoft Authenticator, etc. generate one-time passwords that are used as a second factor to verify your identity when prompted during sign-in.</span>
                     <h2 className='text-xl text-left'>Scan the QR code</h2>
                     <span className='text-gray-400'> Use an authenticator app or browser extension to scan. Learn more about enabling 2FA.</span>
+                    <p className='text-white'>Unable to scan? You can use the <span onClick={() => setShowModal(true)} className="text-blue-400 cursor-pointer">setup key </span>
+ to manually configure your authenticator app.</p>
+                    
+
                 </div>
                 <img className='h-full w-full sm:max-w-48 aspect-square rounded-lg p-1' src={`data:${qrCode.mime_type};${qrCode.encoding}, ${qrCode.img}`} width={192} height={192} alt="QR Code"></img>
             </div>
@@ -219,6 +228,13 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
 
                     </div>
             </div>
+
+            <Modal
+                isOpen={showModal}
+                action={() => setShowModal(false)}
+                title={"Your two-factor secret"}
+                description={qrCode.secret}
+            />
         </div>
     );
 }
@@ -238,5 +254,29 @@ const InputField = ({ name, type = 'text', value, placeholder, onChange, error }
         />
     </div>
 );
+
+
+const Modale = () => {
+
+    // const handleClick = () => {
+
+    // }
+
+    return (
+    <>
+        <button className="btn" onClick={()=>document.getElementById('my_modal_3').showModal()}>open modal</button>
+        <dialog id="my_modal_3" className="modal">
+            <div className="modal-box">
+                <form method="dialog">
+                {/* if there is a button in form, it will close the modal */}
+                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <h3 className="font-bold text-lg">Hello!</h3>
+                <p className="py-4">Press ESC key or click on ✕ button to close</p>
+            </div>
+        </dialog>
+    </>
+    );
+}
 
 export default QrCodePage;
