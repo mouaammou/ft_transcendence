@@ -21,13 +21,18 @@ const DoughnutChart = () => {
 
 	// Options for customizing the Doughnut chart
 	const options = {
-		responsive: true,
-		plugins: {
-			legend: {
-			position: 'top',
-			},
-		},
-	};
+        responsive: true,
+        maintainAspectRatio: false, // This is important
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Match Statistics'
+            }
+        }
+    };
 
 	return <Doughnut data={data} options={options} />;
 };
