@@ -7,6 +7,20 @@ import { useAuth } from '@/components/auth/loginContext';
 import NotificationBell from './notifications';
 import SearchProfileComponent from './search';
 
+const Logo = () => (
+	<div className="flex-shrink max-w-20">
+	  <Link href="/">
+		<img
+		  src="/main-logo.svg"
+		  width={1}
+		  height={1}
+		  alt="logo"
+		  className="h-16 w-12 sm:h-16 sm:w-16 md:h-24 md:w-24 p-2"
+		/>
+	  </Link>
+	</div>
+  );
+
 const UserDropdown = ({ isOpen, setIsOpen, data, Logout }) => (
   <div className="relative">
     <button
@@ -83,17 +97,18 @@ const AuthenticatedNav = ({ data, Logout }) => {
 };
 
 const UnauthenticatedNav = ({ loginPage }) => (
-  <div className="h-16 bg-gradient-to-r from-blue-600 to-blue-800">
-    <div className="h-full container mx-auto px-4 flex justify-end items-center">
-      <Link
-        href={loginPage === 'Login' ? '/login' : '/signup'}
-        className="inline-flex items-center justify-center px-6 py-2 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
-      >
-        {loginPage}
-      </Link>
-    </div>
-  </div>
-);
+	<div className="container p-[0px] mx-auto flex flex-row items-center justify-between sm:space-y-0">
+		<Logo />
+		<div>
+		<Link
+			href={loginPage === 'Login' ? '/login' : '/signup'}
+			className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300 max-md:px-10 text-sm"
+		>
+			{loginPage}
+		</Link>
+		</div>
+	</div>
+	);
 
 const Navbar = () => {
   const { Logout, isAuth, profileData: data } = useAuth();
