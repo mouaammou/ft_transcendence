@@ -80,7 +80,7 @@ const AuthenticatedNav = ({ data, Logout }) => {
   
   return (
     <div className="flex items-center h-16 bg-white px-4 sm:px-6 shadow-sm">
-      <div className="w-[300px] sm:w-[400px]">
+      <div className="w-[200px] sm:w-[400px]">
         <SearchProfileComponent />
       </div>
       <div className="ml-auto flex items-center space-x-4">

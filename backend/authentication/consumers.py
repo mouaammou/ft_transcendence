@@ -102,8 +102,10 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def remove_user_from_groups(self):
 		try:
-			await self.channel_layer.group_discard(self.user_windows, self.channel_name)
-			await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
+			if self.user_windows:
+				await self.channel_layer.group_discard(self.user_windows, self.channel_name)
+			if self.USER_STATUS_GROUP:
+				await self.channel_layer.group_discard(self.USER_STATUS_GROUP, self.channel_name)
 			await self.untrack_user_connection()
 		except Exception as e:
 			logger.error(f"\nError during disconnection: {e}\n")

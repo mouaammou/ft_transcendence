@@ -61,24 +61,33 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                 </div>
             </div>
 
-            {data.notif_status === 'pending' && (
-                <div className="flex items-center space-x-2">
-                    <button
-                        onClick={() => onAction('accepted')}
-                        className="bg-green-600 text-white rounded-full p-1.5 hover:bg-green-700 transition-colors"
-                        aria-label="Accept"
-                    >
-                        <IoCheckmarkOutline className="text-lg" />
-                    </button>
-                    <button
-                        onClick={() => onAction('rejected')}
-                        className="bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors"
-                        aria-label="Reject"
-                    >
-                        <IoCloseOutline className="text-lg" />
-                    </button>
-                </div>
-            )}
+            <div className="flex items-center space-x-2">
+                {data.notif_status === 'pending' && (
+                    <>
+                        <button
+                            onClick={() => onAction('accepted')}
+                            className="bg-green-600 text-white rounded-full p-1.5 hover:bg-green-700 transition-colors"
+                            aria-label="Accept"
+                        >
+                            <IoCheckmarkOutline className="text-lg" />
+                        </button>
+                        <button
+                            onClick={() => onAction('rejected')}
+                            className="bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors"
+                            aria-label="Reject"
+                        >
+                            <IoCloseOutline className="text-lg" />
+                        </button>
+                    </>
+                )}
+                <button
+                    onClick={() => onAction('read')}
+                    className="bg-blue-600 text-white rounded-full p-1.5 hover:bg-blue-700 transition-colors"
+                    aria-label="Mark as Read"
+                >
+                    <IoCheckmarkDoneOutline className="text-lg" />
+                </button>
+            </div>
         </div>
     );
 };
@@ -130,7 +139,7 @@ const NotificationBell = () => {
             </div>
 
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-96 max-h-[400px] bg-gray-800 
+                <div className="absolute max-sm:-right-16 right-0 top-full mt-2 w-96 max-sm:w-[22rem] max-h-[400px] bg-gray-800 
                     rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
                     <div className="flex justify-between items-center p-4 border-b border-gray-700">
                         <h3 className="text-sm font-semibold text-white">Notifications</h3>

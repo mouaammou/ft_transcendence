@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 
 const SearchedItem = ({ result }) => {
   return (
-    <Link href={`/${result.username}`}>
+    <Link href={`/friend/${result.username}`}>
       <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 rounded-lg shadow-sm bg-white w-96">
         <div className="flex items-center space-x-4">
           <img

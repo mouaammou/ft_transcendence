@@ -355,7 +355,7 @@ export default function FriendProfile({ params }) {
 					<h2 className="text-xl font-semibold mb-6 flex items-center">
 						<TfiStatsUp className="mr-2" /> Statistics
 					</h2>
-					<div className="max-w-3xl mx-auto">
+					<div className="w-full h-[500px] md:h-[700px]"> {/* Add fixed heights and full width */}
 						<DoughnutChart />
 					</div>
 				</div>
