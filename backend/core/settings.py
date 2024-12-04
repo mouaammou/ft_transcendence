@@ -87,23 +87,24 @@ FRONTEND_URL = os.getenv('FRONTEND_URL', default='http://localhost:3000')
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 INSTALLED_APPS = [
-	'daphne',
-	'channels',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'pong',
-	'game',
-	# 'game.apps.GameConfig',
-	"authentication.apps.AuthenticationConfig",
-	"rest_framework",
-	"rest_framework_simplejwt",
-	"corsheaders",
-	"rest_framework_simplejwt.token_blacklist",
-	"chat",
+    'daphne',
+    'channels',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pong',
+    'game',
+    # 'game.apps.GameConfig',
+    "authentication.apps.AuthenticationConfig",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+    "chat",
+    "connect_four",
 ]
 
 MIDDLEWARE = [
@@ -148,6 +149,12 @@ CHANNEL_LAYERS = {
 			"hosts": [('localhost', 6379)],
 		},
 	},
+#  'default': {
+# 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+# 		'CONFIG': {
+# 			"hosts": [('redis', 6379)],
+# 		},
+# 	},
 	# 'default': {
 	# 	'BACKEND': 'channels.layers.InMemoryChannelLayer',
 	# },

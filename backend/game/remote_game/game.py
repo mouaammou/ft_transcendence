@@ -12,7 +12,7 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
         #i have to add a type of the game : random, vsfriend, vsbot
         self.game_id = str(uuid.uuid4())
         self._unfocused = None  
-        self._islaunched = False    
+        # self._islaunched = False    
         self._player_1 = None
         self._player_2 = None
         self.fulfilled = False
@@ -27,13 +27,13 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
     def increment_joined(self):
         self.joined += 1
 
-    @property
-    def islaunched(self):
-        return self._islaunched 
+    # @property
+    # def islaunched(self):
+    #     return self._islaunched 
 
-    @islaunched.setter
-    def islaunched(self, value):
-        self._islaunched = value
+    # @islaunched.setter
+    # def islaunched(self, value):
+    #     self._islaunched = value
 
     @property
     def unfocused(self):

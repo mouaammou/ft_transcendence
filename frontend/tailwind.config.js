@@ -102,6 +102,10 @@ module.exports = {
 				tablet: '990px',
 				larg_screen: '1300px'
 			},
+			animation: {
+			brightening: 'brightening 1.5s infinite',
+			'bounce-3s' : 'bounce 3s'
+			},
 			
     	}
     },

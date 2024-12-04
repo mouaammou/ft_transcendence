@@ -1,165 +1,171 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { MdNavigateNext, MdNavigateBefore } from 'react-icons/md';
-import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 
-import { getData } from '@/services/apiCalls';
+import { getData } from "@/services/apiCalls";
+import useNotificationContext from '@/components/navbar/useNotificationContext';
+import Modal from '@/components/modals/Modal';
 
 const Friends = () => {
-  const { websocket, users, isConnected } = useWebSocketContext();
-  const [nextPage, setNextPage] = useState(null);
-  const [prevPage, setPrevPage] = useState(null);
-  const router = useRouter();
-  const query_params = useSearchParams();
-  const [pageNotFound, setPageNotFound] = useState(false);
-  const [page, setPage] = useState(1);
-  const [friends, setFriends] = useState([]);
-  const [selectedFriend, setSelectedFriend] = useState(null);
+	const { users, isConnected, sendMessage , NOTIFICATION_TYPES} = useNotificationContext();
+	const [nextPage, setNextPage] = useState(null);
+	const [prevPage, setPrevPage] = useState(null);
+	const router = useRouter();
+	const query_params = useSearchParams();
+	const [pageNotFound, setPageNotFound] = useState(false);
+	const [page, setPage] = useState(1);
+	const [friends, setFriends] = useState([]);
+	const [selectedFriend, setSelectedFriend] = useState(null);
 
-  const handleFriendClick = friend => {
-    setSelectedFriend(friend);
-  };
+	const [openModal, setOpenModal] = useState(false);
+	const [modalMessage, setModalMessage] = useState('');
+	const [msgDescription, setMsgDescription] = useState('');
 
-  const sendGameInvitation = () => {
-    if (selectedFriend?.id) {
-      //selectedFriend.status == 'online' &&
-      console.log('sending game invitation to: ', selectedFriend);
-      websocket.current.send(
-        JSON.stringify({
-          type: 'send_game_invitation',
-          to_user_id: selectedFriend.id,
-        })
-      );
-    }
-  };
 
-  const handleNextClick = () => {
-    if (selectedFriend) {
-      // Do something with selectedFriend
-      console.log('selectedFriend :: ', selectedFriend);
-      // store the selected friend in localstorage
-      localStorage.setItem('selectedFriend', JSON.stringify(selectedFriend));
-      sendGameInvitation();
-      router.push('/waiting_friends_game');
-    } else {
-      alert('Please select a friend first.'); // i have to change this an error message display
-    }
-  };
-  const fetchAllUsers = async page => {
-    // Prevent multiple requests
-    try {
-      const response = await getData(`/friends?page=${page}`);
-      if (response.status === 200) {
-        setFriends(() => {
-          const friends = response.data.results;
-          const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-          console.log('storedUsers :: ', storedUsers);
-          const mergedUsers = friends.map(user => {
-            const newUser = storedUsers.find(newUser => newUser.username === user.username);
-            console.log('newUser :: ', newUser);
-            if (newUser) {
-              return { ...user, status: newUser.status || 'offline' };
-            }
-            return user;
-          });
-          return mergedUsers;
-        });
+	const handleFriendClick = (friend) => {
+		setSelectedFriend(friend);
+	}
 
-        setPrevPage(() => {
-          if (response.data.previous) return response.data.previous.split('page=')[1] || 1; // If there's no page number, return null
-          // Extract the page number from the previous URL
-          return null; // No previous page
-        });
 
-        // Update nextPage
-        setNextPage(() => {
-          if (response.data.next) return response.data.next.split('page=')[1] || null; // If there's no page number, return null
-          return null; // No next page
-        });
-      } else {
-        setPageNotFound(true);
-      }
-    } catch (error) {
-      console.error('Error fetching users in friends page:', error);
-      setPageNotFound(true);
-    }
-    router.replace(`/list_of_friends?page=${page}`);
-  };
+	const sendGameInvitation = () => {
+		if (selectedFriend?.id) {
+			console.log('sending game invitation to: ', selectedFriend);
 
-  useEffect(() => {
-    //save the users in localstorage
-    setFriends(prevUsers => {
-      console.log('users :: ', users);
-      // Merge the existing users with the new users and update the status
-      const mergedUsers = prevUsers.map(user => {
-        const newUser = users.find(newUser => newUser.username === user.username);
-        if (newUser) {
-          return { ...user, status: newUser.status || 'offline' };
-        }
-        return user;
-      });
-      return mergedUsers;
-    });
-  }, [users, isConnected]);
+			if (isConnected)
+				sendMessage(JSON.stringify({
+					type: NOTIFICATION_TYPES.INVITE_GAME,
+					to_user_id: selectedFriend.id,
+				}));
+		}
+	}
+    
 
-  // Fetch users on the initial render
-  useEffect(() => {
-    const page = query_params.get('page') || 1;
-    fetchAllUsers(page);
-    setPage(page);
+	const handleNextClick = () => {
+		if (selectedFriend) {
+			// Do something with selectedFriend
+			console.log('selectedFriend :: ', selectedFriend);
+			// store the selected friend in localstorage
+			localStorage.setItem('selectedFriend', JSON.stringify(selectedFriend));
+			sendGameInvitation();
+			router.push('/waiting_friends_game');
+		} else {
+			setOpenModal(true);
+			setModalMessage('Please select a friend');
+			setMsgDescription('You need to select a friend to invite to the game');
+		}
+	}
+	const fetchAllUsers = async (page) => {
 
-    return () => {
-      setPageNotFound(false);
-    };
-  }, [page]);
+		// Prevent multiple requests
+		try {
+			const response = await getData(`/friends?page=${page}`);
+			if (response.status === 200) {
 
-  return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <div className=" flex flex-col bg-white gap-3 bg-opacity-25 backdrop-filter backdrop-blur-md p-4 rounded-xl">
-          <h2 className="text-2xl font-bold  text-center">Your Online Friends</h2>
-          <div className="flex flex-wrap items-center justify-around max-w-4xl mb-3 sm:w-full">
-            {friends.map(friend => {
-              return (
-                <div
-                  key={friend.id}
-                  className={`p-1 m-2 rounded-full shadow-md flex items-center cursor-pointer ${friend === selectedFriend ? 'bg-white' : 'bg-transparent'}`}
-                  onClick={() => handleFriendClick(friend)}
-                >
-                  <div className="flex-shrink-0">
-                    <img className="h-16 w-16 rounded-full" src={friend.avatar} alt={friend.name} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <button
-            onClick={handleNextClick}
-            className="px-4 py-2 m-auto items-center justify-center text-white bg-blue-500 rounded-md hover:bg-blue-700"
-          >
-            Next
-          </button>
-        </div>
-        <div className="flex mt-6">
-          <button
-            onClick={() => setPage(prevPage => prevPage - 1)}
-            disabled={page === 1}
-            className="px-4 py-2 m-2 text-white bg-blue-500 rounded-md hover:bg-blue-700"
-          >
-            <MdNavigateBefore />
-          </button>
-          <button
-            onClick={() => setPage(prevPage => prevPage + 1)}
-            className="px-4 py-2 m-2 text-white bg-blue-500 rounded-md hover:bg-blue-700"
-          >
-            <MdNavigateNext />
-          </button>
-        </div>
-      </div>
-    </>
-  );
+				setFriends(() => {
+					const friends = response.data.results;
+					const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+					console.log('storedUsers :: ', storedUsers);
+					const mergedUsers = friends.map((user) => {
+						const newUser = storedUsers.find((newUser) => newUser.username === user.username);
+						console.log('newUser :: ', newUser);
+						if (newUser) {
+							return { ...user, status: newUser.status || "offline" };
+						}
+						return user;
+					});
+					return mergedUsers;
+				});
+
+				setPrevPage(() => {
+					if (response.data.previous)
+						return response.data.previous.split("page=")[1] || 1; // If there's no page number, return null
+					// Extract the page number from the previous URL
+					return null; // No previous page
+				});
+
+				// Update nextPage
+				setNextPage(() => {
+					if (response.data.next)
+						return response.data.next.split("page=")[1] || null; // If there's no page number, return null
+					return null; // No next page
+				});
+			}
+			else {
+				setPageNotFound(true);
+			}
+		} catch (error) {
+			console.error("Error fetching users in friends page:", error);
+			setPageNotFound(true)
+		}
+		router.replace(`/list_of_friends?page=${page}`);
+	};
+
+	useEffect(() => {
+		//save the users in localstorage
+		setFriends((prevUsers) => {
+			console.log('users :: ', users);
+			// Merge the existing users with the new users and update the status
+			const mergedUsers = prevUsers.map((user) => {
+				const newUser = users.find((newUser) => newUser.username === user.username);
+				if (newUser) {
+					return { ...user, status: newUser.status || "offline" };
+				}
+				return user;
+			});
+			return mergedUsers;
+		});
+	}, [users, isConnected]);
+
+	// Fetch users on the initial render
+	useEffect(() => {
+		const page = query_params.get('page') || 1;
+		fetchAllUsers(page);
+		setPage(page);
+
+		return () => {
+			setPageNotFound(false);
+		}
+	}, [page]);
+
+
+	return (
+		<>
+			<div className="flex flex-col items-center justify-center min-h-screen py-2">
+				<div className=" flex flex-col bg-white gap-3 bg-opacity-25 backdrop-filter backdrop-blur-md p-4 rounded-xl">
+					<h2 className="text-2xl font-bold  text-center">Your Online Friends</h2>
+					<div className="flex flex-wrap items-center justify-around max-w-4xl mb-3 sm:w-full">
+						{friends.map((friend) => {
+									return (
+										<div
+											key={friend.id}
+											className={`p-1 m-2 rounded-full shadow-md flex items-center cursor-pointer ${friend === selectedFriend ? 'bg-white' : 'bg-transparent'}`}
+											onClick={() => handleFriendClick(friend)}
+										>
+											<div className="flex-shrink-0">
+												<img className="h-16 w-16 rounded-full" src={friend.avatar} alt={friend.name} />
+											</div>
+										</div>
+									)}
+								)}
+					</div>
+					<button onClick={handleNextClick} className="px-4 py-2 m-auto items-center justify-center text-white bg-blue-500 rounded-md hover:bg-blue-700">
+						Next
+					</button>
+				</div>
+				<div className="flex mt-6">
+					<button onClick={() => setPage((prevPage) => prevPage - 1)} disabled={page === 1} className="px-4 py-2 m-2 text-white bg-blue-500 rounded-md hover:bg-blue-700">
+						<MdNavigateBefore />
+					</button>
+					<button onClick={() => setPage((prevPage) => prevPage + 1)} className="px-4 py-2 m-2 text-white bg-blue-500 rounded-md hover:bg-blue-700">
+						<MdNavigateNext />
+					</button>
+				</div>
+			</div>
+			<Modal isOpen={openModal} title={modalMessage} description={msgDescription} action={() => setOpenModal(false)} />
+		</>
+	);
 };
 
 function Friend({ friend }) {

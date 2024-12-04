@@ -57,14 +57,21 @@ export async function middleware(request) {
   return response;
 }
 
+// protect paths here:
+
 export const config = {
-  matcher: [
-    '/',
-    '/login/:path*',
-    '/signup/:path*',
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/game/:path*',
-    '/chat/:path*',
-  ],
+	matcher: [
+		"/",
+		"/login/:path*",
+		// "/edit_profile/:path*", there is more routes that should be protected in (game) and (tournament)
+		"/signup/:path*",
+		"/dashboard/:path*",
+		"/profile/:path*",
+		"/game/:path*",
+		"/chat/:path*",
+		"/create_join_tournament/:path*",
+		"/tournament_board/:path*",
+		"/waiting_random_game/:path*",
+		"/waiting_random_c4/:path*",
+	],
 };

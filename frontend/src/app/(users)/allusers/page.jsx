@@ -39,11 +39,11 @@ const Friends = () => {
 				setPrevPage(response.data.previous ? pageNumber - 1 : null);
 				setPageNumber(pageNumber);
 			} else {
-				setPageNotFound(true);
+				// setPageNotFound(true);
 			}
 		} catch (error) {
 			console.log('Error fetching users:', error);
-			setPageNotFound(true);
+			// setPageNotFound(true);
 		}
 	},[]);
 

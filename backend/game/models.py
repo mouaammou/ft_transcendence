@@ -66,6 +66,7 @@ class GameHistory(models.Model):
             ('vs_friend', 'Remote_vs_friend'),# remote game with a friend or a random player
             ('random', 'Random_remote_game'),# remote game with a friend or a random player
             ('tournament', 'Remote_tournament'),
+            ('connect_four', 'Connect_four_game'),
         ], default='local')
     
     finish_type = models.CharField(max_length=20, choices=[

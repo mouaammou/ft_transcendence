@@ -4,13 +4,16 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { useWebSocketContext } from '@components/websocket/websocketContext';
 
 const NOTIFICATION_TYPES = {
-  FRIENDSHIP: 'send_friend_request',
-  ACCEPT_FRIEND: 'accept_friend_request',
-  REJECT_FRIEND: 'reject_friend_request',
-  INVITE_GAME: 'invite_to_game',
-  ACCEPT_GAME: 'accept_game',
-  INVITE_TOURNAMENT: 'invite_to_tournament',
-  ACCEPT_TOURNAMENT: 'accept_tournament',
+	FRIENDSHIP: 'send_friend_request',
+	ACCEPT_FRIEND: 'accept_friend_request',
+	REJECT_FRIEND: 'reject_friend_request',
+	INVITE_GAME: 'invite_to_game',
+	ACCEPT_GAME: 'accept_game',
+	REJECT_GAME: 'reject_game',
+	INVITE_TOURNAMENT: 'invite_to_tournament',
+	ACCEPT_TOURNAMENT: 'accept_tournament',
+	REJECT_TOURNAMENT: 'reject_tournament',
+	ROUND: 'round_notif'
 };
 
 const NotificationContext = createContext();
@@ -40,22 +43,15 @@ export const NotificationProvider = ({ children }) => {
     }
   }, []);
 
-  const handleNotifications = useCallback(
-    async data => {
-      if (!isConnected || !data) return;
-      if (
-        [
-          NOTIFICATION_TYPES.FRIENDSHIP,
-          NOTIFICATION_TYPES.ACCEPT_FRIEND,
-          ,
-          NOTIFICATION_TYPES.ACCEPT_GAME,
-          NOTIFICATION_TYPES.INVITE_GAME,
-          NOTIFICATION_TYPES.INVITE_TOURNAMENT,
-          NOTIFICATION_TYPES.ACCEPT_TOURNAMENT,
-        ].includes(data.type)
-      ) {
-        console.log('WebSocket FOR Notifications:', data);
-        // setNotifications((prev) => [...prev, { ...data }]);
+	const handleNotifications = useCallback(async (data) => {
+
+		if (!isConnected || !data) return;
+		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
+			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
+			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT, NOTIFICATION_TYPES.ROUND
+		].includes(data.type)) {
+			console.log('WebSocket FOR Notifications:', data);
+			// setNotifications((prev) => [...prev, { ...data }]);
 
         setNotifications(prevNotifications => {
           const updatedNotifications = [...prevNotifications, { ...data }];

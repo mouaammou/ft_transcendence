@@ -12,12 +12,14 @@ import React, { useContext , useState, useRef, useEffect} from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import Link  from "next/link";
-
-
-
+import useNotificationContext from '@/components/navbar/useNotificationContext';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Msg_chat = () => {
+
+	const {isConnected, sendMessage , NOTIFICATION_TYPES} = useNotificationContext();
+
   const {
 	selectedUser,
 	open,
@@ -48,6 +50,29 @@ const Msg_chat = () => {
 
 	// Generate chatKey based on currentUser and selectedUser
     // const chatKey = selectedUser ? generateChatKey(currentuser.id, selectedUser.id) : null;
+  const { profileData: data } = useAuth(); // Current logged-in user
+  const router = useRouter();
+  const inviteToGame = () => {
+      if (selectedUser?.id) {
+  
+        if (isConnected)
+          sendMessage(JSON.stringify({
+            type: NOTIFICATION_TYPES.INVITE_GAME,
+            to_user_id: selectedUser.id,
+          }));
+      }
+    localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
+    router.push('/waiting_friends_game');
+    console.log('Invite to game');
+  };
+  console.log('selectedUser:', selectedUser);
+
+  // const formatDate = (timestamp) => {
+  //   const date = new Date(timestamp);
+  //   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+
+  //   return date.toLocaleString('en-US', options).replace(',', ''); // Modify for your locale
+  // };
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -73,7 +98,7 @@ const Msg_chat = () => {
 					)}
 				</div>
 				<div className="section_action">
-				<LiaGamepadSolid className="LiaGamepadSolid" />
+				<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
 				<ImBlocked className="ImBlocked" />
 				</div>
 			</div>
