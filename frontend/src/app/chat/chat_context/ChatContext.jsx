@@ -49,7 +49,8 @@ export const ChatProvider = ({ children }) => {
     const isFetchingRef = useRef(false); // To prevent multiple fetches at once
     const scrollTimeoutRef = useRef(null);
     const selectedUserRef = useRef(null);
-
+    // usestate to check active scrollToEnd or not
+    const [activeScrollToEnd, setActiveScrollToEnd] = useState(false);
     // ************************ end ***********************
          // ************************  Fetch friends (users to chat with) ************************
     const fetchFriends = async (search = '') => {
@@ -226,9 +227,7 @@ export const ChatProvider = ({ children }) => {
         selectedUserRef.current = user; // Update the ref with the selected user
         // Reset nextPage for this user
         setNextPage(null);
-        // Scroll to bottom after messages load
         setTimeout(() => {
-            // if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
             scrollToEnd();
         }, 100);
         
@@ -382,6 +381,8 @@ export const ChatProvider = ({ children }) => {
             if (message) {
 
                 console.log('Incoming message:', message);
+                setActiveScrollToEnd(true);
+
                 // if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                 if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                     // Mark the message as read since the receiver is actively viewing this chat
@@ -401,8 +402,8 @@ export const ChatProvider = ({ children }) => {
                 // Always update the sender's view of the receiver's last message
                 updateLastMessage(receiver_id, message, true, receivedData.timestamp);
 
-                if (contact === sender)
-                    scrollToEnd();
+                // if (contact === sender)
+                    // scrollToEnd();
 
                 // ------ last methode -----------------//
                 setMessages((prevMessages) => {
@@ -468,6 +469,7 @@ export const ChatProvider = ({ children }) => {
         setSocket(ws);
     };
   // ************************ end ***********************
+
 
     //  ************************ handle emoji selection and append the selected emoji to the message text ************************
         const handleEmojiClick = emoji => {
@@ -539,6 +541,7 @@ export const ChatProvider = ({ children }) => {
         // scrollTimeout = setTimeout(() => {
         scrollTimeoutRef.current = setTimeout(() => {
             if (chatContainer.scrollTop <= 50) {
+                setActiveScrollToEnd(false);
                 handleFetchOlderMessages();
             }
         }, 300); // Debounce interval (300ms)
@@ -549,15 +552,10 @@ export const ChatProvider = ({ children }) => {
 
 
     // ************************ Scroll to the end of the messages ************************
-    // useEffect(() => {
-    //     if (endRef.current) {
-    //     // endRef.current.scrollIntoView({ behavior: 'smooth' });
-    //     endRef.current?.scrollIntoView({ behavior: 'auto' });
-    //     }
-    // }, [messages, selectedUser]); // Trigger on messages or user change
 
     useEffect(() =>{
-        scrollToEnd();
+        if (activeScrollToEnd)
+            scrollToEnd();
     }, [messages])
     // new  methode 
     const scrollToEnd = () => {
@@ -567,13 +565,6 @@ export const ChatProvider = ({ children }) => {
 
     // ************************ end ***********************
 
-  // ************************ Scroll to the end of the messages whenever messages or selectedUser changes ************************
-  useEffect(() => {
-    if (endRef.current) {
-      endRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, selectedUser]); // Trigger on messages or user change
-  // ************************ end ***********************
 
   // ************************ Manage WebSocket connection based on selected user ************************
   useEffect(() => {
@@ -623,12 +614,6 @@ export const ChatProvider = ({ children }) => {
 	}, [open, setOpen]);
     
     // ************************ end ***********************
-
-  // ************************ Fetch friends when component mounts and clean up WebSocket on unmount ************************
-  useEffect(() => {
-    fetchFriends();
-  }, []);
-  // ************************ end ***********************
 
   return (
     <ChatContext.Provider

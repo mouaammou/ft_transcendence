@@ -185,10 +185,7 @@ const UserList = ({ users, listType , currentUser}) => {
             <UserCard
               key={user.friend.id}
               user={user.friend}
-              // for test
-              info_user={console.log('info_user => ',user)}
-              // end for test
-              lastMessage={user.last_message} // Pass last message details
+              lastMessage={user.last_message}
               listType={listType}
               typingUsers={typingUsers}
               onUserSelect={handleUserClick}

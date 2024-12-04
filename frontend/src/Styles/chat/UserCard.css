@@ -4,7 +4,7 @@
   /* justify-content: space-around; */
   align-items: center;
   /* gap: 20%; */
-  gap: 6%;
+  /* gap: 6%; */
   /* margin: 10px 30px 10px 30px; */
   margin: 5px 30px;
   cursor: pointer;
@@ -17,6 +17,10 @@
   position: relative;
   /* border-bottom: solid 1px; */
   /* border: 1px solid; */
+
+  /* add  */
+  height: 80px;
+  /* width: 100%; */
 }
 
 /* .img-usercard{
@@ -60,8 +64,10 @@
 
 .typing_indicator_card {
   font-style: italic;
-  position: absolute;
+  /* position: absolute; */
   right: 20;
+  color: #f7d3d3;
+  font-weight:bold;
 }
 
 /* .img-usercard{
