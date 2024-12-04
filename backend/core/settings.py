@@ -20,7 +20,7 @@ BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -144,7 +144,8 @@ CHANNEL_LAYERS = {
 	'default': {
 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
 		'CONFIG': {
-			"hosts": [('redis', 6379)],
+			# "hosts": [('redis', 6379)],
+			"hosts": [('localhost', 6379)],
 		},
 	},
 	# 'default': {
@@ -160,24 +161,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "ft_transcendence",
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT'),
-    }
-}
-
 # DATABASES = {
-	
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.sqlite3',
-# 		'NAME': BASE_DIR / 'db.sqlite3',
-# 	}
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': "ft_transcendence",
+#         'USER': os.getenv('POSTGRES_USER'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+#         'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
+#         'PORT': os.getenv('POSTGRES_PORT'),
+#     }
 # }
+
+DATABASES = {
+	
+	'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': BASE_DIR / 'db.sqlite3',
+	}
+}
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost",
@@ -232,7 +233,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

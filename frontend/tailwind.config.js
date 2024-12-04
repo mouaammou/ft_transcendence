@@ -9,6 +9,12 @@ module.exports = {
 	],
 	theme: {
     	extend: {
+			maxWidth: {
+				'1920': '1920px',
+			  },
+			minHeight: {
+				'screen-nav': 'calc(100vh - 4rem)',
+			  },
     		keyframes: {
     			'loading-dot': {
     				'0%, 80%, 100%': {

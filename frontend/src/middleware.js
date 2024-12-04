@@ -23,7 +23,8 @@ export async function middleware(request) {
   if (!isAuthPage) {
     // If you have at least the refresh token, then validate it in the backend
     try {
-      const backendResponse = await fetch('http://backend:8000/verifyTokens', {
+      // const backendResponse = await fetch('http://backend:8000/verifyTokens', {
+      const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
