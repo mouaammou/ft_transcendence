@@ -16,8 +16,15 @@
   /* width: 100%; */
   margin-right: 5px;
   /* overflow: hidden; */
-  height: 1290px;
+
+  /* change responsive  */
+  /* height: 1290px; */
+  
+  /* change responsive  */
+  height: 1120px;
+
 }
+
 
 h2 {
   margin: 42px 20px;
@@ -46,10 +53,11 @@ h2 {
   font-size: 30px;
 }
 
-.HiBell {
+/* change responsive  */
+/* .HiBell {
   font-size: 35px;
   color: white;
-}
+} */
 
 .div-Search {
   /* border: solid red; */
@@ -158,6 +166,8 @@ input[type='text']:focus::placeholder {
     height: 55px;
   }
 }
+
+
 @media (max-width: 1300px) {
   .list_chat {
     /* background-color: rgba(233, 114, 131, 0.2); */
@@ -170,14 +180,22 @@ input[type='text']:focus::placeholder {
 
     /* add */
 
-    height: 1280px;
+    /* change responsive  */
+    /* height: 1280px; */
+
+    /* change responsive  */
+    height: 1120px;
+
   }
   /* .user-chat{
         gap: 10px;
     } */
-  .HiBell {
+
+  /* change responsive  */
+  /* .HiBell {
     font-size: 25px;
-  }
+  } */
+
   h2 {
     text-align: center;
     margin-left: 0;
@@ -207,9 +225,10 @@ input[type='text']:focus::placeholder {
     /* height: 1175px; */
   }
 
-  .HiBell {
+    /* change responsive  */
+  /* .HiBell {
     font-size: 35px;
-  }
+  } */
   .img-info-user {
     width: 65px;
     height: 65px;
@@ -264,9 +283,11 @@ input[type='text']:focus::placeholder {
     /* font-weight: bold; */
     font-size: 15px;
   }
-  .HiBell {
+
+  /* change responsive  */
+  /* .HiBell {
     font-size: 22px;
-  }
+  } */
   .user-chat {
     gap: 15%;
     margin: 20px 0px;

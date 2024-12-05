@@ -42,12 +42,6 @@ const Msg_chat = () => {
   } = useContext(ChatContext);
 
 	const { profileData: currentuser } = useAuth();  // Current logged-in user
-	// const chatKey = currentuser && selectedUser 
-    // ? `${Math.min(currentuser.id, selectedUser.id)}_${Math.max(currentuser.id, selectedUser.id)}`
-    // : null;
-
-	// Generate chatKey based on currentUser and selectedUser
-    // const chatKey = selectedUser ? generateChatKey(currentuser.id, selectedUser.id) : null;
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
 		{selectedUser ? (
@@ -119,57 +113,6 @@ const Msg_chat = () => {
 						</div>
 					))}
 
-							{/* {messages[chatKey] &&
-                                Object.entries(messages[chatKey]).map(([date, dateMessages], index) => (
-									<div key={index} className="groupe_msg_date">
-                                        <div className="message_date">
-                                            <p className="par_date">
-                                                <span>{date}</span>
-                                            </p>
-                                        </div>
-										<p className="par_date"> <span>helloooooo how are 11111</span> </p>
-
-										{console.log('dateMessages', dateMessages)}
-                                        {dateMessages.map((msg, msgIndex) => (
-                                            <div
-                                                key={msgIndex}
-                                                className={
-                                                    msg.sender_id === currentuser.id ? 'my-message' : 'message'
-                                                }
-                                            >
-												<p className="par_date"> <span>helloooooo how are 2222 </span> </p>
-                                                {msg.sender_id !== currentuser.id && (
-                                                    <img
-                                                        src={selectedUser.avatar}
-                                                        alt={selectedUser.username}
-                                                        className="img_msg"
-                                                        style={{
-                                                            borderRadius: '50%',
-                                                            border: 'solid #F1FAEE',
-                                                        }}
-                                                    />
-                                                )}
-                                                <div className="div_text_message">
-                                                    <p className="text_message">{msg.message}</p>
-                                                    <span className="message_time">
-                                                        {formatTime(msg.timestamp)}
-                                                    </span>
-                                                </div>
-												{msg.sender === currentuser.username && (
-													<img
-													src={currentuser.avatar}
-													alt={currentuser.username}
-													className="img_my_message"
-													style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-													/>
-											)}
-                                            </div>
-                                        ))}
-                                    </div>
-                            ))} */}
-
-
-					
 				{/* Scroll to the bottom of the chat */}
 				<div ref={endRef}></div>
 				</div>

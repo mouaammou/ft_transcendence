@@ -124,12 +124,21 @@
 
 /*   for carousel */
 
-/* @media (max-width: 990px) {
+@media (max-width: 990px) {
   .UserListAll {
-    width: 85%;
-    margin-bottom: 100px;
+    width: 65%;
+    /* margin-bottom: 100px; */
   }
 }
+
+@media (max-width: 500px) {
+  .UserListAll {
+    width: 95%;
+    /* margin-bottom: 100px; */
+  }
+}
+
+/*
 @media (max-width: 400px) {
   .UserListAll {
     width: 85%;

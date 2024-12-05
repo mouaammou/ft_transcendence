@@ -2,13 +2,18 @@
   display: flex;
   /* add */
   align-items: center;
-  padding-right: 30px;
+
+  /* change responsive  */
+  /* padding-right: 30px; */
 
   /* flex-grow: 1; */
   /* border: solid rgb(0, 125, 10); */
   /* width: auto; */
   /* width: 100%; */
   width: 100%;
+
+  /* change responsive  */
+  padding: 50px 120px;
 
   /* padding: 50px 50px 50px 0px; */
 }
@@ -136,12 +141,25 @@ h2 {
   display: none;
 }
 
+@media (max-width: 1400px) {
+  .main-chat {
+    padding: 30px 50px;;
+  }
+}
+
 @media (max-width: 1300px) {
   .main-chat {
     align-items: initial;
     padding-top: 30px;
   }
 }
+
+@media (max-width: 1300px) {
+  .main-chat {
+    padding: 30px 20px;
+  }
+}
+
 @media (max-width: 990px) {
   .list_chat.hidden {
     display: none;
@@ -162,8 +180,9 @@ h2 {
     display: block;
   }
   .main-chat {
-    padding-right: 0px;
-    padding-top: 0px;
+    /* padding-right: 0px;
+    padding-top: 0px; */
+    padding: 0px;
   }
 }
 

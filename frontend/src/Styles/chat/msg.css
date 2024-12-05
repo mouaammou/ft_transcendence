@@ -12,7 +12,12 @@
   margin-left: 5px;
   /*  add commante  */
   /* overflow: hidden; */
-  height: 1290px;
+
+  /* change responsive  */
+  /* height: 1290px; */
+
+  /* change responsive  */
+  height: 1120px;
 }
 
 /* add test  */
