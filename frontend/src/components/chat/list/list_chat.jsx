@@ -36,9 +36,6 @@ const list_chat = () => {
           {/* <p> mohammed </p> */}
           <p> {currentUser?.username} </p>
         </div>
-        <div>
-          <HiBell className="HiBell" />
-        </div>
       </div>
       <div className="div-Search">
         <input type="text" placeholder="Search users..." onChange={handleSearch} />

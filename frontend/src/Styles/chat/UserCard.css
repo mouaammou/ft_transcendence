@@ -4,9 +4,16 @@
   /* justify-content: space-around; */
   align-items: center;
   /* gap: 20%; */
-  gap: 6%;
+  /* gap: 6%; */
   /* margin: 10px 30px 10px 30px; */
-  margin: 5px 30px;
+
+  /* change responsive  */
+  /* margin: 5px 30px; */
+  /* change responsive  */
+  margin: 5px 0px;
+  width: 100%;
+  /* end change responsive  */
+
   cursor: pointer;
   /* transition: border 0.3s, border-radius 0.3s; */
   padding: 10px 5px;
@@ -17,16 +24,24 @@
   position: relative;
   /* border-bottom: solid 1px; */
   /* border: 1px solid; */
+
+  /* add  */
+  height: 80px;
+  gap: 5px;
+  /* width: 100%; */
 }
 
-/* .img-usercard{
-    position: relative;
-} */
+.img-usercard{
+  max-width: 80px;
+}
 
 .UserCardAll:hover {
   border: 1px solid #ffffff; /* Border on hover */
-  background-color: #5faffe;
-  /* background-color: #041921; */
+  /* background-color: #5faffe; */
+  /* background-color: #1a2980; */
+  /* background-color: #3b82f680; */
+
+  background-color: #041921;
 }
 
 /* Styling for clicked card */
@@ -54,14 +69,16 @@
 }
 
 .UserCardAll .status {
-  bottom: 11px;
+  bottom: 18px;
   left: 40px;
 }
 
 .typing_indicator_card {
   font-style: italic;
-  position: absolute;
+  /* position: absolute; */
   right: 20;
+  color: #f7d3d3;
+  font-weight:bold;
 }
 
 /* .img-usercard{
@@ -84,7 +101,25 @@
     } */
 }
 
+@media (max-width: 1200px) {
+  .UserCardAll{
+
+    /* margin: 5px 10px; */
+
+    /* change responsive  */
+    margin: 5px 0px;
+  }
+}
+
+
+
 @media (max-width: 990px) {
+
+  .UserCardAll {
+  /* change responsive  */
+  /* margin: 5px 30px; */
+  margin: 5px 0px;   
+  }
   /* .UserCardAll{
         gap: 40px;
     } */
@@ -101,7 +136,8 @@
   .UserCardAll {
     margin: 10px 15px;
     padding: 0px;
-    gap: 12%;
+    /* gap: 12%; */
+    gap: 5px;
   }
 
   .UserCardOnline .status {

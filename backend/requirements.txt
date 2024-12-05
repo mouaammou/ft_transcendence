@@ -37,7 +37,6 @@ txaio==23.1.1
 typing_extensions==4.11.0
 urllib3==2.2.1
 zope.interface==6.4.post2
-psycopg2-binary
 Faker==30.8.2
-pyotp
-qrcode
+qrcode==8.0
+pyotp==2.9.0
