@@ -134,7 +134,7 @@
 }
 @media (max-width: 400px) {
   .UserCardAll {
-    margin: 10px 15px;
+    /* margin: 10px 15px; */
     padding: 0px;
     /* gap: 12%; */
     gap: 5px;
