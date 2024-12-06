@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 
 const SearchedItem = ({ result }) => {
   return (
-    <Link href={`/${result.username}`}>
+    <Link href={`/friend/${result.username}`}>
       <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 rounded-lg shadow-sm bg-white w-96">
         <div className="flex items-center space-x-4">
           <img
@@ -64,11 +64,11 @@ const SearchProfileComponent = () => {
   }, [debouncedSearchTerm, searchTerm]);
 
   return (
-    <div>
+    <div className="w-full">
       <div className="relative w-full">
-        <div className="absolute inset-y-0 start-0 flex items-center ps-3 h-full">
+        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
           <svg
-            className="w-4 h-4 text-gray-500 dark:text-gray-400"
+            className="w-4 h-4 text-gray-500"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -86,15 +86,14 @@ const SearchProfileComponent = () => {
         <input
           type="search"
           id="default-search"
-          className="block w-full ps-10 text-gray-900 outline-none max-sm:text-sm h-20 bg-gray-100"
+          className="block w-full ps-10 py-2.5 text-gray-900 text-sm rounded-lg bg-gray-50/50 border border-gray-200 focus:border-gray-300 focus:outline-none transition-colors duration-200"
           placeholder="Search for users, friends, tournaments"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
 
         {/* Results of Search */}
-        <div className="absolute top-14 bg-white z-40">
-          {/* {loading && <SearchedItem results={results} />} */}
+        <div className="absolute top-12 left-0 bg-transparent z-40">
           {loading &&
             results.length > 0 &&
             results.map((result, index) => <SearchedItem key={index} result={result} />)}

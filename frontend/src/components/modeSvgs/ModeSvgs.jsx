@@ -104,31 +104,35 @@ export const VsbotSvg = () => {
 
 export const ExitSvg = () => {
   return (
-    <svg
-      viewBox="-3 -5 30 30"
-      className="fill-white group-hover:fill-customfill transition ease-in-out delay-150 duration-150"
-    >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
-        {' '}
-        <g
-          fill="none"
-          fillRule="evenodd"
-          stroke="#ffffff"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          transform="matrix(-1 0 0 1 18 3)"
-        >
-          {' '}
-          <path d="m10.595 10.5 2.905-3-2.905-3"></path> <path d="m13.5 7.5h-9"></path>{' '}
-          <path
-            d="m10.5.5-8 .00224609c-1.1043501.00087167-1.9994384.89621131-2 
-                                2.00056153v9.99438478c.0005616 
-                                1.1043502.8956499 1.9996898 2 2.0005615l8 .0022461"
-          ></path>{' '}
-        </g>{' '}
-      </g>
-    </svg>
+    <svg  className="fill-white group-hover:fill-customfill transition ease-in-out delay-150 duration-150" fill="#000000"   viewBox="-4 -4 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M22,3a1,1,0,0,0,0-2H20a1,1,0,0,0-1,1V4H17a1,1,0,0,0-1,1v6H14.816a2.982,2.982,0,0,0-5.632,0H8V5A1,1,0,0,0,7,4H5V2A1,1,0,0,0,4,1H2A1,1,0,0,0,2,3H3V7H2A1,1,0,0,0,2,9H4A1,1,0,0,0,5,8V6H6V18H5V16a1,1,0,0,0-1-1H2a1,1,0,0,0,0,2H3v4H2a1,1,0,0,0,0,2H4a1,1,0,0,0,1-1V20H7a1,1,0,0,0,1-1V13H9.184a2.982,2.982,0,0,0,5.632,0H16v6a1,1,0,0,0,1,1h2v2a1,1,0,0,0,1,1h2a1,1,0,0,0,0-2H21V17h1a1,1,0,0,0,0-2H20a1,1,0,0,0-1,1v2H18V6h1V8a1,1,0,0,0,1,1h2a1,1,0,0,0,0-2H21V3ZM12,13a1,1,0,1,1,1-1A1,1,0,0,1,12,13Z" /></svg>
+
+
+
+    // <svg
+    //   viewBox="-3 -5 30 30"
+    //   className="fill-white group-hover:fill-customfill transition ease-in-out delay-150 duration-150"
+    // >
+    //   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+    //   <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+    //   <g id="SVGRepo_iconCarrier">
+    //     {' '}
+    //     <g
+    //       fill="none"
+    //       fillRule="evenodd"
+    //       stroke="#ffffff"
+    //       strokeLinecap="round"
+    //       strokeLinejoin="round"
+    //       transform="matrix(-1 0 0 1 18 3)"
+    //     >
+    //       {' '}
+    //       <path d="m10.595 10.5 2.905-3-2.905-3"></path> <path d="m13.5 7.5h-9"></path>{' '}
+    //       <path
+    //         d="m10.5.5-8 .00224609c-1.1043501.00087167-1.9994384.89621131-2 
+    //                             2.00056153v9.99438478c.0005616 
+    //                             1.1043502.8956499 1.9996898 2 2.0005615l8 .0022461"
+    //       ></path>{' '}
+    //     </g>{' '}
+    //   </g>
+    // </svg>
   );
 };

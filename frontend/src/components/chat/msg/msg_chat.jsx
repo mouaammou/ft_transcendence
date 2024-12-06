@@ -12,12 +12,14 @@ import React, { useContext , useState, useRef, useEffect} from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import Link  from "next/link";
-
-
-
+import useNotificationContext from '@/components/navbar/useNotificationContext';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Msg_chat = () => {
+
+	const {isConnected, sendMessage , NOTIFICATION_TYPES} = useNotificationContext();
+
   const {
 	selectedUser,
 	open,
@@ -48,6 +50,28 @@ const Msg_chat = () => {
 
 	// Generate chatKey based on currentUser and selectedUser
     // const chatKey = selectedUser ? generateChatKey(currentuser.id, selectedUser.id) : null;
+  const router = useRouter();
+  const inviteToGame = () => {
+      if (selectedUser?.id) {
+  
+        if (isConnected)
+          sendMessage(JSON.stringify({
+            type: NOTIFICATION_TYPES.INVITE_GAME,
+            to_user_id: selectedUser.id,
+          }));
+      }
+    localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
+    router.push('/waiting_friends_game');
+    console.log('Invite to game');
+  };
+  console.log('selectedUser:', selectedUser);
+
+  // const formatDate = (timestamp) => {
+  //   const date = new Date(timestamp);
+  //   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+
+  //   return date.toLocaleString('en-US', options).replace(',', ''); // Modify for your locale
+  // };
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -73,7 +97,7 @@ const Msg_chat = () => {
 					)}
 				</div>
 				<div className="section_action">
-				<LiaGamepadSolid className="LiaGamepadSolid" />
+				<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
 				<ImBlocked className="ImBlocked" />
 				</div>
 			</div>
@@ -120,57 +144,6 @@ const Msg_chat = () => {
 						</div>
 					))}
 
-							{/* {messages[chatKey] &&
-                                Object.entries(messages[chatKey]).map(([date, dateMessages], index) => (
-									<div key={index} className="groupe_msg_date">
-                                        <div className="message_date">
-                                            <p className="par_date">
-                                                <span>{date}</span>
-                                            </p>
-                                        </div>
-										<p className="par_date"> <span>helloooooo how are 11111</span> </p>
-
-										{console.log('dateMessages', dateMessages)}
-                                        {dateMessages.map((msg, msgIndex) => (
-                                            <div
-                                                key={msgIndex}
-                                                className={
-                                                    msg.sender_id === currentuser.id ? 'my-message' : 'message'
-                                                }
-                                            >
-												<p className="par_date"> <span>helloooooo how are 2222 </span> </p>
-                                                {msg.sender_id !== currentuser.id && (
-                                                    <img
-                                                        src={selectedUser.avatar}
-                                                        alt={selectedUser.username}
-                                                        className="img_msg"
-                                                        style={{
-                                                            borderRadius: '50%',
-                                                            border: 'solid #F1FAEE',
-                                                        }}
-                                                    />
-                                                )}
-                                                <div className="div_text_message">
-                                                    <p className="text_message">{msg.message}</p>
-                                                    <span className="message_time">
-                                                        {formatTime(msg.timestamp)}
-                                                    </span>
-                                                </div>
-												{msg.sender === currentuser.username && (
-													<img
-													src={currentuser.avatar}
-													alt={currentuser.username}
-													className="img_my_message"
-													style={{ borderRadius: '50%', border: 'solid #F1FAEE' }}
-													/>
-											)}
-                                            </div>
-                                        ))}
-                                    </div>
-                            ))} */}
-
-
-					
 				{/* Scroll to the bottom of the chat */}
 				<div ref={endRef}></div>
 				</div>

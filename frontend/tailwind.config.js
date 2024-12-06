@@ -9,6 +9,12 @@ module.exports = {
 	],
 	theme: {
     	extend: {
+			maxWidth: {
+				'1920': '1920px',
+			  },
+			minHeight: {
+				'screen-nav': 'calc(100vh - 4rem)',
+			  },
     		keyframes: {
     			'loading-dot': {
     				'0%, 80%, 100%': {
@@ -95,6 +101,10 @@ module.exports = {
 			screens: {
 				tablet: '990px',
 				larg_screen: '1300px'
+			},
+			animation: {
+			brightening: 'brightening 1.5s infinite',
+			'bounce-3s' : 'bounce 3s'
 			},
 			
     	}

@@ -87,23 +87,24 @@ FRONTEND_URL = os.getenv('FRONTEND_URL', default='http://localhost:3000')
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 INSTALLED_APPS = [
-	'daphne',
-	'channels',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'pong',
-	'game',
-	# 'game.apps.GameConfig',
-	"authentication.apps.AuthenticationConfig",
-	"rest_framework",
-	"rest_framework_simplejwt",
-	"corsheaders",
-	"rest_framework_simplejwt.token_blacklist",
-	"chat",
+    'daphne',
+    'channels',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pong',
+    'game',
+    # 'game.apps.GameConfig',
+    "authentication.apps.AuthenticationConfig",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+    "chat",
+    "connect_four",
 ]
 
 MIDDLEWARE = [
@@ -144,9 +145,16 @@ CHANNEL_LAYERS = {
 	'default': {
 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
 		'CONFIG': {
-			"hosts": [('127.0.0.1', 6379)],
+			# "hosts": [('redis', 6379)],
+			"hosts": [('localhost', 6379)],
 		},
 	},
+#  'default': {
+# 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
+# 		'CONFIG': {
+# 			"hosts": [('redis', 6379)],
+# 		},
+# 	},
 	# 'default': {
 	# 	'BACKEND': 'channels.layers.InMemoryChannelLayer',
 	# },
@@ -180,8 +188,12 @@ DATABASES = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-	'http://localhost:3000', #add your frontend url here
+    "https://localhost",
+    "http://localhost",
+    "http://frontend:3000",
+    "https://frontend:3000",
 ]
+
 
 CORS_ALLOW_METHODS = [
 	'DELETE',
@@ -227,15 +239,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOW_ALL_ORIGINS = True
 
 

@@ -39,11 +39,11 @@ const Friends = () => {
 				setPrevPage(response.data.previous ? pageNumber - 1 : null);
 				setPageNumber(pageNumber);
 			} else {
-				setPageNotFound(true);
+				// setPageNotFound(true);
 			}
 		} catch (error) {
 			console.log('Error fetching users:', error);
-			setPageNotFound(true);
+			// setPageNotFound(true);
 		}
 	},[]);
 
@@ -216,7 +216,7 @@ const UserCart = ({ user, sendFriendRequest}) => {
 				</div>
 
 				<div className="mt-6 space-y-3">
-					<Link href={user.username}
+					<Link href={`friend/${user.username}`}
 						className="flex items-center w-full px-6 py-3 rounded-2xl
 								bg-gray-700/50 hover:bg-gray-600/50 
 								text-gray-200 

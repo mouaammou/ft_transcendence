@@ -1,16 +1,19 @@
 'use client';
 
 import '@/styles/game/game.css';
-import mysocket from '@/utils/WebSocketManager';
+
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
+import {useGlobalWebSocket} from '@/utils/WebSocketManager';
 
 // i have a repeted function here which is fetchPlayer
 
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
   const router = useRouter();
+  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,
@@ -40,7 +43,7 @@ export default function CreateJoinTournamentPage() {
 
   const handleJoinTournament = () => {
     if (selectedTournamentId !== '') {
-      mysocket.sendMessage(
+      sendMessage(
         JSON.stringify({
           type: 'JOIN_TOURNAMENT',
           data: {
@@ -60,7 +63,7 @@ export default function CreateJoinTournamentPage() {
         setTournamentName('');
         return;
       }
-      mysocket.sendMessage(
+      sendMessage(
         JSON.stringify({
           type: 'CREATE_TOURNAMENT',
           data: {
@@ -74,7 +77,7 @@ export default function CreateJoinTournamentPage() {
 
   useEffect(() => {
     // Get all tournaments from the backend when the page is loaded
-    mysocket.sendMessage(
+    sendMessage(
       JSON.stringify({
         type: 'GET_TOURNAMENTS',
       })
@@ -92,7 +95,7 @@ export default function CreateJoinTournamentPage() {
         setInputError({ ...inputError, alreadyInGame: true });
         setTimeout(() => {
           router.push('/game');
-        }, 1000);
+        }, 2000);
         console.log('pushed to game');
       } else if (data.status === 'already_in_tournament_join') {
         setInputError({ ...inputError, alreadyInTournamentJoin: true });
@@ -102,10 +105,9 @@ export default function CreateJoinTournamentPage() {
       } else if (data.status === 'tournament_full') {
         setInputError({ ...inputError, tournamentFull: true });
       } else if (data.status === 'created_successfully' || data.status === 'joined_successfully') {
-        setTimeout(() => {
           router.push('/tournament_board');
-        }, 1000);
-      } else if (data.tournaments !== undefined) {
+      }
+      else if (data.tournaments !== undefined) {
         setTab(data.tournaments);
         const playersAvatar = {};
         for (const tournauwa of data.tournaments) {
@@ -119,9 +121,9 @@ export default function CreateJoinTournamentPage() {
         setPlayers(playersAvatar);
       }
     };
-    mysocket.registerMessageHandler(messageHandler);
+    registerMessageHandler(messageHandler);
     return () => {
-      mysocket.unregisterMessageHandler(messageHandler);
+      unregisterMessageHandler(messageHandler);
     };
   }, [inputError.tournamentFull]);
 
@@ -130,7 +132,7 @@ export default function CreateJoinTournamentPage() {
   };
 
   return (
-    <div className="bg-whitetrspnt m-auto w-fit lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
+    <div className="bg-whitetrspnt m-auto my-6 w-fit lg:w-[80%] lg:max-w-[1170px] lg:p-24 p-6 rounded-3xl flex flex-col items-center lg:flex-row lg:justify-center lg:gap-[6%] lg:mt-[100px]">
       <div className="flex flex-col items-center lg:items-start">
         <p className="text-[26px] font-ibm font-semibold m-auto w-fit my-2 lg:text-[40px]  lg:m-0 lg:mb-11">
           Create tournament
@@ -141,6 +143,8 @@ export default function CreateJoinTournamentPage() {
         <input
           type="text"
           value={tournament_name}
+          name='tournament_name'
+          autoComplete='off'
           onChange={handleInputChange}
           placeholder="my_tournament123..."
           className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
@@ -193,7 +197,7 @@ export default function CreateJoinTournamentPage() {
                   key={index}
                   className={`flex-shrink-0 text-[14px]  font-mono bg-[#D6D6D6] text-black font-bold
                             rounded-md m-2 w-[120px] h-[30px] text-center lg:text-[16px] 
-                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-buttoncolor text-white' : ''} flex justify-center items-center gap-3 `}
+                              lg:w-[210px] lg:h-[40px] ${tournament.id === selectedTournamentId ? 'bg-btnColor text-white' : ''} flex justify-center items-center gap-3 `}
                   onClick={() => {
                     setSelectedTournamentId(tournament.id);
                   }}

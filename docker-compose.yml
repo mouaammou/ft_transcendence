@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     container_name: postgres
     volumes:
-      - /var/lib/postgresql/data:/Users/mouaammo/goinfre/PgData
+      - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     environment:
@@ -13,6 +13,8 @@ services:
       POSTGRES_USER: mouad
       POSTGRES_PASSWORD: mouad
     restart: on-failure
+    networks:
+      - ft_transcendence
 
   redis:
     image: redis:latest
@@ -20,44 +22,60 @@ services:
     ports:
       - "6379:6379"
     restart: on-failure
+    networks:
+      - ft_transcendence
 
   frontend:
-    build: frontend
+    build:
+      context: ./frontend
     hostname: frontend
     container_name: frontend
+    ports:
+      - "3000:3000"
     restart: on-failure
+    networks:
+      - ft_transcendence
 
   backend:
-    build: backend
+    build:
+      context: ./backend
     hostname: backend
     container_name: backend
     depends_on:
       - postgres
       - redis
-    restart: on-failure
     environment:
-      - DATABASE_URL=postgres://mouad:mouad@postgres:5432/your_database_name
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgres://mouad:mouad@postgres:5432/ft_transcendence
       - REDIS_URL=redis://redis:6379
       - DJANGO_SETTINGS_MODULE=core.settings
-      - DJANGO_SUPERUSER_USERNAME=admin
-      - DJANGO_SUPERUSER_EMAIL=admin@example.com
-      - DJANGO_SUPERUSER_PASSWORD=admin123
+    ports:
+      - "8000:8000"
+    restart: on-failure
     env_file:
       - .env
+    networks:
+      - ft_transcendence
 
   nginx:
-    build: services/nginx
+    build:
+      context: ./services/nginx
     hostname: nginx
+    container_name: nginx
     ports:
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - backend
       - frontend
+    networks:
+      - ft_transcendence
 
 volumes:
   postgres-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /Users/mouaammo/goinfre/PgData
-      o: bind
+
+networks:
+  ft_transcendence:
+    driver: bridge

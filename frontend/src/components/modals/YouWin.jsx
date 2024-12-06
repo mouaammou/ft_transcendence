@@ -1,63 +1,88 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-const YouWin = ({ onClose, winner='' }) => {
+const YouWin = ({ gameType, setShowWinModal }) => {
+  const router = useRouter();
+  const intervalRef = useRef(null);
+  const animationPlayed = useRef(false); // To prevent multiple runs
+
+  const onClose = () => {
+    () => setShowWinModal(false); // Close the modal when the user clicks close
+    if (gameType === 'tournament') {
+      router.push('/tournament_board'); // Navigate to the tournament board
+    } else {
+      router.push('/create_join_tournament'); // Navigate to the create/join tournament page
+    }
+  };
+
+  // Function to generate random values
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  // Function for the confetti celebration
+  function winner_celebration() {
+    if (animationPlayed.current) return; // Guard against re-runs
+    animationPlayed.current = true; // Mark as played
+
+    const duration = 6 * 1000; // 6 seconds
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60 };
+
+    intervalRef.current = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        clearInterval(intervalRef.current); // Clear the interval when the animation ends
+        confetti.reset(); // Reset confetti to stop it
+        return;
+      }
+
+      const particleCount = 80 * (timeLeft / duration);
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
+    }, 250);
+  }
 
   useEffect(() => {
+    // Start the timer for navigation after 9 seconds
     const timer = setTimeout(() => {
       onClose();
     }, 9000);
 
-    function winner_celebration() {
-      let duration = 5 * 1000;
-      let animationEnd = Date.now() + duration;
-      let defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-      function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-
-      let interval = setInterval(function () {
-        let timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-
-        let particleCount = 80 * (timeLeft / duration);
-        // since particles fall down, start a bit higher than random
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-        });
-      }, 250);
-    }
+    // Run the celebration animation once on mount
     winner_celebration();
 
+    // Cleanup function: clear both the timer and the interval
     return () => {
       clearTimeout(timer);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
-  }, [onClose]);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
       <div className="text-center">
         <h1 className="text-white font-semibold font-balsamiq text-4xl md:text-5xl">
-           {winner && <span className='pr-2 text-green-400'>{winner}</span>} Congratulations You Win 🎉
+           <span className='pr-2 text-green-400'></span>Congratulations You Win 🎉
         </h1>
         <p className="text-white font-normal font-open text-lg mt-4">
           Great job! You’ve earned this victory!
         </p>
         <button
           onClick={onClose}
-          className=" cursor-pointer bg-white text-black font-semibold font-open px-4 py-2 mt-4 rounded-lg"
+          className="cursor-pointer bg-white text-black font-semibold font-open px-4 py-2 mt-4 rounded-lg"
         >
           Close
         </button>
