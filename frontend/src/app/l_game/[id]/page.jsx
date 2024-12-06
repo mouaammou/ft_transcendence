@@ -6,6 +6,8 @@ import '@/styles/game/game.css';
 import CountdownTimer from "@/components/countDown/CountDown.jsx";
 import Image from 'next/image';
 import { fetchStartPlayTournament, fetchTournamentMatchPlayers } from '@/services/apiCalls';
+import TopBar from'@/components/local_tournament/TopBar';
+
 
 const rounds = [
 	'Opening Matches',
@@ -78,6 +80,8 @@ const GamePage = ({params}) => {
 	// 	setScore1(score1 + 1);
 	// }
 	return (
+		<>
+		<TopBar />
 		<div className="flex flex-col items-center justify-start max-w-[100vw] w-full h-full ">
 			<div className="flex w-full h-fit justify-evenly items-center my-24">
 				
@@ -122,6 +126,7 @@ const GamePage = ({params}) => {
 				<div className="tournament-name text-2xl">{title} {round}</div>
 			</div>
 		</div>
+		</>
 	)
 }
 

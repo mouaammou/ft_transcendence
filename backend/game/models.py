@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from datetime import timedelta
 import asyncio
 import uuid
+import random
+import copy
 
 # class (models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -266,6 +268,23 @@ class LocalTournament(models.Model):
         self.match_index = index + 1
         if index == 7:
             self.finished = True
+        
+    def shuffle(self):
+        if self.match_index != 1:
+            return
+        original_nicknames = [
+            'match1_nickname1',
+            'match1_nickname2',
+            'match2_nickname1',
+            'match2_nickname2',
+            'match3_nickname1',
+            'match3_nickname2',
+            'match4_nickname1',
+            'match4_nickname2',
+        ]
+        nicknames = copy.deepcopy(original_nicknames)
+        random.shuffle(nicknames)
+        map(lambda index: setattr(self, original_nicknames[index], nicknames[index]), range(len(nicknames)))
     
     def __str__(self) -> str:
         return f"[{self.id}] Local Tournament - {self.title} - {self.match7_winner}"

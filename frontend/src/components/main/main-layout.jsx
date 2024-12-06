@@ -12,7 +12,7 @@ const MainLayout = ({ children }) => {
 			<div className={isAuth ? 'parent-authenticated' : 'parent-not-authenticated'}
 			>
 				{isAuth && 
-					<div className="SIDE-NAV">
+					<div className="SIDE-NAV ">
 						
 						<Sidebar />
 					</div>

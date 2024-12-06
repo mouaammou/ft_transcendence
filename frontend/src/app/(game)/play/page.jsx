@@ -37,7 +37,7 @@ const PlayMode = () => {
 
   const handlePlayLocalClick = (e) => {
     e.preventDefault();
-    router.push('/local_game');
+    router.push('/l_game');
   };
 
 

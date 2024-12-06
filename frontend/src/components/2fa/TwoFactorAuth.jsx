@@ -146,7 +146,6 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
             toast.error("Please enter 6 digits code");
             return ;
         }
-        // const response = await apiEnableTwoFactorAuth(code);
         const response = await apiEnableTwoFactorAuth(code)
         if (response.status === 200) {
             //success 2fa is enabled
@@ -178,7 +177,7 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
     return (
         <div className="bg-gray-800 rounded-2xl p-6 shadow-lg m-2">
             <h2 className="text-xl font-semibold mb-6 flex items-center capitalize">
-            two-factor authentication (2FA)
+                two-factor authentication (2FA)
             </h2>
             <div className={ (toggleButton? "block ": "hidden ") + "flex-1 flex-wrap flex justify-between gap-2"}>
                 <div className='flex-1 p-1'>

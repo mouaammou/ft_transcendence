@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { createTournament } from '@/services/apiCalls';
 import { Toaster, toast } from 'react-hot-toast';
+import TopBar from'@/components/local_tournament/TopBar';
+
 
 
 export default function TournamentForm() {
@@ -57,6 +59,8 @@ export default function TournamentForm() {
   };
 
   return (
+    <>
+    <TopBar />
     <div className="max-w-3xl mx-auto p-4 mt-8">
       <form onSubmit={handleSubmit} className="bg-white/10 shadow-md rounded-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-center text-white mb-6">
@@ -88,5 +92,6 @@ export default function TournamentForm() {
       </form>
       <Toaster />
     </div>
+    </>
   );
 }
