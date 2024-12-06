@@ -45,7 +45,7 @@
 			<ul className="py-2">
 			{[
 				{ href: '/profile', label: 'Profile' },
-				{ href: '/settings', label: 'Settings' },
+				{ href: '/edit_profile', label: 'Settings' },
 				{ href: '/tournament', label: 'Create Tournament' },
 				{ href: '/play', label: 'Start Game' },
 			].map(({ href, label }) => (
@@ -77,7 +77,7 @@
 	const [isOpen, setIsOpen] = useState(false);
 	
 	return (
-		<div className="flex flex-row items-center justify-between bg-gray-100 pr-10">
+		<div className="flex flex-row items-center justify-between bg-orange-500 pr-10">
 		<div className="w-full">
 			<SearchProfileComponent />
 		</div>

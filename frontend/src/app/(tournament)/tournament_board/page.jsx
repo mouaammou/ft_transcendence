@@ -8,7 +8,7 @@ import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/loginContext';
 import { Modal } from '@/components/modals/Modal';
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 import confetti from 'canvas-confetti';
 
 
@@ -16,7 +16,7 @@ function winner_celebration() {
   let end = Date.now() + (5 * 1000);
 
   // go Buckeyes!
-  
+
   (function frame() {
     confetti({
       particleCount: 5,
@@ -28,9 +28,9 @@ function winner_celebration() {
       particleCount: 5,
       angle: 120,
       spread: 55,
-      origin: { x: 1}
+      origin: { x: 1 }
     });
-  
+
     if (Date.now() < end) {
       requestAnimationFrame(frame);
     }
@@ -38,7 +38,7 @@ function winner_celebration() {
 }
 
 export default function TournamentBoardPage() {
-  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
   const [players, setPlayers] = useState([]);
   const [fulfilled, setFulfilled] = useState(false);
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
@@ -60,23 +60,27 @@ export default function TournamentBoardPage() {
   };
 
   const startTournament = () => {
-    sendMessage(
-      JSON.stringify({
-        type: 'START_TOURNAMENT',
-      })
-    );
+    if (isConnected)
+      sendMessage(
+        JSON.stringify({
+          type: 'START_TOURNAMENT',
+        })
+      );
   };
 
   const leaveTournament = () => {
-    sendMessage(
-      JSON.stringify({
-        type: 'LEAVE_TOURNAMENT',
-      })
-    );
+    if (isConnected)
+      sendMessage(
+        JSON.stringify({
+          type: 'LEAVE_TOURNAMENT',
+        })
+      );
   };
 
-  const handleMessage = message => { 
-    const data = JSON.parse(message.data);
+
+  useEffect(() => {
+    if (!lastMessage) return;
+    const data = JSON.parse(lastMessage.data);
     console.log('data  ---> ', data);
     if (data.status === 'players') {
       console.log('bla bla bla bla', data.data);
@@ -84,7 +88,7 @@ export default function TournamentBoardPage() {
     } else if (data.status === 'no_tournament_found') {
       console.log('the player does not exist in any tournament');
       router.push('/create_join_tournament');
-    } else if (data.status === 'fulfilled') { 
+    } else if (data.status === 'fulfilled') {
       setFulfilled(true);
     } else if (data.status === 'not_fulfilled') {
       setFulfilled(false);
@@ -125,30 +129,31 @@ export default function TournamentBoardPage() {
         setModalOpen(true);
       }, 15000);
     }
-  };
+  }, [lastMessage]);
 
   useEffect(() => {
 
-  sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
+    // if (isConnected)
+      sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    sendMessage(JSON.stringify({ inBoardPage: true }));
+    // if (isConnected)
+      sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {
-      // data = {round1: Array(1), round2: null, round3: null}
+      data = {round1: Array(1), round2: null, round3: null}
       let players = [];
       for (let round in data) {
         if (data[round] !== null) {
-          players = players.concat(data[round]);
+          // players = players.concat(data[round]); 
         }
       }
       return players;
     };
 
-    registerMessageHandler(handleMessage);
 
     return () => {
-      unregisterMessageHandler(handleMessage);
-      sendMessage(JSON.stringify({ inBoardPage: false }));
+      if (isConnected)
+        sendMessage(JSON.stringify({ inBoardPage: false }));
     };
   }, []);
 

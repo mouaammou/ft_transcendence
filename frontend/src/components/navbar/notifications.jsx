@@ -10,30 +10,33 @@ import { useRouter } from 'next/navigation';
 const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
 	const { sendMessage } = useNotificationContext();
 	const router = useRouter();
+	// const [action, setAction] = useState(null);
 	console.log('NotificationLayout:', data);
 	const sendAction = useCallback((action, notif_type) => {
 		console.log('sendAction:', action, notif_type);
 		let messageType = null;
+		
 		if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
 			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
 		} else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
-			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
-			if (action === 'accepted'){
+			if (action === 'accepted') {
 				messageType = NOTIFICATION_TYPES.ACCEPT_GAME;
 				router.push('/game');
-			}
-			else {
+			} else {
 				messageType = NOTIFICATION_TYPES.REJECT_GAME;
 			}
 		} else if (notif_type === NOTIFICATION_TYPES.INVITE_TOURNAMENT) {
 			messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_TOURNAMENT : NOTIFICATION_TYPES.REJECT_TOURNAMENT;
 		}
+		
 		console.log('sendAction:', messageType)
-		messageType && sendMessage(JSON.stringify({
-			type: messageType,
-			to_user_id: data.sender,
-		}));
-	}, [data.sender, NOTIFICATION_TYPES, sendMessage]);
+		if (messageType) {
+			sendMessage(JSON.stringify({
+				type: messageType,
+				to_user_id: data.sender,
+			}));
+		}
+	}, [data.sender, NOTIFICATION_TYPES, sendMessage, router]);
 
 	const onAction = (action, data) => {
 		handleAction(action, data);
@@ -123,6 +126,12 @@ const NotificationBell = () => {
 	// Fetch unread notifications on component mount
 	useEffect(() => {
 		UnreadNotifications();
+
+		return () => {
+			setIsOpen(false);
+			setNotifications([]);
+		}
+	
 	}, []);
 
 	// Toggle notification bell dropdown

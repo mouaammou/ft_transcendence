@@ -32,7 +32,7 @@ class RemoteGameOutput:
     
 
     @classmethod
-    def add_callback(cls, player_id, consumer, game_obj=None, sendConfig=True) -> None:
+    def add_callback(cls, player_id, consumer) -> None:
         print("add_callback method")
         """
         game_obj is None on connect, But a game instance on reconnect.
@@ -40,9 +40,6 @@ class RemoteGameOutput:
         if cls.consumer_group.get(player_id) is None:
             cls.consumer_group[player_id] = weakref.WeakSet()
         cls.consumer_group[player_id].add(consumer)
-        # print(f"call back added for player --> {player_id} --> {cls.consumer_group.get(player_id)}")
-        if sendConfig:   
-            cls.send_config(player_id, game_obj or RemoteGameLogic())
 
 
     @classmethod
@@ -61,8 +58,8 @@ class RemoteGameOutput:
     
     @classmethod 
     def _send_to_consumer_group(cls, player_id, data) -> None:
-        # {'update': {'ball_pos': [29.5, 136.5]}}
-        print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
+        if 'update' not in data and 'config' not in data:
+            print(f"_send_to_consumer_group method ----> {player_id} --> {data}")
         if player_id is None:
             return
         group = cls.consumer_group.get(player_id)

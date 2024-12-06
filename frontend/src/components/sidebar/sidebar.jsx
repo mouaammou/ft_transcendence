@@ -19,7 +19,7 @@ const sidebarItems = [
 	{ icon: <ImProfile className="text-2xl" />, route: '/profile', label: 'Profile' },
 	{ icon: <IoChatboxEllipses className="text-2xl" />, route: '/chat', label: 'Chat' },
 	{ icon: <IoGameController className="text-2xl" />, route: '/play', label: 'Play' },
-	{ icon: <IoSettingsSharp className="text-2xl" />, route: '/settings', label: 'Settings' },
+	{ icon: <IoSettingsSharp className="text-2xl" />, route: '/edit_profile', label: 'Settings' },
 ];
 
 return (

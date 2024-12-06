@@ -16,7 +16,7 @@ export default function MobileSidebar() {
 		{ label: 'Profile', icon: '/Profil.svg', route: '/profile' },
 		{ label: 'Chat', icon: '/chat.svg', route: '/chat' },
 		{ label: 'Game', icon: '/Game.svg', route: '/Game' },
-		{ label: 'Setting', icon: '/Setting.svg', route: '/Setting' },
+		{ label: 'Setting', icon: '/Setting.svg', route: '/edit_profile' },
 	];
 
 	// Try to access the ChatContext, but fallback to undefined if not available
