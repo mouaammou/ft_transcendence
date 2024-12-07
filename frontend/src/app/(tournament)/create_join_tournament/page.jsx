@@ -152,11 +152,7 @@ export default function CreateJoinTournamentPage() {
           className='custom-input w-full'
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
-          {inputError.alreadyInTournament ? (
-            <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
-              You are already in a tournament
-            </li>
-          ) : null}
+              
           {inputError.alreadyInGame ? (
             <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
               You are already started a game

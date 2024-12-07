@@ -24,10 +24,10 @@ const TwoFactorAuthPage = () => {
     }
 
     return (
-        <div className="relative flex flex-col items-center justify-center w-screen h-screen capitalize">
+        <div className="relative flex flex-col items-center justify-center w-full h-full capitalize">
             <div className="flex flex-col w-fit h-fit gap-y-4">
                 <h1 className="mx-auto text-white uppercase tracking-wider text-2xl">Two-factor authentication</h1>
-                <div className="group relative h-fit p-[1px] w-full">
+                {/* <div className="group relative h-fit p-[1px] w-full">
                     <div className="absolute top-0 left-0 border-white border-t border-l w-1/3 h-1/2 pointer-events-none group-focus-within:border-green-400"></div>
                     <div className="absolute top-0 right-0 border-white border-t border-r w-2 h-1/2 pointer-events-none group-focus-within:border-green-400"></div>
                     <div className="absolute bottom-0 left-0 border-white border-b border-l w-2 h-1/2 pointer-events-none group-focus-within:border-green-400"></div>
@@ -46,14 +46,23 @@ const TwoFactorAuthPage = () => {
                             maxLength={6}
                         />
                     </div>
-                </div>
-                <div onClick={handleValidate} className="group relative h-fit p-[1px] cursor-pointer w-full">
-                    <div className="absolute top-0 left-0 border-white border-t border-l w-2 h-2 pointer-events-none "></div>
-                    <div className="absolute top-0 right-0 border-white border-t border-r w-2 h-2 pointer-events-none "></div>
-                    <div className="absolute bottom-0 left-0 border-white border-b border-l w-2 h-2 pointer-events-none "></div>
-                    <div className="absolute bottom-0 right-0 border-white border-b border-r w-2 h-2 pointer-events-none "></div>
-                    <div className="relative flex items-center justify-center  text-white bg-white/30  font-bold  hover:text-black  hover:bg-white w-full h-full px-4 py-2 BlenderPro-Thin text-xl">validate</div>
-                </div>
+                </div> */}
+                <input
+                    placeholder="6 digits code"
+                    className="custom-input w-full"
+                    // className="placeholder:text-white/50 text-white bg-transparent border-none outline-none w-full"
+                    required
+                    type="text"
+                    value={code}
+                    onChange={handleInputChange}
+                    maxLength={6}
+                />
+                <button
+                    onClick={handleValidate}
+                    className="custom-button w-full"
+                >
+                    verify
+                </button>
             </div>
         </div>
     );
