@@ -11,6 +11,7 @@ import { MdScoreboard } from "react-icons/md";
 
 
 
+
 const GamePage = () => {
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);

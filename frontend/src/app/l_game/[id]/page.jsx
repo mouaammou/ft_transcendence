@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { fetchStartPlayTournament, fetchTournamentMatchPlayers } from '@/services/apiCalls';
 import TopBar from'@/components/local_tournament/TopBar';
 import { FaUser } from 'react-icons/fa';
+import { MdScoreboard } from "react-icons/md";
+
 
 
 const rounds = [
@@ -86,14 +88,24 @@ const GamePage = ({params}) => {
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">{score2}</div>
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+					<div className="flex justify-center items-center ">
+							<MdScoreboard className="pr-1" />
+							{score2}
+						</div>
+					</div>
 						<div className="vs-section">
 							<div className="vs-image">
 								<Image className="max-sm:w-4 " src="/vs.svg" alt="vs" width={70} height={70} />
 							</div>
 							<CountdownTimer className='w-full h-auto flex justify-center' />
 						</div>
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">{score1}</div>
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+					<div className="flex justify-center items-center ">
+							<MdScoreboard className="pr-1" />
+							{score1}
+						</div>
+					</div>
 				</div>
 
 				<div className="flex justify-between ">
