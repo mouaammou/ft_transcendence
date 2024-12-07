@@ -285,7 +285,15 @@ class LocalTournament(models.Model):
         ]
         nicknames = copy.deepcopy(original_nicknames)
         random.shuffle(nicknames)
-        map(lambda index: setattr(self, original_nicknames[index], nicknames[index]), range(len(nicknames)))
+
+        for index in range(len(original_nicknames)):
+            nickname = getattr(self, nicknames[index])
+            setattr(self, original_nicknames[index], nickname)
+    
+    def save(self, *args, **kwargs):
+        print("Saving")
+        self.shuffle()
+        super().save(*args, **kwargs)
     
     def __str__(self) -> str:
         return f"[{self.id}] Local Tournament - {self.title} - {self.match7_winner}"
