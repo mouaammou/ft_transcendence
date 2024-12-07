@@ -112,7 +112,7 @@ const Disable2fa = ({set2faIsEnabled}) => {
                         </div>
                         <button onClick={handleDisable}
                             // className={`w-full sm:w-fit bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}
-                            className='custom-button-error'
+                            className='w-full sm:w-fit custom-button-error'
                         >
                             Disable
                         </button>
@@ -209,7 +209,7 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                         <div className="flex-1 flex justify-start sm:justify-end gap-1">
                             <button onClick={handleToggleButton}
                             // className={`w-full sm:w-fit ${toggleButton? "bg-yellow-500/30 hover:bg-yellow-500":"bg-sky-500 hover:bg-sky-600"} text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
-                            className={`w-full sm:w-fit ${toggleButton? "custom-button-secondary":"custom-button"} flex items-center justify-center`}>
+                            className={`w-full sm:w-52 ${toggleButton? "custom-button-secondary":"custom-button"} flex items-center justify-center`}>
                             {toggleButton ? "cancel":"enable"}
                             </button>
                             {toggleButton && <button onClick={handleEnable}
