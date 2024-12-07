@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const CountdownTimer = () => {
+const CountdownTimer = ({ className="w-fit h-auto" }) => {
   const [seconds, setSeconds] = useState(8 * 60);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const CountdownTimer = () => {
   const remainingSeconds = seconds % 60;
 
   return (
-    <div className="w-fit">
+    <div className={className}>
       {minutes}:{remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}
     </div>
   );

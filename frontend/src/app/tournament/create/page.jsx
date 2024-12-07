@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { createTournament } from '@/services/apiCalls';
+import { Toaster, toast } from 'react-hot-toast';
+import TopBar from'@/components/local_tournament/TopBar';
+
 
 
 export default function TournamentForm() {
@@ -22,7 +25,8 @@ export default function TournamentForm() {
     try {
       const response = await createTournament(JSON.stringify(formData));
       if (response.status === 201) {
-        alert('Tournament created successfully!');
+        // alert('Tournament created successfully!');
+        toast.success('Tournament created successfully');
         // Reset form
         setFormData({
           title: '',
@@ -36,11 +40,13 @@ export default function TournamentForm() {
           match4_nickname2: ''
         });
       } else {
-        alert('Failed to create tournament');
+        // alert('Failed to create tournament');
+        toast.error('Failed to create tournament');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error creating tournament');
+      // console.error('Error:', error);
+      // alert('Error creating tournament');
+      toast.error('Error creating tournament');
     }
   };
 
@@ -53,6 +59,8 @@ export default function TournamentForm() {
   };
 
   return (
+    <>
+    <TopBar />
     <div className="max-w-3xl mx-auto p-4 mt-8">
       <form onSubmit={handleSubmit} className="bg-white/10 shadow-md rounded-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-center text-white mb-6">
@@ -82,6 +90,8 @@ export default function TournamentForm() {
           </button>
         </div>
       </form>
+      <Toaster />
     </div>
+    </>
   );
 }

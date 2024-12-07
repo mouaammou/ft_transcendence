@@ -334,13 +334,58 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
         };
 
         // router.events.on('routeChangeStart', handleRouteChange);
+    let lastY = null;
+    let key = '';
+    const halfCanvasWidth = canvas.width/2;
+    const clientRect = canvas.getBoundingClientRect();
+    const handleTouchStart = (e) => {
+      // console.log('touch-start: ', e);
+      e.preventDefault();
+      lastY = e.touches[0].clientY - clientRect.top;
+    }
+    const handleTouchEnd = (e) => {
+      console.log('touch-end: ', e.touches);
+      e.preventDefault();
+      lastY = null;
+      key = '';
+      // send stop move up
+      socket.send(JSON.stringify({ onRelease: key.trim() }));
+      keys[key] = false;
+    }
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+      if (lastY === null)
+          return ;
+      // console.log('touch-move: ', e);
+      const touch = e.touches[0];
+      const currentX = touch.clientX - clientRect.left;
+      const currentY = touch.clientY - clientRect.top;
 
+      if (currentY > lastY) { //moving down
+        if (currentX > halfCanvasWidth) // right player
+          key = 'ArrowDown';
+        else // left player
+          key = 's';
+      } else { // moving up
+        if (currentX > halfCanvasWidth) // right player
+          key = 'ArrowUp';
+        else // left player
+          key = 'w';
+      }
+      socket.send(JSON.stringify({ onPress: key.trim() }));
+      keys[key] = true;
+    }
 		// Move the paddle2 with the mouse too
 		// Attach event listeners
 		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
 		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
+
+    canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
+    canvas.addEventListener('touchend', handleTouchEnd, {passive: false});
+    // canvas.addEventListener('touchcancel', handleTouchCancel, {passive: false});
+    canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
 		// canvasRef.current.addEventListener('touchmove', handleTouchMove);
 		// document.addEventListener('beforeunload', closeSocket);
 
@@ -360,11 +405,14 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      // canvas.removeEventListener('touchcancel', handleTouchCancel);
+      canvas.removeEventListener('touchmove', handleTouchMove);
 		};
 	}, []);
 	return (
-		<canvas className="min-w-[100px] w-auto h-auto" ref={canvasRef} >
-			
+		<canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto" ref={canvasRef} >
 		</canvas>
 	);
 }

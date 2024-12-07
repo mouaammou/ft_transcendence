@@ -14,13 +14,20 @@ export default function LoginPage() {
 		password: '',
 		// 2fa_code: '', will be added if user enabled 2fa
 	});
-	const [showPassword, setShowPassword] = useState(false);
 	const { errors, AuthenticateTo } = useAuth();
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData(prev => ({ ...prev, [name]: value }));
 	};
+
+	const handleTotpInputChange = (event) => {
+        const value = event.target.value.replace(/\D/g, "");
+        if (value.length > 6)
+            return ;
+		setFormData(prev => ({ ...prev, [event.target.name]: value }));
+		console.log('=-=-=->: ', formData);
+    };
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -71,14 +78,13 @@ export default function LoginPage() {
 				/>
 			</div>
 
-			<div className="relative">
-				<input
-			/>
+			<div className="relative" >
+
 			<input
 				// type="password"
 				// className="form-control  disabled:opacity-50"
 				name="password"
-				type={showPassword ? 'text' : 'password'}
+				type={'password'}
 				value={formData.password}
 				onChange={handleChange}
 				placeholder="Password"
@@ -86,20 +92,14 @@ export default function LoginPage() {
 				required
 				disabled={totp}
 			/>
-				{ totp && <input
+			{ totp && <input
 				type="text"
-				className="form-control"
+				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
 				name="totp_code"
 				placeholder="Enter Two Factor Code"
-				onChange={handleChange}
+				onChange={handleTotpInputChange}
+				value={formData.totp_code || ""}
 			/>}
-			<button
-				type="button"
-				onClick={() => setShowPassword(!showPassword)}
-				className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-				>
-				{showPassword ? '👁️' : '👁️‍🗨️'}
-				</button>
 			</div>
 
 			<button

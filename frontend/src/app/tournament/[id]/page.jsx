@@ -9,6 +9,8 @@ import React from 'react';
 import { getData, postData } from '@/services/apiCalls';
 import { fetchTournamentMatchPlayers } from '@/services/apiCalls';
 import Image from 'next/image';
+import TopBar from'@/components/local_tournament/TopBar';
+
 
     
 
@@ -129,6 +131,8 @@ export default function Board({ params })
   }, []);
 
   return (
+    <>
+		<TopBar />
     <div className="relative w-full h-auto">
       <h1 className="flex justify-center items-center font-bold mt-14">
         {title} 
@@ -526,5 +530,6 @@ export default function Board({ params })
         }
       </div>
     </div>
+    </>
   );
 }

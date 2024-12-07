@@ -27,7 +27,7 @@
 .game .up-section .vs-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  margin: auto;  
   gap: 20px;
 }
 
@@ -40,6 +40,8 @@
 .game .down-section {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   column-gap: 3%;
   padding: 0 20px;
 }
@@ -47,10 +49,10 @@
 .game .down-section .left-user,
 .game .down-section .right-user {
   display: flex;
-  flex-direction: column;
+  order: 1;
   align-items: center;
   justify-content: center;
-  width: 10%;
+  width: fit-content;
 }
 
 .left-user .left-user-img,
@@ -67,10 +69,16 @@
   font-family: 'IBM Plex Sans', Courier, monospace;
   font-size: 1.7rem;
   padding-top: 10px;
+  width: fit-content;
+  margin-left: auto;
+}
+.right-user .right-user-name {
+  margin-right: auto;
 }
 
 .game .down-section .self-game {
-  width: 80%;
+  width: fit-content;
+  order: 2;
 }
 
 .game .down-section .play-ground {
@@ -79,8 +87,8 @@
   /* position: relative; */
   border-radius: 5px;
   border: 1px solid white;
-  /* width: 100%; */
-  /* height: 100%; */
+  width: 100%;
+  height: 100%;
 }
 
 @media (max-width: 1188px) {
@@ -97,6 +105,7 @@
   }
   .game .down-section .left-user,
   .game .down-section .right-user {
+    order: 1;
     width: 10%;
   }
   .game .down-section .left-user img,
@@ -105,7 +114,7 @@
   }
 
   .game .down-section .self-game {
-    width: 80%;
+    width: 100%;
   }
 
   .game .down-section .play-ground {
@@ -128,13 +137,10 @@
   .game .up-section .right-score {
     font-size: 1rem;
   }
-  .game .down-section {
-    /* flex-direction: column; */
-    flex-wrap: wrap;
-  }
+
   .game .down-section .left-user,
   .game .down-section .right-user {
-    order: 1;
+  
     flex-basis: 48%;
     margin-bottom: 20px;
     margin-top: 0px;
