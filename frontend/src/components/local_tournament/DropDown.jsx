@@ -23,7 +23,7 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPa
                 onClick={toggleDropdown} // Toggle visibility
                 type="button"
                 // className="justify-center w-full py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
-                className="justify-center w-full inline-flex items-center gap-x-2 custom-button"
+                className="justify-center w-full inline-flex items-center gap-x-2 custom-button truncate"
                 aria-haspopup="menu"
                 aria-expanded={dropdown ? 'true' : 'false'}
                 // onBlur={closeDropdown}
@@ -55,18 +55,12 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPa
                 aria-orientation="vertical"
             >
                 <div className="p-1 space-y-0.5">
-                    <button
-                        onClick={() => setFilterKeyword('pending')}
-                        className="flex items-center gap-x-3.5 py-2 px-3 w-full text-start rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none"
-                    >
-                        Pending
-                    </button>
 
                     {filterKeywords.map((keyword) => (
                         <button
                             key={keyword}
                             onClick={() => handleFilter(keyword)}
-                            className="flex items-center gap-x-3.5 py-2 px-3 w-full text-start rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none"
+                            className="flex items-center gap-x-3.5 py-2 px-3 w-full text-start truncate rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none"
                         >
                             {keyword}
                         </button>

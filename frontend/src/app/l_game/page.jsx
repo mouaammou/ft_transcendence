@@ -8,6 +8,7 @@ import TopBar from'@/components/local_tournament/TopBar';
 // import TopBar from'@/components/local_tournament/TopBar';
 import { FaUser } from 'react-icons/fa';
 import { MdScoreboard } from "react-icons/md";
+import { apiPlayRegularGame } from '@/services/gameApi';
 
 
 
@@ -17,6 +18,11 @@ const GamePage = () => {
 	const [score2, setScore2] = useState(0);
 	const [leftNickname, setLeftNickname] = useState("");
 	const [rightNickname, setRightNickname] = useState("");
+
+	const handlePlayClick = async () => {
+		const response = await apiPlayRegularGame();
+		// console.log(response);
+	}
 
 	return (
 		<>
@@ -66,6 +72,12 @@ const GamePage = () => {
 					setLeftNickname={setLeftNickname}
 					setRightNickname={setRightNickname}
 				/>
+				<div
+					onClick={handlePlayClick}
+					className="mt-16 flex justify-center items-center max-w-96 w-full h-fit mx-auto custom-button "
+				>
+					Play
+				</div>
 			</div>
 		{/* </div> */}
 		</>

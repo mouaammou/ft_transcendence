@@ -9,6 +9,8 @@ import { fetchStartPlayTournament, fetchTournamentMatchPlayers } from '@/service
 import TopBar from'@/components/local_tournament/TopBar';
 import { FaUser } from 'react-icons/fa';
 import { MdScoreboard } from "react-icons/md";
+import { apiPlayTournamentGame } from '@/services/gameApi';
+
 
 
 
@@ -39,8 +41,13 @@ const GamePage = ({params}) => {
 	const [leftNickname, setLeftNickname] = useState("");	
 	const [rightNickname, setRightNickname] = useState("");
 	const [title, setTitle] = useState("");
-	const [tournament_id, setTournament_id] = useState(0);
+	const [tournament_id, setTournament_id] = useState(-1);
 	const [round, setRound] = useState(rounds[0]);
+
+	const handlePlayClick = async () => {
+		const response = await apiPlayTournamentGame(tournament_id);
+		// console.log(response);
+	}
 
 
 	const redirectFinishedTournament = async () => {
@@ -64,10 +71,10 @@ const GamePage = ({params}) => {
 			if (response.finished === false) {
 				//post request to start the game
 				console.log('start game');
-            	response = await fetchStartPlayTournament(identical.id);
+            	// response = await fetchStartPlayTournament(identical.id);
 				// setLeftNickname(response);
-				console.log(response);
-			} else 
+				// console.log(response);
+			} else
 			{
 				redirectFinishedTournament();
 			}
@@ -133,6 +140,12 @@ const GamePage = ({params}) => {
 				/>
 				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize">
 					{title}
+				</div>
+				<div
+					onClick={handlePlayClick}
+					className="mt-16 flex justify-center items-center max-w-96 w-full h-fit mx-auto custom-button "
+				>
+					Play
 				</div>
 			</div>
 		{/* </div> */}

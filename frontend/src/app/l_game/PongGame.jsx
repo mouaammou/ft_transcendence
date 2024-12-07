@@ -412,6 +412,7 @@ export default function PongGame({ setScore1, setScore2, setLeftNickname, setRig
       canvas.removeEventListener('touchmove', handleTouchMove);
 		};
 	}, []);
+
 	return (
     <>
       {winner && <LocalGameWinner reset={() => setWinner('')} winner={winner} tournament_id={tournament_id} />}
