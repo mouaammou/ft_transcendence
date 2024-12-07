@@ -149,7 +149,7 @@ export default function CreateJoinTournamentPage() {
           placeholder="my_tournament123..."
           // className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
           //               placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
-          className='custom-input'
+          className='custom-input w-full'
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
           {inputError.alreadyInTournament ? (
