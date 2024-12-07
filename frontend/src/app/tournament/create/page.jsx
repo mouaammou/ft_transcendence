@@ -67,7 +67,7 @@ export default function TournamentForm() {
 
   return (
     <>
-    <TopBar />
+    <TopBar activeIndex={2} />
     <div className="max-w-screen-sm mx-auto p-4 mt-8">
       <form onSubmit={handleSubmit} className="bg-white/10 shadow-md rounded-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-center text-white mb-6">

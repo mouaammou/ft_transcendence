@@ -6,6 +6,8 @@ import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import TopBar from'@/components/local_tournament/TopBar';
 // import TopBar from'@/components/local_tournament/TopBar';
+import { FaUser } from 'react-icons/fa';
+import { MdScoreboard } from "react-icons/md";
 
 
 
@@ -21,22 +23,38 @@ const GamePage = () => {
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">{score2}</div>
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+						<div className="flex justify-center items-center ">
+							<MdScoreboard className="pr-1" />
+							{score2}
+						</div>
+					</div>
 						<div className="vs-section">
 							<div className="vs-image">
 								<Image src="/vs.svg" alt="vs" width={70} height={70} />
 							</div>
 							<CountdownTimer className='w-full h-auto flex justify-center' />
 						</div>
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">{score1}</div>
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+					<div className="flex justify-center items-center ">
+							{score1}
+							<MdScoreboard className="pl-1" />
+						</div>
+					</div>
 				</div>
 
 				<div className="flex justify-between ">
 					<div className="w-fit h-fit flex justify-center items-center pl-[5%]">
-						<div className="text-xl break-all py-2">{leftNickname}</div>
+						<div className="flex gap-x-1 justify-center items-center text-xl break-all py-2">
+							<FaUser />
+							{leftNickname}
+						</div>
 					</div>
 					<div className="w-fit h-fit flex justify-center items-center pr-[5%]">
-						<div className="text-xl break-all py-2">{rightNickname}</div>
+						<div className="flex gap-x-1 justify-center items-center text-xl break-all py-2">
+							{rightNickname}
+							<FaUser />
+						</div>
 					</div>
 				</div>
 				<PongGame

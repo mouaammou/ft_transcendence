@@ -7,6 +7,7 @@ import CountdownTimer from "@/components/countDown/CountDown.jsx";
 import Image from 'next/image';
 import { fetchStartPlayTournament, fetchTournamentMatchPlayers } from '@/services/apiCalls';
 import TopBar from'@/components/local_tournament/TopBar';
+import { FaUser } from 'react-icons/fa';
 
 
 const rounds = [
@@ -81,7 +82,7 @@ const GamePage = ({params}) => {
 	// }
 	return (
 		<>
-		<TopBar />
+		<TopBar activeIndex={1} />
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">
@@ -97,10 +98,16 @@ const GamePage = ({params}) => {
 
 				<div className="flex justify-between ">
 					<div className="w-fit h-fit flex justify-center items-center pl-[5%]">
-						<div className="text-xl break-all py-2">{leftNickname}</div>
+						<div className="flex gap-x-1 justify-center items-center text-xl break-all py-2">
+							<FaUser />
+							{leftNickname}
+						</div>
 					</div>
 					<div className="w-fit h-fit flex justify-center items-center pr-[5%]">
-						<div className="text-xl break-all py-2">{rightNickname}</div>
+						<div className="flex gap-x-1 justify-center items-center text-xl break-all py-2">
+							{rightNickname}
+							<FaUser />
+						</div>
 					</div>
 				</div>
 				<PongGame

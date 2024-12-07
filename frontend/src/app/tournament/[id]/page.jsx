@@ -132,7 +132,7 @@ export default function Board({ params })
 
   return (
     <>
-		<TopBar />
+		<TopBar activeIndex={1} />
     <div className="relative w-full h-auto">
       <h1 className="flex justify-center items-center font-bold mt-14">
         {title} 
