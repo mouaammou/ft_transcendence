@@ -26,7 +26,6 @@ export default function LoginPage() {
         if (value.length > 6)
             return ;
 		setFormData(prev => ({ ...prev, [event.target.name]: value }));
-		console.log('=-=-=->: ', formData);
     };
 
 	const handleSubmit = async (e) => {
@@ -35,10 +34,7 @@ export default function LoginPage() {
 		let resp = await AuthenticateTo('/login', formData);
 		if (resp?.totp) {
 			setTotp(true);
-			// setFormData({...formData, 2fa_code: '123456'});
-			// resp = await AuthenticateTo('/login', formData);
 		}
-		console.log('resp: in login::  ', resp);
 	};
 
 	return (
@@ -71,8 +67,9 @@ export default function LoginPage() {
 				type="text"
 				value={formData.username}
 				onChange={handleChange}
-				placeholder="Username or Email"
-				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+				placeholder="Username Or Email"
+				// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+				className='custom-input w-full'
 				required
 				disabled={totp}
 				/>
@@ -80,34 +77,44 @@ export default function LoginPage() {
 
 			<div className="relative" >
 
-			<input
-				// type="password"
-				// className="form-control  disabled:opacity-50"
-				name="password"
-				type={'password'}
-				value={formData.password}
-				onChange={handleChange}
-				placeholder="Password"
-				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
-				required
-				disabled={totp}
-			/>
-			{ totp && <input
-				type="text"
-				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
-				name="totp_code"
-				placeholder="Enter Two Factor Code"
-				onChange={handleTotpInputChange}
-				value={formData.totp_code || ""}
-			/>}
+				<input
+					// type="password"
+					// className="form-control  disabled:opacity-50"
+					name="password"
+					type={'password'}
+					value={formData.password}
+					onChange={handleChange}
+					placeholder="Password" 
+					// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+					className='custom-input w-full'
+					required
+					disabled={totp}
+				/>
+				
 			</div>
 
-			<button
-				type="submit"
-				className="w-full py-4 text-2xl text-black bg-white rounded-full hover:bg-gray-100 transition-colors duration-300 font-medium"
-			>
-				{totp ? 'Verify 2FA Code' : 'Login'}
-			</button>
+			{ totp && <div className="relative">
+				<input
+						type="text"
+						// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+						className='custom-input w-full'
+						name="totp_code"
+						placeholder="Enter 2fa code"
+						onChange={handleTotpInputChange}
+						value={formData.totp_code || ""}
+						required
+					/>
+				</div>}
+
+
+
+				<button
+					type="submit"
+					// className="w-full py-4 text-2xl text-black bg-white rounded-full hover:bg-gray-100 transition-colors duration-300 font-medium"
+					className='custom-button'
+				>
+					{totp ? 'Verify 2FA Code' : 'Login'}
+				</button>
 			</div>
 
 			<div className="mt-8 text-center">

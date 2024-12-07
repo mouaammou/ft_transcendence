@@ -16,20 +16,19 @@ const HomePage = () => {
         <>
             <TopBar />
         <div className="container">
-            <div className="flex flex-col justify-center items-center gap-y-4 mx-auto w-full max-w-96 py-4">
-                
-                <DropDown
+            <div className="flex max-lg:flex-col justify-center items-center max-lg:gap-y-4 gap-x-4 mx-auto w-full max-w-96 py-4">
+                <input
+                    type="text"
+                    // className="max-w-96 px-4 py-2 w-full rounded-full bg-white/30 border-none outline-none focus:ring focus:ring-white/10"
+                    className="max-w-96 w-full custom-input"
+                    placeholder="Search"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                 <DropDown
                     filterKeyword={filterKeyword}
                     filterKeywords={keywords}
                     setFilterKeyword={setFilterKeyword}
                     setCurrentPage={setCurrentPage}
-                />
-                
-                <input
-                    type="text"
-                    className="max-w-96 px-4 py-2 w-full rounded-full bg-white/30 border-none outline-none focus:ring focus:ring-white/10"
-                    placeholder="Search"
-                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </div>
 

@@ -102,7 +102,8 @@ const UnauthenticatedNav = ({ loginPage }) => (
 		<div>
 		<Link
 			href={loginPage === 'Login' ? '/login' : '/signup'}
-			className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300 max-md:px-10 text-sm"
+			// className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300 max-md:px-10 text-sm"
+      className='block custom-button w-fit'
 		>
 			{loginPage}
 		</Link>

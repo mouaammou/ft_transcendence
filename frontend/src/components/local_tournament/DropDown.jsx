@@ -22,7 +22,8 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPa
             <button
                 onClick={toggleDropdown} // Toggle visibility
                 type="button"
-                className="justify-center w-full py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                // className="justify-center w-full py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                className="justify-center w-full inline-flex items-center gap-x-2 custom-button"
                 aria-haspopup="menu"
                 aria-expanded={dropdown ? 'true' : 'false'}
                 // onBlur={closeDropdown}

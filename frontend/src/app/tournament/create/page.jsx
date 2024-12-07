@@ -61,7 +61,7 @@ export default function TournamentForm() {
   return (
     <>
     <TopBar />
-    <div className="max-w-3xl mx-auto p-4 mt-8">
+    <div className="max-w-screen-sm mx-auto p-4 mt-8">
       <form onSubmit={handleSubmit} className="bg-white/10 shadow-md rounded-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-center text-white mb-6">
           Create Local Tournament
@@ -78,13 +78,17 @@ export default function TournamentForm() {
                     placeholder={key==='title'? key: `Nickname ${index}`}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-transparent border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    autoComplete="off"
+                    maxLength={18}
+                    // className="w-full px-3 py-2 bg-transparent border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className='custom-input w-full'
                   />
           ))}
 
           <button
             type="submit"
-            className="w-full bg-white text-black py-2 px-4 rounded-md hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+            // className="w-full bg-white text-black py-2 px-4 rounded-md hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+            className='custom-button'
           >
             Create Tournament
           </button>

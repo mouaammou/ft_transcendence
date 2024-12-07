@@ -205,9 +205,10 @@ const EditProfile = () => {
 						<button
 							type="submit"
 							disabled={isLoading.info}
-							className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-									disabled:bg-gray-400 disabled:cursor-not-allowed
-									transition duration-200 ease-in-out"
+							// className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+							// 		disabled:bg-gray-400 disabled:cursor-not-allowed
+							// 		transition duration-200 ease-in-out"
+							className='custom-button w-fit'
 						>
 							{isLoading.info ? 'Updating...' : 'Update Information'}
 						</button>
@@ -242,9 +243,10 @@ const EditProfile = () => {
 					<button
 						type="submit"
 						disabled={isLoading.password}
-						className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-								disabled:bg-gray-400 disabled:cursor-not-allowed
-								transition duration-200 ease-in-out"
+						// className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+						// 		disabled:bg-gray-400 disabled:cursor-not-allowed
+						// 		transition duration-200 ease-in-out"
+						className='custom-button w-fit'
 					>
 						{isLoading.password ? 'Updating...' : 'Update Password'}
 					</button>
@@ -267,10 +269,8 @@ const EditProfile = () => {
 				name={name}
 				placeholder={value}
 				onChange={onChange}
-				className={`text-white w-full px-4 py-3 rounded-lg border ${
-					error ? 'border-red-500' : 'border-gray-700 bg-white/10'
-				} focus:ring-2 focus:ring-blue-500 focus:border-transparent
-				transition-colors duration-200 text-gray-600`}
+				className={`w-full ${error ? 'custom-input-error' : 'custom-input'}`}
+				autoComplete='off'
 			/>
 			{error && (
 				<p className="text-red-500 text-sm">{error}</p>

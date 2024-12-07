@@ -54,9 +54,10 @@ export default function Signup() {
           value={formData[name]}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 rounded-lg bg-black/20 border border-gray-600 text-white 
-                     placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
-                     transition-all outline-none"
+          // className="w-full px-4 py-3 rounded-lg bg-black/20 border border-gray-600 text-white 
+          //            placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
+          //            transition-all outline-none"
+          className='custom-input w-full'
         />
         {isPasswordField && (
           <button
@@ -106,9 +107,10 @@ export default function Signup() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-white hover:bg-gray-100 text-black rounded-lg 
-                           text-lg font-semibold transition-colors duration-300 
-                           shadow-lg hover:shadow-xl"
+                  // className="w-full py-4 bg-white hover:bg-gray-100 text-black rounded-lg 
+                  //          text-lg font-semibold transition-colors duration-300 
+                  //          shadow-lg hover:shadow-xl"
+                  className='custom-button'
                 >
                   Sign up
                 </button>

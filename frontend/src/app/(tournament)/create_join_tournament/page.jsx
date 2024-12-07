@@ -147,8 +147,9 @@ export default function CreateJoinTournamentPage() {
           autoComplete='off'
           onChange={handleInputChange}
           placeholder="my_tournament123..."
-          className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
-                        placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
+          // className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
+          //               placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
+          className='custom-input'
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
           {inputError.alreadyInTournament ? (
@@ -168,8 +169,9 @@ export default function CreateJoinTournamentPage() {
           ) : null}
         </ul>
         <button
-          className="  border-[1px]  text-[16px] w-[114px] h-[32px]
-                 border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[167px] lg:h-[41] lg:self-end"
+          // className="  border-[1px]  text-[16px] w-[114px] h-[32px]
+          //        border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[167px] lg:h-[41] lg:self-end"
+          className='custom-button w-full'
           onClick={handleCreateTournament}
         >
           CREATE
@@ -229,8 +231,9 @@ export default function CreateJoinTournamentPage() {
           </p>
         ) : null}
         <button
-          className="  border-[1px]  text-[16px] w-[114px] h-[32px]
-                 border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[137px] lg:h-[41] lg:self-end "
+          // className="  border-[1px]  text-[16px] w-[114px] h-[32px]
+          //        border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[137px] lg:h-[41] lg:self-end "
+          className='custom-button w-[120px] lg:w-[210px]'
           onClick={handleJoinTournament}
         >
           JOIN

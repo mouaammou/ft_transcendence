@@ -110,7 +110,10 @@ const Disable2fa = ({set2faIsEnabled}) => {
                         <div className="text-sm text-white pr-2 flex-1">
                             Two-factor authentication is enabled.
                         </div>
-                        <button onClick={handleDisable} className={`w-full sm:w-fit bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
+                        <button onClick={handleDisable}
+                            // className={`w-full sm:w-fit bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}
+                            className='custom-button-error'
+                        >
                             Disable
                         </button>
                     </div>
@@ -204,10 +207,13 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                         {toggleButton && <InputField error={enableError} onChange={handleInputChange} value={code} placeholder="6 digit code"  />}
 
                         <div className="flex-1 flex justify-start sm:justify-end gap-1">
-                            <button onClick={handleToggleButton} className={`w-full sm:w-fit ${toggleButton? "bg-yellow-500/30 hover:bg-yellow-500":"bg-sky-500 hover:bg-sky-600"} text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
+                            <button onClick={handleToggleButton}
+                            // className={`w-full sm:w-fit ${toggleButton? "bg-yellow-500/30 hover:bg-yellow-500":"bg-sky-500 hover:bg-sky-600"} text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center`}>
+                            className={`w-full sm:w-fit ${toggleButton? "custom-button-secondary":"custom-button"} flex items-center justify-center`}>
                             {toggleButton ? "cancel":"enable"}
                             </button>
-                            {toggleButton && <button onClick={handleEnable} className="w-full sm:w-fit bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+                            {toggleButton && <button onClick={handleEnable}
+                            className="custom-button w-full sm:w-fit flex items-center justify-center">
                             verify
                             </button>}
                         </div>
@@ -235,10 +241,11 @@ const InputField = ({ name, type = 'text', value, placeholder, onChange, error }
             name={name}
             placeholder={placeholder}
             onChange={onChange}
-            className={`w-full lg:max-w-64 min-w-48 text-white  px-4 py-3 bg-white/10 rounded-lg border ${
-                error ? 'border-red-500 ' : 'border-gray-700 '
-            } focus:ring-2 focus:ring-blue-500 focus:border-transparent
-            transition-colors duration-200 text-gray-600 outline-none`}
+            // className={`w-full lg:max-w-64 min-w-48 text-white  px-4 py-3 bg-white/10 rounded-lg border ${
+            //     error ? 'border-red-500 ' : 'border-gray-700 '
+            // } focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            // transition-colors duration-200 text-gray-600 outline-none`}
+            className={`w-full lg:max-w-64 min-w-48  ${error? "custom-input-error":"custom-input"}`}
         />
     </div>
 );
