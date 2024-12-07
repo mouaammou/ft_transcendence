@@ -67,7 +67,9 @@ class PlayersGamesManager:
                     winner = game.player1_id
                 else:
                     winner = game.player2_id
-                game.update_winner(winner)
+                if game.save_once == False:
+                    game.save_once = True
+                    game.update_winner(winner)
                 # cls.players.pop(game.player1_id, None)
                 # cls.players.pop(game.player2_id, None)
                 # cls.games.pop(game_id, None)
