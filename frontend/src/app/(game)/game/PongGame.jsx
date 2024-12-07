@@ -4,6 +4,7 @@ import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter, usePathname } from 'next/navigation';
+import { set } from 'date-fns';
 
 
 const INITIAL_CONFIG = {
@@ -127,15 +128,24 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 
 	useEffect(() => {
 		drawGame();
-
 		document.addEventListener('keydown', e => handleKeyboardEvents(e, 'keydown'));
 		document.addEventListener('keyup', e => handleKeyboardEvents(e, 'keyup'));
 		document.addEventListener('visibilitychange', handleVisibilityChange);
 
+
+		if (isConnected) {
+			sendMessage(JSON.stringify({ tabFocused: true }));
+		}
+
 		return () => {
+			if (isConnected) {
+				sendMessage(JSON.stringify({ tabFocused: false }));
+			}
 			document.removeEventListener('keydown', e => handleKeyboardEvents(e, 'keydown'));
 			document.removeEventListener('keyup', e => handleKeyboardEvents(e, 'keyup'));
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			setShowWinModal(false);
+			setShowLoseModal(false);
 		};
 	}, []);
 
@@ -149,7 +159,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 				setShowWinModal(true);
 			} else if (data.status === 'lose') {
 				setShowLoseModal(true);
-			} else if (data.update) {
+			}
+			else if (data.status == 'GAME_DATA') {
+				setShowWinModal(false);
+				setShowLoseModal(false);
+			}
+			else if (data.update) {
 				const { update } = data;
 				if (update.left_paddle_pos) {
 					state.player1.x = update.left_paddle_pos[0];
@@ -212,16 +227,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		}
 	}, [lastMessage]);
 
-	useEffect(() => {
-		if (isConnected) {
-			sendMessage(JSON.stringify({ tabFocused: true }));
-		}
-		return () => {
-			if (isConnected) {
-				sendMessage(JSON.stringify({ tabFocused: false }));
-			}
-		};
-	}, []);
+
 
 	const handleModalClose = (isWin) => {
 		if (isWin) {

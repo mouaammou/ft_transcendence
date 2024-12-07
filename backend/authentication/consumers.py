@@ -60,6 +60,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		# Handle logout event
 		if logout and self.user.is_authenticated:
 			await self.untrack_user_connection()
+			self.scope['user'] = None  # Set the scope user to None
+			print(f"\n scope user: {self.scope['user']}\n")
+			# await self.close()
 
 		# Handle online event
 		elif online and self.user.is_authenticated:

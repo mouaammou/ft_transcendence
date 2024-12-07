@@ -158,6 +158,14 @@ const Profile = () => {
 						<DoughnutChart />
 					</div>
 				</div>
+				<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
+					<h2 className="text-xl font-semibold mb-6 flex items-center">
+						<TfiStatsUp className="mr-2" /> Statistics
+					</h2>
+					<div className="max-w-3xl mx-auto">
+						<DoughnutChart />
+					</div>
+				</div>
 			</div>
 			</div>
 		)

@@ -118,11 +118,12 @@ const WaitingFriendPage = () => {
         player_1_id: userData?.id,
         player_2_id: myFriend?.id,
       }));
+      lastJsonMessage.type = null;
       router.push('/game');
     } else if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_GAME) {
       router.push('/list_of_friends');
     }
-  }, [lastJsonMessage, userData?.id, myFriend?.id, router, sendMessage, NOTIFICATION_TYPES]);
+  }, [lastJsonMessage]);
 
   if (!userData || !myFriend) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
