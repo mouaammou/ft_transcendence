@@ -283,12 +283,12 @@ class LocalTournament(models.Model):
             'match4_nickname1',
             'match4_nickname2',
         ]
-        nicknames = copy.deepcopy(original_nicknames)
+        nicknames = [getattr(self, nickname) for nickname in original_nicknames]
         random.shuffle(nicknames)
+        print(nicknames)
 
         for index in range(len(original_nicknames)):
-            nickname = getattr(self, nicknames[index])
-            setattr(self, original_nicknames[index], nickname)
+            setattr(self, original_nicknames[index], nicknames[index])
     
     def save(self, *args, **kwargs):
         print("Saving")

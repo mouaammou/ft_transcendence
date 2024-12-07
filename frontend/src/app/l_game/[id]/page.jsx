@@ -110,8 +110,9 @@ const GamePage = ({params}) => {
 					setScore2={setScore2}
 					setLeftNickname={setLeftNickname}
 					setRightNickname={setRightNickname}
+					tournament_id={tournament_id}
 				/>
-				<div className="flex w-full h-fit justify-center items-center">
+				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize">
 					{title}
 				</div>
 			</div>

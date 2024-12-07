@@ -2,9 +2,9 @@ import { useClient } from 'next/client';
 import { useEffect, useRef, useState } from 'react';
 import GamePage from './page';
 import { useRouter } from 'next/navigation';
-import YouWin from '@/components/modals/YouWin';
+import LocalGameWinner from '@/components/modals/LocalGameWinner';
 
-export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
+export default function PongGame({ setScore1, setScore2, tournament_id=-1}) {
 	const canvasRef = useRef(null);
 	const router = useRouter();
 	const [winner, setWinner] = useState('');
@@ -412,7 +412,10 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 		};
 	}, []);
 	return (
-		<canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto" ref={canvasRef} >
-		</canvas>
+    <>
+      {winner && <LocalGameWinner reset={() => setWinner('')} winner={winner} tournament_id={tournament_id} />}
+      <canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto" ref={canvasRef} >
+      </canvas>
+    </>
 	);
 }

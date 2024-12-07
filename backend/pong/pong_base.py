@@ -54,8 +54,8 @@ class Base:
     
         self.ball_win   = None # for debug
 
-        self.left_nickname = 'left_default'
-        self.right_nickname = 'right_default'
+        self.left_nickname = 'left palyer'
+        self.right_nickname = 'right player'
         
     
     @property

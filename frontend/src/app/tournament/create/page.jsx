@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createTournament } from '@/services/apiCalls';
 import { Toaster, toast } from 'react-hot-toast';
@@ -8,6 +9,9 @@ import TopBar from'@/components/local_tournament/TopBar';
 
 
 export default function TournamentForm() {
+
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     title: '',
     match1_nickname1: '',
@@ -25,20 +29,23 @@ export default function TournamentForm() {
     try {
       const response = await createTournament(JSON.stringify(formData));
       if (response.status === 201) {
+        console.log('Tournament created successfully!');
+        console.log(response);
         // alert('Tournament created successfully!');
         toast.success('Tournament created successfully');
+        router.push(`/tournament/${response.data.id}`);
         // Reset form
-        setFormData({
-          title: '',
-          match1_nickname1: '',
-          match1_nickname2: '',
-          match2_nickname1: '',
-          match2_nickname2: '',
-          match3_nickname1: '',
-          match3_nickname2: '',
-          match4_nickname1: '',
-          match4_nickname2: ''
-        });
+        // setFormData({
+        //   title: '',
+        //   match1_nickname1: '',
+        //   match1_nickname2: '',
+        //   match2_nickname1: '',
+        //   match2_nickname2: '',
+        //   match3_nickname1: '',
+        //   match3_nickname2: '',
+        //   match4_nickname1: '',
+        //   match4_nickname2: ''
+        // });
       } else {
         // alert('Failed to create tournament');
         toast.error('Failed to create tournament');
