@@ -915,7 +915,7 @@ class EventLoopManager:
             )  # since i imported the player from the custom user model ---> ask mouad about this
             return
 
-        reason = "defeat" if not disconnect else "disconnect"
+        reason = "defeat" if game_obj._unfocused == None else "disconnect"
         if game_obj.remote_type == "vsfriend":
             l_game_type = "vs_friend"
         elif game_obj.remote_type == "random":
