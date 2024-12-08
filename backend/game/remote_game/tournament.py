@@ -279,7 +279,7 @@ class Tournament:
     def __init__(self, organizer, name):   
         self.id = str(uuid.uuid4())
         self.name = name  
-        self.max_participants =  8 # 8
+        self.max_participants =  2 # 8
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
         self.players[0] =  organizer
