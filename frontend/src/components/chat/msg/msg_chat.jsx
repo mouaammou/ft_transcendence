@@ -33,46 +33,28 @@ const Msg_chat = () => {
 	handleSendMessage,
 	handleKeyPress,
 	endRef,
-	// getChatId
 	formatTime,
-	typingUsers, // Include typingUsers to access typing status
+	typingUsers,
 	emojiPickerRef,
 	handleScroll,
-	chatContainerRef,
-	generateChatKey
-	
+	chatContainerRef,	
   } = useContext(ChatContext);
 
 	const { profileData: currentuser } = useAuth();  // Current logged-in user
-	// const chatKey = currentuser && selectedUser 
-    // ? `${Math.min(currentuser.id, selectedUser.id)}_${Math.max(currentuser.id, selectedUser.id)}`
-    // : null;
-
-	// Generate chatKey based on currentUser and selectedUser
-    // const chatKey = selectedUser ? generateChatKey(currentuser.id, selectedUser.id) : null;
-  const router = useRouter();
-  const inviteToGame = () => {
-      if (selectedUser?.id) {
-  
-        if (isConnected)
-          sendMessage(JSON.stringify({
-            type: NOTIFICATION_TYPES.INVITE_GAME,
-            to_user_id: selectedUser.id,
-          }));
-      }
-    localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
-    router.push('/waiting_friends_game');
-    console.log('Invite to game');
-  };
-  console.log('selectedUser:', selectedUser);
-
-  // const formatDate = (timestamp) => {
-  //   const date = new Date(timestamp);
-  //   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
-
-  //   return date.toLocaleString('en-US', options).replace(',', ''); // Modify for your locale
-  // };
-
+	const router = useRouter();
+	const inviteToGame = () => {
+		if (selectedUser?.id) {
+	
+			if (isConnected)
+			sendMessage(JSON.stringify({
+				type: NOTIFICATION_TYPES.INVITE_GAME,
+				to_user_id: selectedUser.id,
+			}));
+		}
+		localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
+		router.push('/waiting_friends_game');
+		console.log('Invite to game');
+	};
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
 		{selectedUser ? (
@@ -80,13 +62,10 @@ const Msg_chat = () => {
 			<div className="freind-profile">
 				<div className="section-profile">
 				<TiArrowBack onClick={handleBackClick} className="TiArrowBack" />
-					<Link href={`/${selectedUser.username}`} className='link_selectedUser_profile'>
+					<Link href={`friend/${selectedUser.username}`} className='link_selectedUser_profile'>
 					<img
 						src={selectedUser.avatar}
 						alt={selectedUser.username}
-						// width={65}
-						// height={65}
-						// style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
 						className="img-section-profile"
 					/>
 					</Link>
@@ -104,8 +83,6 @@ const Msg_chat = () => {
 
 			<div className="body-message-chat" >
 				<div className="center-chat"   onScroll={handleScroll}  ref={chatContainerRef}>
-					{/* {(Array.isArray(dateMessages) ? dateMessages : []).map((msg, msgIndex) => ( */}
-					{/* {Array.isArray(dateMessages) && dateMessages.map((msg, msgIndex) => ( */}
 					{messages[selectedUser?.id] &&
 					Object.entries(messages[selectedUser.id]).map(([date, dateMessages], index) => (
 						<div key={index} className="groupe_msg_date">

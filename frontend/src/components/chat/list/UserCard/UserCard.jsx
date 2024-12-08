@@ -3,19 +3,21 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import '@/styles/chat/UserCard.css';
 import { formatDistanceToNow } from 'date-fns'; // Optionally for formatting the timestamp
+// usetate
+import { useState, useEffect } from 'react';
 
 const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , currentUser}) => {
   const borderColor = user.active ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
 
-  // console.log('user. username => ', user.username)
   // Helper function to shorten time strings
   const formatShortDistance = (timestamp) => {
+
     const fullString = formatDistanceToNow(new Date(timestamp));
 
     // Replace long phrases with shorter equivalents
     return fullString
-      .replace('less than a minute', '1 min')
+      .replace('less than a minute', 'now')
       .replace('about', '') // Removes "about"
       .replace('minutes', 'min')
       .replace('minute', 'min')
@@ -31,9 +33,26 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
   };
   // Check if the user is typing
   const isTyping = typingUsers.includes(user.username);
-  const formattedTimestamp = lastMessage.timestamp
-    ? formatShortDistance(new Date(lastMessage.timestamp))
-    : '';
+
+  // Dynamic timestamp state
+  const [formattedTimestamp, setFormattedTimestamp] = useState(
+    lastMessage.timestamp ? formatShortDistance(new Date(lastMessage.timestamp)) : ''
+  );
+
+  useEffect(() => {
+    if (!lastMessage.timestamp) return;
+
+    // Update immediately for initial value
+    setFormattedTimestamp(formatShortDistance(new Date(lastMessage.timestamp)));
+
+    // Update the timestamp every minute
+    const interval = setInterval(() => {
+      setFormattedTimestamp(formatShortDistance(new Date(lastMessage.timestamp)));
+    }, 60000); // Update every 60 seconds (1 minute)
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(interval);
+  }, [lastMessage.timestamp]);
 
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType
@@ -126,7 +145,6 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
           {!isTyping && (
             <>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                {/* <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , width: '10%',}}> */}
                   {formattedTimestamp && (
                     <p style={{ fontSize: '12px', margin: '0 0 5px', color: '#888' }}>
                       {formattedTimestamp}

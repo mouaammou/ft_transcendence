@@ -105,13 +105,16 @@
 /* add */
 .typing-indicator {
   font-style: italic;
-  color: rgb(245, 230, 230);
+  color: rgb(123, 123, 123);
   font-size: 15px;
 }
 
 .link_selectedUser_profile{
   width: 65px;
   height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .img-section-profile {
@@ -280,12 +283,29 @@
   font-size: 20px;
 }
 
+
+/* for test */
+/* .Picker {
+  position: absolute;
+  bottom: 50px;
+  right: 12px;
+} */
+
+
+/* for test */
 .Picker {
   position: absolute;
   bottom: 50px;
   right: 12px;
-  /* left: 0; */
+  width: 350px; /* Default size */
+  height: auto; /* Allow it to adjust height automatically */
+  max-height: 400px; /* Ensure it doesn't overflow */
+  overflow-y: auto; /* Add scroll for overflow */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
 }
+
 
 .div_EmojiPicker {
   /* width: 300px; */
@@ -357,6 +377,25 @@ input placeholder {
 
 /* addd just to test */
 
+@media (max-width: 768px) {
+  .Picker {
+      width: 300px; /* Smaller size for tablets */
+  }
+}
+
+@media (max-width: 480px) {
+  .Picker {
+      width: 200px; /* Even smaller size for phones */
+  }
+}
+
+@media (max-width: 320px) {
+  .Picker {
+      width: 150px; /* Smallest size for very small devices */
+  }
+}
+
+
 @media (max-width: 1600px) {
   .section-profile {
     gap: 35px;
@@ -420,6 +459,9 @@ input placeholder {
     width: 45px;
     height: 45px;
   }
+  .freind-profile {
+    padding: 10px;
+  }  
   .LiaGamepadSolid {
     font-size: 30px;
   }
@@ -446,9 +488,14 @@ input placeholder {
   /* .body-message-chat {
         height: 94%;
     } */
+
+
 }
 
 @media (max-width: 500px) {
+  .text_message{
+    font-size: 12px;
+  }
   .div_EmojiPicker {
     /* width: 300px; */
     /* height: 300px; */
@@ -482,6 +529,11 @@ input placeholder {
     gap: 7px;
     margin-left: 0%;
   }
+
+  .link_selectedUser_profile{
+    width: 50px;
+    height: 50px;
+  }
   .section_action {
     gap: 10px;
   }
@@ -494,6 +546,9 @@ input placeholder {
     border: none;
     border: 1px solid rgb(241, 250, 238);
   }
+  .freind-profile {
+    padding: 4px;
+  }  
   .LiaGamepadSolid {
     font-size: 25px;
   }
@@ -527,6 +582,10 @@ input placeholder {
   .my-message {
     max-width: 100%;
   }
+
+  .message_time{
+    font-size: 9px;
+  }
   /* .body-message-chat {
         height: 96%;
     } */
@@ -540,9 +599,11 @@ input placeholder {
 
   .center-chat p {
     /* margin: 5px; */
-    margin: 10px;
-    padding: 10px;
-    font-size: 10px;
+    /* margin: 10px;
+    padding: 10px; */
+    margin: 0px;
+    padding: 0px;
+    font-size: 12px;
   }
   .my-message {
     /* margin: 0px; */
@@ -553,6 +614,13 @@ input placeholder {
   .img_my_message {
     width: 30px;
     height: 30px;
+  }
+  .center-chat .div_text_message {
+    gap: 4px;
+  }
+  .div_message_input .message_input {
+    padding: 13px;
+    font-size: 13px;
   }
 }
 

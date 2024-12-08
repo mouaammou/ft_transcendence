@@ -17,6 +17,12 @@ const UserList = ({ users, listType , currentUser}) => {
   // console.log('hay users  => ' , users)
 
   // console.log(' ***** currentUser data ***  => ' , currentUser)
+  // Sort users by last_message timestamp in descending order
+  const sortedUsers = [...users].sort((a, b) => {
+    const timeA = new Date(a.last_message.timestamp).getTime();
+    const timeB = new Date(b.last_message.timestamp).getTime();
+    return timeB - timeA; // Descending order: newest first
+  });
   
   return (
     <>
@@ -27,7 +33,7 @@ const UserList = ({ users, listType , currentUser}) => {
           style={{ maxWidth: "70%" }}
         >
           <CarouselContent>
-            {users.map(user => (
+            {sortedUsers.map(user => (
               <CarouselItem
                 key={user.friend.id}
                 className="
@@ -57,7 +63,7 @@ const UserList = ({ users, listType , currentUser}) => {
         <div
           className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
         >
-          {users.map(user => (
+          {sortedUsers.map(user => (
             <UserCard
               key={user.friend.id}
               user={user.friend}
