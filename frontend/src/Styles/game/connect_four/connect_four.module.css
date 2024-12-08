@@ -1,4 +1,5 @@
 .container {
+    margin-top: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,7 +37,7 @@
 
 .gridContainer {
     width: auto;
-    margin: 2rem 0;
+    margin: 4rem 0;
 }
 
 @media (max-width: 1024px) {

@@ -8,8 +8,8 @@ const Selector = ({ title, description, Svgvar, onclick }) => {
       className="group flex flex-row  bg-whitetrspnt  p-3 sm:p-5 pr-0 lg:max-w-[504px] rounded-[20px] sm:rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150"
     >
       <div className="w-5/6">
-        <div className="text-[16px] sm:text-[24px] md:text-[35px] font-balsamiq">{title}</div>
-        <div className="text-[8px] sm:text-[16] md:text-[20px] font-open font-thin">{description}</div>
+        <div className="text-[20px] sm:text-[24px] md:text-[35px] font-balsamiq">{title}</div>
+        <div className="text-[12px] sm:text-[16] md:text-[20px] font-open font-thin">{description}</div>
       </div>
       <div className="flex-1">
         <svg width="70%" height="70%" viewBox="0 0 40 40">

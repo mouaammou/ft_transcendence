@@ -150,7 +150,7 @@ const Profile = () => {
 											{/* VS */}
 											<div className="flex flex-col items-center">
 												{/* <GiBattleAxe className="text-gray-400 text-xl" /> */}
-												<div className="text-l font-bold text-gray-400">{match.finish_type}</div>
+												<div className="text-l font-bold text-gray-400">{match.finish_type == 'defeat'? '' : 'Disconnection'}</div>
 												<div className="text-sm text-gray-400 mt-1">{match.game_type == 'connect_four'? '🚥 Connect Four 🚥':'🏓 Ping Pong 🏓'}</div>
 												<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
 											<MdUpdate className="mr-1" />
