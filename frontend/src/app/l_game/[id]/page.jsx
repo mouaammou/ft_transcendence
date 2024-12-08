@@ -61,7 +61,7 @@ const GamePage = ({params}) => {
           try {
 			setTournament_id(identical.id);
             let response = await fetchTournamentMatchPlayers(identical.id);
-            // console.log(response);
+            console.log('====================', response);
             setLeftNickname(response.left);
             setRightNickname(response.right);
             setTitle(response.title);

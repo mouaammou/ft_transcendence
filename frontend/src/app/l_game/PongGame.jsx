@@ -201,12 +201,12 @@ export default function PongGame({ setScore1, setScore2, setLeftNickname, setRig
 				setScore1(score1 => gameConfig.right_player_score);
 
 
-				if (data.config?.left_nickname)
+				if (data.config?.left_nickname && tournament_id === -1)
 				{
 					leftUser = data.config.left_nickname;
           setLeftNickname(leftUser);
 				}
-				if (data.config?.right_nickname)
+				if (data.config?.right_nickname && tournament_id === -1)
 				{
 					rightUser=data.config.right_nickname;
           setRightNickname(rightUser);
