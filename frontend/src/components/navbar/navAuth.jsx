@@ -46,7 +46,7 @@
 			{[
 				{ href: '/profile', label: 'Profile' },
 				{ href: '/edit_profile', label: 'Settings' },
-				{ href: '/tournament', label: 'Create Tournament' },
+				{ href: '/create_join_tournament', label: 'Create Tournament' },
 				{ href: '/play', label: 'Start Game' },
 			].map(({ href, label }) => (
 				<li key={href}>

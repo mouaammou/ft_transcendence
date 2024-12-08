@@ -30,7 +30,7 @@ const Profile = () => {
 				setPageNumber(pageNumber);
 			}
 		} catch (error) {
-			console.log('Error fetching game history:', error);
+			console.error('Error fetching game history:', error);
 		}
 	}, []);
 
@@ -128,7 +128,7 @@ const Profile = () => {
 
 							<div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
 								{matches.map((match) => (
-									<div key={match.id} className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300">
+									<div key={match.id} className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300 ">
 										<div className="flex justify-between items-center">
 											{/* Player 1 */}
 											<div className="flex items-center space-x-3">
@@ -150,6 +150,7 @@ const Profile = () => {
 											{/* VS */}
 											<div className="flex flex-col items-center">
 												{/* <GiBattleAxe className="text-gray-400 text-xl" /> */}
+												<div className="text-l font-bold text-gray-400">{match.finish_type}</div>
 												<div className="text-sm text-gray-400 mt-1">{match.game_type == 'connect_four'? '🚥 Connect Four 🚥':'🏓 Ping Pong 🏓'}</div>
 												<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
 											<MdUpdate className="mr-1" />
