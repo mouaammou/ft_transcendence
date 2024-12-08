@@ -12,7 +12,7 @@ const DoughnutChart = () => {
 		datasets: [
 			{
 			label: 'User Stats',
-			data: [20, 10, 5], // Example values: Wins, Losses, Draws
+			data: [200, 100, 1], // Example values: Wins, Losses, Draws
 			backgroundColor: ['#0ea5e9', '#d89721', '#ef4444'], // Colors for each section
 			borderWidth: 1,
 			},

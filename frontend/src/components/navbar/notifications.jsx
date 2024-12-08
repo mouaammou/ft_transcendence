@@ -115,9 +115,10 @@ const NotificationBell = () => {
         markAsRead(data.id);
     }, [markAsRead, setNotifications]);
 
-    useEffect(() => {
-        UnreadNotifications();
-    }, [UnreadNotifications]);
+	// Fetch unread notifications on component mount
+	useEffect(() => {
+		UnreadNotifications();
+	}, []);
 
     const toggleDropdown = () => setIsOpen((prev) => !prev);
 

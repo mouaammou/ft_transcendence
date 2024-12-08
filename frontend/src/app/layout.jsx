@@ -6,8 +6,6 @@ import { WebSocketProvider } from '@/components/websocket/websocketContext';
 import { NotificationProvider } from '@components/navbar/useNotificationContext';
 import { GlobalWebSocketProvider } from '@/utils/WebSocketManager';
 import { ConnectFourWebSocketProvider } from '@/utils/FourGameWebSocketManager';
-import SkeletonTheme from 'react-loading-skeleton';
-import Loading from './loading';
 import MainLayout from '@/components/main/main-layout';
 
 import '@/styles/globals.css';

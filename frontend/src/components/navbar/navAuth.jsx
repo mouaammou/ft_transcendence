@@ -47,7 +47,7 @@ const UserDropdown = ({ isOpen, setIsOpen, data, Logout }) => (
         <ul className="py-2">
           {[
             { href: '/profile', label: 'Profile' },
-            { href: '/settings', label: 'Settings' },
+            { href: '/edit_profile', label: 'Settings' },
             { href: '/tournament', label: 'Create Tournament' },
             { href: '/play', label: 'Start Game' },
           ].map(({ href, label }) => (

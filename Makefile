@@ -13,3 +13,4 @@ clear_db:
 
 redis:
 	/Users/moouaamm/.brew/opt/redis/bin/redis-server /Users/moouaamm/.brew/etc/redis.conf
+

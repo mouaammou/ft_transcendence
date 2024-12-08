@@ -80,7 +80,7 @@ class TournamentManager:
     def init(cls, event_loop_manager) -> None:
         cls.event_loop_manager = event_loop_manager
         
-    @classmethod
+    @classmethod  
     async def run_tournaments(cls):
         while True:
             try:
@@ -157,15 +157,10 @@ class TournamentManager:
                     if is_finished:
                         cls._clean_finished_games(tournament)
                         cls.event_loop_manager.tournament_games.clear()
+                        await asyncio.sleep(15)
                         if not tournament.start_new_round():
-                            await asyncio.sleep(15)
                             cls.event_loop_manager.end_tournament(tournament.id)
                             return
-                        await asyncio.sleep(15)
-                        # if cls.check_tournament_is_cancelled(tournament):
-                        #     return
-                        # cls.players_in_same_game_left_board_page(tournament)
-                        #check if two players in one game are left the board page, if so set game to finished and one of them as a winner
                         cls.event_loop_manager.active_tournaments[tournament.id] = tournament
                         cls.event_loop_manager.start_tournament(tournament.round.players[0])
         except Exception as e:
@@ -283,7 +278,7 @@ class Round:
 class Tournament:
     def __init__(self, organizer, name):   
         self.id = str(uuid.uuid4())
-        self.name = name
+        self.name = name  
         self.max_participants =  8 # 8
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
@@ -407,10 +402,10 @@ class Tournament:
         self.winners = []
         self.create_games()
         self.round.games = self.games
-        try:
-            asyncio.create_task(self.save_tournament_to_db())
-        except Exception as e:
-            print(f"Error saving tournament to database: {e}")
+        # try:
+        #     asyncio.create_task(self.save_tournament_to_db())
+        # except Exception as e:
+        #     print(f"Error saving tournament to database: {e}")
         return True
 
 

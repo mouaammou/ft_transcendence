@@ -25,6 +25,8 @@ class GameLogic:
         self.timer = self.max_wait_time
         self.last_move_time = time.time()
         self.game_active = True
+        self.save_once = False
+        
 
     async def start_timer(self):
         while self.game_active:
