@@ -55,6 +55,11 @@ export default function CreateJoinTournamentPage() {
     }
   };
 
+  /**
+   * Handles the creation of a tournament. If the tournament name is not empty,
+   * it sends a message to the server to create the tournament. If the tournament
+   * name is empty, it resets the input error and the tournament name.
+   */
   const handleCreateTournament = () => {
     setInputError({ ...inputError, tournamentName: false });
     if (tournament_name.trim() !== '') {
@@ -159,7 +164,7 @@ export default function CreateJoinTournamentPage() {
           name='tournament_name'
           autoComplete='off'
           onChange={handleInputChange}
-          placeholder="my_tournament123..."
+          placeholder="Pong_1337"
           className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
                         placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
         />

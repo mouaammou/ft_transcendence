@@ -48,14 +48,16 @@ const WaitingPage = () => {
       } else if (data.status === 'already_in_game') {
         setModalOpen(true);
         setModalMessage('You Are already In Game');
-        setMsgDescription('You are currently participating in a game. Please complete your ongoing game before joining a new one. Thank you for your engagement!');
+        setMsgDescription('You are currently participating in a game.\
+         Please complete your ongoing game before joining a new one. Thank you for your engagement!');
         setTimeout(() => {
           router.push('/game');
         }, 2000);
       } else if (data.status === 'already_in_tournament') {
         setModalOpen(true);
         setModalMessage('You Are Already In Tournament');
-        setMsgDescription('You are currently registered in a tournament. Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!');
+        setMsgDescription('You are currently registered in a tournament. Please complete or leave your\
+         ongoing participation before entering a new tournament. Thank you for being part of the event!');
         setTimeout(() => {
           router.push('/tournament_board');
         }, 2000);

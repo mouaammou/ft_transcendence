@@ -2,10 +2,14 @@
 import Selector from '@/app/(game)/mode/selecor';
 import { RandomSvg, VsfriendSvg, VsbotSvg, ExitSvg } from '@components/modeSvgs/ModeSvgs.jsx';
 import { useRouter } from 'next/navigation';
+import { LoadingComponent } from '@/components/multipleStepLoader/MultipleStepLoader';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
+import { useEffect } from 'react';
 
 
 const Mode = () => {
   const router = useRouter();
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
 
   const handleRandomGame = () => {
     router.push('/waiting_random_game');
@@ -23,11 +27,15 @@ const Mode = () => {
     router.push('/create_join_tournament');
   }
 
+  useEffect(() => {
+      sendMessage(JSON.stringify({ type: 'LEET_PONG' }));
+
+  }, []);
 
 
 
   return (
-    <div className="flex flex-col lg:flex-row w-fit mx-6 sm:m-auto md:max-w-[760px] lg:max-w-full mt-56 sm:mt-56 lg:gap-10">
+    <div className="flex flex-col lg:flex-row w-fit mx-6 sm:m-auto md:max-w-[600px]  lg:max-w-full mt-56 sm:mt-56 lg:gap-10">
       <div className="flex flex-col w-full mx-2">
         <Selector
           title="RANDOM GAME"
@@ -43,8 +51,8 @@ const Mode = () => {
         ></Selector>
       </div>
       <div className="flex flex-col w-full mx-2">
-        <Selector 
-          title="TOURNAMENT" 
+        <Selector
+          title="TOURNAMENT"
           description="Join or host a great tournament today!"
           Svgvar={ExitSvg}
           onclick={goBack}
@@ -56,6 +64,7 @@ const Mode = () => {
           onclick={botGame}
         ></Selector>
       </div>
+      <LoadingComponent />
     </div>
   );
 };

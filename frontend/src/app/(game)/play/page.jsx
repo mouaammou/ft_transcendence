@@ -30,17 +30,17 @@ const PlayMode = () => {
         <div className="font-balsamiq align-middle text-center text-2xl sm:text-3xl md:text-4xl font-bold xl:text-5xl">
           PLAY PONG WITH OTHERS
         </div>
-        <div className="flex flex-col gap-10 lg:flex-row lg:gap-3 xl:gap-0">
+        <div className="flex flex-col gap-8 lg:flex-row lg:gap-3 xl:gap-0">
           <button 
             className="w-[80%] xl:w-[100%] relative m-auto sm:max-w-[400px] lg:max-w-[500px] bg-transparent border-none" 
             onClick={handlePlayOnlineGame}
           >
             <Image 
-              className="w-[90%] sm:w-[80%] m-auto cursor-pointer" 
+              className="w-[70%] sm:w-[80%] m-auto cursor-pointer" 
               src="/mode1.svg" 
               alt="remote-game" 
-              width={500} 
-              height={500} 
+              width={400} 
+              height={400} 
               priority 
             />
             <p className='cursor-pointer font-balsamiq font-bold absolute w-full text-center bottom-[10%] sm:text-xl md:text-2xl 2xl:text-4xl'>
@@ -53,11 +53,11 @@ const PlayMode = () => {
             onClick={handlePlayLocalClick}
           >
             <Image 
-              className="w-[90%] sm:w-[80%] m-auto cursor-pointer" 
+              className="w-[70%] sm:w-[80%] m-auto cursor-pointer" 
               src="/mode2.svg" 
               alt="local-game" 
-              width={500} 
-              height={500} 
+              width={400} 
+              height={400} 
               priority 
             />
             <p className='cursor-pointer font-balsamiq font-bold absolute w-full text-center bottom-[10%] sm:text-xl md:text-2xl 2xl:text-4xl'>
@@ -70,11 +70,11 @@ const PlayMode = () => {
             onClick={handlePlayFour}
           >
             <Image 
-              className="w-[90%] sm:w-[80%] m-auto cursor-pointer rounded-3xl brightness-70" 
+              className="w-[70%] sm:w-[80%] m-auto cursor-pointer rounded-3xl brightness-70" 
               src="/1111.svg" 
               alt="connect4-game" 
-              width={500} 
-              height={500} 
+              width={400} 
+              height={400} 
               priority 
             />
             <p className='cursor-pointer font-balsamiq font-bold absolute w-full text-center bottom-[10%] sm:text-xl md:text-2xl 2xl:text-4xl'>
@@ -83,8 +83,6 @@ const PlayMode = () => {
           </button>
         </div>
       </div>
-
-      <LoadingComponent />
     </div>
   );
 };

@@ -32,9 +32,10 @@ class PlayersGamesManager:
                 FourGameOutput._send_to_consumer_group(player_id, data1)
                 data2 = {'status': 'WINNER_BY_DISCONNECTION'}
                 FourGameOutput._send_to_consumer_group(winner, data2)
+                game.player_disconnected = player_id
+                asyncio.create_task(game.save_game(type_finish='disconnect'))
                 game.game_active = False
                 cls.games.pop(game_id)
-                await asyncio.sleep(10)
         except Exception as e:
             logger.error(f"Error disconnecting player with ID: {player_id}: {e}")
             raise
@@ -67,9 +68,7 @@ class PlayersGamesManager:
                     winner = game.player1_id
                 else:
                     winner = game.player2_id
-                if game.save_once == False:
-                    game.save_once = True
-                    game.update_winner(winner)
+                game.update_winner(winner)
                 # cls.players.pop(game.player1_id, None)
                 # cls.players.pop(game.player2_id, None)
                 # cls.games.pop(game_id, None)

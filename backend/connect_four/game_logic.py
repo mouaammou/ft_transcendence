@@ -26,6 +26,7 @@ class GameLogic:
         self.last_move_time = time.time()
         self.game_active = True
         self.save_once = False
+        self.player_disconnected = -1
         
 
     async def start_timer(self):
@@ -110,16 +111,24 @@ class GameLogic:
         asyncio.create_task(self.save_game())
         
         
-    async def save_game(self):
+    async def save_game(self, type_finish = 'defeat'):
         print("on save game function")
+        if self.save_once:
+            return
+        self.save_once = True
         try :
             p_1 = await sync_to_async(CustomUser.objects.get)(id=self.player1_id)
             p_2 = await sync_to_async(CustomUser.objects.get)(id=self.player2_id)
         except CustomUser.DoesNotExist:
             logger.error(f"User does not exist ")
-            
-        score_1 = 1 if self.winner == self.player1_id else 0
-        score_2 = 1 if self.winner == self.player2_id else 0
+        if self.player_disconnected == -1:  
+            score_1 = 1 if self.winner == self.player1_id else 0
+            score_2 = 1 if self.winner == self.player2_id else 0
+        else:
+            score_1 = 0
+            score_2 = 0
+            self.loser = self.player_disconnected
+            self.winner = self.player1_id if self.player_disconnected == self.player2_id else self.player2_id
         try:
             await database_sync_to_async(GameHistory.objects.create)(
                 player_1 = p_1,
@@ -128,7 +137,8 @@ class GameLogic:
                 player_2_score = score_2,
                 winner_id = self.winner,
                 loser_id = self.loser,
-                game_type = 'connect_four'
+                game_type = 'connect_four',
+                finish_type = type_finish
             )
         except Exception as ex:
             logger.error(f"game is not saved {ex}")

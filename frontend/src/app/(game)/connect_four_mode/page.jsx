@@ -2,11 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
+import { useEventSource } from "react-use-websocket";
+
 
 
 const ChooseMode = () => {
+    const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
 
+    useEffect(() => {
+        if (isConnected) {
+            sendMessage({ type: "GET_ROOMS" });
+        }
+    }
+        , [isConnected]);
+        
     const router = useRouter();
+
 
     const redirectToLocal = () => {
         router.push('/local_c4')

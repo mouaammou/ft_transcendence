@@ -18,6 +18,7 @@ const MyGrid = ({username}) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [msgDescription, setMsgDescription] = useState('');
+    const [yetCelebrated, setYetCelebrated] = useState(false);
 
     useEffect(() => {
         const handleMouseMove = (event) => {
@@ -74,8 +75,9 @@ const MyGrid = ({username}) => {
 
     useEffect(() => {
         checkForWinner();
-        if (winner) {
+        if (winner && !yetCelebrated) {
             celebration(winner);
+            setYetCelebrated(true);
         }
     }, [yourTurn, winner]);
 
@@ -195,6 +197,9 @@ const MyGrid = ({username}) => {
     }
 
     const handleClick = (index) => {
+        if (yetCelebrated)
+            return;
+        console.log('clicked', index);
         let column = index % 7;
         let row = 5;
 
@@ -282,7 +287,7 @@ const MyGrid = ({username}) => {
                 description={msgDescription}
                 action={() => {
                     setModalOpen(false);
-                    router.push('/play');
+                    router.push('/connect_four_mode');
                     // router.refresh()
                 }}
             />

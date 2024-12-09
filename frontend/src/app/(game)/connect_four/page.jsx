@@ -17,7 +17,6 @@ const ConnectFour = () => {
     const [player1, setPlayer1] = useState(null);
     const [player2, setPlayer2] = useState(null);
     const [dataFetched, setDataFetched] = useState(false);
-    const [winnerName, setWinnerName] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [msgDescription, setMsgDescription] = useState('');
@@ -60,6 +59,10 @@ const ConnectFour = () => {
                 setMsgDescription('if you refresh the page or change you location, the game ends and you lose!!');
             } else if (data.status === 'DRAW') {
                 // inform the player that the game is a draw
+                setModalOpen(true);
+                setModalMessage('Game over!');
+                setMsgDescription("The game has ended in a draw, which means both players showed incredible skill and\
+                 strategy! It's a testament to your abilities, but don't be discouraged. Better luck next time! Keep practicing, and you'll come back even stronger!");
 
             } else if (data.status === 'NOT_YOUR_TURN') {
                 // inform the player that it is not his turn
@@ -68,16 +71,18 @@ const ConnectFour = () => {
                 // inform the player that the game is over
                 let winner = data.winner;
                 // setShowWinModal(true);
-                if (winner == player1.id)
-                    setWinnerName(player1.username);
-                else
-                    setWinnerName(player2.username);
+                if (winner == player1.id) {
+                    setMsgDescription(`🎉 Congratulations to ${player1.username} 🎉 Thanks for playing!
+                    Looking forward to the next game!`);
+                    setModalMessage(`Game over!, ${player1.username} wins!`);
+                } else {
+                    setMsgDescription(`🎉 Congratulations to ${player2.username} 🎉 Thanks for playing!
+                    Looking forward to the next game!`);
+                    setModalMessage(`Game over!, ${player2.username} wins!`);
+                }
                 setTimeout(() => {
-                    setModalOpen(true);
-                    setModalMessage('Game over 🍀!');
-                    setMsgDescription(`🎉 Congratulations to ${winnerName} ! 🎉`
-                    );
-                },5000)
+                    setModalOpen(true);//🍀
+                },3000)
             }
         }
     }, [lastMessage]);
@@ -130,7 +135,7 @@ const ConnectFour = () => {
                 description={msgDescription}
                 action={() => {
                     setModalOpen(false);
-                    router.push('/play');
+                    router.push('/connect_four_mode');
                 }}
             />
         </div>

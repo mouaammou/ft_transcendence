@@ -131,7 +131,7 @@ export const MultiStepLoader = ({
 
 export const LoadingComponent = () => {
 
-  const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const loadingStates = [
@@ -149,30 +149,28 @@ export const LoadingComponent = () => {
     ];
 
     return (
-        <div className="fixed bottom-20 right-20 z-[100]" onClick={() => setLoading(true)}>
-            <MultiStepLoader
-                loadingStates={loadingStates}
-                loading={loading}
-                duration={2000}
-            />
-            <button
-                className="bg-white hover:bg-white/90 font-bold text-black rounded-full text-lg transition duration-200 h-10 w-10 font-balsamiq flex items-center justify-center"
-            >
-                ?
-            </button>
+        <div className="z-[100]">
+            <div onClick={() => setLoading(true)}>
+                <MultiStepLoader
+                    loadingStates={loadingStates}
+                    loading={loading}
+                    duration={2000}
+                />
+                <button
+                    className="absolute top-36 md:bottom-16 right-10 md:right-20  bg-white hover:bg-white/90 font-bold text-black rounded-full text-lg transition duration-200 h-10 w-10 font-balsamiq flex items-center justify-center"
+                >
+                    ?
+                </button>
+            </div>
             {loading && (
                 <button
-                    className="cursor-pointer absolute bottom-0 right-0 text-white font-bold z-[120] h-10 w-10 text-lg bg-black rounded-full border-2 border-white font-balsamiq flex items-center justify-center"
-                    onClick={() => {
-                        router.push('/mode')
-                        setLoading(false)
-                    }
-                    }
-                >
+                    className="cursor-pointer absolute  top-36 md:bottom-16 right-10 md:right-20 text-white font-bold z-[120] h-10 w-10 text-lg bg-black rounded-full border-2 border-white font-balsamiq flex items-center justify-center"
+                    onClick={() => setLoading(false)}>
                     X
                 </button>
             )}
         </div>
+
     );
 
 };

@@ -276,7 +276,7 @@ class Round:
     
 
 class Tournament:
-    def __init__(self, organizer, name):   
+    def __init__(self, organizer, name):      
         self.id = str(uuid.uuid4())
         self.name = name  
         self.max_participants =  2 # 8

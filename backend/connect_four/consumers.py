@@ -26,6 +26,9 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
             if not self.player_id:
                 return
             parsed_data = json.loads(text_data)
+            if 'type' in parsed_data and parsed_data['type'] == 'LEAVE_GAME':
+                await self.games_manager.disconnect(self.player_id)
+                return
             self.games_manager.receive(self.player_id, parsed_data)
         except json.JSONDecodeError as ex:
             logging.error(f'EXCEPTION: received invaled data from the socket -> {ex}')

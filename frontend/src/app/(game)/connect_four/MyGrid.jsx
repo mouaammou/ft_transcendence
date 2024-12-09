@@ -37,6 +37,7 @@ const MyGrid = () => {
             if (gridElement) {
                 gridElement.removeEventListener('mousemove', handleMouseMove);
             }
+            sendMessage(JSON.stringify({ type: 'LEAVE_GAME' }));
         };
     }, []);
 
@@ -91,6 +92,9 @@ const MyGrid = () => {
                 sendMessage(JSON.stringify({ type: 'WIN', player: 'player1' }));
             else
                 sendMessage(JSON.stringify({ type: 'WIN', player: 'player2' }));
+        }
+        else {
+            sendMessage(JSON.stringify({ type: 'DRAW' }));
         }
     }
 
