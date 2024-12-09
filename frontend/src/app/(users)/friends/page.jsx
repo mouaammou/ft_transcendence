@@ -86,8 +86,8 @@ const Friends = () => {
 				<div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl relative min-h-[600px]
 							border border-gray-700/50">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
-					{users?.map((user) => (
-					<div key={user.id} onClick={(e) => handleUserSelect(user, e)}
+					{users?.map((user, index) => (
+					<div key={index} onClick={(e) => handleUserSelect(user, e)}
 						className="cursor-pointer">
 						<div className={`bg-gray-800/50 p-4 rounded-lg shadow-lg hover:shadow-xl 
 									transition-all duration-300 transform hover:-translate-y-1

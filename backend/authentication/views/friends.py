@@ -176,3 +176,15 @@ class RejectFriendshipView(generics.DestroyAPIView):
 			return Response({"message": "Friendship request rejected."}, status=status.HTTP_200_OK)
 		else:
 			return Response({"error": "This request has already been processed."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetFriendshipView(generics.RetrieveAPIView):
+	
+	def get(self, request, *args, **kwargs):
+		friend_id = kwargs.get('id')
+		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		if friendship:
+			serializer = FriendsSerializer(friendship)
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response({"error": "Friendship not found."}, status=404)

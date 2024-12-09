@@ -65,6 +65,9 @@ urlpatterns = [
 	#2fa
 	path("2fa/verify/user/", User2faVerificationView.as_view(), name="verify_2fa"),
 	path("2fa/<str:action>/", TwoFactorAuthView.as_view(), name="2fa"),
+
+	#get friendship
+	path("getFriendship/<int:id>", views.GetFriendshipView.as_view(), name="get friendship"),
 ]
 
 if settings.DEBUG:

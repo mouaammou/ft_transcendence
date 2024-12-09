@@ -1,12 +1,14 @@
 'use client';
 
-import React, { createContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
 import { getData } from '@/services/apiCalls';
 // import usersData from '../data/users.json'
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
 
 import { useDebounce } from 'use-debounce'; // Import from use-debounce
+import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import { router } from 'next/client';
 
 
 
@@ -51,6 +53,18 @@ export const ChatProvider = ({ children }) => {
     const selectedUserRef = useRef(null);
     // usestate to check active scrollToEnd or not
     const [activeScrollToEnd, setActiveScrollToEnd] = useState(false);
+
+
+    //test friends
+    const {
+		users,
+		setUsers,
+        lastMessage,
+        isConnected,
+	} = useWebSocketContext();
+    // test friends
+
+
     // ************************ end ***********************
          // ************************  Fetch friends (users to chat with) ************************
     const fetchFriends = async (search = '') => {
@@ -70,8 +84,19 @@ export const ChatProvider = ({ children }) => {
                     setOriginalUsers(newUsers);
                 }
                 setAllUsers(newUsers);
+                console.log('newUsers => ', newUsers);
                 // setNextPage(null); // Clear next page state as it's no longer used
-            } else {
+            }
+            // Handle unauthorized response
+
+            // we can use router.push('/login');
+            else if (response.status === 401) {
+                // Handle unauthorized response
+                console.error("Unauthorized access - redirecting to login");
+                // history.push('/login'); // Redirect to login page
+                // router.push('/login');
+            } 
+            else {
                 console.error("Unexpected response status:", response.status);
             }
         } catch (error) {
@@ -79,18 +104,90 @@ export const ChatProvider = ({ children }) => {
         }
     };
 
-    //  ************************  Handle search functionality  ************************
+    // ************************  Fetch fetchOnlineUsers ************************
 
+    // old methode
+    // const fetchOnlineUsers = async () => {
+    //     try {
+    //         const url = `/chat-friends`;
+    //         const response = await getData(url);
+
+    //         if (response.status === 200) {
+    //             setOnlineUsers(response.data); // Update only online users
+    //         } else {
+    //             console.error("Unexpected response status:", response.status);
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to fetch online users:", error);
+    //     }
+    // };
+
+
+     // Fetch online users
+     const fetchOnlineUsers = () => {
+        console.log('originalUsers => ', originalUsers);
+        const onlineUsers = originalUsers.filter(user => user.friend && user.friend.status === 'online');
+        console.log('onlineUsers => ', onlineUsers);
+        setOnlineUsers(onlineUsers);
+    };
+
+    // Usage in a component or effect
+    useEffect(() => {
+        fetchOnlineUsers();
+    }, [originalUsers]);
+
+    
+    //  ************************  Handle search functionality  ************************
+    
     // Update search term
     const handleSearch = (event) => {
         setSearchTerm(event.target.value); // Update the search term as the user types
     };
-
+    
     // Effect to fetch friends when debounced search term changes
     useEffect(() => {
         fetchFriends(debouncedSearchTerm); // Only fetch when debouncedSearchTerm changes
     }, [debouncedSearchTerm]);
+    
+    // ************************ end ***********************
+    
+    // ************************  Fetch friends (users to chat with) ************************
+    
 
+    const handleOnlineStatus = useCallback(
+        (message) => {
+            if (!message || !isConnected) return;
+            try 
+            {
+                const data = JSON.parse(message.data);
+                if (data.type === 'user_status_change') {
+                    console.log('WebSocket ONLINE STATUS:', data);
+                    setAllUsers((prevUsers) =>
+                        prevUsers.map((user) =>
+                            user.friend && user.friend.username === data.username
+                        ? { ...user, friend: { ...user.friend, status: data.status } }
+                        : user
+                    ));
+                    setOriginalUsers((prevUsers) =>
+                        prevUsers.map((user) =>
+                            user.friend && user.friend.username === data.username
+                                ? { ...user, friend: { ...user.friend, status: data.status } }
+                                : user
+                        )
+                    );
+                    // update online users
+                    // fetchOnlineUsers(); // Update online users after status change
+                }
+            } catch (error) {
+                console.error('Error in handleOnlineStatus:', error);
+            }
+        },
+        [isConnected]
+    );
+    // Effect to handle incoming WebSocket messages
+    useEffect(() => {
+    if (lastMessage) handleOnlineStatus(lastMessage);
+    }, [lastMessage, handleOnlineStatus]);
     // ************************ end ***********************
 
 
@@ -231,7 +328,9 @@ export const ChatProvider = ({ children }) => {
             scrollToEnd();
         }, 100);
         
-        const userHasLastMessage = allUsers.some((friend) => friend.friend.id === user.id && friend.last_message && friend.last_message.message);
+        const userHasLastMessage = allUsers.some((friend) => 
+            friend && friend.friend && friend.friend.id === user.id && friend.last_message && friend.last_message.message
+        );
         if (socket && userHasLastMessage) {
             console.log('Sending mark_read to backend');
             // socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
@@ -485,21 +584,6 @@ export const ChatProvider = ({ children }) => {
         setIsChatVisible(false);
     };
     // ************************ end ***********************
-
-    const fetchOnlineUsers = async () => {
-        try {
-            const url = `/chat-friends`;
-            const response = await getData(url);
-
-            if (response.status === 200) {
-                setOnlineUsers(response.data); // Update only online users
-            } else {
-                console.error("Unexpected response status:", response.status);
-            }
-        } catch (error) {
-            console.error("Failed to fetch online users:", error);
-        }
-    };
 
     // ************************ end ***********************
 

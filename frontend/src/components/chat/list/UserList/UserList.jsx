@@ -34,26 +34,29 @@ const UserList = ({ users, listType , currentUser}) => {
         >
           <CarouselContent>
             {sortedUsers.map(user => (
-              <CarouselItem
-                key={user.friend.id}
-                className="
-                  basis-[50%] max-w-[100px]
-                  sm:basis-[40%] sm:max-w-[120px]
-                  md:basis-[33%] md:max-w-[116px]
-                  tablet:basis-[33%] tablet:max-w-[130px]
-                  larg_screen:basis-[25%] lg:max-w-[100px]
-                  shrink-0 p-1
-                "
-              >
-                <UserCard
-                  user={user.friend}
-                  lastMessage={user.last_message} // Pass last message details
-                  listType={listType}
-                  typingUsers={typingUsers}
-                  onUserSelect={handleUserClick}
-                  currentUser={currentUser}
-                />
-              </CarouselItem>
+                user && user.friend && (
+                  <CarouselItem
+                    key={user.friend.id}
+                    className="
+                      basis-[50%] max-w-[100px]
+                      sm:basis-[40%] sm:max-w-[120px]
+                      md:basis-[33%] md:max-w-[116px]
+                      tablet:basis-[37%] tablet:max-w-[130px]
+                      shrink-0 p-1
+                      "
+                      // tablet:basis-[33%] tablet:max-w-[130px]
+                      // larg_screen:basis-[25%] lg:max-w-[100px]
+                  >
+                    <UserCard
+                      user={user.friend}
+                      lastMessage={user.last_message} // Pass last message details
+                      listType={listType}
+                      typingUsers={typingUsers}
+                      onUserSelect={handleUserClick}
+                      currentUser={currentUser}
+                    />
+                  </CarouselItem>
+                ) 
             ))}
           </CarouselContent>
           <CarouselPrevious />
@@ -63,9 +66,9 @@ const UserList = ({ users, listType , currentUser}) => {
         <div
           className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
         >
-          {sortedUsers.map(user => (
+          {sortedUsers.map((user, index) => (
             <UserCard
-              key={user.friend.id}
+              key={index}
               user={user.friend}
               lastMessage={user.last_message}
               listType={listType}

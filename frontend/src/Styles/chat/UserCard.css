@@ -29,6 +29,11 @@
   height: 80px;
   gap: 5px;
   /* width: 100%; */
+
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.75rem;
 }
 
 .img-usercard{
@@ -36,7 +41,9 @@
 }
 
 .UserCardAll:hover {
-  border: 1px solid #ffffff; /* Border on hover */
+  /* border: 1px solid #ffffff; */
+  transform: translateY(-2px);
+  
   /* background-color: #5faffe; */
   /* background-color: #1a2980; */
   /* background-color: #3b82f680; */
@@ -162,3 +169,5 @@
     font-size: 12px;
   }
 }
+
+

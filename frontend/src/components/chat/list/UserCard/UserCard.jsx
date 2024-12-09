@@ -7,7 +7,10 @@ import { formatDistanceToNow } from 'date-fns'; // Optionally for formatting the
 import { useState, useEffect } from 'react';
 
 const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , currentUser}) => {
-  const borderColor = user.active ? 'green' : 'red';
+  if (!user) {
+    return null; // Return null if user is undefined
+  }
+  const borderColor = user.status === 'online' ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
 
   // Helper function to shorten time strings
@@ -36,18 +39,18 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
 
   // Dynamic timestamp state
   const [formattedTimestamp, setFormattedTimestamp] = useState(
-    lastMessage.timestamp ? formatShortDistance(new Date(lastMessage.timestamp)) : ''
+    lastMessage.timestamp ? formatShortDistance(lastMessage.timestamp) : ''
   );
 
   useEffect(() => {
     if (!lastMessage.timestamp) return;
 
     // Update immediately for initial value
-    setFormattedTimestamp(formatShortDistance(new Date(lastMessage.timestamp)));
+    setFormattedTimestamp(formatShortDistance(lastMessage.timestamp));
 
     // Update the timestamp every minute
     const interval = setInterval(() => {
-      setFormattedTimestamp(formatShortDistance(new Date(lastMessage.timestamp)));
+      setFormattedTimestamp(formatShortDistance(lastMessage.timestamp));
     }, 60000); // Update every 60 seconds (1 minute)
 
     // Clean up the interval on component unmount
@@ -61,7 +64,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
       className="usercard-card-wrapper"
       style={{ cursor: "pointer" }} // Optional: Add visual feedback for interactivity
     >
-      <Card className="usercard-card" onClick={() => onUserSelect(user)}>
+      {/* <Card className="usercard-card" onClick={() => onUserSelect(user)}>
         <CardContent 
           className="flex aspect-square items-center justify-center"
         >
@@ -73,7 +76,28 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
             className="w-full h-full object-cover"
           />
         </CardContent>
-      </Card>
+      </Card> */}
+
+      <Card className="h-full">
+          <CardContent className="relative p-2">
+            <div className="aspect-square overflow-hidden rounded-lg">
+              <img
+                src={user.avatar}
+                alt={user.username}
+                className="w-full h-full object-cover"
+              />
+              <div 
+                className="status-indicator"
+                style={{ backgroundColor: borderColor }}
+              />
+            </div>
+            <p className="text-center mt-2 text-sm font-medium truncate">
+              {user.username}
+            </p>
+          </CardContent>
+        </Card>
+
+
     </div>
   ) : (
     // Render default structure for "all" listType
@@ -184,3 +208,5 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
 };
 
 export default UserCard;
+
+
