@@ -57,12 +57,31 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
     return () => clearInterval(interval);
   }, [lastMessage.timestamp]);
 
+
+   // Helper to determine if it's a placeholder
+   const isPlaceholder = user.isPlaceholder;
+
+   const handleClick = () => {
+     if (!isPlaceholder) {
+       onUserSelect(user);
+     }
+   };
+
   return listType === 'online' ? (
     // Render using Card and CardContent for "online" listType
     <div 
-      onClick={() => onUserSelect(user)} 
-      className="usercard-card-wrapper"
-      style={{ cursor: "pointer" }} // Optional: Add visual feedback for interactivity
+      // onClick={() => onUserSelect(user)}
+
+
+      onClick={handleClick}
+      className={`usercard-card-wrapper ${isPlaceholder ? 'placeholder' : ''}`}
+      // className="usercard-card-wrapper"
+    //   style={{ cursor: isPlaceholder ? 'default' : 'pointer',
+    //   transform: isPlaceholder ? 'none' : 'translateY(-3px)',
+    //   transition: 'transform 0.2s ease-in-out', // Smooth animation (optional) 
+    // }}
+      
+      // style={{ cursor: isPlaceholder ? 'default' : 'pointer' }}
     >
       {/* <Card className="usercard-card" onClick={() => onUserSelect(user)}>
         <CardContent 

@@ -82,6 +82,7 @@
 
 .ImBlocked {
   font-size: 25px;
+  cursor: pointer;
 }
 
 .section-profile {
