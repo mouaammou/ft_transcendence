@@ -58,7 +58,7 @@ const LocalGameWinner = ({ winner, reset, tournament_id=-1 }) => {
     // Start the timer for navigation after 9 seconds
     const timer = setTimeout(() => {
       onClose();
-    }, 9000);
+    }, 5000);
 
     // Run the celebration animation once on mount
     winner_celebration();
@@ -79,7 +79,7 @@ const LocalGameWinner = ({ winner, reset, tournament_id=-1 }) => {
            <span className='pr-2 text-green-400'></span>Congratulations <span className='text-green-400'>{winner}</span> You Win 🎉
         </h1>
         <p className="text-white font-normal font-open text-lg mt-4">
-            {tournament_id !== -1 ?"Redirecting in 9 seconds...": "Resetting in 9 seconds..."}
+            {tournament_id !== -1 ?"Redirecting in 9 seconds...": "Resetting in 5 seconds..."}
         </p>
         <button
           onClick={onClose}

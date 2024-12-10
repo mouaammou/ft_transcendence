@@ -12,8 +12,8 @@ export default function PongGame({ setScore1, setScore2, setLeftNickname, setRig
 	// const [socket, setSocket] = useRef(null);
 
 	useEffect(() => {
-		let leftUser = 'Player 1';
-		let rightUser = 'Player 2';
+		let leftUser = 'left player';
+		let rightUser = 'right player';
 		const canvas = canvasRef.current;
 		const context = canvas.getContext('2d');
 
@@ -201,16 +201,16 @@ export default function PongGame({ setScore1, setScore2, setLeftNickname, setRig
 				setScore1(score1 => gameConfig.right_player_score);
 
 
-				if (data.config?.left_nickname && tournament_id === -1)
-				{
-					leftUser = data.config.left_nickname;
-          setLeftNickname(leftUser);
-				}
-				if (data.config?.right_nickname && tournament_id === -1)
-				{
-					rightUser=data.config.right_nickname;
-          setRightNickname(rightUser);
-				}
+				// if (data.config?.left_nickname && tournament_id === -1)
+				// {
+				// 	leftUser = data.config.left_nickname;
+        //   setLeftNickname(leftUser);
+				// }
+				// if (data.config?.right_nickname && tournament_id === -1)
+				// {
+				// 	rightUser=data.config.right_nickname;
+        //   setRightNickname(rightUser);
+				// }
 				drawGame();
 			}
 			// else if (data.tournament)

@@ -38,8 +38,8 @@ const GamePage = ({params}) => {
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);
 	const [finished, setFinished] = useState(false);
-	const [leftNickname, setLeftNickname] = useState("");	
-	const [rightNickname, setRightNickname] = useState("");
+	const [leftNickname, setLeftNickname] = useState("left player");	
+	const [rightNickname, setRightNickname] = useState("right player");
 	const [title, setTitle] = useState("");
 	const [tournament_id, setTournament_id] = useState(-1);
 	const [round, setRound] = useState(rounds[0]);
@@ -52,7 +52,7 @@ const GamePage = ({params}) => {
 
 	const redirectFinishedTournament = async () => {
 		const identical = await params;
-		router.push(`/tournament/${identical.id}`);
+		router.push(`/tournament/${tournament_id}`);
 	};
 
     useEffect(() => {
@@ -61,7 +61,6 @@ const GamePage = ({params}) => {
           try {
 			setTournament_id(identical.id);
             let response = await fetchTournamentMatchPlayers(identical.id);
-            console.log('====================', response);
             setLeftNickname(response.left);
             setRightNickname(response.right);
             setTitle(response.title);
@@ -95,7 +94,7 @@ const GamePage = ({params}) => {
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-white text-xl">
 					<div className="flex justify-center items-center ">
 							<MdScoreboard className="pr-1" />
 							{score2}
@@ -107,7 +106,7 @@ const GamePage = ({params}) => {
 							</div>
 							<CountdownTimer className='w-full h-auto flex justify-center' />
 						</div>
-					<div className="flex w-fit h-auto justify-center items-end font-bold text-cyan-200 text-xl">
+					<div className="flex w-fit h-auto justify-center items-end font-bold text-yellow-200 text-xl">
 					<div className="flex justify-center items-center ">
 							<MdScoreboard className="pr-1" />
 							{score1}
@@ -123,7 +122,7 @@ const GamePage = ({params}) => {
 						</div>
 					</div>
 					<div className="w-fit h-fit flex justify-center items-center pr-[5%]">
-						<div className="flex gap-x-1 justify-center items-center text-xl break-all py-2">
+						<div className="flex gap-x-1 justify-center items-center text-xl text-yellow-200 break-all py-2">
 							{rightNickname}
 							<FaUser />
 						</div>
@@ -138,7 +137,7 @@ const GamePage = ({params}) => {
 					setRightNickname={setRightNickname}
 					tournament_id={tournament_id}
 				/>
-				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize">
+				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize break-all">
 					{title}
 				</div>
 				<div
