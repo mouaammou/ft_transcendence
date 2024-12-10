@@ -29,30 +29,12 @@ export default function TournamentForm() {
     try {
       const response = await createTournament(JSON.stringify(formData));
       if (response.status === 201) {
-        console.log('Tournament created successfully!');
-        console.log(response);
-        // alert('Tournament created successfully!');
         toast.success('Tournament created successfully');
-        router.push(`/tournament/${response.data.id}`);
-        // Reset form
-        // setFormData({
-        //   title: '',
-        //   match1_nickname1: '',
-        //   match1_nickname2: '',
-        //   match2_nickname1: '',
-        //   match2_nickname2: '',
-        //   match3_nickname1: '',
-        //   match3_nickname2: '',
-        //   match4_nickname1: '',
-        //   match4_nickname2: ''
-        // });
+        router.push(`/tournament/${response.id}`);
       } else {
-        // alert('Failed to create tournament');
-        toast.error('Failed to create tournament');
+        toast.error(response.msg ??  'Failed to create tournament');
       }
     } catch (error) {
-      // console.error('Error:', error);
-      // alert('Error creating tournament');
       toast.error('Error creating tournament');
     }
   };

@@ -10,6 +10,5 @@ back:
 clear_db:
 	cd backend && source venv/bin/activate &&  python manage.py clear_db
 
-
 redis:
-	/Users/moouaamm/.brew/opt/redis/bin/redis-server /Users/moouaamm/.brew/etc/redis.conf
+	/Users/samjaabo/.brew/opt/redis/bin/redis-server /Users/samjaabo/.brew/etc/redis.conf

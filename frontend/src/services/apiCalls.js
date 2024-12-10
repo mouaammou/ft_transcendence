@@ -82,13 +82,35 @@ export const fetchTournaments = async (page = 1, filter='all') => {
 	}
 };
 
-export const createTournament = async (data) => {
-	try {
-		const response = await api.post('/', data);
-		return response;
-	} catch (error) {
-		return { status: 422 };
-	}
+// export const createTournament = async (data) => {
+// 	try {
+// 		const response = await api.post('/', data);
+// 		return response;
+// 	} catch (error) {
+// 		return { status: 422 };
+// 	}
+// };
+export const createTournament = async (raw_data) => {
+	let data = null; 
+    try {
+        const response = await api.post('/', raw_data);
+        response.data['status'] = response.status;
+        data = response.data;
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            error.response.data['status'] = error.response.status;
+            data = error.response.data;
+            return error.response.data
+        } else {
+            data = {status: 500, msg: "No response from server"};
+            return data;
+        }
+    }
+    finally {
+        console.log("--response--");
+        console.log(data);
+    }
 };
 
 export const fetchTournamentDetail = async (id) => {

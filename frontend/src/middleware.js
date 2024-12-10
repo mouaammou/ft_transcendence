@@ -63,7 +63,8 @@ export const config = {
 	matcher: [
 		"/",
 		"/login/:path*",
-		// "/edit_profile/:path*", there is more routes that should be protected in (game) and (tournament)
+		"/edit_profile/:path*", 
+		"/settings/:path*", 
 		"/signup/:path*",
 		"/dashboard/:path*",
 		"/profile/:path*",

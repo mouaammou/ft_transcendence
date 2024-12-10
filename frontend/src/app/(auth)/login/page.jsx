@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Login42 from '@/components/auth/login42';
 import Image from 'next/image';
 import '@/styles/auth/login.css';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 export default function LoginPage() {
 	const [totp, setTotp] = useState(false);
@@ -32,12 +34,16 @@ export default function LoginPage() {
 		e.preventDefault();
 		console.log('formData: in login::  ', formData);
 		let resp = await AuthenticateTo('/login', formData);
-		if (resp?.totp) {
+		if (!totp && resp?.totp) {
 			setTotp(true);
 		}
+		if (totp)
+			toast.error('Invalid Credentials');
 	};
 
 	return (
+		<>
+		<Toaster /> 
 		<div className="min-h-screen flex justify-center items-center px-4 py-8">
 		<div className="layer-blue background-blue absolute inset-0" />
 		
@@ -149,5 +155,7 @@ export default function LoginPage() {
 			</footer>
 		</form>
 		</div>
+
+		</>
 	);
 }

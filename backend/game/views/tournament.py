@@ -23,6 +23,23 @@ class LocalTournamentViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.customUser)
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print('iiiiiaaaammmm hhhherehhhiuh\n\n\n')
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            errors = serializer.errors
+            error_messages = []
+            for field, messages in errors.items():
+                if isinstance(messages, list):
+                    error_messages.extend([message for message in messages])
+                else:
+                    error_messages.append(messages)
+            data = {'msg': '\n'.join(error_messages)}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+    
     def get_queryset(self):
         """
         Filters the queryset based on the filter_keyword from the URL.

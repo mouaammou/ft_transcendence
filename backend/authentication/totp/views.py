@@ -52,7 +52,7 @@ def get_qrcode_img(otpauth_uri):
 # enable: POST
 # validate: POST
 # disable: DELETE
-# get_qrcode: GET
+# get_qrcode: GET 
 
 class TwoFactorAuthView(APIView):
     permissions = [IsAuthenticated]
