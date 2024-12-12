@@ -5,6 +5,7 @@ import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter, usePathname } from 'next/navigation';
 import { set } from 'date-fns';
+import style from '@/Styles/game/game.module.css';
 
 
 const INITIAL_CONFIG = {
@@ -105,17 +106,17 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 	};
 
 	const drawGame = () => {
-		const canvas = canvasRef.current;
-		const context = canvas.getContext('2d');
+		const canvas = canvasRef.current;// get the canvas, i use a ref to access  the component <canvas className="play-ground" ref={canvasRef} width={900} height={400} />
+		const context = canvas.getContext('2d');// get the canvas context, the context is used to draw on the canvas
 		const { ball, player1, player2, net } = gameStateRef.current;
 
 		if (!context || !player1 || !player2) return;
 
-		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.clearRect(0, 0, canvas.width, canvas.height);// clear the canvas before drawing the second frame
 		drawNet(context, canvas, net);
-		drawRect(context, player1.x, player1.y, player1.width, player1.height, player1.color);
-		drawRect(context, player2.x, player2.y, player2.width, player2.height, player2.color);
-		drawCircle(context, ball.x, ball.y, ball.radius, ball.color);
+		drawRect(context, player1.x, player1.y, player1.width, player1.height, player1.color);// draw the first player's paddle
+		drawRect(context, player2.x, player2.y, player2.width, player2.height, player2.color);// draw the second player's paddle
+		drawCircle(context, ball.x, ball.y, ball.radius, ball.color);// draw the ball
 	};
 
 	const handleKeyboardEvents = (event, type) => {
@@ -245,7 +246,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 
 	return (
 		<>
-			<canvas className="play-ground" ref={canvasRef} width={900} height={400} />
+			<canvas className={style.play_ground} ref={canvasRef} width={900} height={400} />
 			{showWinModal && (
 				<YouWin
 					gameType={gameType}

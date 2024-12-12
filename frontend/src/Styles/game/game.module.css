@@ -1,51 +1,52 @@
 .game {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   height: 100%;
   padding-top: 70px;
   gap: 70px;
 }
 
-.game .up-section {
+.up_section {
   display: flex;
   align-items: center;
   justify-content: center;
-  column-gap: 50%;
+  column-gap: 5%;
 }
 
-.game .up-section .left-score,
-.game .up-section .right-score {
+.left_score,
+.right_score {
   font-family: 'IBM Plex Sans', sans-serif;
   color: var(--wt);
   font-size: 3rem;
   font-weight: bold;
   /* margin: 0 30px; */
-}
+  /* background-color: red; */
+  }
 
-.game .up-section .vs-section {
+.vs_section {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-.game .up-section .vs-section .vs-time {
+.vs_time {
   font-family: 'IBM Plex Sans', sans-serif;
   color: #e76f51;
   font-size: 1.3rem;
 }
 
-.game .down-section {
+.down_section {
   display: flex;
-  justify-content: center;
-  column-gap: 3%;
-  padding: 0 20px;
-}
+  justify-content: space-between;
+  align-items: center;
+  width: fit-content;
 
-.game .down-section .left-user,
-.game .down-section .right-user {
+  margin: auto;
+}
+.left_user,
+.right_user {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,27 +54,27 @@
   width: 10%;
 }
 
-.left-user .left-user-img,
-.right-user .right-user-img {
+.left_user_img,
+.right_user_img {
   /* width: 100px; */
   /* width: 25%; */
   /* height: 100%; */
   border-radius: 50%;
 }
 
-.left-user .left-user-name,
-.right-user .right-user-name {
+.left_user_name,
+.right_user_name {
   text-align: center;
   font-family: 'IBM Plex Sans', Courier, monospace;
   font-size: 1.7rem;
   padding-top: 10px;
 }
 
-.game .down-section .self-game {
+.self_game {
   width: 70%;
 }
 
-.game .down-section .play-ground {
+.play_ground {
   background-color: #264653;
   /* flex: 1; */
   /* position: relative; */
@@ -84,36 +85,36 @@
 }
 
 @media (max-width: 1388px) {
-  .game .up-section .left-score,
-  .game .up-section .right-score {
+  .left_score,
+  .right_score {
     font-size: 2rem;
   }
 
   /*
-	make the game display orizontally in the mobile view
-	*/
-  .game .up-section .vs-section .vs-time {
+    make the game display orizontally in the mobile view
+    */
+.vs_time {
     font-size: 1rem;
   }
-  .game .down-section .left-user,
-  .game .down-section .right-user {
+  .left_user,
+  .right_user {
     width: 10%;
   }
-  .game .down-section .left-user img,
-  .game .down-section .right-user img {
+  .left_user_img,
+  .right_user_img {
     width: fit-content;
   }
 
-  .game .down-section .self-game {
-    width: 80%;
+  .self_game {
+    width: 70%;
   }
 
-  .game .down-section .play-ground {
+  .play_ground {
     width: 100%;
   }
 
-  .left-user .left-user-name,
-  .right-user .right-user-name {
+   .left_user_name,
+  .right_user_name {
     font-size: 1rem;
   }
 }
@@ -124,70 +125,70 @@
     padding-top: 10px;
     gap: 10px;
   }
-  .game .up-section .left-score,
-  .game .up-section .right-score {
+  .left_score,
+  .right_score {
     font-size: 1rem;
   }
-  .game .down-section {
+  .down_section {
     /* flex-direction: column; */
     flex-wrap: wrap;
   }
-  .game .down-section .left-user,
-  .game .down-section .right-user {
+  .left_user,
+  .right_user {
     order: 1;
     flex-basis: 48%;
     margin-bottom: 20px;
     margin-top: 0px;
     gap: 10px;
   }
-  .game .down-section .self-game {
+  .self_game {
     order: 2;
     flex-basis: 100%;
   }
 
   /*
-	make the game display orizontally in the mobile view
-	*/
-  .game .up-section .vs-section .vs-time {
+    make the game display orizontally in the mobile view
+    */
+  .vs_time {
     font-size: 1rem;
   }
 
-  .game .up-section .vs-section img {
+  .vs_image {
     width: 40px;
     height: 40px;
   }
 
-  .game .down-section .left-user {
+  .left_user {
     margin-bottom: 20px;
   }
 
-  .game .down-section .self-game {
+  .self_game {
     width: 100%;
   }
 
-  .game .down-section .left-user img,
-  .game .down-section .right-user img {
+  .left_user_img,
+  .right_user_img {
     width: 40%;
     height: auto;
   }
 
-  .game .down-section .play-ground {
+  .play_ground {
     width: 90%;
     margin: auto;
   }
 
-  .game .up-section .vs-section {
+  .vs_section {
     gap: 2px;
   }
 
-  .game .up-section .vs-section .vs-time {
+  .vs_time {
     font-family: 'IBM Plex Sans', sans-serif;
     color: #e76f51;
     font-size: 0.7rem;
   }
 
-  .left-user .left-user-name,
-  .right-user .right-user-name {
+  .left_user_name,
+  .right_user_name {
     font-size: 0.7rem;
   }
 }
