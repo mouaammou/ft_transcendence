@@ -17,13 +17,7 @@ class SearchLocalTournament(ModelViewSet):
     pagination_class = TournamentPagination
     
     def get_queryset(self):
-        """
-        Filters the queryset based on the filter_keyword from the URL.
-        """
         query = self.request.GET.get('search', '')
-        print('#q'*30)
-        print(query)
-        print('#q'*30)
         if not query:
             return LocalTournament.objects.none()
         return LocalTournament.objects.filter(title__icontains=query)
@@ -42,7 +36,6 @@ class LocalTournamentViewSet(ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print('iiiiiaaaammmm hhhherehhhiuh\n\n\n')
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -67,9 +60,6 @@ class LocalTournamentViewSet(ModelViewSet):
         # Get the filter keyword from the URL
         filter_keyword = self.kwargs.get('filter_keyword', None)
         filter_keyword = filter_keyword.lower() if filter_keyword else None
-        print('#'*30)
-        print(filter_keyword)
-        print('#'*30)
         
         # Apply filters based on the keyword
         if filter_keyword == 'pending':

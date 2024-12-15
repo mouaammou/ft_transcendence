@@ -123,6 +123,17 @@ export const fetchTournamentDetail = async (id) => {
 	}
 };
 
+export const fetchTournamentUpdate = async (id, data_obj) => {
+	try {
+		const response = await api.put(`/${id}/`, data_obj);
+		response.data['status'] = response.status;
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournament update:', error);
+		return {};
+	}
+};
+
 export const fetchTournamentMatchPlayers = async (id) => {
 	try {
 		// throw new Error('Error fetching tournaments');
