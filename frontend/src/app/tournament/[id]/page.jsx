@@ -162,13 +162,13 @@ export default function Board({ params })
             <MdDeleteOutline className='h-6 w-auto pr-1' />
             delete
         </button>
-        <Link
+        {tournament.match_index === 1 && <Link
             href={"/tournament/update/" + tid.current}
             className={`max-w-96 w-fit custom-input flex `}
         >
             <MdOutlineEdit className='h-6 w-auto pr-1' />
             edit
-        </Link>
+        </Link>}
       </div>
       <div className="overflow-x-auto max-w-full scrollbar scrollbar-thumb-rounded-none scrollbar-track-white/10 scrollbar-thumb-white/50">
 
