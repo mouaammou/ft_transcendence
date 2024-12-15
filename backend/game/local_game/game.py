@@ -43,6 +43,9 @@ class PingPongGame(PingPongGameLogic, LocalGameDisconnection):
         self.tourn_obj = tourn_obj
         self.left_nickname = None
         self.right_nickname = None
+        self.title = tourn_obj.title if tourn_obj else None
+        self.local_game_type = 'tournament' if tourn_obj else 'regular'
+        self.tournament_id = tourn_obj.id if tourn_obj else None
         # self.game_type = game_type
         # self.game_winner = None
         self.first_time = True

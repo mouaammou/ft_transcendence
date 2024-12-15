@@ -1,4 +1,5 @@
 'use client';
+// import PongGame from './newGame';
 import PongGame from './PongGame';
 import { useState, useEffect } from 'react';
 import '@/styles/game/game.css';
@@ -18,10 +19,13 @@ const GamePage = () => {
 	const [score2, setScore2] = useState(0);
 	const [leftNickname, setLeftNickname] = useState("left player");
 	const [rightNickname, setRightNickname] = useState("right player");
+	const [title, setTitle] = useState("Local Game");
+	const [playStart, setPlayStart] = useState(false);
+
 
 	const handlePlayClick = async () => {
 		const response = await apiPlayRegularGame();
-		// console.log(response);
+		setPlayStart(true);
 	}
 
 	return (
@@ -69,9 +73,17 @@ const GamePage = () => {
 					score2={score2}
 					setScore1={setScore1}
 					setScore2={setScore2}
+					leftNickname={leftNickname}
+					rightNickname={rightNickname}
 					setLeftNickname={setLeftNickname}
 					setRightNickname={setRightNickname}
+					title={title}
+					setTitle={setTitle}
+					playStart={playStart}
 				/>
+				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize break-all">
+					{title}
+				</div>
 				<div
 					onClick={handlePlayClick}
 					className="mt-16 flex justify-center items-center max-w-96 w-full h-fit mx-auto custom-button "

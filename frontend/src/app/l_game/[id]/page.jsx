@@ -38,14 +38,16 @@ const GamePage = ({params}) => {
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);
 	const [finished, setFinished] = useState(false);
-	const [leftNickname, setLeftNickname] = useState("left player");	
+	const [leftNickname, setLeftNickname] = useState("left player");
 	const [rightNickname, setRightNickname] = useState("right player");
-	const [title, setTitle] = useState("");
+	const [title, setTitle] = useState("Local Tournament");
 	const [tournament_id, setTournament_id] = useState(-1);
 	const [round, setRound] = useState(rounds[0]);
+	const [playStart, setPlayStart] = useState(false);
 
 	const handlePlayClick = async () => {
 		const response = await apiPlayTournamentGame(tournament_id);
+		setPlayStart(true);
 		// console.log(response);
 	}
 
@@ -133,9 +135,14 @@ const GamePage = ({params}) => {
 					score2={score2}
 					setScore1={setScore1}
 					setScore2={setScore2}
+					leftNickname={leftNickname}
+					rightNickname={rightNickname}
 					setLeftNickname={setLeftNickname}
 					setRightNickname={setRightNickname}
+					title={title}
+					setTitle={setTitle}
 					tournament_id={tournament_id}
+					playStart={playStart}
 				/>
 				<div className="flex w-full h-fit justify-center items-center text-2xl py-4 capitalize break-all">
 					{title}
@@ -149,7 +156,7 @@ const GamePage = ({params}) => {
 			</div>
 		{/* </div> */}
 		</>
-	)
+	);
 }
 
 export default GamePage;

@@ -271,7 +271,7 @@ class LocalTournament(models.Model):
             self.finished = True
         
     def shuffle(self):
-        if self.match_index != 1:
+        if self.match_index != 1: # only on create
             return
         original_nicknames = [
             'match1_nickname1',
@@ -289,9 +289,6 @@ class LocalTournament(models.Model):
 
         for index in range(len(original_nicknames)):
             setattr(self, original_nicknames[index], nicknames[index])
-    
-    def unique_nicknames_validation():
-        pass
     
     def save(self, *args, **kwargs):
         print("Saving")

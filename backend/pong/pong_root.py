@@ -45,6 +45,9 @@ class RootBase(Base):
             'ball_pos': self.ball.ball_pos,
             'left_nickname': self.left_nickname,
             'right_nickname': self.right_nickname,
+            'title': self.title,
+            'local_game_type': self.local_game_type,
+            'tournament_id': self.tournament_id,
         }
         conf.update(data)
         # conf['ball_pos'] = self.ball.ball_pos
