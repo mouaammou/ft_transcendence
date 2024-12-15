@@ -153,19 +153,21 @@ export default function Board({ params })
     <>
 		<TopBar activeIndex={1} />
     <div className="relative w-full h-auto">
+        <h1 className="w-full flex justify-center items-center gap-4 font-bold mt-14">{title}</h1>
       <div className="w-full flex justify-center items-center gap-4 font-bold mt-14">
-        <h1>{title}</h1>
         <button
-            onDoubleClick={handleDelete}
+            onClick={handleDelete}
             className={`max-w-96 w-fit custom-input-error flex `}
         >
             <MdDeleteOutline className='h-6 w-auto pr-1' />
+            delete
         </button>
         <Link
             href={"/tournament/update/" + tid.current}
             className={`max-w-96 w-fit custom-input flex `}
         >
             <MdOutlineEdit className='h-6 w-auto pr-1' />
+            edit
         </Link>
       </div>
       <div className="overflow-x-auto max-w-full scrollbar scrollbar-thumb-rounded-none scrollbar-track-white/10 scrollbar-thumb-white/50">
@@ -546,7 +548,7 @@ export default function Board({ params })
           </svg>
         </div>
       </div>
-      <div className="flex flex-col justify-between w-full h-full mt-16">
+      <div className="flex flex-col justify-between w-full h-full my-16">
         {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight text-black bg-white rounded-full max-w-96 w-full mx-auto mt-8 p-4">
           <div className="font-bold pr-4 capitalize">{(leftUser && rightUser) && 'Play' || 'play next match'}</div>
            {(leftUser && rightUser) && <> <div>{leftUser}</div>
