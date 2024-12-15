@@ -7,16 +7,40 @@ import LocalGameWinner from '@/components/modals/LocalGameWinner';
 
 export default function PongGame({ setScore1, setScore2, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1}) {
 	const canvasRef = useRef(null);
+	const websocketRef = useRef(null);
 	const router = useRouter();
 	const [winner, setWinner] = useState('');
+  const allowedKeys = ['ArrowUp', 'ArrowDown', 'w', 's', 'p', 'W', 'S', 'P'];
 	// const [leftNickname, setleftNickname] = useState("default");
 	// const [rightNickname, setrightNickname] = useState("default");
 	// const [socket, setSocket] = useRef(null);
 
+  const websocketSend = (data_obj) => {
+    if (!websocketRef.current)
+        return ;
+    if (websocketRef.current.readyState !== WebSocket.OPEN)
+        return ;
+    websocketRef.current.send(JSON.stringify(data_obj));
+  }
+
+  const connectWebsocket = () => {
+    if (!websocketRef.current ||
+      !websocketRef.current.readyState  != WebSocket.OPEN ||
+      websocketRef.current.readyState != WebSocket.CONNECTING)
+    {
+      websocketRef.current = new WebSocket('ws://localhost:8000/ws/local/');
+    }
+  }
+
+  
+
+
 	useEffect(() => {
+    connectWebsocket();
+
     // console.log('nnnnnnaaames:', leftNickname, rightNickname)
-		const canvas = canvasRef.current;
-		const context = canvas.getContext('2d');
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
 
     // ball object
     const ball = {
@@ -38,6 +62,7 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
       color: 'white',
       score: 0,
     };
+
     const rectBall = {
       x: 0,
       y: 0,
@@ -120,39 +145,26 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
       context.shadowBlur = 0; // Reset shadow
     };
 
-    const socket = new WebSocket('ws://localhost:8000/ws/local/');
-    let conectionOn = false;
-    function sendVisibilityStatus() {
-      // console.log('Visibility: ');
-      // if (conectionOn === true) {
-      console.log('visibility->: ', document.visibilityState);
-      let isTabFocused = document.visibilityState === 'visible';
-      socket.send(JSON.stringify({ tabFocused: isTabFocused }));
-      // }
-    }
+    // Draw game elements
+    const drawGame = () => {
+      // Clear the canvas
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      // draw net
+      drawNet();
 
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log('WebSocket connection is open');
-      conectionOn = true;
-      // create new game EVENT
-    } else {
-      console.log('WebSocket connection is not open');
-      conectionOn = false;
-    }
-    socket.addEventListener('open', event => {
-      conectionOn = true;
-      console.log('Connected to WS Server');
-    });
+      // Draw paddles
+      drawRect(user.x, user.y, user.width, user.height, user.color);
+      drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
+      // drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
 
+      // Draw the ball
+      drawCircle(ball.x, ball.y, ball.radius, ball.color);
+      context.closePath();
+    };
 
-    //   window.addEventListener('resize', resizeCanvas);
-    //   resizeCanvas();
-    
-    //   window.addEventListener('resize', resizeCanvas);
-    //   resizeCanvas();
     let gameConfig = {};
 
-		socket.onmessage = function (message) {
+		const handleIncomingMessages = function (message) {
 			const data = JSON.parse(message.data);
 			if (data.update)
 			{
@@ -240,38 +252,42 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
 			}
 		}
 
-    // Draw game elements
-    const drawGame = () => {
-      // Clear the canvas
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      // draw net
-      drawNet();
-
-      // Draw paddles
-      drawRect(user.x, user.y, user.width, user.height, user.color);
-      drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
-      // drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
-
-      // Draw the ball
-      drawCircle(ball.x, ball.y, ball.radius, ball.color);
-      context.closePath();
-    };
-
-    if (!conectionOn) {
-      drawGame();
-    }
-
     const handleKeyDown = event => {
+      if (!allowedKeys.includes(event.key)) {
+        return;
+      }
       event.preventDefault();
-      socket.send(JSON.stringify({ onPress: event.key.trim() }));
+      // socket.send(JSON.stringify({ onPress: event.key.trim() }));
+      websocketSend({ onPress: event.key.trim() });
     };
 
     // set the key to false when the key is released
-    const handleKeyUp = event => {
+    const handleKeyUp = (event) => {
+      if (!allowedKeys.includes(event.key)) {
+        return;
+      }
       event.preventDefault();
-      socket.send(JSON.stringify({ onRelease: event.key.trim() }));
+      // socket.send(JSON.stringify({ onRelease: event.key.trim() }));
+      websocketSend({ onRelease: event.key.trim() });
     };
 
+    const handleWebsocketOpen  = (event) => {
+      websocketRef.current.onmessage = handleIncomingMessages;
+      drawGame();
+    }
+
+    function sendVisibilityStatus() {
+      // console.log('Visibility: ');
+      // if (conectionOn === true) {
+      // console.log('visibility->: ', document.visibilityState);
+      let isTabFocused = canvasRef.current.visibilityState === 'visible';
+      // socket.send(JSON.stringify({ tabFocused: isTabFocused }));
+      websocketSend({ tabFocused: isTabFocused });
+      // }
+    }
+
+    // Event listeners
+    websocketRef.current.addEventListener('open', handleWebsocketOpen);
 		document.addEventListener('keydown', handleKeyDown);
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
@@ -281,6 +297,7 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+      websocketRef.current?.close();
 		};
 	}, [winner, leftNickname, rightNickname, playStart]); // to reset to default
 	return (
