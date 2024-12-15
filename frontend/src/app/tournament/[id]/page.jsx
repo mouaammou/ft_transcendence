@@ -2,15 +2,11 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-// import { useRouter } from 'next/navigation';
 import { fetchTournamentDetail } from '@/services/apiCalls';
-// import { useSearchParams } from 'next/navigation';
 import React from 'react';
-import { getData, postData } from '@/services/apiCalls';
-import { fetchTournamentMatchPlayers } from '@/services/apiCalls';
 import Image from 'next/image';
 import TopBar from'@/components/local_tournament/TopBar';
-
+import { useRouter } from 'next/navigation';
 
     
 
@@ -66,6 +62,7 @@ const getRound = (match_index) => {
 
 export default function Board({ params })
 {
+  const router = useRouter();
   const waiting = '';
   const [finished, setFinished] = useState(false);
   const [leftUser, setLeftUser] = useState("");	
@@ -109,14 +106,17 @@ export default function Board({ params })
       8: [15],
     }
     if (match_index === 8 && player_pos === 15) return finished;
-    return positions[match_index].includes(player_pos) ? next_match : normal;
+    return positions[match_index]?.includes(player_pos) ? next_match : normal;
   }
   useEffect(() => {
     const fetchTournaments = async () => {
       const identical = await params;
       try {
-        let response = await fetchTournamentDetail(identical.id);
-        // console.log(response);
+        let response = await fetchTournamentDetail(identical.id ?? -1);
+        if (!response.id) {
+          router.push('/404');
+          return;
+        }
         setTournament(response);
         setTitle(response.title);
         setFinished(response.finished);

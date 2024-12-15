@@ -17,10 +17,10 @@ const TournamentList = () => {
         const data = await response.json();
         setTournaments(data); // Assuming data is an array of tournaments
       } else {
-        console.error('Error fetching tournaments');
+        console.log('Error fetching tournaments');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.log('Error:', error);
     }
   };
 

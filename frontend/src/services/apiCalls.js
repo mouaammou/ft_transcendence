@@ -118,7 +118,7 @@ export const fetchTournamentDetail = async (id) => {
 		const response = await api.get(`/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching tournaments:', error);
+		console.log('Error fetching tournaments:', error);
 		return {};
 	}
 };
@@ -129,7 +129,7 @@ export const fetchTournamentMatchPlayers = async (id) => {
 		const response = await api.get(`/next-match-players/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournaments:', error);
+		// console.log('Error fetching tournaments:', error);
 		return {'error': 'Error fetching tournaments'};
 	}
 };
