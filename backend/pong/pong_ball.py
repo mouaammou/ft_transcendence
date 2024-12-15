@@ -81,6 +81,7 @@ class BallBase(Collisions, Movements):
     def restart_ball(self, to_left=False):
         self.__x = self.ball_start_x
         self.__y = self.ball_start_y
+        self.ball_speed = self.ball_reset_speed
         random_angle = self.get_random_angle()
         self._step_x = math.cos(random_angle) * self.ball_start_speed
         self._step_y = math.sin(random_angle) * self.ball_start_speed
