@@ -549,10 +549,10 @@ export default function Board({ params })
         </div>
       </div>
       <div className="flex flex-col justify-between w-full h-full my-16">
-        {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight text-black bg-white rounded-full max-w-96 w-full mx-auto mt-8 p-4">
+        {tournament.match_index <= 7 && <Link href={`/l_game/${tournament.id}/`} className="flex justify-center items-center font-extralight custom-button max-w-96 w-full mx-auto mt-8">
           <div className="font-bold pr-4 capitalize">{(leftUser && rightUser) && 'Play' || 'play next match'}</div>
            {(leftUser && rightUser) && <> <div>{leftUser}</div>
-            <Image src="/vs.svg" className='filter invert mx-2' alt="vs" width={30} height={30}/>
+            <Image src="/vs.svg" className='filter mx-2' alt="vs" width={30} height={30}/>
             <div>{rightUser}</div></>}
           </Link>}
         {tournament.match_index > 7 &&
