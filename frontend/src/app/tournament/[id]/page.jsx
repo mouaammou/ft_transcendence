@@ -1,12 +1,16 @@
 // pages/tournament/page.jsx
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { fetchTournamentDetail } from '@/services/apiCalls';
+import { useEffect, useState, useRef } from 'react';
+import { fetchTournamentDetail, fetchTournamentDelete } from '@/services/apiCalls';
 import React from 'react';
 import Image from 'next/image';
 import TopBar from'@/components/local_tournament/TopBar';
 import { useRouter } from 'next/navigation';
+import { MdDeleteOutline } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
+import { Toaster, toast } from 'react-hot-toast';
+
 
     
 
@@ -63,6 +67,7 @@ const getRound = (match_index) => {
 export default function Board({ params })
 {
   const router = useRouter();
+  const tid = useRef(-1);
   const waiting = '';
   const [finished, setFinished] = useState(false);
   const [leftUser, setLeftUser] = useState("");	
@@ -111,6 +116,7 @@ export default function Board({ params })
   useEffect(() => {
     const fetchTournaments = async () => {
       const identical = await params;
+      tid.current = identical.id;
       try {
         let response = await fetchTournamentDetail(identical.id ?? -1);
         if (!response.id) {
@@ -130,13 +136,38 @@ export default function Board({ params })
     fetchTournaments();
   }, []);
 
+  const handleDelete = async () => {
+    const response = await fetchTournamentDelete(tid.current);
+    if (response.status === 204) {
+      toast.success('Tournament deleted successfully');
+      setTimeout(() => {
+        router.push('/local_game/tournament');
+      }, 2000);
+      return ;
+    }
+    toast.error('Failed to delete tournament');
+  }
+    
+
   return (
     <>
 		<TopBar activeIndex={1} />
     <div className="relative w-full h-auto">
-      <h1 className="flex justify-center items-center font-bold mt-14">
-        {title} 
-      </h1>
+      <div className="w-full flex justify-center items-center gap-4 font-bold mt-14">
+        <h1>{title}</h1>
+        <button
+            onDoubleClick={handleDelete}
+            className={`max-w-96 w-fit custom-input-error flex `}
+        >
+            <MdDeleteOutline className='h-6 w-auto pr-1' />
+        </button>
+        <Link
+            href={"/tournament/update/" + tid.current}
+            className={`max-w-96 w-fit custom-input flex `}
+        >
+            <MdOutlineEdit className='h-6 w-auto pr-1' />
+        </Link>
+      </div>
       <div className="overflow-x-auto max-w-full scrollbar scrollbar-thumb-rounded-none scrollbar-track-white/10 scrollbar-thumb-white/50">
 
         <div className="mt-16 h-auto max-w-max w-[1010px] mx-auto">
@@ -530,6 +561,7 @@ export default function Board({ params })
         }
       </div>
     </div>
+    <Toaster />
     </>
   );
 }

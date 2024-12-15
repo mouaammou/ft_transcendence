@@ -130,7 +130,19 @@ export const fetchTournamentUpdate = async (id, data_obj) => {
 		return response.data;
 	} catch (error) {
 		console.log('Error fetching tournament update:', error);
-		return {msg: error.response.data.non_field_errors[0], status: error.response.status??400};
+		return {msg: error.response.data.non_field_errors[0], status: error.response.status};
+	}
+};
+
+export const fetchTournamentDelete = async (id) => {
+	try {
+		const response = await api.delete(`/${id}/`);
+		console.log(response);
+		response.data ={status: response.status};
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournament delete:', error);
+		return { status: 400};
 	}
 };
 

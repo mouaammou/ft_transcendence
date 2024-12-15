@@ -33,7 +33,7 @@ const HomePage = () => {
                     setFilterKeyword={setFilterKeyword}
                     setCurrentPage={setCurrentPage}
                 />
-                 <Link
+                <Link
                     href={"/tournament/create"}
                     className={`max-w-96 w-full custom-input flex `}
                 >
