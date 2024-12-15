@@ -29,13 +29,7 @@ const TopBar = ({activeIndex=0}) => {
                 <IoList className='h-6 w-auto pr-1' />
                 tournament
             </Link>
-            <Link
-                href={"/tournament/create"}
-                className={`flex items-center justify-center ${activeIndex === 2?"text-blue-400":""} hover:text-blue-400 text-sm w-full sm:w-56 px-4 py-2 font-bold font-mono hover:opacity-90 uppercase text-center`}
-            >
-                 <IoMdAddCircleOutline className='h-6 w-auto pr-1' />
-                Tournament
-            </Link>
+           
         </div>
     );
 }
