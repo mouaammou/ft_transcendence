@@ -130,7 +130,7 @@ export const fetchTournamentUpdate = async (id, data_obj) => {
 		return response.data;
 	} catch (error) {
 		console.log('Error fetching tournament update:', error);
-		return {};
+		return {msg: error.response.data.non_field_errors[0], status: error.response.status??400};
 	}
 };
 

@@ -64,7 +64,7 @@ export default function TournamentForm({params}) {
         toast.success('Tournament created successfully');
         router.push(`/tournament/${response.id}`);
       } else {
-        toast.error(response.msg ??  'Failed to create tournament');
+        toast.error(response.msg ??  'Failed to update tournament');
       }
     } catch (error) {
       toast.error('Error creating tournament');
