@@ -10,6 +10,8 @@ import TopBar from'@/components/local_tournament/TopBar';
 import { FaUser } from 'react-icons/fa';
 import { MdScoreboard } from "react-icons/md";
 import { apiPlayTournamentGame } from '@/services/gameApi';
+import { MdOutlineSportsScore } from "react-icons/md";
+
 
 
 
@@ -37,6 +39,7 @@ const GamePage = ({params}) => {
 	const router = useRouter();
 	const [score1, setScore1] = useState(0);
 	const [score2, setScore2] = useState(0);
+	const [maxScore, setMaxScore] = useState(0);
 	const [finished, setFinished] = useState(false);
 	const [leftNickname, setLeftNickname] = useState("left player");
 	const [rightNickname, setRightNickname] = useState("right player");
@@ -107,7 +110,12 @@ const GamePage = ({params}) => {
 								<Image className="max-sm:w-4 " src="/vs.svg" alt="vs" width={70} height={70} />
 							</div>
 							<CountdownTimer className='w-full h-auto flex justify-center' />
+							<div className='w-full h-auto flex flex-col justify-center items-center text-xl text-red-600' >
+								<MdOutlineSportsScore />
+								{maxScore}
+							</div>
 						</div>
+
 					<div className="flex w-fit h-auto justify-center items-end font-bold text-yellow-200 text-xl">
 					<div className="flex justify-center items-center ">
 							<MdScoreboard className="pr-1" />
@@ -135,6 +143,7 @@ const GamePage = ({params}) => {
 					score2={score2}
 					setScore1={setScore1}
 					setScore2={setScore2}
+					setMaxScore={setMaxScore}
 					leftNickname={leftNickname}
 					rightNickname={rightNickname}
 					setLeftNickname={setLeftNickname}

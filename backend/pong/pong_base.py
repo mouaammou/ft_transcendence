@@ -79,8 +79,11 @@ class Base:
             
             "left_player_score": 0,
             "right_player_score": 0,
+            "max_score": self.max_score,
+            
             'left_nickname': self.left_nickname,
             'right_nickname': self.right_nickname,
+
             'title': self.title,
             'local_game_type': self.local_game_type,
             'tournament_id': self.tournament_id,

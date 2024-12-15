@@ -5,7 +5,7 @@ import LocalGameWinner from '@/components/modals/LocalGameWinner';
 
 
 
-export default function PongGame({ setScore1, setScore2, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1}) {
+export default function PongGame({ setScore1, setScore2, setMaxScore, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1}) {
 	const canvasRef = useRef(null);
 	const websocketRef = useRef(null);
 	const router = useRouter();
@@ -191,6 +191,10 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
 					computer.score = data.update.right_player_score;
 					setScore1(score1 => data.update.right_player_score);
 				}
+				if (data.update.max_score)
+				{
+					setMaxScore(data.update.max_score);
+				}
 				if (data.update.finished)
 				{
 					if (data.update.finished === 'left_player')
@@ -224,7 +228,10 @@ export default function PongGame({ setScore1, setScore2, title, setTitle, setLef
 				setScore2(score2 => gameConfig.left_player_score);
 				computer.score = gameConfig.right_player_score;
 				setScore1(score1 => gameConfig.right_player_score);
-
+        if (data.config.max_score)
+        {
+          setMaxScore(data.config.max_score);
+        }
         if (data.config.local_game_type === 'tournament')
         {
           console.log('=======================troun================>>>>>>>>>');
