@@ -12,6 +12,23 @@ from game.local_game.eventloop import EventLoopManager
 from django.db.models import Q
 
 
+class SearchLocalTournament(ModelViewSet):
+    serializer_class = TournamentSerializer
+    pagination_class = TournamentPagination
+    
+    def get_queryset(self):
+        """
+        Filters the queryset based on the filter_keyword from the URL.
+        """
+        query = self.request.GET.get('search', '')
+        print('#q'*30)
+        print(query)
+        print('#q'*30)
+        if not query:
+            return LocalTournament.objects.none()
+        return LocalTournament.objects.filter(title__icontains=query)
+
+
 class LocalTournamentViewSet(ModelViewSet):
     # queryset = LocalTournament.objects.all().order_by('-created_at')
     serializer_class = TournamentSerializer

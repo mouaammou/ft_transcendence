@@ -81,7 +81,7 @@ const Card = ({tournament={}}) => {
     );
     return (
         <div
-            onClick={()=>handleTournamentDetail(tournament.id)}
+            onClick={()=>handleTournamentDetail(tournament.id ?? -1)}
             className="p-1 flex flex-col justify-center items-center mx-auto w-full bg-white/10 hover:bg-white/20  rounded-t-lg rounded-b-lg cursor-pointer"
         >
             
