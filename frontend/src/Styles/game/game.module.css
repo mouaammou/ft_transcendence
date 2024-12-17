@@ -39,19 +39,21 @@
 
 .down_section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* justify-content: space-between; */
+  gap: 50px;
+  /* align-items: center; */
   width: fit-content;
 
   margin: auto;
 }
+
 .left_user,
 .right_user {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 10%;
+  /* width: 10%; */
 }
 
 .left_user_img,
@@ -71,7 +73,7 @@
 }
 
 .self_game {
-  width: 70%;
+  width: 100%;
 }
 
 .play_ground {
@@ -84,42 +86,8 @@
   /* height: 100%; */
 }
 
+
 @media (max-width: 1388px) {
-  .left_score,
-  .right_score {
-    font-size: 2rem;
-  }
-
-  /*
-    make the game display orizontally in the mobile view
-    */
-.vs_time {
-    font-size: 1rem;
-  }
-  .left_user,
-  .right_user {
-    width: 10%;
-  }
-  .left_user_img,
-  .right_user_img {
-    width: fit-content;
-  }
-
-  .self_game {
-    width: 70%;
-  }
-
-  .play_ground {
-    width: 100%;
-  }
-
-   .left_user_name,
-  .right_user_name {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 668px) {
   .game {
     justify-content: space-around;
     padding-top: 10px;
@@ -131,6 +99,7 @@
   }
   .down_section {
     /* flex-direction: column; */
+    gap: 0;
     flex-wrap: wrap;
   }
   .left_user,
@@ -146,9 +115,6 @@
     flex-basis: 100%;
   }
 
-  /*
-    make the game display orizontally in the mobile view
-    */
   .vs_time {
     font-size: 1rem;
   }
@@ -169,6 +135,7 @@
   .left_user_img,
   .right_user_img {
     width: 40%;
+    max-width: 100px;
     height: auto;
   }
 

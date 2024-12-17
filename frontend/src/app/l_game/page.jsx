@@ -1,7 +1,7 @@
 'use client';
 import PongGame from './PongGame';
 import { useState, useEffect } from 'react';
-import '@/styles/game/game.css';
+// import '@/styles/game/game.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 

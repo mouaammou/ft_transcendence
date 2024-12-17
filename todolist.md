@@ -84,7 +84,7 @@
 
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
+    
+# Path to run redis server 
+    /Users/login/.brew/opt/redis/bin/redis-server
 
-
-
->>>>>>> game

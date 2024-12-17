@@ -41,7 +41,7 @@ const ConnectFour = () => {
                 </div>
                 <PlayerCard
                     avatar="defaultAvatar.svg"
-                    name="Friend"
+                    name="MyFriend"
                     cardStyle={styles.player2Card}
                 />
             </div>

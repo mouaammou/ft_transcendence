@@ -9,11 +9,13 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
        
     games_manager = PlayersGamesManager 
     async def connect(self):
-        await self.accept()
+        self.user = self.scope['user']
         self.player_id = self.scope['user'].id
-        if self.scope['user'].is_authenticated:
-            print(f"Player {self.player_id} connected")
-            self.games_manager.connect(self, self.player_id)
+        if self.user and not self.user.is_authenticated:  
+            return
+        await self.accept()
+        print(f"Player {self.player_id} connected")
+        self.games_manager.connect(self, self.player_id)
             
     
     

@@ -94,7 +94,6 @@ class GameLogic:
                 
                 self.switch_turn()
                 return True
-
         return False
 
     def update_winner(self, winner_id):
@@ -113,7 +112,7 @@ class GameLogic:
         
     async def save_game(self, type_finish = 'defeat'):
         print("on save game function")
-        if self.save_once:
+        if self.save_once == True:
             return
         self.save_once = True
         try :

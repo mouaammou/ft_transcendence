@@ -1,8 +1,4 @@
 'use client';
-
-import '@/styles/game/game.css';
-
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
@@ -165,7 +161,7 @@ export default function CreateJoinTournamentPage() {
           autoComplete='off'
           onChange={handleInputChange}
           placeholder="Pong_1337"
-          className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
+          className="rounded-xl w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
                         placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">

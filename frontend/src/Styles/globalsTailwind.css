@@ -152,3 +152,13 @@ h6 {
 	animation: leave 0.3s forwards;
 }
 }
+
+
+
+@layer utilities {
+  @media (min-width: 1070px) {
+    .custom-lg-block {
+      @apply block;
+    }
+  }
+}

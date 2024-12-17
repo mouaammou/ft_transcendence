@@ -28,14 +28,17 @@ class PlayersGamesManager:
                 if game is None:
                     return
                 winner = game.player1_id if game.player1_id != player_id else game.player2_id
-                data1 = {'status': 'DISCONNECTED'}
-                FourGameOutput._send_to_consumer_group(player_id, data1)
-                data2 = {'status': 'WINNER_BY_DISCONNECTION'}
-                FourGameOutput._send_to_consumer_group(winner, data2)
+                if game.save_once == False:
+                    data1 = {'status': 'DISCONNECTED'}
+                    FourGameOutput._send_to_consumer_group(player_id, data1)
+                    data2 = {'status': 'WINNER_BY_DISCONNECTION'}
+                    FourGameOutput._send_to_consumer_group(winner, data2)
                 game.player_disconnected = player_id
                 asyncio.create_task(game.save_game(type_finish='disconnect'))
                 game.game_active = False
-                cls.games.pop(game_id)
+                cls.players.pop(game.player1_id, None)
+                cls.players.pop(game.player2_id, None)
+                cls.games.pop(game_id, None)
         except Exception as e:
             logger.error(f"Error disconnecting player with ID: {player_id}: {e}")
             raise
@@ -69,9 +72,6 @@ class PlayersGamesManager:
                 else:
                     winner = game.player2_id
                 game.update_winner(winner)
-                # cls.players.pop(game.player1_id, None)
-                # cls.players.pop(game.player2_id, None)
-                # cls.games.pop(game_id, None)
             elif 'type' in data and data['type'] == 'MAKE_MOVE':
                 print(f"Player {player_id} will make a move manager")
                 game_id = cls.players.get(player_id)
