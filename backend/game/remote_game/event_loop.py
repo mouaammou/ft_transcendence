@@ -318,9 +318,14 @@ class EventLoopManager:
         # cls._reset_game_focus(game)
 
         player_id_2 = game.player_1 if game.player_2 == player_id else game.player_2
-        if RemoteGameOutput.there_is_focus(player_id_2):
-            cls._resume_game(game)
-            return True
+        
+        if not RemoteGameOutput.there_is_focus(player_id_2):
+            cls._handle_unfocused_game(game, player_id_2)
+            print(f"GAME IS PAUSED {game.finished}")
+            return False
+        
+        cls._resume_game(game)
+        return True
 
             # cls._handle_unfocused_game(game, player_id_2)
             # print(f"GAME IS PAUSED {game.finished}")
@@ -414,6 +419,7 @@ class EventLoopManager:
                         "to_user_id": player,
                         "from_user_id": organizer,
                         "message": f"{round} round starts in 15 seconds. Go to /tournament_board!",
+                        "notif_status": "pending",
                     }
                     await consumer.round_notifs(data)
                     logging.info(f"Notification sent to player: {player}")
@@ -439,7 +445,7 @@ class EventLoopManager:
                         await cls.send_tournament_notifications(
                             players_in_round,
                             tournament.round.status,
-                            tournament.organizer,
+                            tournament.organizer,   
                         )
                     except Exception as e:
                         print(f"Error sending notifications: {e}")
@@ -451,9 +457,9 @@ class EventLoopManager:
                         cls.end_tournament(tournament_id)
                         return
                     TournamentManager.players_in_same_game_left_board_page(tournament)
-                    RemoteGameOutput.send_tournament_players(
-                        players_in_round, {"status": "PUSH_TO_GAME"}
-                    )
+                    # RemoteGameOutput.send_tournament_players(
+                    #     players_in_round, {"status": "PUSH_TO_GAME"}
+                    # )
                 else:
                     print(
                         f"No players found in the current round of tournament {tournament_id}"
