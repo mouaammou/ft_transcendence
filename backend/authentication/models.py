@@ -63,16 +63,6 @@ class Notification(models.Model):
 
 
 # ----------------- model Frienship -----------------#  
-################### Helper function to create notifications
-def create_notification(sender, receiver, message, notif_type, notif_status):
-	Notification.objects.create(
-		sender=sender,
-		receiver=receiver,
-		message=message,
-		notif_type=notif_type,
-		notif_status=notif_status
-	)
-################### Helper function to create notifications
 
 class Friendship(models.Model):
 	STATUS_CHOICES = (
