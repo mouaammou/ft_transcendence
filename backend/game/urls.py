@@ -1,9 +1,14 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from .views.tournament import LocalTournamentViewSet, TournamentNextMatchPlayersView
+from .views.tournament import LocalTournamentViewSet, TournamentNextMatchPlayersView, SearchLocalTournament
 from .views.play import PlayTounament, PlayRegular
 
 urlpatterns = [
+    path(
+        'local-tournaments/search/',
+        SearchLocalTournament.as_view({'get': 'list'}),
+        name='search-local-tournaments',
+    ),
     path(
         'local-tournaments/filter/<str:filter_keyword>/',
         LocalTournamentViewSet.as_view({'get': 'list', 'post': 'create'}),
@@ -16,7 +21,11 @@ urlpatterns = [
     ),
     path(
         'local-tournaments/<int:pk>/',
-        LocalTournamentViewSet.as_view({'get': 'retrieve'}),
+        LocalTournamentViewSet.as_view({
+            'get': 'retrieve',
+            'put': 'update',
+            'delete': 'destroy',
+        }),
         name='local-tournaments-details',
     ),
     path('play-tournament/<int:tid>', PlayTounament.as_view(), name='play-tournament'),

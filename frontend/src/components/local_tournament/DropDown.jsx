@@ -17,13 +17,13 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPa
 
     return (
         <div 
-            className={`max-w-96 w-full relative inline-flex`}
+            className={`max-w-96 w-full relative z-50 inline-flex`}
             onMouseLeave={closeDropdown}>
             <button
                 onClick={toggleDropdown} // Toggle visibility
                 type="button"
                 // className="justify-center w-full py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
-                className="justify-center w-full inline-flex items-center gap-x-2 custom-button truncate"
+                className="justify-center w-full min-w-[150px] inline-flex items-center gap-x-2 custom-button truncate"
                 aria-haspopup="menu"
                 aria-expanded={dropdown ? 'true' : 'false'}
                 // onBlur={closeDropdown}

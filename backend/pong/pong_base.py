@@ -30,7 +30,7 @@ class Base:
         
         self.ball_width = 25
         self.ball_height = self.ball_width
-        self.ball_speed = 8
+        self.ball_speed = 12
         self.max_ball_speed = 25
         self.ball_speed_increase_factor = 0.2 
         self.ball_start_speed = 5 # ball restart speed on score increase
@@ -79,8 +79,11 @@ class Base:
             
             "left_player_score": 0,
             "right_player_score": 0,
+            "max_score": self.max_score,
+            
             'left_nickname': self.left_nickname,
             'right_nickname': self.right_nickname,
+
             'title': self.title,
             'local_game_type': self.local_game_type,
             'tournament_id': self.tournament_id,

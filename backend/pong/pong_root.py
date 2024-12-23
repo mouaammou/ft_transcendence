@@ -38,6 +38,7 @@ class RootBase(Base):
         conf = super().get_game_config
         self = self.ball.root_obj
         data = {
+            "max_score": self.max_score,
             'left_player_score': self.left_player.score,
             'right_player_score': self.right_player.score,
             'left_paddle_pos': self.left_player.padd_pos,

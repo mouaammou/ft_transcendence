@@ -31,7 +31,7 @@ class TournamentSerializer(ModelSerializer):
                 )
     
     def validate_allowed_chars(self, data_values):
-        valid_pattern = re.compile(r'^[a-zA-Z0-9_]*$')
+        valid_pattern = re.compile(r'^[a-zA-Z0-9_ ]*$')
         for nickname in data_values:
             if not valid_pattern.match(nickname):
                 raise ValidationError('All fields can only container alphanumeric characters and underscores: ' + str(nickname))

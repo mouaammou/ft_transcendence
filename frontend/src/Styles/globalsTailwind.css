@@ -158,6 +158,10 @@ h6 {
 
 /* final componenets */
 
+.custom-card {
+	@apply bg-gray-800 p-4 rounded-lg shadow-[3px_3px_#fafafa] border-2 border-white;
+}
+
 .custom-button {
 	@apply bg-gray-800 px-4 py-2 text-white rounded-lg text-lg
 	capitalize border-2 border-white  active:translate-x-[3px]
