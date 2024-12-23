@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from datetime import timedelta
 import asyncio
 import uuid
+import random
         
     
 class GameHistory(models.Model):
