@@ -5,23 +5,20 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useDebounce } from 'use-debounce';
 
-const SearchedItem = ({ result }) => {
+const SearchedItem = ({ result , setResults}) => {
   return (
-    <Link href={`/friend/${result.username}`}>
-      <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 rounded-lg shadow-sm bg-white w-96">
-        <div className="flex items-center space-x-4">
-          <img
-            src={result.avatar}
-            alt="Profile"
-            className="w-10 h-10 rounded-full object-cover border border-gray-200"
-          />
-          <span className="font-medium text-gray-800 text-sm">{result.username}</span>
-        </div>
-        <div className="text-xs bg-blue-100 text-blue-800 py-1 px-3 rounded-full font-medium">
-          In Tournament
-        </div>
+  <Link href={`/friend/${result.username}`} onClick={() => setResults({})}>
+    <div className="flex flex-col sm:flex-row items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 rounded-lg shadow-sm bg-white w-full sm:w-96 my-1">
+      <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+        <img
+          src={result.avatar}
+          alt="Profile"
+          className="w-10 h-10 rounded-full object-cover border border-gray-200"
+        />
+        <span className="font-medium text-gray-800 text-sm">{result.username}</span>
       </div>
-    </Link>
+    </div>
+  </Link>
   );
 };
 
@@ -42,10 +39,6 @@ const SearchProfileComponent = () => {
       if (response.status === 200) {
         setLoading(true);
         setResults(response.data);
-
-        setTimeout(() => {
-          setResults({});
-        }, 5000);
       } else {
         throw new Error('Profile not found');
       }
@@ -60,7 +53,7 @@ const SearchProfileComponent = () => {
     }
     if (debouncedSearchTerm) {
       searchQuery();
-    }
+    };
   }, [debouncedSearchTerm, searchTerm]);
 
   return (
@@ -96,7 +89,9 @@ const SearchProfileComponent = () => {
         <div className="absolute top-12 left-0 bg-transparent z-40">
           {loading &&
             results.length > 0 &&
-            results.map((result, index) => <SearchedItem key={index} result={result} />)}
+            results.map((result, index) => <SearchedItem key={index} result={result} setResults={setResults}
+            />)
+          }
         </div>
       </div>
     </div>

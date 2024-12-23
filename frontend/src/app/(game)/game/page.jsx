@@ -5,7 +5,7 @@ import '@/styles/game/game.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import { getData } from '@/services/apiCalls';
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 import { useRouter } from 'next/navigation';
 
 const GamePage = () => {
@@ -16,7 +16,8 @@ const GamePage = () => {
   const router = useRouter();
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+  const [gameType, setGameType] = useState('vsfriend');
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
 
 
   const Skeleton = () => (
@@ -27,18 +28,20 @@ const GamePage = () => {
     </div>
   );
 
-  const handle_message = message => {
-    const data = JSON.parse(message.data);
-    console.log('data -----> ', data.data);
+  useEffect(() => {
+    if (lastMessage === null) return;
+    const data = JSON.parse(lastMessage.data);
+    // console.log('data -----> ', data);
     if (data.status == 'GAME_DATA') {
       setPlayer1_id(data.player_1);
       setPlayer2_id(data.player_2);
+      setGameType(data.game_type);
     } else if (data.status == 'NO_GAME_DATA') {
       router.push('/play');
     } else if (data.status == 'PLAYER_IN_TOURNAMENT') {
       router.push('/tournament_board');
     }
-  };
+  }, [lastMessage]);
 
   const fetchPlayer = async player_id => {
     try {
@@ -63,8 +66,8 @@ const GamePage = () => {
   }, [player1_id, player2_id]);
 
   useEffect(() => {
-    registerMessageHandler(handle_message);
-    sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
   }, []);
 
   return (
@@ -95,7 +98,7 @@ const GamePage = () => {
           <Skeleton />
         )}
         <div className="self-game">
-          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} />
+          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} gameType={gameType} />
         </div>
         {player2 ? (
           <div className="right-user">

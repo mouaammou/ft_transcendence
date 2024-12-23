@@ -39,7 +39,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
             <div className="flex items-center space-x-4">
                 <div className="relative">
                     <img 
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500 transition-all" 
+                        className="w-10 h-10 min-w-10 rounded-full object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500 transition-all" 
                         src={data.avatar} 
                         alt={`${data.username}'s avatar`} 
                     />
@@ -80,6 +80,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                         </button>
                     </>
                 )}
+                {data.notif_status !== 'pending' && (
                 <button
                     onClick={() => onAction('read')}
                     className="bg-blue-600 text-white rounded-full p-1.5 hover:bg-blue-700 transition-colors"
@@ -87,6 +88,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                 >
                     <IoCheckmarkDoneOutline className="text-lg" />
                 </button>
+                )}
             </div>
         </div>
     );
@@ -115,9 +117,10 @@ const NotificationBell = () => {
         markAsRead(data.id);
     }, [markAsRead, setNotifications]);
 
-    useEffect(() => {
-        UnreadNotifications();
-    }, [UnreadNotifications]);
+	// Fetch unread notifications on component mount
+	useEffect(() => {
+		UnreadNotifications();
+	}, []);
 
     const toggleDropdown = () => setIsOpen((prev) => !prev);
 

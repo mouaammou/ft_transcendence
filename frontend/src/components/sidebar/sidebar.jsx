@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@components/auth/loginContext';
 import { usePathname } from 'next/navigation';
-import { Home, Users, MessageCircle, Gamepad2, User, Settings, LogOut } from 'lucide-react';
+import { Home, Users, MessageCircle, Gamepad2, User, Settings, LogOut, UserPlus} from 'lucide-react';
 import Link from 'next/link';
 
 export default function Sidebar() {
@@ -13,10 +13,11 @@ export default function Sidebar() {
   const sidebarItems = [
     { label: 'Home', icon: Home, route: '/' },
     { label: 'Friends', icon: Users, route: '/friends' },
+    { label: 'All Users', icon: UserPlus, route: '/allusers' },
     { label: 'Chat', icon: MessageCircle, route: '/chat' },
     { label: 'Game', icon: Gamepad2, route: '/play' },
     { label: 'Profile', icon: User, route: '/profile' },
-    { label: 'Settings', icon: Settings, route: '/settings' },
+    { label: 'Settings', icon: Settings, route: '/edit_profile' },
   ];
 
   return (

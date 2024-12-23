@@ -138,14 +138,14 @@ export default function FriendProfile({ params }) {
 		if (!lastJsonMessage || !isConnected) return;
 
 		if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
-		setFriendStatusRequest('no');
+			setFriendStatusRequest('no');
 		}
 
 		if (
-		lastJsonMessage.type === 'user_status_change' &&
-		lastJsonMessage.username === profile.username
+			lastJsonMessage.type === 'user_status_change' &&
+			lastJsonMessage.username === profile.username
 		) {
-		setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
+			setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
 		}
 	}, [lastJsonMessage, isConnected, profile.username]);
 
@@ -154,7 +154,11 @@ export default function FriendProfile({ params }) {
 			setPageNotFound(false);
 			notFound();
 		}
-	}, [pageNotFound]);
+		setTimeout(() => {
+			if (friendStatusRequest === 'pending')
+				setFriendStatusRequest('no');
+		}, 2000);
+	}, [pageNotFound, friendStatusRequest]);
 
 	return (
 		profile && (data.username !== profile.friendProfile) && !pageNotFound && (

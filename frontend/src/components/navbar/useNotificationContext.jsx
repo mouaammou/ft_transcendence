@@ -48,7 +48,8 @@ export const NotificationProvider = ({ children }) => {
 		if (!isConnected || !data) return;
 		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
 			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
-			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT, NOTIFICATION_TYPES.ROUND
+			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT,
+      NOTIFICATION_TYPES.ROUND
 		].includes(data.type)) {
 			console.log('WebSocket FOR Notifications:', data);
 			// setNotifications((prev) => [...prev, { ...data }]);

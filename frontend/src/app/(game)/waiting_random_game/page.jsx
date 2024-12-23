@@ -7,13 +7,13 @@ import { getData } from '@/services/apiCalls';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { Modal } from '@/components/modals/Modal';
 
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 
 
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
 const WaitingPage = () => {
-  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
   const { profileData: user_data } = useAuth();
   const [opponent, setOpponent] = useState(null);
   const router = useRouter();
@@ -22,49 +22,57 @@ const WaitingPage = () => {
   const [msgDescription, setMsgDescription] = useState('');
   let timer;
 
-  const handleMessage = async (message) => {
-    const data = JSON.parse(message.data);
-    console.log('data -----> ', data.data);
-    if (data.status === 'start') {
-      const opponent_id = data.opponent;
-      try {
-        const fetchedUser = await getData(`/userById/${opponent_id}`);
-        if (fetchedUser.status === 200) {
-          setOpponent(fetchedUser.data);
-          timer = setTimeout(() => {
-            router.push('/game');
-          }, 1000);
-        } else {
-          console.error('Fetched user data is invalid');
-        }
-      } catch (error) {
-        console.error('Failed to fetch opponent data', error);
+  const fetchOpponentData = async (opponent_id) => {
+    try {
+      const fetchedUser = await getData(`/userById/${opponent_id}`);
+      if (fetchedUser.status === 200) {
+        setOpponent(fetchedUser.data);
+        timer = setTimeout(() => {
+          router.push('/game');
+        }, 1000);
+      } else {
+        console.log('Fetched user data is invalid');
       }
-    } else if (data.status === 'already_in_game') {
-      setModalOpen(true);
-      setModalMessage('You Are already In Game');
-      setMsgDescription('You are currently participating in a game. Please complete your ongoing game before joining a new one. Thank you for your engagement!');
-      setTimeout(() => {
-        router.push('/game');
-      }, 2000);
-    } else if (data.status === 'already_in_tournament') {
-      setModalOpen(true);
-      setModalMessage('You Are Already In Tournament');
-      setMsgDescription('You are currently registered in a tournament. Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!');
-      setTimeout(() => {
-        router.push('/tournament_board');
-      }, 2000);
+    } catch (error) {
+      console.log('Failed to fetch opponent data', error);
     }
   };
 
   useEffect(() => {
-    registerMessageHandler(handleMessage);
-    sendMessage(JSON.stringify({ type: 'RANDOM_GAME' }));
+    if (lastMessage !== null) {
+      const data = JSON.parse(lastMessage.data);
+
+      if (data.status === 'start') {
+        const opponent_id = data.opponent;
+        fetchOpponentData(opponent_id);
+      } else if (data.status === 'already_in_game') {
+        setModalOpen(true);
+        setModalMessage('You Are already In Game');
+        setMsgDescription('You are currently participating in a game. Please complete your ongoing game before joining a new one. Thank you for your engagement!');
+        setTimeout(() => {
+          router.push('/game');
+        }, 2000);
+      } else if (data.status === 'already_in_tournament') {
+        setModalOpen(true);
+        setModalMessage('You Are Already In Tournament');
+        setMsgDescription('You are currently registered in a tournament. Please complete or leave your ongoing participation before entering a new tournament. Thank you for being part of the event!');
+        setTimeout(() => {
+          router.push('/tournament_board');
+        }, 2000);
+      }
+
+    }
+  }, [lastMessage]);
+
+
+  useEffect(() => {
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'RANDOM_GAME' }));
 
     return () => {
       clearTimeout(timer);
-      unregisterMessageHandler(handleMessage);
-      sendMessage(JSON.stringify({ type: 'LEAVE_RANDOM_PAGE' }));
+      if (isConnected)
+        sendMessage(JSON.stringify({ type: 'LEAVE_RANDOM_PAGE' }));
     };
   }, []);
 

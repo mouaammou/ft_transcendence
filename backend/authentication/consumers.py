@@ -60,6 +60,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		# Handle logout event
 		if logout and self.user.is_authenticated:
 			await self.untrack_user_connection()
+			self.scope['user'] = None  # Set the scope user to None
+			print(f"\n scope user: {self.scope['user']}\n")
+			# await self.close()
 
 		# Handle online event
 		elif online and self.user.is_authenticated:
@@ -252,8 +255,9 @@ class NotificationConsumer(BaseConsumer):
 	async def round_notifs(self, data):
 		print(f"new round: {data}\n")
 		to_user_id = data.get('to_user_id')
+		from_user_id = data.get('from_user_id')
 		try:
-			user = await database_sync_to_async(User.objects.get)(id=to_user_id)
+			user = await database_sync_to_async(User.objects.get)(id=from_user_id)
 			user_data = UserSerializer(user).data
 			await self.send_notification_alert(to_user_id, {
 				'type': 'round_notification',
@@ -264,7 +268,7 @@ class NotificationConsumer(BaseConsumer):
 		except Exception as e:
 			logger.error(f"\nError sending game invite: {e}\n")
 
-	async def handle_invite_to_game(self, data):
+	async def handle_invite_to_game(self, data): 
 		print(f"\ninvite_to_game: {data}\n")
 		to_user_id = data.get('to_user_id')
 		try:
