@@ -153,12 +153,6 @@ const NotificationBell = () => {
                     <div className="flex justify-between items-center p-4 border-b border-gray-700">
                         <h3 className="text-sm font-semibold text-white">Notifications</h3>
                         <div className="flex items-center space-x-2">
-                            <button 
-                                className="text-blue-400 hover:text-blue-300 transition-colors"
-                                aria-label="Mark all as read"
-                            >
-                                <IoCheckmarkDoneOutline className="text-lg" />
-                            </button>
                             <Link 
                                 href="/notifications" 
                                 className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors"

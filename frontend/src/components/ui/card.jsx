@@ -23,7 +23,10 @@ import React from 'react';
 export function Card({ children, className }) {
   return (
     // <div className={`bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden ${className}`}>
-    <div className={`bg-primary border border-gray-200 shadow-lg rounded-xl overflow-hidden ${className}`}>
+    <div 
+      className={` border border-gray-200 shadow-lg rounded-xl overflow-hidden ${className}`}
+      style={{ backgroundColor: "#070828" }}
+    >
       {children}
     </div>
   );

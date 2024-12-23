@@ -1,12 +1,15 @@
 'use client';
 
-import React, { createContext, useState, useEffect, useRef } from 'react';
-import { getData } from '@/services/apiCalls';
+import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
+import { deleteData, getData , postData} from '@/services/apiCalls';
 // import usersData from '../data/users.json'
 import { useAuth } from '@/components/auth/loginContext.jsx';
 
 
 import { useDebounce } from 'use-debounce'; // Import from use-debounce
+import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import { router } from 'next/client';
+import { all } from 'axios';
 
 
 
@@ -41,7 +44,7 @@ export const ChatProvider = ({ children }) => {
     const [socket, setSocket] = useState(null); // WebSocket connection
     const [nextPage, setNextPage] = useState(null); // Store the next page URL
     const [debouncedSearchTerm] = useDebounce(searchTerm, 400);
-    const { profileData: currentUser } = useAuth(); // Current authenticated user
+    const { profileData: currentUser , isAuth} = useAuth(); // Current authenticated user
     const chatContainerRef = useRef(null); // Ref for the chat container
     const endRef = useRef(null); // Reference to scroll to bottom of chat
     const typingTimeoutRef = useRef(null); // To manage typing timeout
@@ -51,6 +54,20 @@ export const ChatProvider = ({ children }) => {
     const selectedUserRef = useRef(null);
     // usestate to check active scrollToEnd or not
     const [activeScrollToEnd, setActiveScrollToEnd] = useState(false);
+
+    const [friendStatusRequest, setFriendStatusRequest] = useState(null);
+
+
+    //test friends
+    const {
+		users,
+		setUsers,
+        lastMessage,
+        isConnected,
+	} = useWebSocketContext();
+    // test friends
+
+
     // ************************ end ***********************
          // ************************  Fetch friends (users to chat with) ************************
     const fetchFriends = async (search = '') => {
@@ -70,27 +87,112 @@ export const ChatProvider = ({ children }) => {
                     setOriginalUsers(newUsers);
                 }
                 setAllUsers(newUsers);
+                console.log('newUsers => ', newUsers);
                 // setNextPage(null); // Clear next page state as it's no longer used
-            } else {
-                console.error("Unexpected response status:", response.status);
+            }
+            // Handle unauthorized response
+
+            // we can use router.push('/login');
+            else if (response.status === 401) {
+                // Handle unauthorized response
+                console.error("Unauthorized access ");
+                // history.push('/login'); // Redirect to login page
+                // router.push('/login');
+            } 
+            else {
+                console.error(" ****** Unexpected response status:", response);
             }
         } catch (error) {
             console.error("Failed to fetch friends:", error);
         }
     };
 
-    //  ************************  Handle search functionality  ************************
+    // ************************  Fetch fetchOnlineUsers ************************
 
+    // old methode
+    // const fetchOnlineUsers = async () => {
+    //     try {
+    //         const url = `/chat-friends`;
+    //         const response = await getData(url);
+
+    //         if (response.status === 200) {
+    //             setOnlineUsers(response.data); // Update only online users
+    //         } else {
+    //             console.error("Unexpected response status:", response.status);
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to fetch online users:", error);
+    //     }
+    // };
+
+
+     // Fetch online users
+     const fetchOnlineUsers = () => {
+        console.log('originalUsers => ', originalUsers);
+        const onlineUsers = originalUsers.filter(user => user.friend && user.friend.status === 'online');
+        console.log('onlineUsers => ', onlineUsers);
+        setOnlineUsers(onlineUsers);
+    };
+
+    // Usage in a component or effect
+    useEffect(() => {
+        fetchOnlineUsers();
+    }, [originalUsers]);
+
+    
+    //  ************************  Handle search functionality  ************************
+    
     // Update search term
     const handleSearch = (event) => {
         setSearchTerm(event.target.value); // Update the search term as the user types
     };
-
+    
     // Effect to fetch friends when debounced search term changes
     useEffect(() => {
-        fetchFriends(debouncedSearchTerm); // Only fetch when debouncedSearchTerm changes
-    }, [debouncedSearchTerm]);
+        if (isAuth) {
+            fetchFriends(debouncedSearchTerm); // Only fetch when debouncedSearchTerm changes
+        }
+    }, [debouncedSearchTerm, isAuth]);
+    
+    // ************************ end ***********************
+    
+    // ************************  Fetch friends (users to chat with) ************************
+    
 
+    const handleOnlineStatus = useCallback(
+        (message) => {
+            if (!message || !isConnected) return;
+            try 
+            {
+                const data = JSON.parse(message.data);
+                if (data.type === 'user_status_change') {
+                    console.log('WebSocket ONLINE STATUS:', data);
+                    setAllUsers((prevUsers) =>
+                        prevUsers.map((user) =>
+                            user.friend && user.friend.username === data.username
+                        ? { ...user, friend: { ...user.friend, status: data.status } }
+                        : user
+                    ));
+                    setOriginalUsers((prevUsers) =>
+                        prevUsers.map((user) =>
+                            user.friend && user.friend.username === data.username
+                                ? { ...user, friend: { ...user.friend, status: data.status } }
+                                : user
+                        )
+                    );
+                    // update online users
+                    // fetchOnlineUsers(); // Update online users after status change
+                }
+            } catch (error) {
+                console.error('Error in handleOnlineStatus:', error);
+            }
+        },
+        [isConnected]
+    );
+    // Effect to handle incoming WebSocket messages
+    useEffect(() => {
+    if (lastMessage) handleOnlineStatus(lastMessage);
+    }, [lastMessage, handleOnlineStatus]);
     // ************************ end ***********************
 
 
@@ -231,7 +333,9 @@ export const ChatProvider = ({ children }) => {
             scrollToEnd();
         }, 100);
         
-        const userHasLastMessage = allUsers.some((friend) => friend.friend.id === user.id && friend.last_message && friend.last_message.message);
+        const userHasLastMessage = allUsers.some((friend) => 
+            friend && friend.friend && friend.friend.id === user.id && friend.last_message && friend.last_message.message
+        );
         if (socket && userHasLastMessage) {
             console.log('Sending mark_read to backend');
             // socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
@@ -254,13 +358,103 @@ export const ChatProvider = ({ children }) => {
             );
         }
 
+        // Check if the selected user is blocked
+
+        const selectedUserStatus = allUsers.find((friend) => friend.friend.id === user.id)?.friend.friendship_status;
+        console.log('****** selectedUserStatus => ', selectedUserStatus);
+        if (selectedUserStatus === 'blocked')
+        {
+
+            console.log('****** setFriendStatusRequest is  blocked => ');
+            setFriendStatusRequest('blocked');
+        }
+        else
+        {
+            console.log('****** setFriendStatusRequest is  accepted => ');
+            setFriendStatusRequest('accepted');
+        }
     };
     // ************************ end ***********************
 
+    // *********** block friends ********
+
+    const blockFriend = useCallback(() => {
+        console.log('selectedUser.id in blockFriend => ', selectedUserRef.current?.id)
+        // if (selectedUser?.id)
+        if (selectedUserRef.current?.id)
+            // postData(`/blockFriend/${selectedUser.id}`)
+            postData(`/blockFriend/${selectedUserRef.current.id}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        setFriendStatusRequest('blocked');
+                        setAllUsers((prevUsers) =>
+                            prevUsers.map((friend) =>
+                                friend.friend.id === selectedUserRef.current.id
+                                    ? {
+                                        ...friend,
+                                        friend: {
+                                            ...friend.friend,
+                                            friendship_status: 'blocked',
+                                        },
+                                    }
+                                    : friend
+                            )
+                        );
+                    }
+                    else {
+                        console.log('Failed to block friend, response status:', response);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    console.log('Error blocking friend:', error);
+                });
+    // }, [selectedUser?.id]);
+    // });
+    }, [selectedUserRef.current?.id]);
+
+
+    const removeBlock = useCallback(() => {
+        console.log('selectedUser.id in removeBlock => ', selectedUserRef.current?.id)
+        // if (selectedUser?.id)
+        if (selectedUserRef.current?.id)
+            // deleteData(`/removeBlock/${selectedUser.id}`)
+            deleteData(`/removeBlock/${selectedUserRef.current.id}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        setFriendStatusRequest('accepted');
+                        setAllUsers((prevUsers) =>
+                            prevUsers.map((friend) =>
+                                friend.friend.id === selectedUserRef.current.id
+                                    ? {
+                                        ...friend,
+                                        friend: {
+                                            ...friend.friend,
+                                            friendship_status: 'accepted',
+                                        },
+                                    }
+                                    : friend
+                            )
+                        );
+                    }
+                    else {
+                        console.log('Failed to remove block, response status:', response);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    console.log('Error removing block:', error);
+                });
+    // }, [selectedUser?.id]);
+    // });
+    }, [selectedUserRef.current?.id]);
+    // *********** end block friends ********
 
   //  ************************  ************************
   const handleSendMessage = () => {
     console.log('Sending message...');
+
+
     // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
     if (text.trim() && selectedUser && socket) {
         console.log('selectedUser.username =>' , selectedUser.username)
@@ -322,6 +516,11 @@ export const ChatProvider = ({ children }) => {
 
 
     const handleKeyPress = (event) => {
+        
+        if (friendStatusRequest === 'blocked') {
+            console.log('Message not sent: The selected user is blocked.');
+            return;
+        }
         if (event.key === 'Enter') {
             event.preventDefault();
             handleSendMessage();
@@ -486,21 +685,6 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
-    const fetchOnlineUsers = async () => {
-        try {
-            const url = `/chat-friends`;
-            const response = await getData(url);
-
-            if (response.status === 200) {
-                setOnlineUsers(response.data); // Update only online users
-            } else {
-                console.error("Unexpected response status:", response.status);
-            }
-        } catch (error) {
-            console.error("Failed to fetch online users:", error);
-        }
-    };
-
     // ************************ end ***********************
 
  // Function to handle fetching and restoring scroll
@@ -511,7 +695,11 @@ export const ChatProvider = ({ children }) => {
             return;
         }            
         const chatContainer = chatContainerRef.current;
-        
+        // Check if chatContainer is not null
+        if (!chatContainer) {
+            // console.error("chatContainerRef.current is null");
+            return;
+        }
         // Save the current scroll height before fetching
         setPrevScrollHeight(chatContainer.scrollHeight);
         
@@ -587,10 +775,15 @@ export const ChatProvider = ({ children }) => {
 
     // ************************ Fetch friends when component mounts and clean up WebSocket on unmount ************************
     useEffect(() => {
-        fetchFriends();
-        fetchOnlineUsers(); // Fetch online users separately
-        console.log('currentUser hous connecting =>', currentUser);
-    }, []);
+        // display currentUser
+        if (isAuth) {
+            console.log('currentUser hous connecting =>', currentUser);
+            fetchFriends();
+            fetchOnlineUsers(); // Fetch online users separately
+            // console.log('currentUser hous connecting =>', currentUser);
+        }
+    }, [isAuth]);
+    // }, []);
     // ************************ end ***********************
 
 
@@ -640,7 +833,10 @@ export const ChatProvider = ({ children }) => {
         typingUsers,
         emojiPickerRef,
         currentUser,
-        onlineUsers
+        onlineUsers,
+        blockFriend,
+        removeBlock,
+        friendStatusRequest,
         }}
         >
         {children}

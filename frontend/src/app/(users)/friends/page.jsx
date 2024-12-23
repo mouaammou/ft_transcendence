@@ -35,7 +35,7 @@ const Friends = () => {
 			const response = await getData(`/${endpoint}?page=${pageNumber}`);
 			if (response.status === 200) {
 				setUsers(response.data.results);
-				console.log(response.data.results);
+				console.log("my friends: ", response.data.results);
 				setNextPage(response.data.next ? pageNumber + 1 : null);
 				setPrevPage(response.data.previous ? pageNumber - 1 : null);
 				setPageNumber(pageNumber);
@@ -86,8 +86,8 @@ const Friends = () => {
 				<div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl relative min-h-[600px]
 							border border-gray-700/50">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
-					{users?.map((user) => (
-					<div key={user.id} onClick={(e) => handleUserSelect(user, e)}
+					{users?.map((user, index) => (
+					<div key={index} onClick={(e) => handleUserSelect(user, e)}
 						className="cursor-pointer">
 						<div className={`bg-gray-800/50 p-4 rounded-lg shadow-lg hover:shadow-xl 
 									transition-all duration-300 transform hover:-translate-y-1
@@ -109,10 +109,6 @@ const Friends = () => {
 							<div className="flex flex-col">
 							<span className="font-medium text-gray-100 mb-2">
 								{user.username}
-							</span>
-							<span className="text-xs bg-blue-900/50 text-blue-300 
-											px-3 py-1 rounded-full w-fit border border-blue-800/50">
-								In Tournament
 							</span>
 							</div>
 						</div>
@@ -202,10 +198,6 @@ const UserCart = ({ user, sendFriendRequest}) => {
 								<div className="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
 							</span>
 						}
-							
-						<span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-sm">
-							In game
-						</span>
 					</div>
 				</div>
 
@@ -295,9 +287,6 @@ const UserCart2 = ({ user }) => {
 						<span className="flex items-center gap-2 px-4 py-1.5 bg-green-500/10 text-green-400 rounded-full text-sm">
 						<div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
 							{user.status}
-						</span>
-						<span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-sm">
-							In game
 						</span>
 					</div>
 				</div>

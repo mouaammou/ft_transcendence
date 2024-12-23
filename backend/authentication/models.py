@@ -104,15 +104,15 @@ class Friendship(models.Model):
 		super().delete(*args, **kwargs)
 
 	def accept(self):
-		if self.status != 'pending':
-			raise ValidationError("This request already passed")
+		# if self.status != 'pending':
+		# 	raise ValidationError("This request already passed")
 		self.status = 'accepted'
 		self.save()
 
 	def block(self, *args, **kwargs):
-		if self.status == 'accepted':
-			self.status = 'blocked'
-			self.save()
+		# if self.status == 'accepted':
+		self.status = 'blocked'
+		self.save()
 
 	def __str__(self):
 		return f"{self.sender} is friend with {self.receiver}, friend status: {self.status}"
@@ -181,3 +181,48 @@ class CustomUser(AbstractUser):
 		return self.username
 # +++++++++ done model CustomeUser ++++++++++++#
 
+# class FriendshipListView(generics.ListAPIView):
+# 	serializer_class = FriendsSerializer
+# 	pagination_class = CustomUserPagination
+
+# 	def get_queryset(self):
+# 		custom_user = self.request.customUser
+# 		search_term = self.request.query_params.get('search', None)
+
+# 		friendships = Friendship.objects.filter(
+# 			Q(sender=custom_user) | Q(receiver=custom_user),
+# 			Q(status='accepted') | Q(status='blocked')
+# 		)
+
+# 		unique_friends = []
+# 		seen_users = set()
+
+# 		for friendship in friendships:
+# 			if friendship.sender == custom_user:
+# 				friend = friendship.receiver
+# 			else:
+# 				friend = friendship.sender
+
+# 			if friend.id not in seen_users:
+# 				unique_friends.append({
+# 					'user': friend,
+# 					'friendship_status': friendship.status
+# 				})
+# 				seen_users.add(friend.id)
+
+# 		if search_term:
+# 			unique_friends = [
+# 				friend for friend in unique_friends
+# 				if search_term.lower() in friend['user'].username.lower()
+# 			]
+# 		return unique_friends
+
+# 	def list(self, request, *args, **kwargs):
+# 		# Get the unique friends queryset
+# 		friends_queryset = self.get_queryset()
+# 		paginator = self.pagination_class()
+# 		paginated_users = paginator.paginate_queryset(friends_queryset, request)
+# 			# Serialize the paginated data
+# 		print(f"\npaginated_users: {paginated_users}\n")
+# 		serializer = UserWithStatusSerializer(paginated_users, many=True)
+# 		return paginator.get_paginated_response(serializer.data)

@@ -54,31 +54,30 @@ export default function FriendProfile({ params }) {
 	}, [profile?.id]);
 
 	const blockFriend = useCallback(() => {
-
 		if (profile?.id)
-			postData(`/blockFriend/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('blocked');
-					}
-				})
-				.catch(error => {
-					console.log(error);
-				});
-	}, [profile?.id]);
+		postData(`/blockFriend/${profile.id}`)
+			.then(response => {
+			if (response.status === 200) {
+				setFriendStatusRequest('blocked');
+			}
+			})
+			.catch(error => {
+			console.log(error);
+			});
+	}, [profile?.id, setFriendStatusRequest]);
 
 	const removeBlock = useCallback(() => {
 		//http request to block friend
 		if (profile?.id)
-			deleteData(`/removeBlock/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('no');
-					}
-				})
-				.catch(error => {
-					console.log(error);
-				});
+		deleteData(`/removeBlock/${profile.id}`)
+			.then(response => {
+			if (response.status === 200) {
+				setFriendStatusRequest('accepted');
+			}
+			})
+			.catch(error => {
+			console.log(error);
+			});
 	}, [profile?.id]);
 
 	const sendFriendRequest = useCallback(() => {
@@ -141,6 +140,9 @@ export default function FriendProfile({ params }) {
 		if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
 			setFriendStatusRequest('no');
 		}
+		else if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_FRIEND) {
+			setFriendStatusRequest('accepted');
+		}
 
 		if (
 			lastJsonMessage.type === 'user_status_change' &&
@@ -182,16 +184,20 @@ export default function FriendProfile({ params }) {
 					<div className="flex items-center mb-12 justify-around w-full">
 						{/* USER PROFILE */}
 						<div className='user-profile w-96'>
-							<div className="relative w-fit">
-								<img
-									src={profile.avatar}
-									alt="profile avatar"
-									className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
-								/>
-								<div className="absolute -bottom-1 -right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-									Level 5
-								</div>
+						<div className="relative w-fit">
+							<img
+								src={profile.avatar}
+								alt="profile avatar"
+								className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
+							/>
+							<div
+								className={`absolute -bottom-1 -right-2 px-3 py-1 rounded-full text-sm font-semibold ${
+								profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
+								} text-white`}
+							>
+								{profile?.status ? 'online' : 'offline'}
 							</div>
+						</div>
 
 							<div className="mt-4 text-center">
 								<h1 className="text-3xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h1>
@@ -233,12 +239,12 @@ export default function FriendProfile({ params }) {
 									<Link href="/create_join_tournament"
 										className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 									>
-										<FaTrophy className="mr-2" /> Add to Tournament
+										<FaTrophy className="mr-2" />Create Tournament
 									</Link>
 									<Link href="/mode"
 										className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 									>
-										<FaGamepad className="mr-2" /> Add to Game
+										<FaGamepad className="mr-2" /> Play Game
 									</Link>
 									<button
 										onClick={blockFriend}

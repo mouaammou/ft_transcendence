@@ -17,6 +17,36 @@ const UserList = ({ users, listType , currentUser}) => {
   // console.log('hay users  => ' , users)
 
   // console.log(' ***** currentUser data ***  => ' , currentUser)
+  // console.log(' ***** users hellll ***  => ' , users)
+  // Sort users by last_message timestamp in descending order
+  const sortedUsers = [...users].sort((a, b) => {
+    const timeA = new Date(a.last_message.timestamp).getTime();
+    const timeB = new Date(b.last_message.timestamp).getTime();
+    return timeB - timeA; // Descending order: newest first
+  });
+
+  // Add placeholders if listType is 'online' and less than 4 users
+  let updatedUsers = sortedUsers;
+
+  if (listType === 'online') {
+    const onlineUsers = sortedUsers.filter(user => user.friend.status === 'online'); // Filter online users
+    const numPlaceholders = Math.max(0, 4 - onlineUsers.length); // Calculate missing slots
+
+    // Create placeholder users
+    const placeholders = Array.from({ length: numPlaceholders }).map((_, index) => ({
+      friend: {
+        id: `placeholder-${index}`, // Unique ID for placeholders
+        avatar: '/def_prof.jpeg', // Default avatar from public folder
+        username: '?', // Placeholder username
+        status: 'offline', // Placeholder status
+        isPlaceholder: true, // Mark as placeholder
+      },
+      last_message: {}, // No message for placeholders
+    }));
+
+    // Combine online users with placeholders
+    updatedUsers = [...onlineUsers, ...placeholders];
+  }
   
   return (
     <>
@@ -27,27 +57,30 @@ const UserList = ({ users, listType , currentUser}) => {
           style={{ maxWidth: "70%" }}
         >
           <CarouselContent>
-            {users.map(user => (
-              <CarouselItem
-                key={user.friend.id}
-                className="
-                  basis-[50%] max-w-[100px]
-                  sm:basis-[40%] sm:max-w-[120px]
-                  md:basis-[33%] md:max-w-[116px]
-                  tablet:basis-[33%] tablet:max-w-[130px]
-                  larg_screen:basis-[25%] lg:max-w-[100px]
-                  shrink-0 p-1
-                "
-              >
-                <UserCard
-                  user={user.friend}
-                  lastMessage={user.last_message} // Pass last message details
-                  listType={listType}
-                  typingUsers={typingUsers}
-                  onUserSelect={handleUserClick}
-                  currentUser={currentUser}
-                />
-              </CarouselItem>
+            {updatedUsers.map(user => (
+                user && user.friend && (
+                  <CarouselItem
+                    key={user.friend.id}
+                    className="
+                      basis-[50%] max-w-[100px]
+                      sm:basis-[40%] sm:max-w-[120px]
+                      md:basis-[33%] md:max-w-[116px]
+                      tablet:basis-[40%] tablet:max-w-[130px]
+                      larg_screen:basis-[25%] lg:max-w-[100px]
+                      shrink-0 p-1
+                      "
+                      // tablet:basis-[33%] tablet:max-w-[130px]
+                  >
+                    <UserCard
+                      user={user.friend}
+                      lastMessage={user.last_message} // Pass last message details
+                      listType={listType}
+                      typingUsers={typingUsers}
+                      onUserSelect={handleUserClick}
+                      currentUser={currentUser}
+                    />
+                  </CarouselItem>
+                ) 
             ))}
           </CarouselContent>
           <CarouselPrevious />
@@ -57,9 +90,9 @@ const UserList = ({ users, listType , currentUser}) => {
         <div
           className={`user-list ${listType === 'online' ? 'UserListOnline' : 'UserListAll'}`}
         >
-          {users.map(user => (
+          {sortedUsers.map((user, index) => (
             <UserCard
-              key={user.friend.id}
+              key={index}
               user={user.friend}
               lastMessage={user.last_message}
               listType={listType}

@@ -133,7 +133,7 @@ module.exports = {
     		},
 			screens: {
 				tablet: '990px',
-				larg_screen: '1300px'
+				larg_screen: '1750px'
 			},
 			animation: {
 			brightening: 'brightening 1.5s infinite',

@@ -34,11 +34,12 @@ h2 {
 .user-chat {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  /* justify-content: space-around; */
   gap: 20%;
   /* margin: 14px; */
   /* padding: 20px; */
   padding: 30px;
+  padding-left: 20%;
   width: 100%;
 }
 
@@ -229,6 +230,11 @@ input[type='text']:focus::placeholder {
   /* .HiBell {
     font-size: 35px;
   } */
+
+  .user-chat{
+    justify-content: space-around;
+    padding-left: 0%;
+  }
   .img-info-user {
     width: 65px;
     height: 65px;

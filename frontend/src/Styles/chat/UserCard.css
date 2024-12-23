@@ -29,25 +29,51 @@
   height: 80px;
   gap: 5px;
   /* width: 100%; */
+
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  /* padding: 0.75rem; */
+  padding: 10px;
 }
 
 .img-usercard{
   max-width: 80px;
 }
 
+
+
 .UserCardAll:hover {
-  border: 1px solid #ffffff; /* Border on hover */
+  /* border: 1px solid #ffffff; */
+  transform: translateY(-3px);
+  
   /* background-color: #5faffe; */
   /* background-color: #1a2980; */
   /* background-color: #3b82f680; */
-
-  background-color: #041921;
+  
+  /* background-color: #041921; */
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Styling for clicked card */
 .usercard.clicked {
   border: 1px solid #333; /* Solid border when clicked */
   border-radius: 5px; /* Reduced border radius when clicked */
+}
+
+.usercard-card-wrapper{
+  transition: all 0.2s ease;
+}
+
+.usercard-card-wrapper:hover {
+  transform: translateY(-3px);
+  cursor: pointer;
+}
+
+.usercard-card-wrapper.placeholder:hover {
+  /* transform: none; */
+  transform: translateY(-3px);
+  cursor: default;
 }
 
 .UserCardOnline {
@@ -134,8 +160,10 @@
 }
 @media (max-width: 400px) {
   .UserCardAll {
-    margin: 10px 15px;
-    padding: 0px;
+    /* margin: 10px 15px; */
+    /* padding: 0px; */
+    padding: 5px;
+
     /* gap: 12%; */
     gap: 5px;
   }
@@ -162,3 +190,5 @@
     font-size: 12px;
   }
 }
+
+
