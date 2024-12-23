@@ -12,26 +12,31 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
 
     const sendAction = useCallback((action, notif_type) => {
         let messageType = null;
+        console.log("\n Notification type: ", notif_type);
+        console.log("\n Action: ", action);
         if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
         } else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
+            console.log("\n Notification type: 1002 ", notif_type);
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
             if (action === 'accepted'){
                 router.push('/game');
             }
-        } else if (notif_type === NOTIFICATION_TYPES.INVITE_TOURNAMENT) {
-            messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_TOURNAMENT : NOTIFICATION_TYPES.REJECT_TOURNAMENT;
+        } else if (notif_type === NOTIFICATION_TYPES.ROUND) {
+            router.push('/tournament_board');
         }
         
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,
         }));
-    }, [data.sender, NOTIFICATION_TYPES, sendMessage, router]);
+    }, [data.sender, NOTIFICATION_TYPES, router]); 
 
     const onAction = (action) => {
         handleAction(action, data);
-        sendAction(action, data.type);
+        data.type &&
+            sendAction(action, data.type);
+        data.notif_type && sendAction(action, data.notif_type);
     }
 
     return (
@@ -114,6 +119,7 @@ const NotificationBell = () => {
                         : notif
                 )
             );
+        console.log("\n Notification DATA: ", data);
         markAsRead(data.id);
     }, [markAsRead, setNotifications]);
 

@@ -50,16 +50,18 @@ const WaitingPage = () => {
   }, [lastMessage]);
 
   useEffect(() => {
-    sendMessage(JSON.stringify({ type: 'PLAY_RANDOM' }));
-    
-    return(() => {
-    sendMessage(JSON.stringify({ type: 'LEAVE_PLAY_RANDOM' }));
-  });
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'PLAY_RANDOM' }));
+
+    return (() => {
+      if (isConnected)
+        sendMessage(JSON.stringify({ type: 'LEAVE_PLAY_RANDOM' }));
+    });
   }, []);
 
   return (
     <div className="flex items-center justify-center p-4 mt-24">
-      <div className="split-background rounded-lg max-w-3xl w-fit p-4 md:p-12">
+      <div className="split-background rounded-2xl max-w-3xl w-fit p-4 md:p-12">
         <div className="flex items-center justify-center mb-4">
           <img src={user_data?.avatar} alt="" className="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full mr-2 bg-gray-700" />
           <span className="text-sm sm:text-xl md:text-2xl lg:text-3xl  font-bold">VS</span>

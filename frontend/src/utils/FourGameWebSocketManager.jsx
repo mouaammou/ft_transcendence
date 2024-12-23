@@ -3,22 +3,23 @@ import useWebSocket from 'react-use-websocket';
 
 const ConnectFourWebSocket = createContext(null);
 
-export const ConnectFourWebSocketProvider = ({ url, children }) => {
+export const ConnectFourWebSocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
-    const { sendMessage, lastMessage, readyState } = useWebSocket(url, {
+    console.log("Opening socket four players")
+    const { sendMessage, lastMessage, readyState, lastJsonMessage } = useWebSocket("ws://localhost:8000/ws/four_game/", {
         onOpen: () => {
-            console.log('WebSocket connection opened');
+            console.log('WebSocket c4 connection opened');
             setIsConnected(true);
         },
-        onClose: () => {
-            console.log('WebSocket connection closed');
-            setIsConnected(false);
-        },
-        onError: (error) => {
-            console.log('WebSocket error:', error);
-        },
-        shouldReconnect: () => true, // Will attempt to reconnect on all close events
+        // onClose: () => {
+        //     console.log('WebSocket c4 connection closed');
+        //     setIsConnected(false);
+        // },
+        // onError: (error) => {
+        //     console.log('WebSocket error: c4 ', error);
+        // },
+        shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
     });
 
 
@@ -28,9 +29,9 @@ export const ConnectFourWebSocketProvider = ({ url, children }) => {
             isConnected,
             sendMessage,
             lastMessage,
-            readyState,
+            lastJsonMessage
         }),
-        [isConnected, sendMessage, lastMessage]
+        [isConnected, sendMessage, lastMessage, lastJsonMessage]
     );
 
     return (

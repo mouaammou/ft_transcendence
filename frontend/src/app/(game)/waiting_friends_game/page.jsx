@@ -131,7 +131,7 @@ const WaitingFriendPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="bg-gray-400 bg-opacity-50 rounded-lg max-w-md w-full p-6">
+      <div className="bg-gray-400 bg-opacity-50 rounded-2xl max-w-md w-full p-6">
         <h1 className="text-lg md:text-2xl text-center font-balsamiq mb-12">
           Waiting for {myFriend.username} to join
         </h1>

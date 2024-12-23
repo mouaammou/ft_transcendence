@@ -1,43 +1,17 @@
 'use client';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
-import { IoMdPhonePortrait } from 'react-icons/io';
+import {  MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
 import { TfiStatsUp } from 'react-icons/tfi';
-import { GrHistory } from 'react-icons/gr';
-import { CiUser } from 'react-icons/ci';
 import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
 import { GiBattleAxe } from 'react-icons/gi';
 import Image from 'next/image';
 import DoughnutChart from '@/components/userStats/userStatsCharts';
-import { getData } from '@/services/apiCalls';
-import { useEffect, useState, useCallback } from 'react';
+import GameHistory from '@/components/history/GameHistory';
 
 const Profile = () => {
 	const { profileData: data } = useAuth();
-	const [matches, setMatches] = useState([]);
-	const [nextPage, setNextPage] = useState(null);
-	const [prevPage, setPrevPage] = useState(null);
-	const [pageNumber, setPageNumber] = useState(1);
-
-	const fetchGameHistory = useCallback(async (userId) => {
-		try {
-			const response = await getData(`/gamehistory/${userId}?page=${1}`);
-			if (response.status === 200) {
-				setMatches(response.data.results);
-				setNextPage(response.data.next ? pageNumber + 1 : null);
-				setPrevPage(response.data.previous ? pageNumber - 1 : null);
-				setPageNumber(pageNumber);
-			}
-		} catch (error) {
-			console.error('Error fetching game history:', error);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchGameHistory(data.id);
-	}, [fetchGameHistory]);
-
+	
 	return (
 		data && (
 			<div className="min-h-screen bg-gray-900 text-white">
@@ -121,66 +95,9 @@ const Profile = () => {
 						</div>
 
 						{/* Match History Card */}
-						<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
-							<h2 className="text-xl font-semibold mb-6 flex items-center">
-								<FaHistory className="mr-2" /> Recent Matches
-							</h2>
+						<GameHistory profileId={data.id} />
 
-							<div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-								{matches.map((match) => (
-									<div key={match.id} className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300 ">
-										<div className="flex justify-between items-center">
-											{/* Player 1 */}
-											<div className="flex items-center space-x-3">
-												<img
-													src={match.player_1.avatar} // Replace with actual avatar path
-													alt="player_1"
-													className={`w-12 h-12 rounded-full border-2 ${match.winner_id === match.player_1.id ? 'border-green-500' : 'border-red-500'
-														}`}
-												/>
-												<div>
-													<div className="font-medium">{match.player_1.username}</div>
-													<div className={`text-lg font-bold ${match.winner_id === match.player_1.id ? 'text-green-400' : 'text-red-400'
-														}`}>
-														{match.player_1_score}
-													</div>
-												</div>
-											</div>
-
-											{/* VS */}
-											<div className="flex flex-col items-center">
-												{/* <GiBattleAxe className="text-gray-400 text-xl" /> */}
-												<div className="text-l font-bold text-gray-400">{match.finish_type}</div>
-												<div className="text-sm text-gray-400 mt-1">{match.game_type == 'connect_four'? '🚥 Connect Four 🚥':'🏓 Ping Pong 🏓'}</div>
-												<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
-											<MdUpdate className="mr-1" />
-											{match.creation_date} • {match.creation_time.slice(0, 5)}
-										</div>
-											</div>
-
-											{/* Player 2 */}
-											<div className="flex items-center space-x-3">
-												<div className="text-right">
-													<div className="font-medium">{match.player_2.username}</div>
-													<div className={`text-lg font-bold ${match.winner_id === match.player_2.id ? 'text-green-400' : 'text-red-400'
-														}`}>
-														{match.player_2_score}
-													</div>
-												</div>
-												<img
-													src={match.player_2.avatar} // Replace with actual avatar path
-													alt="player_2"
-													className={`w-12 h-12 rounded-full border-2 ${match.winner_id === match.player_2.id ? 'border-green-500' : 'border-red-500'
-														}`}
-												/>
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
 					</div>
-
 					{/* Stats Section */}
 					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
 						<h2 className="text-xl font-semibold mb-6 flex items-center">

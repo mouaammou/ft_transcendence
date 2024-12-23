@@ -13,7 +13,9 @@ const NOTIFICATION_TYPES = {
 	INVITE_TOURNAMENT: 'invite_to_tournament',
 	ACCEPT_TOURNAMENT: 'accept_tournament',
 	REJECT_TOURNAMENT: 'reject_tournament',
-	ROUND: 'round_notif'
+	ROUND: 'round_game',
+  ACCEPT_ROUND: 'accept_round',
+  REJECT_ROUND: 'reject_round',
 };
 
 const NotificationContext = createContext();

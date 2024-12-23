@@ -1,5 +1,6 @@
 .player {
     width: fit-content;
+    min-width: 114px;
 }
 
 
@@ -16,7 +17,12 @@
 }
 
 
-@media (max-width: 1024px) {
+@media (max-width: 1070px) {
+
+    .player {
+        width: fit-content;
+        min-width: 78px;
+    }
 
     .playerAvatar {
         height: 54px;
@@ -31,6 +37,10 @@
 
 @media (max-width: 768px) {
 
+    .player {
+        width: fit-content;
+        min-width: 56px;
+    }
     .playerAvatar {
         height: 40px;
         width: 40px;

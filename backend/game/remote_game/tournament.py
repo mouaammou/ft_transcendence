@@ -171,8 +171,8 @@ class TournamentManager:
     def _update_tournament_players(cls, tournament, game):
         try:
             
-            index_of_game = tournament.games.index(game)
-            game.determine_winner_loser()
+            index_of_game = tournament.games.index(game) 
+            game.determine_winner_loser() 
             if tournament.round.status == 'quarter':  
                 if index_of_game in range(4):
                     tournament.players[8 + index_of_game] = game.winner
@@ -261,7 +261,7 @@ class Round:
         pass
 
     def get_next_round (self):
-        if self.status == 'quarter':
+        if self.status == 'quarter':  
             return 'semi-final'
         elif self.status == 'semi-final':
             return 'final'
@@ -276,10 +276,10 @@ class Round:
     
 
 class Tournament:
-    def __init__(self, organizer, name):   
+    def __init__(self, organizer, name):      
         self.id = str(uuid.uuid4())
         self.name = name  
-        self.max_participants =  8 # 8
+        self.max_participants =  2 # 8
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
         self.players[0] =  organizer

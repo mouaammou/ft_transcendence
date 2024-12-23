@@ -15,8 +15,6 @@ import confetti from 'canvas-confetti';
 function winner_celebration() {
   let end = Date.now() + (5 * 1000);
 
-  // go Buckeyes!
-
   (function frame() {
     confetti({
       particleCount: 5,
@@ -56,7 +54,7 @@ export default function TournamentBoardPage() {
   };
 
   const pushToPlay = () => {
-    router.push('/play');
+    router.push('/create_join_tournament');
   };
 
   const startTournament = () => {
@@ -81,12 +79,12 @@ export default function TournamentBoardPage() {
   useEffect(() => {
     if (!lastMessage) return;
     const data = JSON.parse(lastMessage.data);
-    console.log('data  ---> ', data);
+    // console.log('data  ---> ', data);
     if (data.status === 'players') {
-      console.log('bla bla bla bla', data.data);
+      // console.log('bla bla bla bla', data.data);
       setPlayers(data.data);
     } else if (data.status === 'no_tournament_found') {
-      console.log('the player does not exist in any tournament');
+      // console.log('the player does not exist in any tournament');
       router.push('/create_join_tournament');
     } else if (data.status === 'fulfilled') {
       setFulfilled(true);
@@ -102,7 +100,7 @@ export default function TournamentBoardPage() {
       );
       setExitTournament(true);
     } else if (data.status === 'you_can_not_leave') {
-      console.log('you can not leave the tournament');
+      // console.log('you can not leave the tournament');
       setModalOpen(true);
       setModalMessage('Tournament Participation in Progress');
       setMsgDescription(
@@ -110,7 +108,7 @@ export default function TournamentBoardPage() {
       Please remain engaged to support the event and your fellow players. Thank you for your commitment!'
       );
     } else if (data.status === 'organizer_can_not_leave') {
-      console.log('you can not leave the tournament');
+      // console.log('you can not leave the tournament');
       setModalOpen(true);
       setModalMessage('Stay Engaged as Tournament Organizer');
       setMsgDescription(
@@ -163,7 +161,7 @@ export default function TournamentBoardPage() {
       if (response.status === 200) {
         return response.data;
       } else {
-        console.log(response);
+        // console.log(response);
         return null;
       }
     } catch (error) {
@@ -179,15 +177,15 @@ export default function TournamentBoardPage() {
       if (player === -1) {
         newFetchedPlayers.push(defaultPlayer);
       } else if (existingPlayer) {
-        console.log('player is added \n');
+        // console.log('player is added \n');
         newFetchedPlayers.push(existingPlayer);
       } else {
         const newPlayer = await fetchPlayer(player);
         if (newPlayer !== null) {
-          console.log('player is fetched ', newPlayer);
+          // console.log('player is fetched ', newPlayer);
           newFetchedPlayers.push(newPlayer);
         } else {
-          console.log('Failed to fetch a player');
+          // console.log('Failed to fetch a player');
         }
       }
     }
@@ -195,8 +193,8 @@ export default function TournamentBoardPage() {
   };
 
   useEffect(() => {
-    console.log('hi\n');
-    console.log(players);
+    // console.log('hi\n');
+    // console.log(players);
 
     fetchPlayers();
   }, [players]);
@@ -213,9 +211,9 @@ export default function TournamentBoardPage() {
 
   const organizerUsername = userNames?.userName1;
 
-  console.log('image Urls --> ', imageUrls);
+  // console.log('image Urls --> ', imageUrls);
   return (
-    <>
+    <div>
       <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12  gap-8">
         <Board {...imageUrls} {...userNames} />
         <button
@@ -229,12 +227,8 @@ export default function TournamentBoardPage() {
         {fulfilled && profileData.username === organizerUsername && (
           <button
             onClick={startTournament}
-            className="relative md:text-[16px] md:w-[114px] md:h-[32px] inline-flex h-8 overflow-hidden rounded-full p-[2px] 
-                      focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-            <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-            <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+            className="relative text-[16px] w-[114px] h-8  p-[2px]  border-white  rounded-xl bg-blue-950">
               Start
-            </span>
           </button>
         )}
       </div>
@@ -250,6 +244,6 @@ export default function TournamentBoardPage() {
           }
         }}
       />
-    </>
+    </div>
   );
 }

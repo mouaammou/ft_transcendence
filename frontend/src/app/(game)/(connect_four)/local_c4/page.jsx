@@ -40,8 +40,8 @@ const ConnectFour = () => {
                     <MyGrid username={user_data?.username}/>
                 </div>
                 <PlayerCard
-                    avatar="avatar4.jpeg"
-                    name="A Friend"
+                    avatar="defaultAvatar.svg"
+                    name="MyFriend"
                     cardStyle={styles.player2Card}
                 />
             </div>

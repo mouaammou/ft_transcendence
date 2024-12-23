@@ -196,3 +196,10 @@ h6 {
 	px-4 py-2 text-white rounded-lg text-lg border-2 border-red-600
 	focus:shadow-[3px_3px_#dc2626] focus:duration-75 outline-none;
 }
+@layer utilities {
+  @media (min-width: 1070px) {
+    .custom-lg-block {
+      @apply block;
+    }
+  }
+}

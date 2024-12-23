@@ -1,8 +1,4 @@
 'use client';
-
-import '@/styles/game/game.css';
-
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
@@ -55,6 +51,11 @@ export default function CreateJoinTournamentPage() {
     }
   };
 
+  /**
+   * Handles the creation of a tournament. If the tournament name is not empty,
+   * it sends a message to the server to create the tournament. If the tournament
+   * name is empty, it resets the input error and the tournament name.
+   */
   const handleCreateTournament = () => {
     setInputError({ ...inputError, tournamentName: false });
     if (tournament_name.trim() !== '') {

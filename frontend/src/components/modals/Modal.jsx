@@ -13,7 +13,7 @@ export function Modal({ isOpen, title, description, action }) {
 
           <button
             onClick={action}
-            className="border px-4 py-1 rounded-lg  border-gray-500 hover:bg-gray-800 text-gray-300 transform transition-all duration-300 hover:scale-105 "
+            className="border px-4 py-1 rounded-xl  border-gray-500 hover:bg-gray-800 text-gray-300 transform transition-all duration-300 hover:scale-105 "
           >
             Close
           </button>

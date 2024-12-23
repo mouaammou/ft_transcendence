@@ -1,23 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from '@/Styles/game/connect_four/MyGrid.module.css'
-import { Modal } from '@/components/modals/Modal';
-import { useRouter } from "next/navigation";
+import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
+import './mypage.css'
 
 
-const MyGrid = ({username}) => {
+const MyGrid = () => {
+    const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
     const [circleColor, setCircleColor] = useState(Array(42).fill('#1C4E8E'));
-    const [yourTurn, setYourTurn] = useState(true);
+    const [yourTurn, setYourTurn] = useState(null);
     const [winner, setWinner] = useState(null);
-    const [isWin, setIsWin] = useState(false);
     const [locator, setLocator] = useState(350);
     const gridRef = useRef(null);
-    const [timer, setTimer] = useState(30);
-    const router = useRouter();
-
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
-    const [msgDescription, setMsgDescription] = useState('');
+    const [timer, setTimer] = useState(20);
 
     useEffect(() => {
         const handleMouseMove = (event) => {
@@ -38,39 +33,79 @@ const MyGrid = ({username}) => {
             gridElement.addEventListener('mousemove', handleMouseMove);
         }
 
-        const interval = setInterval(() => {
-            setTimer((prevTimer) => {
-                if (prevTimer === 1) {
-                    setYourTurn(!yourTurn);
-                    return 30;
-                }
-                return prevTimer - 1;
-            });
-        }, 1000);
-
         return () => {
             if (gridElement) {
                 gridElement.removeEventListener('mousemove', handleMouseMove);
             }
-            clearInterval(interval);
+            sendMessage(JSON.stringify({ type: 'LEAVE_GAME' }));
         };
-    }, [yourTurn]);
+    }, []);
+
+
+    // Handle incoming WebSocket messages
+    useEffect(() => {
+        if (lastMessage) {
+            try {
+                const data = JSON.parse(lastMessage.data);
+                // console.log("data from waiting page ", data);
+                switch (data.status) {
+                    case 'GAME_DATA':
+                        // setPlayerId(data.your_id);
+                        setYourTurn(data.your_turn);
+                        setTimer(data.timer);
+                        break;
+                    case 'MOVE_MADE':
+                        const newCircleColor = [...circleColor];
+                        newCircleColor[data.position] = data.player_id === data.player1_id ? '#BD3B57' : '#FFCE67';
+                        setCircleColor(newCircleColor);
+                        setYourTurn(data.your_turn);
+                        // setTimer(30);
+                        break;
+                    case 'TIMER_UPDATE':
+                        // console.log("timer update", data.time);
+                        setTimer(data.time);
+                        break;
+                    case 'WINNER':
+                        celebration(data.winner_color);
+                        break;
+                    case 'TURN_CHANGE':
+                        console.log("current turn ------>  ", data.current_turn);
+                        setYourTurn(data.current_turn);
+                        break;
+                }
+            } catch (error) {
+                console.log('Failed to parse lastMessage:', error);
+            }
+        }
+    }, [lastMessage]);
+
+    // Request game data when connected
+    useEffect(() => {
+        if (isConnected) {
+            sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
+        }
+    }, [isConnected]);
 
     function celebration(color) {
-        let winner = ''
-        if (color === '#BD3B57')
-            winner = username
-        else
-            winner = 'Your Friend'
-
-        setTimeout(() => {
-            setModalOpen(true);
-            setModalMessage('Game over!');
-            setMsgDescription(`🎉 Congratulations to ${winner} ! 🎉`
-            );
-        },2000)
-        setCircleColor(circleColor);
+        if (color !== 'draw') {
+            if (color === '#BD3B57')
+                sendMessage(JSON.stringify({ type: 'WIN', player: 'player1' }));
+            else
+                sendMessage(JSON.stringify({ type: 'WIN', player: 'player2' }));
+        }
+        else {
+            sendMessage(JSON.stringify({ type: 'DRAW' }));
+        }
     }
+
+
+    const handleClick = (index) => {
+        let column = index % 7;
+        sendMessage(JSON.stringify({
+            type: 'MAKE_MOVE',
+            column: column
+        }));
+    };
 
     useEffect(() => {
         checkForWinner();
@@ -81,7 +116,7 @@ const MyGrid = ({username}) => {
 
     function checkForWinner() {
         let winFound = false;
-    
+
         for (let index = 0; index < 42; index++) {
             // Horizontal win
             if (
@@ -92,11 +127,13 @@ const MyGrid = ({username}) => {
                 circleColor[index] === circleColor[index + 3]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 1, index + 2, index + 3]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 1, index + 2, index + 3]);
+                },500);
                 winFound = true;
                 break;
             }
-    
+
             // Vertical win
             if (
                 index < 21 &&
@@ -106,11 +143,13 @@ const MyGrid = ({username}) => {
                 circleColor[index] === circleColor[index + 21]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 7, index + 14, index + 21]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 7, index + 14, index + 21]);
+                },500);
                 winFound = true;
                 break;
             }
-    
+
             // Diagonal win (bottom-right)
             if (
                 index % 7 < 4 &&
@@ -121,11 +160,13 @@ const MyGrid = ({username}) => {
                 circleColor[index] === circleColor[index + 24]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 8, index + 16, index + 24]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 8, index + 16, index + 24]);
+                },500);
                 winFound = true;
                 break;
             }
-    
+
             // Diagonal win (bottom-left)
             if (
                 index % 7 >= 3 &&
@@ -136,18 +177,20 @@ const MyGrid = ({username}) => {
                 circleColor[index] === circleColor[index + 18]
             ) {
                 setWinner(circleColor[index]);
-                markWinningDiscs([index, index + 6, index + 12, index + 18]);
+                setTimeout(() => {
+                    markWinningDiscs([index, index + 6, index + 12, index + 18]);
+                },500);
                 winFound = true;
                 break;
             }
         }
-    
+
         // Check for draw
         if (!winFound && circleColor.every((color) => color !== '#1C4E8E')) {
             setWinner('draw');
         }
     }
-    
+
     function markWinningDiscs(indices) {
         const newCircleColor = [...circleColor];
         const winningColor = circleColor[indices[0]];
@@ -167,10 +210,10 @@ const MyGrid = ({username}) => {
                 const innerCircle = document.createElement('div');
                 innerCircle.style.cssText = `
                     position: absolute;
-                    top: 23%;
-                    left: 23%;
-                    width: 50%;
-                    height: 50%;
+                    top: 45%;
+                    left: 45%;
+                    width: 70%;
+                    height: 70%;
                     background-color: #EAE6E6;
                     border-radius: 50%;
                     z-index: 99;
@@ -194,31 +237,31 @@ const MyGrid = ({username}) => {
         setCircleColor(newCircleColor);
     }
 
-    const handleClick = (index) => {
-        let column = index % 7;
-        let row = 5;
+    // const handleClick = (index) => {
+    //     let column = index % 7;
+    //     let row = 5;
 
-        while (row >= 0) {
-            index = row * 7 + column;
-            if (circleColor[index] === '#1C4E8E') {
-                const newCircleColor = [...circleColor];
-                newCircleColor[index] = yourTurn ? '#BD3B57' : '#FFCE67';
-                setCircleColor(newCircleColor);
-                setYourTurn(!yourTurn);
-                setTimer(30); // Reset the timer when a move is made
-                return;
-            }
-            row--;
-        }
-    };
+    //     while (row >= 0) {
+    //         index = row * 7 + column;
+    //         if (circleColor[index] === '#1C4E8E') {
+    //             const newCircleColor = [...circleColor];
+    //             newCircleColor[index] = yourTurn ? '#BD3B57' : '#FFCE67';
+    //             setCircleColor(newCircleColor);
+    //             setYourTurn(!yourTurn);
+    //             setTimer(30); // Reset the timer when a move is made
+    //             return;
+    //         }
+    //         row--;
+    //     }
+    // };
 
     const discVariants = {
-        hidden: (custom) => ({
+        initial: (custom) => ({
             y: -custom * 72,
             x: 0,
             opacity: 1,
         }),
-        visible: {
+        animate: {
             y: -1,
             x: -2,
             opacity: 1,
@@ -232,8 +275,8 @@ const MyGrid = ({username}) => {
 
     return (
         <div className="relative flex flex-col gap-[20px] md:gap-[30px] items-center">
-            <div style={{left: locator}} 
-                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden lg:block md:w-5 md:h-6 rounded-sm rounded-bl-3xl rounded-br-3xl border-black animate-bounce ${yourTurn? 'bg-[#BD3B57]':'bg-[#FFCE67]'}`}>
+            <div style={{ left: locator }}
+                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden custom-lg-block md:w-5 md:h-6 rounded-sm rounded-bl-3xl rounded-br-3xl border-black animate-bounce ${yourTurn == 'red' ? 'bg-[#BD3B57]' : 'bg-[#FFCE67]'}`}>
             </div>
             <div ref={gridRef} className={styles.gridWrapper} >
                 <div className={styles.gridImage}>
@@ -257,8 +300,8 @@ const MyGrid = ({username}) => {
                                     <motion.div
                                         key={index}
                                         custom={Math.floor(index / 7)}
-                                        initial="hidden"
-                                        animate="visible"
+                                        initial="initial"
+                                        animate="animate"
                                         variants={discVariants}
                                         style={{
                                             backgroundColor: circleColor[index],
@@ -272,22 +315,14 @@ const MyGrid = ({username}) => {
                     ))}
                 </div>
             </div>
-            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn ? '#BD3B57' : '#FFCE67' }}>
-                <p>{yourTurn ? <span>Red</span> : <span>Yellow</span>} Turn</p>
+            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn === 'red'? '#BD3B57' : '#FFCE67' }}>
+                <p>{yourTurn === 'red' ? <span>Red</span> : <span>Yellow</span>} Turn</p>
                 <p className={styles.timer}>{timer} s</p>
             </div>
-            <Modal
-                isOpen={modalOpen}
-                title={modalMessage}
-                description={msgDescription}
-                action={() => {
-                    setModalOpen(false);
-                    router.push('/play');
-                    // router.refresh()
-                }}
-            />
         </div>
     );
 }
 
 export default MyGrid;
+
+
