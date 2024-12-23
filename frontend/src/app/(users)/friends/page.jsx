@@ -110,10 +110,6 @@ const Friends = () => {
 							<span className="font-medium text-gray-100 mb-2">
 								{user.username}
 							</span>
-							<span className="text-xs bg-blue-900/50 text-blue-300 
-											px-3 py-1 rounded-full w-fit border border-blue-800/50">
-								In Tournament
-							</span>
 							</div>
 						</div>
 						</div>
@@ -202,10 +198,6 @@ const UserCart = ({ user, sendFriendRequest}) => {
 								<div className="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
 							</span>
 						}
-							
-						<span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-sm">
-							In game
-						</span>
 					</div>
 				</div>
 
@@ -295,9 +287,6 @@ const UserCart2 = ({ user }) => {
 						<span className="flex items-center gap-2 px-4 py-1.5 bg-green-500/10 text-green-400 rounded-full text-sm">
 						<div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
 							{user.status}
-						</span>
-						<span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-sm">
-							In game
 						</span>
 					</div>
 				</div>

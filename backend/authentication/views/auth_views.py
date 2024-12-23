@@ -89,6 +89,7 @@ class Logout(APIView):
 	
 class VerifyToken(APIView):
 	def post(self, request, *args, **kwargs):
+		print(f"\n -- USERNAME : {request.customUser} -- \n")
 		return Response({"message": "Tokens are valid"}, status=status.HTTP_200_OK)
 
 

@@ -9,11 +9,13 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
        
     games_manager = PlayersGamesManager 
     async def connect(self):
-        await self.accept()
+        self.user = self.scope['user']
         self.player_id = self.scope['user'].id
-        if self.scope['user'].is_authenticated:
-            print(f"Player {self.player_id} connected")
-            self.games_manager.connect(self, self.player_id)
+        if self.user and not self.user.is_authenticated:  
+            return
+        await self.accept()
+        print(f"Player {self.player_id} connected")
+        self.games_manager.connect(self, self.player_id)
             
     
     
@@ -26,6 +28,9 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
             if not self.player_id:
                 return
             parsed_data = json.loads(text_data)
+            if 'type' in parsed_data and parsed_data['type'] == 'LEAVE_GAME':
+                await self.games_manager.disconnect(self.player_id)
+                return
             self.games_manager.receive(self.player_id, parsed_data)
         except json.JSONDecodeError as ex:
             logging.error(f'EXCEPTION: received invaled data from the socket -> {ex}')

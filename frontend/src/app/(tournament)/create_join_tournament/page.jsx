@@ -1,19 +1,15 @@
 'use client';
-
-import '@/styles/game/game.css';
-
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 
 // i have a repeted function here which is fetchPlayer
 
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
   const router = useRouter();
-  const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,
@@ -36,7 +32,7 @@ export default function CreateJoinTournamentPage() {
         return null;
       }
     } catch (error) {
-      console.error(`Failed to fetch player with i ${playerId}: ${error}`);
+      console.log(`Failed to fetch player with id ${playerId}: ${error}`);
       return null;
     }
   };
@@ -55,6 +51,11 @@ export default function CreateJoinTournamentPage() {
     }
   };
 
+  /**
+   * Handles the creation of a tournament. If the tournament name is not empty,
+   * it sends a message to the server to create the tournament. If the tournament
+   * name is empty, it resets the input error and the tournament name.
+   */
   const handleCreateTournament = () => {
     setInputError({ ...inputError, tournamentName: false });
     if (tournament_name.trim() !== '') {
@@ -75,57 +76,70 @@ export default function CreateJoinTournamentPage() {
     setTournamentName('');
   };
 
+  const fetchData = async () => {
+    if (lastMessage === null) return;
+    const data = JSON.parse(lastMessage.data);
+    console.log(data);
+    if (data.status === 'tournaments_created') {
+      setTab(data.tournaments);
+      const playersAvatar = {};
+      for (const tournauwa of data.tournaments) {
+        if (!(tournauwa.organizer in playersAvatar)) {
+          const player = await fetchPlayer(tournauwa.organizer);
+          if (player) {
+            playersAvatar[tournauwa.organizer] = player;
+          }
+        }
+      }
+      setPlayers(playersAvatar);
+    }
+  };
+
+  useEffect(() => {
+   
+    fetchData();
+  }, [lastMessage]);
+
+
   useEffect(() => {
     // Get all tournaments from the backend when the page is loaded
+    if (!isConnected) return;
     sendMessage(
       JSON.stringify({
         type: 'GET_TOURNAMENTS',
       })
     );
+  }, []);
 
-    const messageHandler = async e => {
-      const data = JSON.parse(e.data);
-      console.log(data);
-      if (data.status === 'already_in_tournament') {
-        setInputError({ ...inputError, alreadyInTournament: true });
-        setTimeout(() => {
-          router.push('/tournament_board');
-        }, 1000);
-      } else if (data.status === 'already_in_game') {
-        setInputError({ ...inputError, alreadyInGame: true });
-        setTimeout(() => {
-          router.push('/game');
-        }, 2000);
-        console.log('pushed to game');
-      } else if (data.status === 'already_in_tournament_join') {
-        setInputError({ ...inputError, alreadyInTournamentJoin: true });
-        setTimeout(() => {
-          router.push('/tournament_board');
-        }, 1000);
-      } else if (data.status === 'tournament_full') {
-        setInputError({ ...inputError, tournamentFull: true });
-      } else if (data.status === 'created_successfully' || data.status === 'joined_successfully') {
-          router.push('/tournament_board');
-      }
-      else if (data.tournaments !== undefined) {
-        setTab(data.tournaments);
-        const playersAvatar = {};
-        for (const tournauwa of data.tournaments) {
-          if (!(tournauwa.organizer in playersAvatar)) {
-            const player = await fetchPlayer(tournauwa.organizer);
-            if (player) {
-              playersAvatar[tournauwa.organizer] = player;
-            }
-          }
-        }
-        setPlayers(playersAvatar);
-      }
-    };
-    registerMessageHandler(messageHandler);
+
+  useEffect(() => {
+    if (lastMessage === null) return;
+    const data = JSON.parse(lastMessage.data);
+    console.log(data);
+    if (data.status === 'already_in_tournament') {
+      setInputError({ ...inputError, alreadyInTournament: true });
+      setTimeout(() => {
+        router.push('/tournament_board');
+      }, 1000);
+    } else if (data.status === 'already_in_game') {
+      setInputError({ ...inputError, alreadyInGame: true });
+      setTimeout(() => {
+        router.push('/game');
+      }, 2000);
+      console.log('pushed to game');
+    } else if (data.status === 'already_in_tournament_join') {
+      setInputError({ ...inputError, alreadyInTournamentJoin: true });
+      setTimeout(() => {
+        router.push('/tournament_board');
+      }, 1000);
+    } else if (data.status === 'tournament_full') {
+      setInputError({ ...inputError, tournamentFull: true });
+    } else if (data.status === 'created_successfully' || data.status === 'joined_successfully') {
+      router.push('/tournament_board');
+    }
     return () => {
-      unregisterMessageHandler(messageHandler);
     };
-  }, [inputError.tournamentFull]);
+  }, [lastMessage]);
 
   const handleInputChange = e => {
     setTournamentName(e.target.value);
@@ -147,15 +161,12 @@ export default function CreateJoinTournamentPage() {
           autoComplete='off'
           onChange={handleInputChange}
           placeholder="my_tournament123..."
-          className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
-                        placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
+          // className="rounded-lg w-[200px] px-3 text-black h-[40px] placeholder:text-black placeholder:font-sans placeholder:text-[14]
+          //               placeholder:font-extralight focus:outline-none focus:text-black lg:ml-10 lg:w-[255px] lg:h-[52px]"
+          className='custom-input w-full'
         />
         <ul className="list-disc list-inside  my-6 lg:ml-10 max-w-[269px] lg:max-w-[399px]">
-          {inputError.alreadyInTournament ? (
-            <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
-              You are already in a tournament
-            </li>
-          ) : null}
+              
           {inputError.alreadyInGame ? (
             <li className={`text-[14px] font-sans font-light  py-1 lg:text-[16px] text-red-500`}>
               You are already started a game
@@ -168,8 +179,9 @@ export default function CreateJoinTournamentPage() {
           ) : null}
         </ul>
         <button
-          className="  border-[1px]  text-[16px] w-[114px] h-[32px]
-                 border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[167px] lg:h-[41] lg:self-end"
+          // className="  border-[1px]  text-[16px] w-[114px] h-[32px]
+          //        border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[167px] lg:h-[41] lg:self-end"
+          className='custom-button w-full'
           onClick={handleCreateTournament}
         >
           CREATE
@@ -229,8 +241,9 @@ export default function CreateJoinTournamentPage() {
           </p>
         ) : null}
         <button
-          className="  border-[1px]  text-[16px] w-[114px] h-[32px]
-                 border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[137px] lg:h-[41] lg:self-end "
+          // className="  border-[1px]  text-[16px] w-[114px] h-[32px]
+          //        border-white rounded-xl bg-[#30C7EC] my-6 font-bold lg:text-[22px] lg:w[137px] lg:h-[41] lg:self-end "
+          className='custom-button w-[120px] lg:w-[210px]'
           onClick={handleJoinTournament}
         >
           JOIN

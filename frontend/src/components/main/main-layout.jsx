@@ -18,7 +18,8 @@ const MainLayout = ({ children }) => {
                     {/* Main content wrapper */}
                     <div className="min-h-screen md:pl-[7rem]">
                         <Navbar />
-                        <main className="h-full pb-16 md:pb-0"> {/* Space for mobile nav */}
+                        <main className=" h-full w-full pb-16 md:pb-0"> {/* Space for mobile nav */}
+                        {/* dddd */}
                             {children}
                         </main>
 

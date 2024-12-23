@@ -1,11 +1,11 @@
 'use client';
 import PongGame from './PongGame';
 import { useState, useEffect } from 'react';
-import '@/styles/game/game.css';
+import style from '@/Styles/game/game.module.css';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
 import { getData } from '@/services/apiCalls';
-import {useGlobalWebSocket} from '@/utils/WebSocketManager';
+import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 import { useRouter } from 'next/navigation';
 
 const GamePage = () => {
@@ -16,7 +16,8 @@ const GamePage = () => {
   const router = useRouter();
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-	const { sendMessage, isConnected, registerMessageHandler, unregisterMessageHandler } = useGlobalWebSocket();
+  const [gameType, setGameType] = useState('vsfriend');
+  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
 
 
   const Skeleton = () => (
@@ -27,18 +28,20 @@ const GamePage = () => {
     </div>
   );
 
-  const handle_message = message => {
-    const data = JSON.parse(message.data);
-    console.log('data -----> ', data.data);
+  useEffect(() => {
+    if (lastMessage === null) return;
+    const data = JSON.parse(lastMessage.data);
+    // console.log('data -----> ', data);
     if (data.status == 'GAME_DATA') {
       setPlayer1_id(data.player_1);
       setPlayer2_id(data.player_2);
+      setGameType(data.game_type);
     } else if (data.status == 'NO_GAME_DATA') {
       router.push('/play');
     } else if (data.status == 'PLAYER_IN_TOURNAMENT') {
       router.push('/tournament_board');
     }
-  };
+  }, [lastMessage]);
 
   const fetchPlayer = async player_id => {
     try {
@@ -63,50 +66,50 @@ const GamePage = () => {
   }, [player1_id, player2_id]);
 
   useEffect(() => {
-    registerMessageHandler(handle_message);
-    sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'GET_GAME_DATA' }));
   }, []);
 
   return (
-    <div className="game">
-      <div className="up-section">
-        <div className="left-score">{score2}</div>
-        <div className="vs-section">
-          <div className="vs-image">
-            <Image src="/vs.svg" alt="vs" width={70} height={70} />
+    <div className={style.game}>
+      <div className={style.up_section}>
+        <div className={style.left_score}>{score2}</div>
+        <div className={style.vs_section}>
+          <div className={style.vs_image}>
+            <Image src="/vs.svg" alt="vs" priority className={style.vs_image} width={70} height={70} />
           </div>
           <CountdownTimer />
         </div>
-        <div className="right-score">{score1}</div>
+        <div className={style.right_score}>{score1}</div>
       </div>
-      <div className="down-section">
+      <div className={style.down_section}>
         {player1 ? (
-          <div className="left-user">
+          <div className={style.left_user}>
             <img // i have to resolve the issue with <Image/>
-              className="left-user-img"
+              className={style.left_user_img}
               src={player1.avatar}
               alt="user1"
               width={100}
               height={100}
             />
-            <div className="left-user-name">{player1.username}</div>
+            <div className={style.left_user_name}>{player1.username}</div>
           </div>
         ) : (
           <Skeleton />
         )}
-        <div className="self-game">
-          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} />
+        <div className={style.self_game}>
+          <PongGame score1={score1} score2={score2} setScore1={setScore1} setScore2={setScore2} gameType={gameType} />
         </div>
         {player2 ? (
-          <div className="right-user">
+          <div className={style.right_user}>
             <img // i have to resolve the issue with <Image/>
-              className="right-user-img"
+              className={style.right_user_img}
               src={player2?.avatar}
               alt="user1"
               width={100}
               height={100}
             />
-            <div className="right-user-name">{player2?.username}</div>
+            <div className={style.right_user_name}>{player2?.username}</div>
           </div>
         ) : (
           <Skeleton />

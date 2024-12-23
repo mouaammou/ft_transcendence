@@ -1,0 +1,170 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-top: 70px;
+  gap: 70px;
+}
+
+.up_section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 5%;
+}
+
+.left_score,
+.right_score {
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--wt);
+  font-size: 3rem;
+  font-weight: bold;
+  /* margin: 0 30px; */
+  /* background-color: red; */
+  }
+
+.vs_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.vs_time {
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: #e76f51;
+  font-size: 1.3rem;
+}
+
+.down_section {
+  display: flex;
+  /* justify-content: space-between; */
+  gap: 50px;
+  /* align-items: center; */
+  width: fit-content;
+
+  margin: auto;
+}
+
+.left_user,
+.right_user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* width: 10%; */
+}
+
+.left_user_img,
+.right_user_img {
+  /* width: 100px; */
+  /* width: 25%; */
+  /* height: 100%; */
+  border-radius: 50%;
+}
+
+.left_user_name,
+.right_user_name {
+  text-align: center;
+  font-family: 'IBM Plex Sans', Courier, monospace;
+  font-size: 1.7rem;
+  padding-top: 10px;
+}
+
+.self_game {
+  width: 100%;
+}
+
+.play_ground {
+  background-color: #264653;
+  /* flex: 1; */
+  /* position: relative; */
+  border-radius: 5px;
+  border: 1px solid white;
+  /* width: 100%; */
+  /* height: 100%; */
+}
+
+
+@media (max-width: 1388px) {
+  .game {
+    justify-content: space-around;
+    padding-top: 10px;
+    gap: 10px;
+  }
+  .left_score,
+  .right_score {
+    font-size: 1rem;
+  }
+  .down_section {
+    /* flex-direction: column; */
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .left_user,
+  .right_user {
+    order: 1;
+    flex-basis: 48%;
+    margin-bottom: 20px;
+    margin-top: 0px;
+    gap: 10px;
+  }
+  .self_game {
+    order: 2;
+    flex-basis: 100%;
+  }
+
+  .vs_time {
+    font-size: 1rem;
+  }
+
+  .vs_image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .left_user {
+    margin-bottom: 20px;
+  }
+
+  .self_game {
+    width: 100%;
+  }
+
+  .left_user_img,
+  .right_user_img {
+    width: 40%;
+    max-width: 100px;
+    height: auto;
+  }
+
+  .play_ground {
+    width: 90%;
+    margin: auto;
+  }
+
+  .vs_section {
+    gap: 2px;
+  }
+
+  .vs_time {
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: #e76f51;
+    font-size: 0.7rem;
+  }
+
+  .left_user_name,
+  .right_user_name {
+    font-size: 0.7rem;
+  }
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  width: 80%;
+}

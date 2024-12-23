@@ -63,16 +63,6 @@ class Notification(models.Model):
 
 
 # ----------------- model Frienship -----------------#  
-################### Helper function to create notifications
-def create_notification(sender, receiver, message, notif_type, notif_status):
-	Notification.objects.create(
-		sender=sender,
-		receiver=receiver,
-		message=message,
-		notif_type=notif_type,
-		notif_status=notif_status
-	)
-################### Helper function to create notifications
 
 class Friendship(models.Model):
 	STATUS_CHOICES = (
@@ -141,13 +131,13 @@ def upload_location(instance, filename):
 
 # class of the model CustomUser, override the User model class
 class CustomUser(AbstractUser):
-	username = models.CharField(max_length=255, unique=True, blank=False, null=False)
-	user42 = models.CharField(max_length=255, unique=True, blank=True, null=True)
+	username = models.CharField(max_length=8, unique=True, blank=False, null=False)
+	user42 = models.CharField(max_length=10, unique=True, blank=True, null=True)
 	email = models.EmailField(unique=True, blank=False, null=False)
 	totp_secret = models.CharField(max_length=32, blank=True, null=True)
 	totp_enabled = models.BooleanField(default=False)
-	first_name = models.CharField(max_length=255, blank=False)
-	last_name = models.CharField(max_length=255, blank=False)
+	first_name = models.CharField(max_length=12, blank=False)
+	last_name = models.CharField(max_length=12, blank=False)
 	phone = models.CharField(max_length=255, blank=True)
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)

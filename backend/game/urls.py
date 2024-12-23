@@ -21,10 +21,14 @@ urlpatterns = [
     ),
     path(
         'local-tournaments/<int:pk>/',
-        LocalTournamentViewSet.as_view({'get': 'retrieve'}),
+        LocalTournamentViewSet.as_view({
+            'get': 'retrieve',
+            'put': 'update',
+            'delete': 'destroy',
+        }),
         name='local-tournaments-details',
     ),
-    path('play-tournament/', PlayTounament.as_view(), name='play-tournament'),
+    path('play-tournament/<int:tid>', PlayTounament.as_view(), name='play-tournament'),
     path('play-regular', PlayRegular.as_view(), name='play-regular'),
     path('local-tournaments/next-match-players/<int:id>/', TournamentNextMatchPlayersView.as_view(), name='tournament-next-match-players'),
 ]

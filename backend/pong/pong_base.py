@@ -13,7 +13,7 @@ class Base:
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60
-        self.max_score = 3
+        self.max_score = 500
         
         # assert self.max_score % 2 == 1, ValueError('value should be odd')
         
@@ -26,11 +26,15 @@ class Base:
         
         self.paddle_width = 15
         self.paddle_height = self.window_height/3.5
-        self.paddle_speed = 8
+        self.paddle_speed = 9
         
         self.ball_width = 25
         self.ball_height = self.ball_width
-        self.ball_speed = 8
+        self.ball_speed = 12
+        self.max_ball_speed = 25
+        self.ball_speed_increase_factor = 0.2 
+        self.ball_start_speed = 5 # ball restart speed on score increase
+        self.ball_reset_speed = self.ball_speed # for reset on ball restart
         
         self.window_center_x = self.window_width / 2
         self.window_center_y = self.window_height / 2
@@ -54,8 +58,11 @@ class Base:
     
         self.ball_win   = None # for debug
 
-        self.left_nickname = 'left_default'
-        self.right_nickname = 'right_default'
+        self.left_nickname = None
+        self.right_nickname = None
+        self.title = None
+        self.local_game_type = None
+        self.tournament_id = None
         
     
     @property
@@ -72,7 +79,13 @@ class Base:
             
             "left_player_score": 0,
             "right_player_score": 0,
+            "max_score": self.max_score,
+            
             'left_nickname': self.left_nickname,
             'right_nickname': self.right_nickname,
+
+            'title': self.title,
+            'local_game_type': self.local_game_type,
+            'tournament_id': self.tournament_id,
         }
         

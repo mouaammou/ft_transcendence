@@ -1,5 +1,5 @@
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, Users, User, MessageCircle, Gamepad2, Settings } from 'lucide-react';
+import { Home, Users, User, MessageCircle, Gamepad2, Settings, UserPlus} from 'lucide-react';
 
 export default function MobileNavbar() {
   const router = useRouter();
@@ -8,16 +8,15 @@ export default function MobileNavbar() {
   const navItems = [
     { label: 'Home', icon: Home, route: '/' },
     { label: 'Friends', icon: Users, route: '/friends' },
+    { label: 'All Users', icon: UserPlus, route: '/allusers' },
     { label: 'Chat', icon: MessageCircle, route: '/chat' },
     { label: 'Game', icon: Gamepad2, route: '/play' },
-    { label: 'Profile', icon: User, route: '/profile' },
-    { label: 'Settings', icon: Settings, route: '/settings' },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 backdrop-blur-lg bg-opacity-95 z-50">
-      <div className="max-w-md mx-auto px-4 pb-2 pt-2">
-        <div className="grid grid-cols-6 gap-2">
+      <div className="max-w-lg mx-auto px-4 pb-2 pt-2">
+        <div className="grid grid-cols-5 gap-2">
           {navItems.map((item) => {
             const isActive = pathname === item.route;
             

@@ -91,14 +91,13 @@ class Collisions(Angle):
             # top-right to bottom-right
             ball_obj.ball._step_y = self.negative(sy)
 
-
     def on_left_padd_collision(self, ball_obj):
+        self.increase_ball_speed()
         _, ball_y = ball_obj.ball.ball_pos
         _, padd_y = ball_obj.left_player.padd_pos
         
         # print('on_left_padd_collision', padd_y)
         angle = self.new_angle(ball_y, padd_y, 'right')
-        
         # x, y
         x = math.cos(angle) * self.ball_speed
         y = math.sin(angle) * self.ball_speed
@@ -115,6 +114,7 @@ class Collisions(Angle):
             
             
     def on_right_padd_collision(self, ball_obj):# ball_obj=root_obj
+        self.increase_ball_speed()
         _, ball_y = ball_obj.ball.ball_pos
         _, padd_y = ball_obj.right_player.padd_pos
         # print('on_right_padd_collision', padd_y)
@@ -131,4 +131,8 @@ class Collisions(Angle):
         else:
             ball_obj.ball._step_x = self.negative(x)
             ball_obj.ball._step_y = self.negative(y)
+    
+    def increase_ball_speed(self):
+        if self.ball_speed < self.max_ball_speed:
+            self.ball_speed += self.ball_speed_increase_factor
 

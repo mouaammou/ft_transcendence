@@ -1,22 +1,46 @@
 import { useClient } from 'next/client';
 import { useEffect, useRef, useState } from 'react';
-import GamePage from './page';
 import { useRouter } from 'next/navigation';
-import YouWin from '@/components/modals/YouWin';
+import LocalGameWinner from '@/components/modals/LocalGameWinner';
 
-export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
+
+
+export default function PongGame({ setScore1, setScore2, setMaxScore, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1}) {
 	const canvasRef = useRef(null);
+	const websocketRef = useRef(null);
 	const router = useRouter();
 	const [winner, setWinner] = useState('');
-	// const [leftUser, setLeftUser] = useState("default");
-	// const [rightUser, setRightUser] = useState("default");
+  const allowedKeys = ['ArrowUp', 'ArrowDown', 'w', 's', 'p', 'W', 'S', 'P'];
+	// const [leftNickname, setleftNickname] = useState("default");
+	// const [rightNickname, setrightNickname] = useState("default");
 	// const [socket, setSocket] = useRef(null);
 
+  const websocketSend = (data_obj) => {
+    if (!websocketRef.current)
+        return ;
+    if (websocketRef.current.readyState !== WebSocket.OPEN)
+        return ;
+    websocketRef.current.send(JSON.stringify(data_obj));
+  }
+
+  const connectWebsocket = () => {
+    if (!websocketRef.current ||
+      !websocketRef.current.readyState  != WebSocket.OPEN ||
+      websocketRef.current.readyState != WebSocket.CONNECTING)
+    {
+      websocketRef.current = new WebSocket('ws://localhost:8000/ws/local/');
+    }
+  }
+
+  
+
+
 	useEffect(() => {
-		let leftUser = 'Player 1';
-		let rightUser = 'Player 2';
-		const canvas = canvasRef.current;
-		const context = canvas.getContext('2d');
+    connectWebsocket();
+
+    // console.log('nnnnnnaaames:', leftNickname, rightNickname)
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
 
     // ball object
     const ball = {
@@ -38,6 +62,7 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
       color: 'white',
       score: 0,
     };
+
     const rectBall = {
       x: 0,
       y: 0,
@@ -66,17 +91,32 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
 
     let num = 0;
     let number = 1;
+    // const drawNet = () => {
+    //   for (let y = 0; y < canvas.height; y += 45) {
+    //     drawRect(net.x, y, net.width, net.height, net.color);
+    //   }
+    // };
     const drawNet = () => {
-      for (let y = 0; y < canvas.height; y += 45) {
-        drawRect(net.x, y, net.width, net.height, net.color);
+      const netWidth = 4;
+      const netHeight = 20;
+      const netColor = "#00ffcc";
+      for (let y = 0; y < canvas.height; y += 30) {
+        drawRect(canvas.width / 2 - netWidth / 2, y, netWidth, netHeight, netColor);
       }
     };
 
     // const drawEllipse = () => {
     // }
+    // const drawRect = (x, y, width, height, color) => {
+    //   context.fillStyle = color;
+    //   context.fillRect(x, y, width, height);
+    // };
     const drawRect = (x, y, width, height, color) => {
+      context.shadowBlur = 20;
+      context.shadowColor = color;
       context.fillStyle = color;
       context.fillRect(x, y, width, height);
+      context.shadowBlur = 0; // Reset shadow
     };
 
     // const resetBall = () => {
@@ -88,157 +128,22 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
     // 	ball.velocityX = -ball.velocityX;
     // }
 
+    // const drawCircle = (x, y, radius, color) => {
+    //   context.fillStyle = color;
+    //   context.beginPath();
+    //   context.arc(x, y, radius, 0, Math.PI * 2, false);
+    //   context.closePath();
+    //   context.fill();
+    // };
     const drawCircle = (x, y, radius, color) => {
+      context.shadowBlur = 20;
+      context.shadowColor = color;
       context.fillStyle = color;
       context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2, false);
-      context.closePath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
       context.fill();
+      context.shadowBlur = 0; // Reset shadow
     };
-
-    const socket = new WebSocket('ws://localhost:8000/ws/local/');
-    let conectionOn = false;
-    function sendVisibilityStatus() {
-      console.log('Visibility: ');
-      // if (conectionOn === true) {
-      console.log(document.visibilityState);
-      let isTabFocused = document.visibilityState === 'visible';
-      socket.send(JSON.stringify({ tabFocused: isTabFocused }));
-      // }
-    }
-
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log('WebSocket connection is open');
-      conectionOn = true;
-      // create new game EVENT
-    } else {
-      console.log('WebSocket connection is not open');
-      conectionOn = false;
-    }
-    socket.addEventListener('open', event => {
-      // console.log(socketState);
-      console.log('Connected to WS Server');
-    });
-    // function resizeCanvas() {
-    // 	canvas.width = window.innerWidth/2;
-    // 	canvas.height = window.innerHeight/3;
-    //   }
-
-    //   window.addEventListener('resize', resizeCanvas);
-    //   resizeCanvas();
-    let gameConfig = {};
-
-		socket.onmessage = function (message) {
-			const data = JSON.parse(message.data);
-			if (data.update)
-			{
-				// console.log(data.update);
-				if (data.update.left_paddle_pos)
-				{
-					user.x = data.update.left_paddle_pos[0];
-					user.y = data.update.left_paddle_pos[1];
-				}
-				if (data.update.right_paddle_pos)
-				{
-					computer.x = data.update.right_paddle_pos[0];
-					computer.y = data.update.right_paddle_pos[1];
-				}
-				ball.radius = gameConfig.ball_size[0] / 2;
-				ball.x = data.update.ball_pos[0] + ball.radius;
-				ball.y = data.update.ball_pos[1] + ball.radius;
-				// rectBall.x = data.update.ball_pos[0];
-				// rectBall.y = data.update.ball_pos[1];
-				// console.log(rectBall.x);
-				// console.log(rectBall.y);
-				if (data.update.left_player_score)
-				{
-					user.score = data.update.left_player_score;
-					setScore2(score2 => data.update.left_player_score);
-				}
-				if (data.update.right_player_score)
-				{
-					computer.score = data.update.right_player_score;
-					setScore1(score1 => data.update.right_player_score);
-				}
-				if (data.update.finished)
-				{
-					if (data.update.finished === 'left_player')
-						setWinner(leftUser);
-					else if (data.update.finished === 'right_player')
-						setWinner(rightUser);
-				}
-				drawGame();
-
-			}
-			else if (data.config)
-			{
-				// setScore1(score1 => data.config.right_player_score);
-				// setScore2(score2 => data.config.left_player_score);
-				console.log(data.config);
-				gameConfig = data.config;
-				canvas.width = gameConfig.window_size[0];
-				canvas.height = gameConfig.window_size[1];
-				// console.log(canvas.height);
-				net.x = canvas.width / 2 - 2;
-				computer.width = gameConfig.paddles_size[0];
-				computer.height = gameConfig.paddles_size[1];
-				user.width = gameConfig.paddles_size[0];
-				user.height = gameConfig.paddles_size[1];
-				user.x = gameConfig.left_paddle_pos[0];
-				user.y = gameConfig.left_paddle_pos[1];
-				computer.x = gameConfig.right_paddle_pos[0];
-				computer.y = gameConfig.right_paddle_pos[1];
-				ball.radius = gameConfig.ball_size[0] / 2;
-				ball.x = gameConfig.ball_pos[0] + ball.radius;
-				ball.y = gameConfig.ball_pos[1] + ball.radius;
-				ball.radius = gameConfig.ball_size[0] / 2;
-				// rectBall.x = gameConfig.ball_pos[0];
-				// rectBall.y = gameConfig.ball_pos[1];
-				// rectBall.width = gameConfig.ball_size[0];
-				// rectBall.height = gameConfig.ball_size[1];
-				user.score = gameConfig.left_player_score;
-				setScore2(score2 => gameConfig.left_player_score);
-				computer.score = gameConfig.right_player_score;
-				setScore1(score1 => gameConfig.right_player_score);
-
-
-				if (data.config.left_nickname)
-				{
-					leftUser = data.config.left_nickname;
-				}
-				if (data.config.right_nickname)
-				{
-					rightUser=data.config.right_nickname;
-				}
-				drawGame();
-			}
-			// else if (data.tournament)
-			// {
-			// 	if (data.tournament.left)
-			// 	{
-			// 		setLeftUser(data.tournament.left);
-			// 	}
-			// 	if (data.tournament.right)
-			// 	{
-			// 		setRightUser(data.tournament.right);
-			// 	}
-			// 	console.log(data);
-			// }
-			else
-			{
-				console.log(data);
-			}
-		}
-		// Game state
-		// Keyboard state
-		const keys = {};
-		// Update game logic
-		let setconfig = false;
-		// socket.onmessage
-		const updateGame = () => {
-		}
-
-		
 
     // Draw game elements
     const drawGame = () => {
@@ -257,112 +162,156 @@ export default function PongGame({ setScore1, setScore2, tournament_id=0}) {
       context.closePath();
     };
 
-    if (!conectionOn) {
-      drawGame();
-    }
-    // Keyboard event handlers  // ArrowUp ArrowDown q s
-    // add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
-    const handleKeyDown = event => {
-      console.log('hi');
-      console.log(event.key);
-      socket.send(JSON.stringify({ onPress: event.key.trim() }));
-      keys[event.key] = true;
-      if (event.key === ' ') {
-        // create new game if space key is created
-        socket.send(
-          JSON.stringify({
-            create: {
-              mode: 'local',
-              type: 'single',
-            },
-          })
-        );
-      }
-      if (event.key === 't' || event.key === 'T') {
-        // create new game if space key is created
-        socket.send(
-          JSON.stringify({
-            'start-tournament': {
-              mode: 'local',
-              type: 'tournament',
-              id: 1,
-            },
-          })
-        );
-      }
-    };
+    let gameConfig = {};
 
-    // set the key to false when the key is released
-    const handleKeyUp = event => {
-      socket.send(JSON.stringify({ onRelease: event.key.trim() }));
-      console.log(event.key);
-      keys[event.key] = false;
-    };
+		const handleIncomingMessages = function (message) {
+			const data = JSON.parse(message.data);
+			if (data.update)
+			{
+				if (data.update.left_paddle_pos)
+				{
+					user.x = data.update.left_paddle_pos[0];
+					user.y = data.update.left_paddle_pos[1];
+				}
+				if (data.update.right_paddle_pos)
+				{
+					computer.x = data.update.right_paddle_pos[0];
+					computer.y = data.update.right_paddle_pos[1];
+				}
+				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.x = data.update.ball_pos[0] + ball.radius;
+				ball.y = data.update.ball_pos[1] + ball.radius;
+				if (data.update.left_player_score)
+				{
+					user.score = data.update.left_player_score;
+					setScore2(score2 => data.update.left_player_score);
+				}
+				if (data.update.right_player_score)
+				{
+					computer.score = data.update.right_player_score;
+					setScore1(score1 => data.update.right_player_score);
+				}
+				if (data.update.max_score)
+				{
+					setMaxScore(data.update.max_score);
+				}
+				if (data.update.finished)
+				{
+					if (data.update.finished === 'left_player')
+						setWinner(leftNickname);
+					else if (data.update.finished === 'right_player')
+						setWinner(rightNickname);
+				}
+				drawGame();
 
-		// Mouse event handlers
-		// const handleMouseMove = (event) => {
-		// 	const rect = canvas.getBoundingClientRect();
-		// 	// if event.clentX is less than half of the canvas within the left half of the canvas, move paddle1
-		// 	// how to get the window width and height
-		// 	if (event.clientX >= rect.left && event.clientX < rect.left + canvas.width / 2) {
-		// 		user.y = event.clientY - rect.top - user.height / 2;
-		// 		if (user.y <= 0)
-		// 			user.y = 0
-		// 		else if (user.y + user.height >= canvas.height)
-		// 			user.y = canvas.height - user.height;
-		// 	}
-		// 	else if (event.clientX >= rect.left + canvas.width / 2 && event.clientX < rect.right) {
-		// 		computer.y = event.clientY - rect.top - computer.height / 2;
-		// 		if (computer.y <= 0)
-		// 			computer.y = 0
-		// 		else if (computer.y + computer.height >= canvas.height)
-		// 			computer.y = canvas.height - computer.height;
-		// 	}
-		// 	// handle the paddle going out of the canvas
-		// }
-		const closeSocket = () => {
-			if (socket.readyState === WebSocket.OPEN) {
-				socket.close();
+			}
+			else if (data.config)
+			{
+				console.log('config: ', data.config);
+				gameConfig = data.config;
+				canvas.width = gameConfig.window_size[0];
+				canvas.height = gameConfig.window_size[1];
+				net.x = canvas.width / 2 - 2;
+				computer.width = gameConfig.paddles_size[0];
+				computer.height = gameConfig.paddles_size[1];
+				user.width = gameConfig.paddles_size[0];
+				user.height = gameConfig.paddles_size[1];
+				user.x = gameConfig.left_paddle_pos[0];
+				user.y = gameConfig.left_paddle_pos[1];
+				computer.x = gameConfig.right_paddle_pos[0];
+				computer.y = gameConfig.right_paddle_pos[1];
+				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.x = gameConfig.ball_pos[0] + ball.radius;
+				ball.y = gameConfig.ball_pos[1] + ball.radius;
+				ball.radius = gameConfig.ball_size[0] / 2;
+				user.score = gameConfig.left_player_score;
+				setScore2(score2 => gameConfig.left_player_score);
+				computer.score = gameConfig.right_player_score;
+				setScore1(score1 => gameConfig.right_player_score);
+        if (data.config.max_score)
+        {
+          setMaxScore(data.config.max_score);
+        }
+        if (data.config.local_game_type === 'tournament')
+        {
+          console.log('=======================troun================>>>>>>>>>');
+          console.log(`/l_game/${data.config.tournament_id}`);
+          router.push(`/l_game/${data.config.tournament_id}`);
+        } else if (data.config.local_game_type === 'regular')
+          {
+          console.log('========================regular===============>>>>>>>>>')
+          router.push(`/l_game`);
+        }
+				if (data.config.left_nickname)
+				{
+          setLeftNickname(data.config.left_nickname);
+				}
+				if (data.config.right_nickname)
+				{
+          setRightNickname(data.config.right_nickname);
+				}
+				if (data.config.title)
+				{
+          setTitle(data.config.title);
+				}
+        console.log('local game type: ', data.config.local_game_type)
+				drawGame();
 			}
 		}
 
-		const handleRouteChange = (url) => {
-            console.log('Navigating to: ', url);
-            closeSocket();  // Close the socket when navigating to another page
-        };
+    const handleKeyDown = event => {
+      if (!allowedKeys.includes(event.key)) {
+        return;
+      }
+      event.preventDefault();
+      // socket.send(JSON.stringify({ onPress: event.key.trim() }));
+      websocketSend({ onPress: event.key.trim() });
+    };
 
-        // router.events.on('routeChangeStart', handleRouteChange);
+    // set the key to false when the key is released
+    const handleKeyUp = (event) => {
+      if (!allowedKeys.includes(event.key)) {
+        return;
+      }
+      event.preventDefault();
+      // socket.send(JSON.stringify({ onRelease: event.key.trim() }));
+      websocketSend({ onRelease: event.key.trim() });
+    };
 
-		// Move the paddle2 with the mouse too
-		// Attach event listeners
-		// document.addEventListener('mousemove', handleMouseMove);// add event listener to the document object when the mouse is moved
-		document.addEventListener('keydown', handleKeyDown);// add event listener to the document object when a key is pressed
+    const handleWebsocketOpen  = (event) => {
+      websocketRef.current.onmessage = handleIncomingMessages;
+      drawGame();
+    }
+
+    function sendVisibilityStatus() {
+      // console.log('Visibility: ');
+      // if (conectionOn === true) {
+      // console.log('visibility->: ', document.visibilityState);
+      let isTabFocused = canvasRef.current.visibilityState === 'visible';
+      // socket.send(JSON.stringify({ tabFocused: isTabFocused }));
+      websocketSend({ tabFocused: isTabFocused });
+      // }
+    }
+
+    // Event listeners
+    websocketRef.current.addEventListener('open', handleWebsocketOpen);
+		document.addEventListener('keydown', handleKeyDown);
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
-		// canvasRef.current.addEventListener('touchmove', handleTouchMove);
-		// document.addEventListener('beforeunload', closeSocket);
-
-    // Animation loop
-    // const animate = () => {
-    // 	updateGame();
-    // 	drawGame();
-
-    // 	requestAnimationFrame(animate);
-    // };
-
-    // animate();
-    // setInterval(animate, 1000 / 60);
 
 		// Cleanup event listeners
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
+      websocketRef.current?.close();
 		};
-	}, []);
+	}, [winner, leftNickname, rightNickname, playStart]); // to reset to default
 	return (
-		<canvas className="play-ground" ref={canvasRef} >
-			
-		</canvas>
+    <>
+      {winner && <LocalGameWinner reset={() => setWinner('')} winner={winner} tournament_id={tournament_id} />}
+      <canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto" ref={canvasRef} >
+      </canvas>
+    </>
 	);
 }

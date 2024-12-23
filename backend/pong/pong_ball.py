@@ -1,4 +1,5 @@
 import math
+import random
 
 try:
     from .pong_collisions  import Collisions
@@ -20,6 +21,8 @@ class BallBase(Collisions, Movements):
         self.angle = math.pi/3
         self.__x = self.ball_start_x
         self.__y = self.ball_start_y
+        self.is_left_turn = bool(random.randint(0 ,1))
+        self.restart_ball()
     
     
     @property
@@ -78,14 +81,18 @@ class BallBase(Collisions, Movements):
     def restart_ball(self, to_left=False):
         self.__x = self.ball_start_x
         self.__y = self.ball_start_y
-        
-        self._step_x = self.ball_speed
-        self._step_y = 1
-        
-        if to_left:
-            self._step_x = -self._step_x
-        
-        # self.ball_speed += 0.314
+        self.ball_speed = self.ball_reset_speed
+        random_angle = self.get_random_angle()
+        self._step_x = math.cos(random_angle) * self.ball_start_speed
+        self._step_y = math.sin(random_angle) * self.ball_start_speed
+        self.is_left_turn = not self.is_left_turn
+
+    def get_random_angle(self, range_degrees=90):
+        center_angle = math.pi if self.is_left_turn else 0  # PI for left, 0 for right
+        range_radians = math.radians(range_degrees)
+        lower_bound = center_angle - range_radians / 2
+        upper_bound = center_angle + range_radians / 2
+        return random.uniform(lower_bound, upper_bound)
 
 
 class Ball(BallBase):

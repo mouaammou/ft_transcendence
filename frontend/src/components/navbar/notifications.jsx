@@ -12,26 +12,31 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
 
     const sendAction = useCallback((action, notif_type) => {
         let messageType = null;
+        console.log("\n Notification type: ", notif_type);
+        console.log("\n Action: ", action);
         if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
         } else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
+            console.log("\n Notification type: 1002 ", notif_type);
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
             if (action === 'accepted'){
                 router.push('/game');
             }
-        } else if (notif_type === NOTIFICATION_TYPES.INVITE_TOURNAMENT) {
-            messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_TOURNAMENT : NOTIFICATION_TYPES.REJECT_TOURNAMENT;
+        } else if (notif_type === NOTIFICATION_TYPES.ROUND) {
+            router.push('/tournament_board');
         }
         
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,
         }));
-    }, [data.sender, NOTIFICATION_TYPES, sendMessage, router]);
+    }, [data.sender, NOTIFICATION_TYPES, router]); 
 
     const onAction = (action) => {
         handleAction(action, data);
-        sendAction(action, data.type);
+        data.type &&
+            sendAction(action, data.type);
+        data.notif_type && sendAction(action, data.notif_type);
     }
 
     return (
@@ -39,7 +44,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
             <div className="flex items-center space-x-4">
                 <div className="relative">
                     <img 
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500 transition-all" 
+                        className="w-10 h-10 min-w-10 rounded-full object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500 transition-all" 
                         src={data.avatar} 
                         alt={`${data.username}'s avatar`} 
                     />
@@ -80,6 +85,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                         </button>
                     </>
                 )}
+                {data.notif_status !== 'pending' && (
                 <button
                     onClick={() => onAction('read')}
                     className="bg-blue-600 text-white rounded-full p-1.5 hover:bg-blue-700 transition-colors"
@@ -87,6 +93,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                 >
                     <IoCheckmarkDoneOutline className="text-lg" />
                 </button>
+                )}
             </div>
         </div>
     );
@@ -112,12 +119,14 @@ const NotificationBell = () => {
                         : notif
                 )
             );
+        console.log("\n Notification DATA: ", data);
         markAsRead(data.id);
     }, [markAsRead, setNotifications]);
 
-    useEffect(() => {
-        UnreadNotifications();
-    }, [UnreadNotifications]);
+	// Fetch unread notifications on component mount
+	useEffect(() => {
+		UnreadNotifications();
+	}, []);
 
     const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -144,12 +153,6 @@ const NotificationBell = () => {
                     <div className="flex justify-between items-center p-4 border-b border-gray-700">
                         <h3 className="text-sm font-semibold text-white">Notifications</h3>
                         <div className="flex items-center space-x-2">
-                            <button 
-                                className="text-blue-400 hover:text-blue-300 transition-colors"
-                                aria-label="Mark all as read"
-                            >
-                                <IoCheckmarkDoneOutline className="text-lg" />
-                            </button>
                             <Link 
                                 href="/notifications" 
                                 className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors"

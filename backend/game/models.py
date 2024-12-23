@@ -6,36 +6,8 @@ from django.contrib.auth import get_user_model
 from datetime import timedelta
 import asyncio
 import uuid
-
-# class (models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-   
-#     winner = models.ForeignKey(
-#         CustomUser,
-#         on_delete=models.CASCADE,
-#         related_name='won_games',
-#         null=True,
-#         blank=True
-#     )
-#     score_player_1 = models.IntegerField(default=0)
-#     score_player_2 = models.IntegerField(default=0)
-
-#     @property
-#     def winner_id(self):
-#         if self.winner:
-#             return self.winner.id
-#         elif self.score_player_1 == self.score_player_2:
-#             return None  # Indicates a draw
-#         else:
-#             return self.player_1.id if self.score_player_1 > self.score_player_2 else self.player_2.id
+import random
         
-
-#     class Meta:
-#         pass
-    
-    
     
 class GameHistory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -74,18 +46,7 @@ class GameHistory(models.Model):
         ('disconnect', 'Disconnect')
     ], default='defeat')
     
-    
-    
-    # def save(self, *args, **kwargs):
-    #     # Set the creation_date and creation_time when saving the instance
-    #     if not self.pk:  # Only set these if the instance is being created
-    #         self.creation_date = self.created_at.date()
-    #         self.creation_time = self.created_at.time()
-    #     super().save(*args, **kwargs)
-    
     class Meta:
-        # verbose_name = _("")
-        # verbose_name_plural = _("s")
         pass
 
     def __str__(self):
@@ -267,6 +228,31 @@ class LocalTournament(models.Model):
         self.match_index = index + 1
         if index == 7:
             self.finished = True
+        
+    def shuffle(self):
+        if self.match_index != 1: # only on create
+            return
+        original_nicknames = [
+            'match1_nickname1',
+            'match1_nickname2',
+            'match2_nickname1',
+            'match2_nickname2',
+            'match3_nickname1',
+            'match3_nickname2',
+            'match4_nickname1',
+            'match4_nickname2',
+        ]
+        nicknames = [getattr(self, nickname) for nickname in original_nicknames]
+        random.shuffle(nicknames)
+        print(nicknames)
+
+        for index in range(len(original_nicknames)):
+            setattr(self, original_nicknames[index], nicknames[index])
+    
+    def save(self, *args, **kwargs):
+        print("Saving")
+        self.shuffle()
+        super().save(*args, **kwargs)
     
     def __str__(self) -> str:
         return f"[{self.id}] Local Tournament - {self.title} - {self.match7_winner}"

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Login42 from '@/components/auth/login42';
 import Image from 'next/image';
 import '@/styles/auth/login.css';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 export default function LoginPage() {
 	const [totp, setTotp] = useState(false);
@@ -14,7 +16,6 @@ export default function LoginPage() {
 		password: '',
 		// 2fa_code: '', will be added if user enabled 2fa
 	});
-	const [showPassword, setShowPassword] = useState(false);
 	const { errors, AuthenticateTo } = useAuth();
 
 	const handleChange = (e) => {
@@ -22,19 +23,27 @@ export default function LoginPage() {
 		setFormData(prev => ({ ...prev, [name]: value }));
 	};
 
+	const handleTotpInputChange = (event) => {
+        const value = event.target.value.replace(/\D/g, "");
+        if (value.length > 6)
+            return ;
+		setFormData(prev => ({ ...prev, [event.target.name]: value }));
+    };
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log('formData: in login::  ', formData);
 		let resp = await AuthenticateTo('/login', formData);
-		if (resp?.totp) {
+		if (!totp && resp?.totp) {
 			setTotp(true);
-			// setFormData({...formData, 2fa_code: '123456'});
-			// resp = await AuthenticateTo('/login', formData);
 		}
-		console.log('resp: in login::  ', resp);
+		if (totp)
+			toast.error('Invalid Credentials');
 	};
 
 	return (
+		<>
+		<Toaster /> 
 		<div className="min-h-screen flex justify-center items-center px-4 py-8">
 		<div className="layer-blue background-blue absolute inset-0" />
 		
@@ -64,50 +73,54 @@ export default function LoginPage() {
 				type="text"
 				value={formData.username}
 				onChange={handleChange}
-				placeholder="Username or Email"
-				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+				placeholder="Username Or Email"
+				// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+				className='custom-input w-full'
 				required
 				disabled={totp}
 				/>
 			</div>
 
-			<div className="relative">
+			<div className="relative" >
+
 				<input
-			/>
-			<input
-				// type="password"
-				// className="form-control  disabled:opacity-50"
-				name="password"
-				type={showPassword ? 'text' : 'password'}
-				value={formData.password}
-				onChange={handleChange}
-				placeholder="Password"
-				className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
-				required
-				disabled={totp}
-			/>
-				{ totp && <input
-				type="text"
-				className="form-control"
-				name="totp_code"
-				placeholder="Enter Two Factor Code"
-				onChange={handleChange}
-			/>}
-			<button
-				type="button"
-				onClick={() => setShowPassword(!showPassword)}
-				className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-				>
-				{showPassword ? '👁️' : '👁️‍🗨️'}
-				</button>
+					// type="password"
+					// className="form-control  disabled:opacity-50"
+					name="password"
+					type={'password'}
+					value={formData.password}
+					onChange={handleChange}
+					placeholder="Password" 
+					// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+					className='custom-input w-full'
+					required
+					disabled={totp}
+				/>
+				
 			</div>
 
-			<button
-				type="submit"
-				className="w-full py-4 text-2xl text-black bg-white rounded-full hover:bg-gray-100 transition-colors duration-300 font-medium"
-			>
-				{totp ? 'Verify 2FA Code' : 'Login'}
-			</button>
+			{ totp && <div className="relative">
+				<input
+						type="text"
+						// className="w-full px-4 py-5 bg-transparent border border-gray-500 rounded-lg outline-none focus:border-blue-500 transition-colors"
+						className='custom-input w-full'
+						name="totp_code"
+						placeholder="Enter 2fa code"
+						onChange={handleTotpInputChange}
+						value={formData.totp_code || ""}
+						required
+					/>
+				</div>}
+
+
+
+				<button
+					type="submit"
+					// className="w-full py-4 text-2xl text-black bg-white rounded-full hover:bg-gray-100 transition-colors duration-300 font-medium"
+					className='custom-button'
+				>
+					{totp ? 'Verify 2FA Code' : 'Login'}
+				</button>
 			</div>
 
 			<div className="mt-8 text-center">
@@ -142,5 +155,7 @@ export default function LoginPage() {
 			</footer>
 		</form>
 		</div>
+
+		</>
 	);
 }

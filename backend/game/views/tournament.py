@@ -12,6 +12,17 @@ from game.local_game.eventloop import EventLoopManager
 from django.db.models import Q
 
 
+class SearchLocalTournament(ModelViewSet):
+    serializer_class = TournamentSerializer
+    pagination_class = TournamentPagination
+    
+    def get_queryset(self):
+        query = self.request.GET.get('search', '')
+        if not query:
+            return LocalTournament.objects.none()
+        return LocalTournament.objects.filter(title__icontains=query)
+
+
 class LocalTournamentViewSet(ModelViewSet):
     # queryset = LocalTournament.objects.all().order_by('-created_at')
     serializer_class = TournamentSerializer
@@ -23,6 +34,22 @@ class LocalTournamentViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.customUser)
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            errors = serializer.errors
+            error_messages = []
+            for field, messages in errors.items():
+                if isinstance(messages, list):
+                    error_messages.extend([message for message in messages])
+                else:
+                    error_messages.append(messages)
+            data = {'msg': '\n'.join(error_messages)}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+    
     def get_queryset(self):
         """
         Filters the queryset based on the filter_keyword from the URL.
@@ -33,9 +60,6 @@ class LocalTournamentViewSet(ModelViewSet):
         # Get the filter keyword from the URL
         filter_keyword = self.kwargs.get('filter_keyword', None)
         filter_keyword = filter_keyword.lower() if filter_keyword else None
-        print('#'*30)
-        print(filter_keyword)
-        print('#'*30)
         
         # Apply filters based on the keyword
         if filter_keyword == 'pending':
@@ -79,35 +103,35 @@ class TournamentNextMatchPlayersView(APIView):
 
         except LocalTournament.DoesNotExist:
             return Response({"error": "Tournament not found."}, status=status.HTTP_404_NOT_FOUND)
-    def post(self, request, id):
-        try:
-            EventLoopManager.add(
-                request.unique_key,
-                tourn_obj=LocalTournament.objects.get(id=id)
-            )
-            EventLoopManager.play(request.unique_key)
-            return Response({"success": "Match Started."}, status=status.HTTP_200_OK)
-        except LocalTournament.DoesNotExist:
-            pass
-        return Response({"fail": "Tournament Does Not Exist."}, status=status.HTTP_200_OK)
+    # def post(self, request, id):
+    #     try:
+    #         EventLoopManager.add(
+    #             request.unique_key,
+    #             tourn_obj=LocalTournament.objects.get(id=id)
+    #         )
+    #         EventLoopManager.play(request.unique_key)
+    #         return Response({"success": "Match Started."}, status=status.HTTP_200_OK)
+    #     except LocalTournament.DoesNotExist:
+    #         pass
+    #     return Response({"fail": "Tournament Does Not Exist."}, status=status.HTTP_200_OK)
 
 
 
 
-class SearchLocalTournament(ModelViewSet):
-    serializer_class = TournamentSerializer
-    pagination_class = TournamentPagination
+# class SearchLocalTournament(ModelViewSet):
+#     serializer_class = TournamentSerializer
+#     pagination_class = TournamentPagination
     
-    def get_queryset(self):
-        """
-        Filters the queryset based on the filter_keyword from the URL.
-        """
-        query = self.request.GET.get('search', '')
-        print('#q'*30)
-        print(query)
-        print('#q'*30)
+#     def get_queryset(self):
+#         """
+#         Filters the queryset based on the filter_keyword from the URL.
+#         """
+#         query = self.request.GET.get('search', '')
+#         print('#q'*30)
+#         print(query)
+#         print('#q'*30)
 
-        if not query:
-            return LocalTournament.objects.none()
+#         if not query:
+#             return LocalTournament.objects.none()
 
-        return LocalTournament.objects.filter(title__icontains=query)
+#         return LocalTournament.objects.filter(title__icontains=query)

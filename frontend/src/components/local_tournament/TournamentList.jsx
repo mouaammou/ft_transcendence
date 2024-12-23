@@ -58,34 +58,25 @@ const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
         return <div>Loading tournaments...</div>;
     }
 
-    const formatDate = (date) => {
-        const options = { 
-        //   weekday: 'short', // e.g., "Mon"
-          year: 'numeric', // e.g., "2024"
-          month: 'short', // e.g., "Nov"
-        //   day: 'numeric', // e.g., "15"
-        //   hour: '2-digit', // e.g., "12"
-        //   minute: '2-digit', // e.g., "30"
-        };
+    // const formatDate = (date) => {
+    //     const options = { 
+    //     //   weekday: 'short', // e.g., "Mon"
+    //       year: 'numeric', // e.g., "2024"
+    //       month: 'short', // e.g., "Nov"
+    //     //   day: 'numeric', // e.g., "15"
+    //     //   hour: '2-digit', // e.g., "12"
+    //     //   minute: '2-digit', // e.g., "30"
+    //     };
         
-        return new Date(date).toLocaleDateString('en-US', options);
-      };
+    //     return new Date(date).toLocaleDateString('en-US', options);
+    //   };
 
     return (
-        <div className="flex flex-col w-full max-w-screen-lg bg-transparent justify-between mx-auto">
-            <div className="-m-1.5 overflow-x-auto">
+        <div className="flex-1 h-full flex flex-col max-w-screen-lg bg-transparent justify-between mx-auto">
+            <div className="-m-1.5 overflow-x-auto flex-1">
                 <div className="p-1.5 min-w-full inline-block align-middle">
                     <div className="overflow-hidden">
-                        {/* <table className="min-w-full divide-y divide-white/20">
-
-                        <thead>
-                            <tr>
-                            <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">title</th>
-                            <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-white/70 uppercase">status</th>
-                            </tr>
-                        </thead> */}
-                        {/* <tbody className="divide-y divide-white/10"> */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4  grid-auto-rows-min">
+                        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4  grid-auto-rows-min">
                             {tournaments && tournaments.map((tournament) => (
                                 <Card
                                     key={tournament.id}
@@ -100,7 +91,7 @@ const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
                 </div>
             </div>
 
-            <div colSpan="4"  className="h-full px-6 py-4 whitespace-nowrap mx-auto">
+            <div className="h-fit w-full px-6 py-4 whitespace-nowrap mx-auto">
                 <Pagination
                     currentPage={currentPage}
                     onPageChange={setCurrentPage}

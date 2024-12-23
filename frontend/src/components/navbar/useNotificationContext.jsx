@@ -13,7 +13,9 @@ const NOTIFICATION_TYPES = {
 	INVITE_TOURNAMENT: 'invite_to_tournament',
 	ACCEPT_TOURNAMENT: 'accept_tournament',
 	REJECT_TOURNAMENT: 'reject_tournament',
-	ROUND: 'round_notif'
+	ROUND: 'round_game',
+  ACCEPT_ROUND: 'accept_round',
+  REJECT_ROUND: 'reject_round',
 };
 
 const NotificationContext = createContext();
@@ -48,7 +50,8 @@ export const NotificationProvider = ({ children }) => {
 		if (!isConnected || !data) return;
 		if ([NOTIFICATION_TYPES.FRIENDSHIP, NOTIFICATION_TYPES.ACCEPT_FRIEND,
 			, NOTIFICATION_TYPES.ACCEPT_GAME,NOTIFICATION_TYPES.INVITE_GAME,
-			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT, NOTIFICATION_TYPES.ROUND
+			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT,
+      NOTIFICATION_TYPES.ROUND
 		].includes(data.type)) {
 			console.log('WebSocket FOR Notifications:', data);
 			// setNotifications((prev) => [...prev, { ...data }]);

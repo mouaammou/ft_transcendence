@@ -5,11 +5,11 @@ const Selector = ({ title, description, Svgvar, onclick }) => {
     //   React.createElement("div", [], React.createElement("h1", [], "Hello World!"))
     <div
       onClick={onclick}
-      className="group flex flex-row  bg-whitetrspnt  p-5 pr-0 lg:max-w-[504px]  rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150"
+      className="group flex flex-row  bg-whitetrspnt  p-3 sm:p-5 pr-0 lg:max-w-[500px] rounded-[20px] sm:rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150"
     >
       <div className="w-5/6">
-        <div className="text-[24px] sm:text-[35px] font-balsamiq">{title}</div>
-        <div className="text-[14px] sm:text-[20px] font-open font-thin">{description}</div>
+        <div className="text-[20px] sm:text-[24px] md:text-[28px] font-balsamiq">{title}</div>
+        <div className="text-[12px] sm:text-[16] md:text-[18px] font-open font-thin">{description}</div>
       </div>
       <div className="flex-1">
         <svg width="70%" height="70%" viewBox="0 0 40 40">
@@ -22,7 +22,7 @@ const Selector = ({ title, description, Svgvar, onclick }) => {
                                 13.581l-1.42-.617a10.323 10.323 0 0 0-8.225 
                                 0l-1.42.617C5.874 42.845-2.846 34.125.886 
                                 25.533l.617-1.42a10.323 10.323 0 0 0 0-8.225l-.617-1.42Z"
-            className="fill-customfill group-hover:fill-hrcolor transition ease-in-out delay-150 duration-150" // this is the color of the icon background
+            className="fill-customfill group-hover:fill-hrcolor transition ease-in-out delay-150 duration-150"
           ></path>
           {Svgvar && <Svgvar />}
         </svg>

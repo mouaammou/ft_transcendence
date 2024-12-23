@@ -85,7 +85,7 @@
     font-size: xx-large;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1070px) {
 
     .gridMobileImage {
         display: none;

@@ -14,9 +14,9 @@ class PlayTounament(APIView):
     # permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', ]
 
-    def get(self, request):
+    def get(self, request, tid):
 
-        inst = get_object_or_404(LocalTournament, id=126)
+        inst = get_object_or_404(LocalTournament, id=tid)
         if inst.finished:
             return Response("Tournament is finished")
         EventLoopManager.add(
@@ -26,16 +26,16 @@ class PlayTounament(APIView):
         EventLoopManager.play(request.unique_key)
         return Response("Tournamnet started")
     
-    def post(self, request):
-        inst = get_object_or_404(LocalTournament, id=126)
-        if inst.finished:
-            return Response("Tournament is finished")
-        EventLoopManager.add(
-            request.unique_key,
-            tourn_obj=inst
-        )
-        EventLoopManager.play(request.unique_key)
-        return Response(f"Hello, world! {request.data}")
+    # def post(self, request):
+    #     inst = get_object_or_404(LocalTournament, id=126)
+    #     if inst.finished:
+    #         return Response("Tournament is finished")
+    #     EventLoopManager.add(
+    #         request.unique_key,
+    #         tourn_obj=inst
+    #     )
+    #     EventLoopManager.play(request.unique_key)
+    #     return Response(f"Hello, world! {request.data}")
 
 
 class PlayRegular(APIView):

@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.conf import settings
 from datetime import datetime, timedelta
+from  game.models import GameHistory
 import uuid
 
 User = get_user_model()
@@ -207,3 +208,29 @@ class ResetPasswordSerializer(serializers.Serializer):
         self.user.reset_password_expire = None
         self.user.save()
 ########################## password reset ############################
+
+
+class MinimiseUser(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'avatar']
+
+class GameSerializer(serializers.ModelSerializer):
+    player_1 = MinimiseUser()
+    player_2 = MinimiseUser()
+
+    class Meta:
+        model = GameHistory
+        fields = [
+            'id',
+            'player_1',
+            'player_2',
+            'creation_date',
+            'creation_time',
+            'player_1_score',
+            'player_2_score',
+            'winner_id',
+            'loser_id',
+            'game_type',
+            'finish_type'
+        ]

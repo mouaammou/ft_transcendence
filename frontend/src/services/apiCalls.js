@@ -82,13 +82,35 @@ export const fetchTournaments = async (page = 1, filter='all') => {
 	}
 };
 
-export const createTournament = async (data) => {
-	try {
-		const response = await api.post('/', data);
-		return response;
-	} catch (error) {
-		return { status: 422 };
-	}
+// export const createTournament = async (data) => {
+// 	try {
+// 		const response = await api.post('/', data);
+// 		return response;
+// 	} catch (error) {
+// 		return { status: 422 };
+// 	}
+// };
+export const createTournament = async (raw_data) => {
+	let data = null; 
+    try {
+        const response = await api.post('/', raw_data);
+        response.data['status'] = response.status;
+        data = response.data;
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            error.response.data['status'] = error.response.status;
+            data = error.response.data;
+            return error.response.data
+        } else {
+            data = {status: 500, msg: "No response from server"};
+            return data;
+        }
+    }
+    finally {
+        console.log("--response--");
+        console.log(data);
+    }
 };
 
 export const fetchTournamentDetail = async (id) => {
@@ -96,8 +118,31 @@ export const fetchTournamentDetail = async (id) => {
 		const response = await api.get(`/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching tournaments:', error);
+		console.log('Error fetching tournaments:', error);
 		return {};
+	}
+};
+
+export const fetchTournamentUpdate = async (id, data_obj) => {
+	try {
+		const response = await api.put(`/${id}/`, data_obj);
+		response.data['status'] = response.status;
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournament update:', error);
+		return {msg: error.response.data.non_field_errors[0], status: error.response.status};
+	}
+};
+
+export const fetchTournamentDelete = async (id) => {
+	try {
+		const response = await api.delete(`/${id}/`);
+		console.log(response);
+		response.data ={status: response.status};
+		return response.data;
+	} catch (error) {
+		console.log('Error fetching tournament delete:', error);
+		return { status: 400};
 	}
 };
 
@@ -107,7 +152,7 @@ export const fetchTournamentMatchPlayers = async (id) => {
 		const response = await api.get(`/next-match-players/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournaments:', error);
+		// console.log('Error fetching tournaments:', error);
 		return {'error': 'Error fetching tournaments'};
 	}
 };
