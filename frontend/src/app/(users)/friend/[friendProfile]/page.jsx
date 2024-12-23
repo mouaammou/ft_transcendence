@@ -53,7 +53,6 @@ export default function FriendProfile({ params }) {
 	}, [profile?.id]);
 
 	const blockFriend = useCallback(() => {
-
 		if (profile?.id)
 		postData(`/blockFriend/${profile.id}`)
 			.then(response => {
@@ -64,7 +63,7 @@ export default function FriendProfile({ params }) {
 			.catch(error => {
 			console.log(error);
 			});
-	}, [profile?.id]);
+	}, [profile?.id, setFriendStatusRequest]);
 
 	const removeBlock = useCallback(() => {
 		//http request to block friend
@@ -72,7 +71,7 @@ export default function FriendProfile({ params }) {
 		deleteData(`/removeBlock/${profile.id}`)
 			.then(response => {
 			if (response.status === 200) {
-				setFriendStatusRequest('no');
+				setFriendStatusRequest('accepted');
 			}
 			})
 			.catch(error => {

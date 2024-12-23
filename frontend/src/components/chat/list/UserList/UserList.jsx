@@ -17,7 +17,7 @@ const UserList = ({ users, listType , currentUser}) => {
   // console.log('hay users  => ' , users)
 
   // console.log(' ***** currentUser data ***  => ' , currentUser)
-  console.log(' ***** users hellll ***  => ' , users)
+  // console.log(' ***** users hellll ***  => ' , users)
   // Sort users by last_message timestamp in descending order
   const sortedUsers = [...users].sort((a, b) => {
     const timeA = new Date(a.last_message.timestamp).getTime();

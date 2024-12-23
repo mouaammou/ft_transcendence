@@ -62,7 +62,7 @@ User = get_user_model()
 #         sorted_friends = sorted(
 #             all_friends_data,
 #             key=lambda friend: (
-#             friend_latest_map.get(friend.id).timestamp() if friend_latest_map.get(friend.id) is not None else 0
+#             friend_latest_map.get(riend.get('user')).timestamp() if friend_latest_map.get(ffriend.id) is not None else 0
 #             ),
 #             reverse=True  # Sort in descending order
 #         )
@@ -89,19 +89,19 @@ class ListUsersView(FriendshipListView):
         for friend in all_friends_data:
             # Get the most recent message between the user and the friend
             latest_message = Message.objects.filter(
-                Q(sender=custom_user, receiver=friend) | Q(sender=friend, receiver=custom_user)
+                Q(sender=custom_user, receiver=friend.get('user')) | Q(sender=friend.get('user'), receiver=custom_user)
             ).order_by('-timestamp').first()
 
              # Count unread messages for this friend
             unread_count = Message.objects.filter(
-                sender=friend,
+                sender=friend.get('user'),
                 receiver=custom_user,
                 is_read=False
             ).count()
 
             if latest_message:
                 # Store the latest message, timestamp, and is_read status
-                friend_latest_map[friend.id] = {
+                friend_latest_map[friend.get('user')] = {
                     "message": latest_message.message,
                     "timestamp": latest_message.timestamp,
                     # "is_read": latest_message.is_read
@@ -110,7 +110,7 @@ class ListUsersView(FriendshipListView):
                 }
             else:
                 # No message found
-                friend_latest_map[friend.id] = {
+                friend_latest_map[friend.get('user')] = {
                     "message": '',
                     "timestamp": None,
                     "is_read": False,  # Default as read if no messages are found
@@ -120,7 +120,7 @@ class ListUsersView(FriendshipListView):
         # Prepare a list with friends and their last message details
         friends_with_messages = []
         for friend in all_friends_data:
-            latest_message = friend_latest_map.get(friend.id, None)
+            latest_message = friend_latest_map.get(friend.get('user'), None)
             if latest_message:
                 last_message = {
                     "message": latest_message.get('message', 'No message'),

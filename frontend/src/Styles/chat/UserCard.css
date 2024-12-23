@@ -33,7 +33,8 @@
   transition: all 0.2s ease;
   background: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  padding: 0.75rem;
+  /* padding: 0.75rem; */
+  padding: 10px;
 }
 
 .img-usercard{
@@ -50,7 +51,8 @@
   /* background-color: #1a2980; */
   /* background-color: #3b82f680; */
   
-  background-color: #041921;
+  /* background-color: #041921; */
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Styling for clicked card */
@@ -69,7 +71,8 @@
 }
 
 .usercard-card-wrapper.placeholder:hover {
-  transform: none;
+  /* transform: none; */
+  transform: translateY(-3px);
   cursor: default;
 }
 
@@ -158,7 +161,9 @@
 @media (max-width: 400px) {
   .UserCardAll {
     /* margin: 10px 15px; */
-    padding: 0px;
+    /* padding: 0px; */
+    padding: 5px;
+
     /* gap: 12%; */
     gap: 5px;
   }

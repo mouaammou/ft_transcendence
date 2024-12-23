@@ -1,4 +1,4 @@
-from authentication.serializers import FriendsSerializer, UserSerializer
+from authentication.serializers import FriendsSerializer, UserSerializer, UserWithStatusSerializer
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from authentication.models import Friendship, CustomUser
@@ -11,69 +11,48 @@ from django.db.models import Q
 # ***************** Friendship List View ***************** #
 
 class FriendshipListView(generics.ListAPIView):
-	serializer_class = FriendsSerializer
-	pagination_class = CustomUserPagination
+    serializer_class = UserWithStatusSerializer
+    pagination_class = CustomUserPagination
 
-	def get_queryset(self):
-		# Get the current user from the request
-		custom_user = self.request.customUser
+    def get_queryset(self):
+        custom_user = self.request.customUser
+        search_term = self.request.query_params.get('search', None)
 
-		# Get search term if present
-		search_term = self.request.query_params.get('search', None)
+        friendships = Friendship.objects.filter(
+            Q(sender=custom_user) | Q(receiver=custom_user),
+            Q(status='accepted') | Q(status='blocked')
+        )
 
-		# Filter for friendships where the user is either the sender or receiver
-		# and the status is 'accepted'
-		friendships = Friendship.objects.filter(
-			Q(sender=custom_user) | Q(receiver=custom_user),
-			status='accepted'
-		)
-		
-		
-		# Extract unique friends (either the receiver or sender)
-		unique_friends = []
-		for friendship in friendships:
-			if friendship.sender == custom_user:
-					unique_friends.append(friendship.receiver)
-			else:
-					unique_friends.append(friendship.sender)
+        unique_friends = []
+        seen_users = set()
 
-		unique_friends = set(unique_friends)
+        for friendship in friendships:
+            if friendship.sender == custom_user:
+                friend = friendship.receiver
+            else:
+                friend = friendship.sender
 
-		# If a search term is provided, filter unique friends based on the search term
-		if search_term:
-			filtered_friends = []
-			
-			for user in unique_friends:
-				if search_term.lower() in user.username.lower():
-					# If a match is found, add the user to the filtered_friends list
-					filtered_friends.append(user)
-			# Update unique_friends to contain only the filtered results
-			unique_friends = filtered_friends
+            if friend.id not in seen_users:
+                unique_friends.append({
+                    'user': friend.id,
+					'friend': friend,
+                    'friendship_status': friendship.status
+                })
+                seen_users.add(friend.id)
+        if search_term:
+            unique_friends = [
+                friend for friend in unique_friends
+                if search_term.lower() in friend.get('friend').username.lower()
+                # if search_term.lower() in friend['user'].username.lower()
+            ]
+        return unique_friends
 
-		# Convert the set back to a list for pagination
-		unique_friends = list(unique_friends)
-
-		
-		return unique_friends
-
-	def list(self, request, *args, **kwargs):
-		# Get the unique friends queryset
-		friends_queryset = self.get_queryset()
-		paginator = self.pagination_class()
-		paginated_users = paginator.paginate_queryset(friends_queryset, request)
-			# Serialize the paginated data
-		serializer = UserSerializer(paginated_users, many=True)
-		
-		
-		# Return paginated response
-		return paginator.get_paginated_response(serializer.data)
-	
-
-    # #Return all friends without pagination.
-	# def get_all_friends(self):
-	# 	friends_queryset = self.get_queryset()
-	# 	serializer = UserSerializer(friends_queryset, many=True)
-	# 	return serializer.data
+    def list(self, request, *args, **kwargs):
+        friends_queryset = self.get_queryset()
+        paginator = self.pagination_class()
+        paginated_users = paginator.paginate_queryset(friends_queryset, request)
+        serializer = UserWithStatusSerializer(paginated_users, many=True)
+        return paginator.get_paginated_response(serializer.data)
 	
 
 class FriendshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -104,11 +83,17 @@ class BlockFriendshipView(generics.GenericAPIView):
 
 	def get_object(self, *args, **kwargs):
 		friend_id = kwargs.get('pk')
-		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		user_id = self.request.customUser.id
+		if not user_id or not friend_id:
+			return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+		friendship = Friendship.objects.filter(
+			Q(sender_id=user_id, receiver_id=friend_id) | Q(sender_id=friend_id, receiver_id=user_id)
+		).first()
 		return friendship
 
 	def post(self, request, *args, **kwargs):
 		print("\nblock ::  friend\n")
+		print(f"\nrequest: {request.data}\n")
 		friendship = self.get_object(*args, **kwargs)
 		print(f"frienship: {friendship.status}")
 
@@ -119,7 +104,7 @@ class BlockFriendshipView(generics.GenericAPIView):
 			except ValidationError as e:
 				return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 		elif friendship.status == 'blocked':
-			return Response({"error": "This request has already been blocked."}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({"error": "This request has already been blocked."}, status=status.HTTP_200_OK)
 
 # ***************** Remove Blocked Friend View ***************** #
 class RemoveBlockedFriend(generics.DestroyAPIView):
@@ -128,13 +113,20 @@ class RemoveBlockedFriend(generics.DestroyAPIView):
 
 	def get_object(self, *args, **kwargs):
 		friend_id = kwargs.get('pk')
-		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
+		user_id = self.request.customUser.id
+		if not user_id or not friend_id:
+			return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+		friendship = Friendship.objects.filter(
+			Q(sender_id=user_id, receiver_id=friend_id) | Q(sender_id=friend_id, receiver_id=user_id)
+		).first()
 		return friendship
 
 	def delete(self, request, *args, **kwargs):
 		friendship = self.get_object(*args, **kwargs)
+		print(f"\nfriendship: {friendship.status}\n")
 		if friendship.status == 'blocked':
-			friendship.delete()
+			# friendship.delete()
+			friendship.accept()
 			return Response({"message": "Blocked friend removed from blocked list."}, status=status.HTTP_200_OK)
 		else:
 			return Response({"error": "This request has already been processed."}, status=status.HTTP_400_BAD_REQUEST)
@@ -145,9 +137,14 @@ class RemoveFriend(generics.DestroyAPIView):
 	serializer_class = FriendsSerializer
 
 	def get_object(self, *args, **kwargs):
-		friend_id = kwargs.get('pk')
-		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
-		return friendship
+			friend_id = kwargs.get('pk')
+			user_id = self.request.customUser.id
+			if not user_id or not friend_id:
+				return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+			friendship = Friendship.objects.filter(
+				Q(sender_id=user_id, receiver_id=friend_id) | Q(sender_id=friend_id, receiver_id=user_id)
+			).first()
+			return friendship
 
 	def delete(self, request, *args, **kwargs):
 		friendship = self.get_object(*args, **kwargs)
@@ -176,15 +173,3 @@ class RejectFriendshipView(generics.DestroyAPIView):
 			return Response({"message": "Friendship request rejected."}, status=status.HTTP_200_OK)
 		else:
 			return Response({"error": "This request has already been processed."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GetFriendshipView(generics.RetrieveAPIView):
-	
-	def get(self, request, *args, **kwargs):
-		friend_id = kwargs.get('id')
-		friendship = Friendship.objects.filter(Q(sender=friend_id) | Q(receiver=friend_id)).first()
-		if friendship:
-			serializer = FriendsSerializer(friendship)
-			return Response(serializer.data, status=status.HTTP_200_OK)
-		else:
-			return Response({"error": "Friendship not found."}, status=404)

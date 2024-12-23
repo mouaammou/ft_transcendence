@@ -3,6 +3,7 @@ import '@/styles/chat/msg.css';
 import Image from 'next/image';
 import { LiaGamepadSolid } from 'react-icons/lia';
 import { ImBlocked } from 'react-icons/im';
+import { ImEyeBlocked } from "react-icons/im";
 import { BsSendFill } from 'react-icons/bs';
 import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from 'react-icons/bs';
@@ -37,7 +38,10 @@ const Msg_chat = () => {
 	typingUsers,
 	emojiPickerRef,
 	handleScroll,
-	chatContainerRef,	
+	chatContainerRef,
+	blockFriend,
+	removeBlock,
+	friendStatusRequest,
   } = useContext(ChatContext);
 
 	const { profileData: currentuser } = useAuth();  // Current logged-in user
@@ -55,6 +59,18 @@ const Msg_chat = () => {
 		router.push('/waiting_friends_game');
 		console.log('Invite to game');
 	};
+
+	const handleBlockClick = () => {
+		console.log('friendStatusRequest => ', friendStatusRequest);
+        if (friendStatusRequest === 'blocked') {
+			console.log('Remove block');
+            removeBlock();
+        } else {
+			console.log('block friend');
+            blockFriend();
+        }
+    };
+
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
 		{selectedUser ? (
@@ -77,7 +93,11 @@ const Msg_chat = () => {
 				</div>
 				<div className="section_action">
 				<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
-				<ImBlocked className="ImBlocked" />
+				{friendStatusRequest === 'blocked' ? (
+                <ImEyeBlocked onClick={handleBlockClick} className="ImEyeBlocked" />
+				) : (
+					<ImBlocked onClick={handleBlockClick} className="ImBlocked" />
+				)}
 				</div>
 			</div>
 
@@ -129,7 +149,8 @@ const Msg_chat = () => {
 				<div className="bottom-chat">
 				<div className="div_message_input">
 					<input
-					className="message_input"
+					// className="message_input"
+					className={`message_input ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
 					type="text"
 					placeholder="Type a message..."
 					//   onChange={e => setText(e.target.value)}
@@ -137,17 +158,38 @@ const Msg_chat = () => {
 					}}
 					value={text}
 					onKeyDown={handleKeyPress}
+					disabled={friendStatusRequest === 'blocked'}
 					/>
 				</div>
-				<div className="emoji" ref={emojiPickerRef}>
+				{/* <div className="emoji" ref={emojiPickerRef}>
 					<BsEmojiSmile className="BsEmojiSmile" onClick={() => setOpen(prev => !prev)} />
 					{open && (
 					<div className="Picker">
 						<EmojiPicker onEmojiClick={handleEmojiClick} />
 					</div>
 					)}
+				</div> */}
+				<div className={`emoji ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`} ref={emojiPickerRef}>
+					<BsEmojiSmile 
+						className="BsEmojiSmile" 
+						onClick={() => {
+							if (friendStatusRequest !== 'blocked') {
+								setOpen(prev => !prev);
+							}
+						}} 
+					/>
+					{open && (
+						<div className="Picker">
+							<EmojiPicker onEmojiClick={handleEmojiClick} />
+						</div>
+					)}
 				</div>
-				<button className="buttom-send" onClick={handleSendMessage}>
+				<button 
+					// className="buttom-send" 
+					className={`buttom-send ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
+					onClick={handleSendMessage}
+					disabled={friendStatusRequest === 'blocked'}
+				>
 					<BsSendFill className="send-icon" />
 				</button>
 				</div>

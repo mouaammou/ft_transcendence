@@ -16,6 +16,28 @@ import uuid
 
 User = get_user_model()
 
+#============= Friendship Serializer +++++++++++++++
+
+class UserWithStatusSerializer(serializers.Serializer):
+	id = serializers.IntegerField(source='friend.id')
+	first_name = serializers.CharField(source='friend.first_name')
+	last_name = serializers.CharField(source='friend.last_name')
+	username = serializers.CharField(source='friend.username')
+	email = serializers.EmailField(source='friend.email')
+	avatar = serializers.ImageField(source='friend.avatar')
+	status = serializers.CharField(source='friend.status')
+	friendship_status = serializers.CharField()
+
+	class Meta:
+		fields = ['id', 'first_name', 'last_name', 'username', 'email', 'avatar', 'status', 'friendship_status']
+
+	def to_representation(self, instance):
+		representation = super().to_representation(instance)
+		if representation['avatar'] and not representation['avatar'].startswith('http'):
+				representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+		return representation
+	# end Friendship Serializer ================
+
 #-------------- Notificaion Serializer ================#
 class NotificationSerializer(serializers.ModelSerializer):
 	username = serializers.CharField(source='sender.username', read_only=True)

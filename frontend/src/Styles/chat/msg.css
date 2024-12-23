@@ -85,6 +85,11 @@
   cursor: pointer;
 }
 
+.ImEyeBlocked{
+  font-size: 25px;
+  cursor: pointer;
+}
+
 .section-profile {
   display: flex;
   flex-direction: row;
@@ -336,6 +341,10 @@
   width: 100%;
 }
 
+.not-allowed {
+  cursor: not-allowed;
+}
+
 input placeholder {
   width: 100%;
 }
@@ -469,6 +478,10 @@ input placeholder {
   .ImBlocked {
     font-size: 20px;
   }
+
+  .ImEyeBlocked{
+    font-size: 20px;
+  }
   .section-profile p {
     font-size: 15px;
   }
@@ -554,6 +567,10 @@ input placeholder {
     font-size: 25px;
   }
   .ImBlocked {
+    font-size: 17px;
+  }
+
+  .ImEyeBlocked{
     font-size: 17px;
   }
   .TiArrowBack {

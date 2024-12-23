@@ -168,7 +168,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
                 style={{
                   margin: '5px 0',
                   fontWeight: lastMessage.is_read ? 'normal' : 'bold',
-                  color: lastMessage.is_read ? '#E8E6E6' : '#f9f9f9',
+                  color: lastMessage.is_read ? '#BFBFBF' : '#f9f9f9',
                   fontFamily:'"Times New Roman", Times, serif',
                   whiteSpace: 'nowrap', // Prevents text from wrapping
                   overflow: 'hidden', // Hides overflowing text
