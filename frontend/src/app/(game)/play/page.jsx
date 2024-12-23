@@ -16,7 +16,7 @@ const PlayMode = () => {
 
   const handlePlayLocalClick = useCallback((e) => {
     e.preventDefault();
-    router.push('/local_game');
+    router.push('/l_game');
   }, [router]);
 
 
