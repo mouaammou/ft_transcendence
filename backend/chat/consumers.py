@@ -77,12 +77,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_mark_read_status(self, contact_id, contact_username):
 
-        # add
         user_data = {
         'id': self.user.id,
         'username': self.user.username,
         }
-        # end
 
         # Notify both sender and receiver about the read status
         await self.channel_layer.group_send(
@@ -90,9 +88,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_mark_read',
                 'contact': contact_username,
-                # add
                 'session_user': user_data,
-                #end
                 'mark_read': True,
             }
         )
@@ -101,9 +97,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_mark_read',
                 'contact': contact_username,
-                # add
                 'session_user': user_data,
-                #end
                 'mark_read': True,
             }
         )

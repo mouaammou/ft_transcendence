@@ -178,9 +178,12 @@ const Msg_chat = () => {
 							}
 						}} 
 					/>
+					
 					{open && (
 						<div className="Picker">
-							<EmojiPicker onEmojiClick={handleEmojiClick} />
+							<EmojiPicker 
+							className='stylePicker' onEmojiClick={handleEmojiClick} />
+							{/* <EmojiPicker className='stylePicker' onEmojiClick={handleEmojiClick} /> */}
 						</div>
 					)}
 				</div>

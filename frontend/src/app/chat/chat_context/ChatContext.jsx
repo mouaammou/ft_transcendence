@@ -96,8 +96,6 @@ export const ChatProvider = ({ children }) => {
             else if (response.status === 401) {
                 // Handle unauthorized response
                 console.error("Unauthorized access ");
-                // history.push('/login'); // Redirect to login page
-                // router.push('/login');
             } 
             else {
                 console.error(" ****** Unexpected response status:", response);
