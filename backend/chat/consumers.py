@@ -3,7 +3,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .models import Message
-
+from authentication.models import Friendship
+from django.db.models import Q
+from asgiref.sync import sync_to_async
 from django.utils import timezone  # Import timezone for getting the current time
 
 
@@ -44,8 +46,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Handle the message
         if message and receiver:
-                await self.save_message(self.user, receiver, message)
-                await self.send_message_to_groups(self.user.id, receiver.id, receiver_username, message)
+            user_id = self.user.id
+            friend_id = receiver.id
+            
+            friendship = await sync_to_async(lambda: Friendship.objects.filter(
+                Q(sender_id=user_id, receiver_id=friend_id) |
+                Q(sender_id=friend_id, receiver_id=user_id)
+            ).first())()
+            
+            if friendship and friendship.status != 'accepted':
+                return
+            await self.save_message(self.user, receiver, message)
+            await self.send_message_to_groups(self.user.id, receiver.id, receiver_username, message)
 
         # Handle typing indication
         if 'typing' in data:
