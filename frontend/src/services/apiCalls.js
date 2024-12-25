@@ -56,8 +56,9 @@ export const deleteData = async endPoint => {
 //# by samjaaabo
 
 
+
 const api = axios.create({
-baseURL: 'http://localhost:8000/game/local-tournaments/',  // Base URL for your Django API
+baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/game/local-tournaments/`,  // Base URL for your Django API
 timeout: 10000,
 withCredentials: true,  // Include cookies (credentials)
 headers: {

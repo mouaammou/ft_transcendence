@@ -9,13 +9,13 @@ const TournamentList = () => {
   // Fetch all tournaments
   const fetchTournaments = async () => {
     try {
-      const response = await fetch('http://localhost:8000/game/local-tournaments/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/game/local-tournaments/`, {
         method: 'GET',
       });
 
       if (response.ok) {
         const data = await response.json();
-        setTournaments(data); // Assuming data is an array of tournaments
+        setTournaments(data);
       } else {
         console.log('Error fetching tournaments');
       }

@@ -75,8 +75,8 @@ def initialize_django():
         call_command("migrate")
         print("Migrations applied successfully!")
 
-        print("Collecting static files...")
-        call_command("collectstatic", "--noinput")
+        # print("Collecting static files...")
+        # call_command("collectstatic", "--noinput")
         print("Static files collected successfully!")
     except Exception as e:
         print(f"Error during migrations or collectstatic: {e}")

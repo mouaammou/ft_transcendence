@@ -13,16 +13,11 @@ remove the 2fa page validtion stack in that page
 
 ping pong on mobile devices.
 
-<<<<<<< HEAD
-fix 'all' button z-index on scroll to top.  
-=======
+
 # Channels: redis or inMemory
     what is the deffrence between redis and inMemory ?
 
 
-
-
-=======
 # bandwidth: means what
     what means bandwidth ?
 
@@ -42,12 +37,7 @@ fix 'all' button z-index on scroll to top.
 					onMarkAsRead={markAsRead}
 				/>
 				))}
-=======
-=======
->>>>>>> origin/main
->>>>>>> remoteGame
->>>>>>> 096a94b1fba256c2b4982b500caa34d47b0ef0f9
-=======
+
 # what is the model manager?, is it help me ?
     modlemanager?
 
@@ -80,4 +70,4 @@ fix 'all' button z-index on scroll to top.
 # Path to run redis server 
     /Users/login/.brew/opt/redis/bin/redis-server
 
->>>>>>> testingRemoteTournament
+

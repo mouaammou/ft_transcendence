@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
-import styles from '@/Styles/game/connect_four/connect_four.module.css';
+import styles from '@/styles/game/connect_four/connect_four.module.css';
 import PlayerCard from './PlayerCard';
 import { getData } from '@/services/apiCalls'; // Assuming this exists
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';

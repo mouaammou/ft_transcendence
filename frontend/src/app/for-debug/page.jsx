@@ -71,7 +71,7 @@ export default function FuturisticPongCanvas({
     const ballRadius = 10;
 
     // WebSocket connection
-    socketRef.current = new WebSocket('ws://localhost:8000/ws/local/');
+    socketRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/local/`);
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected");

@@ -70,8 +70,6 @@ resolve channel name from user_ids
 #        associated with the game you should stop the game.
 
 
-
-
 # on disconnection check if there is more that one consumer for a game
 # dont stop it let other consumer play
 

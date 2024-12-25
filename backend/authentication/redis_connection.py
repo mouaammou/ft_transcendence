@@ -1,9 +1,10 @@
 import redis
 import logging
+from django.conf import settings
 
 # Initialize Redis connection
-redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0) # means db 0, the default database, can be changed to any other database
-# redis_conn = redis.StrictRedis(host='redis', port=6379, db=0)
+# redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0) # means db 0, the default database, can be changed to any other database
+redis_conn = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
 # Test the connection
 try:

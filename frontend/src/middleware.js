@@ -23,8 +23,11 @@ export async function middleware(request) {
   if (!isAuthPage) {
     // If you have at least the refresh token, then validate it in the backend
     try {
-      // const backendResponse = await fetch('http://backend:8000/verifyTokens', {
-      const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
+        // const backendUrl = ;
+        // console.log('ENV PUBLIC BACKEND: ', `|${backendUrl}/verifyTokens|`);
+        // console.log('ENV PUBLIC FRONTEND: ', backendUrl2);
+      // const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
+        const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_BACKEND_API_URL}/verifyTokens`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,5 +77,13 @@ export const config = {
 		"/tournament_board/:path*",
 		"/waiting_random_game/:path*",
 		"/waiting_random_c4/:path*",
+    "/connect_four/:path*",
+    "/local_c4/:path*",
+    "/connect_four_mode/:path*",
+    "/bot/:path*",
+    "/list_of_friends/:path*",
+    "/mode/:path*",
+    "/play/:path*",
+    "/waiting_friends_game/:path*",
 	],
 };

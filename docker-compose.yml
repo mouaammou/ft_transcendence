@@ -8,13 +8,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: ft_transcendence
-      POSTGRES_USER: mouad
-      POSTGRES_PASSWORD: mouad
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
 
   redis:
     image: redis:latest
@@ -24,6 +22,8 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
 
   frontend:
     build:
@@ -35,6 +35,10 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/frontend
 
   backend:
     build:
@@ -44,13 +48,6 @@ services:
     depends_on:
       - postgres
       - redis
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://mouad:mouad@postgres:5432/ft_transcendence
-      - REDIS_URL=redis://redis:6379
-      - DJANGO_SETTINGS_MODULE=core.settings
     ports:
       - "8000:8000"
     restart: on-failure
@@ -58,6 +55,8 @@ services:
       - .env
     networks:
       - ft_transcendence
+    volumes:
+      - ./backend:/backend
 
   nginx:
     build:
@@ -72,6 +71,8 @@ services:
       - frontend
     networks:
       - ft_transcendence
+    env_file:
+      - .env
 
 volumes:
   postgres-data:

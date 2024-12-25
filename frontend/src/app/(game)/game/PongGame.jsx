@@ -5,7 +5,7 @@ import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter, usePathname } from 'next/navigation';
 import { set } from 'date-fns';
-import style from '@/Styles/game/game.module.css';
+import style from '@/styles/game/game.module.css';
 
 
 const INITIAL_CONFIG = {

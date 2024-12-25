@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from '@/Styles/game/connect_four/MyGrid.module.css'
+import styles from '@/styles/game/connect_four/MyGrid.module.css'
 import { Modal } from '@/components/modals/Modal';
 import { useRouter } from "next/navigation";
 

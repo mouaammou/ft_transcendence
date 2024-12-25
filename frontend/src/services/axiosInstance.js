@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 // import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: '/api/', // Replace with your Django backend URL
+  baseURL: `/api/`, // Replace with your Django backend URL
 });
 
 //chck if the response is a 401 then redirect to the login page

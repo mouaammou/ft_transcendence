@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import CountdownTimer from '@/components/countDown/CountDown.jsx';
 import Image from 'next/image';
-import style from '@/Styles/game/game.module.css';
+import style from '@/styles/game/game.module.css';
 import { useAuth } from '@/components/auth/loginContext.jsx';
 import PongBot from './BotGame';
 

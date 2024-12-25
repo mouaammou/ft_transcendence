@@ -566,7 +566,7 @@ export const ChatProvider = ({ children }) => {
             console.log('WebSocket is not open');
         }
 
-        const ws = new WebSocket('ws://localhost:8000/ws/chat');
+        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/chat`);
 
         ws.onopen = () => {
         console.log('WebSocket chat connected');

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/Styles/game/connect_four/player_card.module.css';
+import styles from '@/styles/game/connect_four/player_card.module.css';
 
 const PlayerCard = ({ avatar, name, cardStyle }) => {
     return (
