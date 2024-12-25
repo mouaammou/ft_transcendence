@@ -58,7 +58,7 @@ export default function FriendProfile({ params }) {
 		postData(`/blockFriend/${profile.id}`)
 			.then(response => {
 			if (response.status === 200) {
-				setFriendStatusRequest('blocked');
+				setFriendStatusRequest('blocking');
 			}
 			})
 			.catch(error => {
