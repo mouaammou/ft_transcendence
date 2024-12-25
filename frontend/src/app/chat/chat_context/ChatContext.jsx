@@ -107,24 +107,6 @@ export const ChatProvider = ({ children }) => {
 
     // ************************  Fetch fetchOnlineUsers ************************
 
-    // old methode
-    // const fetchOnlineUsers = async () => {
-    //     try {
-    //         const url = `/chat-friends`;
-    //         const response = await getData(url);
-
-    //         if (response.status === 200) {
-    //             setOnlineUsers(response.data); // Update only online users
-    //         } else {
-    //             console.error("Unexpected response status:", response.status);
-    //         }
-    //     } catch (error) {
-    //         console.error("Failed to fetch online users:", error);
-    //     }
-    // };
-
-
-     // Fetch online users
      const fetchOnlineUsers = () => {
         console.log('originalUsers => ', originalUsers);
         const onlineUsers = originalUsers.filter(user => user.friend && user.friend.status === 'online');
@@ -255,7 +237,7 @@ export const ChatProvider = ({ children }) => {
             sortedMessages[date] = merged[date];
         }
         
-        console.log('sortedMessages after merge', sortedMessages);
+        // console.log('sortedMessages after merge', sortedMessages);
         return sortedMessages;
     };
     // ************************ end ***********************
@@ -331,10 +313,11 @@ export const ChatProvider = ({ children }) => {
             scrollToEnd();
         }, 100);
         
-        const userHasLastMessage = allUsers.some((friend) => 
-            friend && friend.friend && friend.friend.id === user.id && friend.last_message && friend.last_message.message
-        );
-        if (socket && userHasLastMessage) {
+        // const userHasLastMessage = allUsers.some((friend) => 
+        //     friend && friend.friend && friend.friend.id === user.id && friend.last_message && friend.last_message.message
+        // );
+        // if (socket && userHasLastMessage) {
+        if (socket) {
             console.log('Sending mark_read to backend');
             // socket.send(JSON.stringify({ mark_read: true, receiver: user.username }));
             
@@ -580,7 +563,6 @@ export const ChatProvider = ({ children }) => {
                 console.log('Incoming message:', message);
                 setActiveScrollToEnd(true);
 
-                // if (currentUser.id === receiver_id && selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                 if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                     // Mark the message as read since the receiver is actively viewing this chat
                     if (ws.readyState === WebSocket.OPEN) {
@@ -599,15 +581,10 @@ export const ChatProvider = ({ children }) => {
                 // Always update the sender's view of the receiver's last message
                 updateLastMessage(receiver_id, message, true, receivedData.timestamp);
 
-                // if (contact === sender)
-                    // scrollToEnd();
-
                 // ------ last methode -----------------//
                 setMessages((prevMessages) => {
                     // Use mergeAndSortMessages to update state and avoid duplicates
                     const updatedMessages = { ...prevMessages };
-
-                    // console.log('prevMessages in onmessage', prevMessages);
         
                     // Format the date of the message
                     const messageDate = formatDate(receivedData.timestamp);
@@ -632,7 +609,6 @@ export const ChatProvider = ({ children }) => {
                         receiver_id
                     );
         
-                    // console.log('Updated Messages:', updatedMessages);
                     return updatedMessages;
                 });
             }
@@ -683,7 +659,6 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
-    // ************************ end ***********************
 
  // Function to handle fetching and restoring scroll
     const handleFetchOlderMessages = async () => {
