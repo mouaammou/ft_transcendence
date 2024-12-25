@@ -6,7 +6,7 @@ export default function MobileNavbar() {
   const pathname = usePathname();
 
   const navItems = [
-    { label: 'Home', icon: Home, route: '/' },
+    { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Friends', icon: Users, route: '/friends' },
     { label: 'All Users', icon: UserPlus, route: '/allusers' },
     { label: 'Chat', icon: MessageCircle, route: '/chat' },

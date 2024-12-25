@@ -167,7 +167,7 @@ class NotificationConsumer(BaseConsumer):
 	async def accept_game_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_game',
-			'success': event.get('success'),  
+			'success': event.get('success'), 
 			**event.get('notification') 
 		}))
     
@@ -201,6 +201,7 @@ class NotificationConsumer(BaseConsumer):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend_request',
 			'success': event.get('success'),
+			'user_id': event.get('user_id'),
 			**event.get('notification')
 		}))
 
@@ -319,6 +320,7 @@ class NotificationConsumer(BaseConsumer):
 			await self.send_notification_alert(to_user_id, {
 				'type': 'accept_request_notif',
 				'success': success,
+				'user_id': notif_data.get('id'),
 				'notification': notif_data,
 			})
 
@@ -383,50 +385,3 @@ class NotificationConsumer(BaseConsumer):
 				logger.error(f"\nError Accepting friend request: {e}\n")
 				return False, f"Error Accepting Friend request, reason :: {str(e)}", None
 		return False, "Error Accepting Friend request, database is locked after multiple retries", None
-
-# Sure, let's break down the flow of sending notifications to users using Django Channels and channels_redis.
-
-# Overview
-# Django Channels extends Django to handle WebSockets, HTTP2, and other protocols. channels_redis is a Redis-backed channel layer that allows Django Channels to manage WebSocket connections and send messages between them.
-
-# Key Components
-# WebSocket Consumer: Handles WebSocket connections and messages.
-# Channel Layer: Manages communication between different consumers using Redis.
-# Groups: Allows grouping of channels to send messages to multiple consumers.
-# Flow of Sending Notifications
-# WebSocket Connection:
-
-# When a user connects to the WebSocket, the connect method of the NotificationConsumer is called.
-# The user is added to a group named after their user ID using channel_layer.group_add.
-# Handling Events:
-
-# The receive method handles incoming WebSocket messages.
-# Based on the message type, different methods are called to handle specific events (e.g., friend request, accept request).
-# Sending Notifications:
-
-# When an event occurs (e.g., a friend request is sent), the send_notification_alert method is called.
-# This method uses channel_layer.group_send to send a message to the user's group.
-# Receiving Notifications:
-
-# The user's WebSocket connection receives the message via a handler method (e.g., friend_request_notif).
-# The handler method sends the notification to the user's WebSocket client.
-# Example Flow
-# User A sends a friend request to User B:
-
-# User A's client sends a WebSocket message to the server.
-# The receive method of NotificationConsumer processes the message and calls handle_friend_request.
-# Handle Friend Request:
-
-# handle_friend_request saves the friend request to the database.
-# It then calls send_notification_alert to notify User B.
-# Send Notification Alert:
-
-# send_notification_alert uses channel_layer.group_send to send a message to User B's group.
-# User B Receives Notification:
-
-# User B's WebSocket connection receives the message via friend_request_notif.
-# friend_request_notif sends the notification to User B's client.
-# Role of channels_redis
-# Channel Layer: channels_redis provides a Redis-backed channel layer that allows different consumers to communicate.
-# Groups: It manages groups of channels, enabling broadcasting messages to multiple consumers.
-# Message Passing: It handles the low-level details of passing messages between different WebSocket connections.

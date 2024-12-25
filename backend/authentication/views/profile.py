@@ -42,7 +42,6 @@ class GetUserById(APIView):
 		except User.DoesNotExist:
 			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
 class FriendProfile(generics.GenericAPIView):
 
 	def get(self, request, *args, **kwargs):
@@ -50,9 +49,7 @@ class FriendProfile(generics.GenericAPIView):
 		if 'username' not in kwargs:
 			logger.error("\nError: Username not provided\n")
 			return Response({"Error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
-		# if (request.customUser.username == kwargs['username']):
-		# 	logger.error("\nError: User cannot be friend of himself\n")
-		# 	return Response({"Error": "User cannot be friend of himself"}, status=status.HTTP_200_OK)
+
 		try:
 			user = User.objects.get(username=kwargs['username'])
 			serializer = UserSerializer(user, partial=True)
@@ -64,12 +61,15 @@ class FriendProfile(generics.GenericAPIView):
 					(Q(sender=user) & Q(receiver=current_user))
 			).first()
 
-			# Add 'friend' field to the response data
-			#friend_status = "yes" if friendship else "no"
-			if (friendship):
-				friend_status = friendship.status
+			# Determine the friend status
+			if friendship:
+				if friendship.sender == current_user:
+					friend_status = friendship.status
+				else:
+					friend_status = friendship.received_status
 			else:
 				friend_status = "no"
+
 			response_data = serializer.data
 			response_data['friend'] = friend_status
 

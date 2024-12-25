@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@loginContext/loginContext';
 import Login42 from '@components/auth/login42';
 import Image from 'next/image';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 import '@/styles/auth/signup.css';
 
 export default function Signup() {
@@ -65,7 +67,7 @@ export default function Signup() {
             onClick={() => setShowPassword(prev => ({ ...prev, [name]: !prev[name] }))}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
           >
-            {showPassword[name] ? '👁️' : '👁️‍🗨️'}
+            {showPassword[name] ? <FaEye /> :  <FaEyeSlash />}
           </button>
         )}
       </div>
@@ -107,9 +109,6 @@ export default function Signup() {
 
                 <button
                   type="submit"
-                  // className="w-full py-4 bg-white hover:bg-gray-100 text-black rounded-lg 
-                  //          text-lg font-semibold transition-colors duration-300 
-                  //          shadow-lg hover:shadow-xl"
                   className='custom-button'
                 >
                   Sign up
@@ -128,8 +127,7 @@ export default function Signup() {
               <div className="flex justify-center">
                 <button
                   type="button"
-                  className="px-8 py-3 bg-white hover:bg-gray-100 rounded-full 
-                           transition-colors duration-300 shadow-lg"
+                  className="px-8 py-3 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg"
                 >
                   <Login42 />
                 </button>

@@ -8,6 +8,7 @@ from django.core.files.temp import NamedTemporaryFile
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
+from django.db import transaction
 
 #---------------- Notifications model ===================#
 class Notification(models.Model):
@@ -68,11 +69,13 @@ class Friendship(models.Model):
 	STATUS_CHOICES = (
 		('accepted', 'accepted'),
 		('blocked', 'blocked'),
+		('blocking', 'blocking'),
 	)
 
 	sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="sender", on_delete=models.CASCADE)
 	receiver = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="receiver", on_delete=models.CASCADE, null=True)
 	status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+	received_status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=True, blank=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta:
@@ -88,30 +91,53 @@ class Friendship(models.Model):
 
 	def save(self, *args, **kwargs):
 		self.clean()
-		reciprocal = Friendship.objects.filter(sender=self.receiver, receiver=self.sender).first()
-
+		is_reciprocal = kwargs.pop('is_reciprocal', False)
+		
+		if self.status == 'blocking':
+			self.received_status = 'blocked'
+		elif self.status == 'accepted':
+			self.received_status = 'accepted'
+		
 		super().save(*args, **kwargs)
-		# Create reciprocal friendship if needed
-		if self.status in ('accepted', 'blocked') and (not reciprocal or reciprocal.status != self.status):
-			Friendship.objects.update_or_create(
+		
+		if not is_reciprocal:
+			self.create_reciprocal_friendship()
+
+	def create_reciprocal_friendship(self):
+		reciprocal_status = {
+			'accepted': 'accepted',
+			'blocking': 'blocked'
+		}.get(self.status)
+		
+		if reciprocal_status:
+			# Separate defaults from additional kwargs
+			defaults = {
+				'status': reciprocal_status, 
+				'received_status': self.status
+			}
+			
+			reciprocal, created = Friendship.objects.get_or_create(
 				sender=self.receiver,
 				receiver=self.sender,
-				defaults={'status': self.status}
+				defaults=defaults
 			)
+			
+			if not created:
+				# Update existing friendship
+				reciprocal.status = reciprocal_status
+				reciprocal.received_status = self.status
+				reciprocal.save(is_reciprocal=True)
+
+	def block(self):
+		self.status = 'blocking'
+		self.save()
 
 	def delete(self, *args, **kwargs):
 		Friendship.objects.filter(sender=self.receiver, receiver=self.sender).delete()
 		super().delete(*args, **kwargs)
 
 	def accept(self):
-		# if self.status != 'pending':
-		# 	raise ValidationError("This request already passed")
 		self.status = 'accepted'
-		self.save()
-
-	def block(self, *args, **kwargs):
-		# if self.status == 'accepted':
-		self.status = 'blocked'
 		self.save()
 
 	def __str__(self):

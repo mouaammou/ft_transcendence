@@ -120,6 +120,7 @@ export default function FriendProfile({ params }) {
 			try {
 				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
 				if (response.status === 200) {
+					console.log("friend user:: ==> ", response.data);
 					setProfile(response.data);
 					setFriendStatusRequest(response.data.friend);
 					console.log("friend user:: ==> ", response);
@@ -234,7 +235,7 @@ export default function FriendProfile({ params }) {
 								</button>
 							)}
 
-							{friendStatusRequest === 'accepted' && (
+							{(friendStatusRequest === 'accepted') && (
 								<>
 									<Link href="/create_join_tournament"
 										className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
@@ -268,7 +269,7 @@ export default function FriendProfile({ params }) {
 								</div>
 							)}
 
-							{friendStatusRequest === 'blocked' && (
+							{friendStatusRequest === 'blocking' && (
 								<button
 									onClick={removeBlock}
 									className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
@@ -276,10 +277,16 @@ export default function FriendProfile({ params }) {
 									<MdDoNotDisturbOff className="mr-2" /> Remove Block
 								</button>
 							)}
-
+		
 							{friendStatusRequest === 'rejected' && (
 								<span className="text-red-400">Friend Request Rejected</span>
 							)}
+
+						{friendStatusRequest === 'blocked' && (
+							<span className="text-red-400 bg-red-100 border border-red-400 rounded px-2 py-1">
+								Add Friend
+							</span>
+						)}
 						</div>
 					</div>
 
