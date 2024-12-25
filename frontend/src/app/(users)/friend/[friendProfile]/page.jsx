@@ -29,6 +29,33 @@ export default function FriendProfile({ params }) {
 	const [prevPage, setPrevPage] = useState(null);
 	const [matches, setMatches] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
+	const { profileData: data } = useAuth();
+
+	const [progressData, setProgressData] = useState({
+        level: 0,
+        progress: 0,
+        currentXp: 0,
+    });
+
+	const fetchProgressData = useCallback(async (userId) => {
+        try {
+
+            const response = await getData(`/progress/${userId}`);
+            if (response.status === 200) { 
+                setProgressData({
+                    level: response.data.level,
+                    progress: response.data.progress,
+                    currentXp: response.data.current_xp,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching progress data:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+		fetchProgressData(profile.id);
+    }, [profile]);
 	const fetchGameHistory = useCallback(async (userId) => {
 		try {
 
@@ -56,7 +83,6 @@ export default function FriendProfile({ params }) {
 		sendMessage,
 	} = useNotificationContext();
 
-	const { profileData: data } = useAuth();
 
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const [pageNotFound, setPageNotFound] = useState(false);
@@ -218,7 +244,7 @@ export default function FriendProfile({ params }) {
 								profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
 								} text-white`}
 							>
-								{profile?.status ? 'online' : 'offline'}
+								{profile?.status  == 'online' ? 'Online' : 'Offline' }
 							</div>
 						</div>
 
@@ -229,18 +255,18 @@ export default function FriendProfile({ params }) {
 
 							{/* Level Progress Bar */}
 							<div className="w-full max-w-md mt-6">
-								<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
-									<div
-										className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
-										style={{ width: '45%' }}
-									>
-									</div>
-								</div>
-								<div className="flex justify-between text-sm mt-1">
-									<span>Level 5</span>
-									<span>45/100 XP</span>
+							<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
+								<div
+									className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
+									style={{ width: `${progressData.progress}%` }}
+								>
 								</div>
 							</div>
+							<div className="flex justify-between text-sm mt-1">
+								<span>Level {progressData.level}</span>
+								<span>{progressData.currentXp}/100 XP</span>
+							</div>
+						</div>
 						</div>
 
 						{/* USER ACTIONS */}

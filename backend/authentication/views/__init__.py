@@ -8,3 +8,4 @@ from .allusers      import  AllUser
 from .search        import  SearchClass
 from .forget_reset_pass      import  ForgotPasswordView, ResetPasswordView
 from .gamehistory  import  UserGamesListView
+from .progress import get_progress
