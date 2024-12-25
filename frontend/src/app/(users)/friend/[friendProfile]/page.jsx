@@ -21,9 +21,60 @@ import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
-import GameHistory from '@/components/history/GameHistory';
+
 
 export default function FriendProfile({ params }) {
+	const [profile, setProfile] = useState({});
+	const [nextPage, setNextPage] = useState(null);
+	const [prevPage, setPrevPage] = useState(null);
+	const [matches, setMatches] = useState([]);
+	const [pageNumber, setPageNumber] = useState(1);
+	const { profileData: data } = useAuth();
+
+	const [progressData, setProgressData] = useState({
+        level: 0,
+        progress: 0,
+        currentXp: 0,
+    });
+
+	const fetchProgressData = useCallback(async (userId) => {
+        try {
+
+            const response = await getData(`/progress/${userId}`);
+            if (response.status === 200) { 
+                setProgressData({
+                    level: response.data.level,
+                    progress: response.data.progress,
+                    currentXp: response.data.current_xp,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching progress data:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+		fetchProgressData(profile.id);
+    }, [profile]);
+	const fetchGameHistory = useCallback(async (userId) => {
+		try {
+
+			const response = await getData(`/gamehistory/${userId}?page=${1}`);
+			if (response.status === 200) {
+				setMatches(response.data.results);
+				setNextPage(response.data.next ? pageNumber + 1 : null);
+				setPrevPage(response.data.previous ? pageNumber - 1 : null);
+				setPageNumber(pageNumber);
+			}
+		} catch (error) {
+			console.log('Error fetching game history:', error);
+			fetchGameHistory(userId);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchGameHistory(profile.id);
+	}, [fetchGameHistory, profile]);
 	const {
 		isConnected,
 		notificationType,
@@ -32,9 +83,7 @@ export default function FriendProfile({ params }) {
 		sendMessage,
 	} = useNotificationContext();
 
-	const { profileData: data } = useAuth();
 
-	const [profile, setProfile] = useState({});
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const [pageNotFound, setPageNotFound] = useState(false);
 	const router = useRouter();
@@ -196,7 +245,7 @@ export default function FriendProfile({ params }) {
 								profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
 								} text-white`}
 							>
-								{profile?.status ? 'online' : 'offline'}
+								{profile?.status  == 'online' ? 'Online' : 'Offline' }
 							</div>
 						</div>
 
@@ -207,18 +256,18 @@ export default function FriendProfile({ params }) {
 
 							{/* Level Progress Bar */}
 							<div className="w-full max-w-md mt-6">
-								<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
-									<div
-										className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
-										style={{ width: '45%' }}
-									>
-									</div>
-								</div>
-								<div className="flex justify-between text-sm mt-1">
-									<span>Level 5</span>
-									<span>45/100 XP</span>
+							<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
+								<div
+									className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
+									style={{ width: `${progressData.progress}%` }}
+								>
 								</div>
 							</div>
+							<div className="flex justify-between text-sm mt-1">
+								<span>Level {progressData.level}</span>
+								<span>{progressData.currentXp}/100 XP</span>
+							</div>
+						</div>
 						</div>
 
 						{/* USER ACTIONS */}
@@ -318,7 +367,75 @@ export default function FriendProfile({ params }) {
 						{/* Match Histsafaory Card */}
 						{
 							profile &&
-							<GameHistory profileId={profile.id} />
+							<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+							<h2 className="text-xl font-semibold mb-6 flex items-center">
+								<FaHistory className="mr-2" /> Recent Matches
+							</h2>
+
+							<div className="space-y-4 max-h-[400px] overflow-y-auto overflow-x-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+								<div className="min-w-[480px]">
+									{matches.map((match) => (
+										<div
+											key={match.id}
+											className="bg-gray-700 rounded-xl p-4 hover:bg-gray-600 transition-all duration-300 mb-4"
+										>
+											<div className="flex justify-between items-center">
+												{/* Player 1 */}
+												<div className="flex items-center space-x-3">
+													<img
+														src={match.player_1.avatar}
+														alt="player_1"
+														className={`w-12 h-12 rounded-full border-2  cursor-pointer ${match.winner_id === match.player_1.id ? 'border-green-500' : 'border-red-500'
+															}`}
+														onClick={() => router.push(`/friend/${match.player_1.username}`)}
+													/>
+													<div>
+														<div className="font-medium  cursor-pointer" onClick={() => router.push(`/friend/${match.player_1.username}`)}>{match.player_1.username}</div>
+														<div className={`text-lg font-bold ${match.winner_id === match.player_1.id ? 'text-green-400' : 'text-red-400'
+															}`}>
+															{match.player_1_score}
+														</div>
+													</div>
+												</div>
+
+												{/* VS */}
+												<div className="flex flex-col items-center">
+													<div className="text-l font-bold text-gray-400">
+														{match.finish_type == 'defeat' ? '' : 'Disconnection'}
+													</div>
+													<div className="text-sm text-gray-400 mt-1">
+														{match.game_type == 'connect_four' ? '🚥 Connect Four 🚥' : '🏓 Ping Pong 🏓'}
+													</div>
+													<div className="mt-3 text-sm text-gray-400 flex items-center justify-center">
+														<MdUpdate className="mr-1" />
+														{match.creation_date} • {match.creation_time.slice(0, 5)}
+													</div>
+												</div>
+
+												{/* Player 2 */}
+												<div className="flex items-center space-x-3">
+													<div className="text-right">
+														<div className="font-medium cursor-pointer" onClick={() => router.push(`/friend/${match.player_2.username}`)}>{match.player_2.username}</div>
+														<div className={`text-lg font-bold ${match.winner_id === match.player_2.id ? 'text-green-400' : 'text-red-400'
+															}`}>
+															{match.player_2_score}
+														</div>
+													</div>
+													<img
+														src={match.player_2.avatar}
+														alt="player_2"
+														className={`w-12 h-12 rounded-full border-2 cursor-pointer ${match.winner_id === match.player_2.id ? 'border-green-500' : 'border-red-500'
+															}`}
+														onClick={() => router.push(`/friend/${match.player_2.username}`)}
+													/>
+												</div>
+											</div>
+										</div>
+									))}
+								</div>
+							</div>
+						</div>
+
 						}
 					</div>
 

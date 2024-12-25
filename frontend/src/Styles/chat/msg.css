@@ -283,6 +283,7 @@
 
 .emoji {
   position: relative;
+  cursor: pointer;
 }
 
 .BsEmojiSmile {
@@ -312,6 +313,20 @@
   background-color: #fff;
 }
 
+/* .stylePicker {
+  width: 20%;
+} */
+
+/*
+.stylePicker {
+    width: 500px !important;
+    height: 600px !important;
+    background-color: aliceblue;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: -600px !important;
+    right: 100% !important;
+*/
 
 .div_EmojiPicker {
   /* width: 300px; */
@@ -396,6 +411,7 @@ input placeholder {
 @media (max-width: 480px) {
   .Picker {
       width: 200px; /* Even smaller size for phones */
+      max-height: 300px;
   }
 }
 

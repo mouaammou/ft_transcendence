@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .allusers import CustomUserPagination
 from django.db.models import Q
+import logging as logger
 
 # ***************** Friendship List View ***************** #
 
@@ -20,7 +21,9 @@ class FriendshipListView(generics.ListAPIView):
 
 		friendships = Friendship.objects.filter(
 			Q(sender=custom_user, status__in=['accepted', 'blocking']) |
-			Q(receiver=custom_user, status__in=['accepted', 'blocked'])
+			Q(receiver=custom_user, status__in=['accepted', 'blocked']) |
+			Q(sender=custom_user, received_status__in=['accepted', 'blocking']) |
+			Q(receiver=custom_user, received_status__in=['accepted', 'blocked'])
 		)
 
 		unique_friends = []
@@ -96,43 +99,62 @@ class BlockFriendshipView(generics.GenericAPIView):
 
 	def get_object(self, *args, **kwargs):
 		friend_id = kwargs.get('pk')
-		
-		user_id = self.request.customUser.id
-		if not user_id or not friend_id:
-			return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-		
-		friendship = Friendship.objects.filter(
-			Q(sender_id=user_id, receiver_id=friend_id) |
-			Q(sender_id=friend_id, receiver_id=user_id)
-		).first()
-		
-		if not friendship:
-			friendship = Friendship.objects.create(
-				sender_id=user_id,
-				receiver_id=friend_id,
-				status='pending'
-			)
-		return friendship
+		try:
+			user_id = self.request.customUser.id
+			if not user_id or not friend_id:
+				return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+			
+			friendship = Friendship.objects.filter(
+				Q(sender_id=user_id, receiver_id=friend_id) |
+				Q(sender_id=friend_id, receiver_id=user_id)
+			).first()
+
+			print(f"\n 333: {friendship}")
+			
+			if not friendship:
+				friendship = Friendship.objects.create(
+					sender_id=user_id,
+					receiver_id=friend_id,
+					status='pending'
+				)
+			return friendship
+		except Exception as e:
+			logger.error(f"\nError in BlockFriendshipView: {e}\n")
+			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 	def post(self, request, *args, **kwargs):
-		friendship = self.get_object(*args, **kwargs)
-		
-		if friendship.status in ['blocking', 'blocked']:
-			return Response({"error": "Already blocked"}, status=status.HTTP_400_BAD_REQUEST)
-		
 		try:
-			# Make sure current user is sender for blocking
-			if friendship.sender != request.customUser:
-				# Swap sender and receiver
-				friendship.sender, friendship.receiver = friendship.receiver, friendship.sender
-				friendship.save()
+			friendship = self.get_object(*args, **kwargs)
 			
-			friendship.block()
-			return Response({
-				'status': 'blocking',
-				'received_status': 'blocked'
-			}, status=status.HTTP_200_OK)
-		except ValidationError as e:
+			if friendship.status in ['blocking', 'blocked']:
+				return Response({"error": "Already blocked"}, status=status.HTTP_400_BAD_REQUEST)
+			
+			try:
+				# Make sure current user is sender for blocking
+				if friendship.sender != request.customUser:
+					# Swap sender and receiver
+					# friendship.sender, friendship.receiver = friendship.receiver, friendship.sender
+					sender = friendship.sender
+					receiver = friendship.receiver
+					friendship.delete()
+					friendship = Friendship.objects.create(
+						sender=receiver,
+						receiver=sender,
+						status='blocking',
+						received_status='blocked'
+					)
+					friendship.save()
+
+				
+				friendship.block()
+				return Response({
+					'status': 'blocking',
+					'received_status': 'blocked'
+				}, status=status.HTTP_200_OK)
+			except ValidationError as e:
+				return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+		except Exception as e:
+			logger.error(f"\nError in BlockFriendshipView: 1001 {e}\n")
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # ***************** Remove Blocked Friend View ***************** #

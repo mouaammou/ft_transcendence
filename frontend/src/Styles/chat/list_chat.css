@@ -154,12 +154,19 @@ input[type='text']:focus::placeholder {
 
 /* addd just to test */
 
+
+
+
+@media (max-width: 1800px) {
+  .info-user p {
+    font-size: 27px;
+  }
+}
 @media (max-width: 1600px) {
   .list_chat {
     width: 30%;
   }
   .info-user p {
-    font-weight: bold;
     font-size: 25px;
   }
   .img-info-user {
@@ -202,7 +209,6 @@ input[type='text']:focus::placeholder {
     margin-left: 0;
   }
   .info-user p {
-    font-weight: bold;
     font-size: 18px;
   }
   .user-chat {

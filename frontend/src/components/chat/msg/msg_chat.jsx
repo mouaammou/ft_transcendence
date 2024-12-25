@@ -42,6 +42,8 @@ const Msg_chat = () => {
 	blockFriend,
 	removeBlock,
 	friendStatusRequest,
+	removeBlockedUser,
+	setRemoveBlockedUser
   } = useContext(ChatContext);
 
 	const { profileData: currentuser } = useAuth();  // Current logged-in user
@@ -60,16 +62,28 @@ const Msg_chat = () => {
 		console.log('Invite to game');
 	};
 
-	const handleBlockClick = () => {
-		console.log('friendStatusRequest => ', friendStatusRequest);
-        if (friendStatusRequest === 'blocked') {
-			console.log('Remove block');
-            removeBlock();
-        } else {
-			console.log('block friend');
-            blockFriend();
-        }
-    };
+	// const handleBlockClick = () => {
+	// 	console.log('friendStatusRequest => ', friendStatusRequest);
+    //     if (removeBlockedUser === 'blocked') {
+	// 		console.log('Remove block');
+	// 		setRemoveBlockedUser('unblocking');
+    //         removeBlock();
+    //     } else {
+	// 		console.log('block friend');
+	// 		setRemoveBlockedUser('blocking');
+    //         blockFriend();
+    //     }
+    // };
+
+	const handleRemoveBlock = () => {
+		setRemoveBlockedUser('blocked');
+		removeBlock();
+	};
+
+	const handleBlockFriend = () => {
+		setRemoveBlockedUser('blocking');
+		blockFriend();
+	}
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -92,12 +106,20 @@ const Msg_chat = () => {
 					)}
 				</div>
 				<div className="section_action">
-				<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
-				{friendStatusRequest === 'blocked' ? (
-                <ImEyeBlocked onClick={handleBlockClick} className="ImEyeBlocked" />
-				) : (
-					<ImBlocked onClick={handleBlockClick} className="ImBlocked" />
+				{
+					friendStatusRequest === 'accepted' &&
+					<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
+
+				}
+				{removeBlockedUser  === 'blocking' && (
+                	<ImEyeBlocked onClick={handleRemoveBlock} className="ImEyeBlocked" />
 				)}
+				{
+					friendStatusRequest === 'accepted' ? 
+					<ImBlocked onClick={handleBlockFriend} className="ImBlocked" />
+					: removeBlockedUser === 'blocked' ?
+					<ImBlocked className="ImBlocked" /> : ''
+				}
 				</div>
 			</div>
 
@@ -178,9 +200,12 @@ const Msg_chat = () => {
 							}
 						}} 
 					/>
+					
 					{open && (
 						<div className="Picker">
-							<EmojiPicker onEmojiClick={handleEmojiClick} />
+							<EmojiPicker 
+							className='stylePicker' onEmojiClick={handleEmojiClick} />
+							{/* <EmojiPicker className='stylePicker' onEmojiClick={handleEmojiClick} /> */}
 						</div>
 					)}
 				</div>
