@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const api = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/game/`,
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/game/`,
     timeout: 10000,
     withCredentials: true,
     headers: {

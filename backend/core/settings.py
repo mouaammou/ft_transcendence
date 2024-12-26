@@ -11,7 +11,7 @@ os.environ['SSL_CERT_FILE'] = certifi.where()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
-BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BACKEND_API_URL"))
+BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BACKEND_API_URL_MEDIA"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -21,7 +21,7 @@ BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BAC
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", False)
 
 ALLOWED_HOSTS = ['*']
 

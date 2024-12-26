@@ -27,7 +27,7 @@ export async function middleware(request) {
         // console.log('ENV PUBLIC BACKEND: ', `|${backendUrl}/verifyTokens|`);
         // console.log('ENV PUBLIC FRONTEND: ', backendUrl2);
       // const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
-        const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_BACKEND_API_URL}/verifyTokens`, {
+        const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_BACKEND_API_URL}/backend/verifyTokens`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

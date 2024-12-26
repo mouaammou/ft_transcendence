@@ -1,7 +1,7 @@
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
-    console.log('=====>', process.env.NEXT_PUBLIC_BACKEND_API_URL);
+    // console.log('=====>', process.env.NEXT_PUBLIC_BACKEND_API_URL);
     return [
       {
         source: '/api/:path*',

@@ -33,7 +33,7 @@ export default function LoginPage() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log('formData: in login::  ', formData);
-		let resp = await AuthenticateTo('/login-user', formData);
+		let resp = await AuthenticateTo('/login', formData);
 		if (!totp && resp?.totp) {
 			setTotp(true);
 		}
