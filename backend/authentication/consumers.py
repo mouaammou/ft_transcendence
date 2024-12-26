@@ -291,6 +291,14 @@ class NotificationConsumer(BaseConsumer):
 				notif_status='pending'
 			)
 			notif_data =  NotificationSerializer(notif).data
+			user_id = self.user.id
+			friend_id = to_user_id
+			friendship = await sync_to_async(lambda: Friendship.objects.filter(
+							Q(sender_id=user_id, receiver_id=friend_id) |
+							Q(sender_id=friend_id, receiver_id=user_id)
+						).first())()
+			if friendship and friendship.status != 'accepted':
+				return
 			await self.send_notification_alert(to_user_id, {
 				'type': 'invite_to_game_notif',
 				'success': True,

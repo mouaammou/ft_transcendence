@@ -16,7 +16,7 @@ export default function Sidebar() {
     { label: 'All Users', icon: UserPlus, route: '/allusers' },
     { label: 'Chat', icon: MessageCircle, route: '/chat' },
     { label: 'Game', icon: Gamepad2, route: '/play' },
-    { label: 'Settings', icon: Settings, route: '/edit_profile' },
+    { label: 'Settings', icon: Settings, route: '/settings' },
   ];
 
   return (
