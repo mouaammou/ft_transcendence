@@ -172,7 +172,7 @@ export const ChatProvider = ({ children }) => {
     );
     // Effect to handle incoming WebSocket messages
     useEffect(() => {
-    if (lastMessage) handleOnlineStatus(lastMessage);
+        if (lastMessage) handleOnlineStatus(lastMessage);
     }, [lastMessage, handleOnlineStatus]);
     // ************************ end ***********************
 
@@ -365,16 +365,17 @@ export const ChatProvider = ({ children }) => {
     // ************************ end ***********************
 
     // *********** block friends ********
-
     const blockFriend = useCallback(() => {
         console.log('selectedUser.id in blockFriend => ', selectedUserRef.current?.id)
         // if (selectedUser?.id)
-        if (selectedUserRef.current?.id)
+        if (selectedUserRef.current?.id && friendStatusRequest !== 'blocked')
             // postData(`/blockFriend/${selectedUser.id}`)
             postData(`/blockFriend/${selectedUserRef.current.id}`)
                 .then((response) => {
-                    if (response.status === 200) {
+                    if (response.status === 200 && response.data?.status == 'blocking') {
+                        console.log(" ** response => ", response.data);
                         setFriendStatusRequest('blocked');
+                        setRemoveBlockedUser('blocking');
                         setAllUsers((prevUsers) =>
                             prevUsers.map((friend) =>
                                 friend.friend.id === selectedUserRef.current.id
@@ -388,6 +389,10 @@ export const ChatProvider = ({ children }) => {
                                     : friend
                             )
                         );
+                    }
+                    else if (response.status === 200 && response.data?.status == 'already') {
+                        setFriendStatusRequest('blocked');
+                        setRemoveBlockedUser('blocked');
                     }
                     else {
                         console.log('Failed to block friend, response status:', response);

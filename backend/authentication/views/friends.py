@@ -127,7 +127,7 @@ class BlockFriendshipView(generics.GenericAPIView):
 			friendship = self.get_object(*args, **kwargs)
 			
 			if friendship.status in ['blocking', 'blocked']:
-				return Response({"error": "Already blocked"}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"status": "already"}, status=status.HTTP_200_OK)
 			
 			try:
 				# Make sure current user is sender for blocking

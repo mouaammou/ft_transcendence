@@ -44,7 +44,7 @@ const Friends = () => {
 			}
 		} catch (error) {
 			console.log('Error fetching users:', error);
-			setPageNotFound(true);
+			// setPageNotFound(true);
 		}
 	},[]);
 

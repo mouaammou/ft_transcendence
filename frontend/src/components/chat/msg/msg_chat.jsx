@@ -16,6 +16,7 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getData } from '@/services/apiCalls';
 
 const Msg_chat = () => {
 
@@ -81,7 +82,7 @@ const Msg_chat = () => {
 	};
 
 	const handleBlockFriend = () => {
-		setRemoveBlockedUser('blocking');
+		// setRemoveBlockedUser('blocking');
 		blockFriend();
 	}
 
