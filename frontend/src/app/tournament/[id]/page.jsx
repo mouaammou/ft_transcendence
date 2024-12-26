@@ -130,7 +130,7 @@ export default function Board({ params })
         setLeftUser(next_match.left);
         setRightUser(next_match.right);
       } catch (error) {
-        console.log('Error:', error);
+        // console.log('Error:', error);
       }
     };
     fetchTournaments();

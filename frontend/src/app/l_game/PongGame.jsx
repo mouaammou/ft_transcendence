@@ -207,7 +207,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 			}
 			else if (data.config)
 			{
-				console.log('config: ', data.config);
+				// console.log('config: ', data.config);
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
@@ -234,12 +234,12 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
         }
         if (data.config.local_game_type === 'tournament')
         {
-          console.log('=======================troun================>>>>>>>>>');
-          console.log(`/l_game/${data.config.tournament_id}`);
+          // console.log('=======================troun================>>>>>>>>>');
+          // console.log(`/l_game/${data.config.tournament_id}`);
           router.push(`/l_game/${data.config.tournament_id}`);
         } else if (data.config.local_game_type === 'regular')
           {
-          console.log('========================regular===============>>>>>>>>>')
+          // console.log('========================regular===============>>>>>>>>>')
           router.push(`/l_game`);
         }
 				if (data.config.left_nickname)
@@ -254,7 +254,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 				{
           setTitle(data.config.title);
 				}
-        console.log('local game type: ', data.config.local_game_type)
+        // console.log('local game type: ', data.config.local_game_type)
 				drawGame();
 			}
 		}

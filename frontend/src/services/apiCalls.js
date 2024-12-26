@@ -20,10 +20,10 @@ export const postData = async (endPoint, data, headers) => {
       withCredentials: true,
     });
     // console.log("postData ==> ", response)
-    if (response.status == 401) console.log('401 form axios');
+    // if (response.status == 401) console.log('401 form axios');
     return response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return error;
   }
 };
@@ -109,8 +109,8 @@ export const createTournament = async (raw_data) => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+        // console.log("--response--");
+        // console.log(data);
     }
 };
 
@@ -119,7 +119,7 @@ export const fetchTournamentDetail = async (id) => {
 		const response = await api.get(`/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournaments:', error);
+		// console.log('Error fetching tournaments:', error);
 		return {};
 	}
 };
@@ -130,7 +130,7 @@ export const fetchTournamentUpdate = async (id, data_obj) => {
 		response.data['status'] = response.status;
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournament update:', error);
+		// console.log('Error fetching tournament update:', error);
 		return {msg: error.response.data.non_field_errors[0], status: error.response.status};
 	}
 };
@@ -138,11 +138,11 @@ export const fetchTournamentUpdate = async (id, data_obj) => {
 export const fetchTournamentDelete = async (id) => {
 	try {
 		const response = await api.delete(`/${id}/`);
-		console.log(response);
+		// console.log(response);
 		response.data ={status: response.status};
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournament delete:', error);
+		// console.log('Error fetching tournament delete:', error);
 		return { status: 400};
 	}
 };
@@ -164,7 +164,7 @@ export const fetchStartPlayTournament = async (id) => {
 		const response = await api.post(`/next-match-players/${id}/`);
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournaments:', error);
+		// console.log('Error fetching tournaments:', error);
 		return {'error': 'Error fetching tournaments'};
 	}
 };
@@ -175,7 +175,7 @@ export const searchTournaments  = async (search) => {
 		const response = await api.get(`search/`, { params: { search } });
 		return response.data;
 	} catch (error) {
-		console.log('Error fetching tournaments:', error);
+		// console.log('Error fetching tournaments:', error);
 		return {
 			results: [],
 			count: 0,
