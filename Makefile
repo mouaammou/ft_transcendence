@@ -10,7 +10,7 @@ build:
 
 .PHONY: up
 up:
-	docker compose -f $(COMPOSE_FILE) up -d
+	docker compose -f $(COMPOSE_FILE) up -d --build
 
 
 .PHONY: down

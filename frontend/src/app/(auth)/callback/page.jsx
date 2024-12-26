@@ -1,62 +1,47 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
 import { useAuth } from '@/components/auth/loginContext';
 
 const AuthCallback = () => {
-	const router = useRouter();
-	// const [totp, setTotp] = useState(false);
-	const searchParams = useSearchParams();
-	const code = searchParams.get('code');
-	const [totpValue, setTotpValue] = useState('');
-	const { setIsAuth } = useAuth();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const code = searchParams.get('code');
+    const { setIsAuth } = useAuth();
+    const requestMade = useRef(false);
 
-	const fetchTokens = async () => {
-		let query = `code=${code}`;
-		await getData(`auth/callback/42?${query}`)
-		.then(response => {
-			if (response.status == 200 || response.status == 201) {
+    const fetchTokens = async () => {
+        if (requestMade.current) return;
+        requestMade.current = true;
 
-				if (response.data?.totp) {
+        try {
+            let query = `code=${code}`;
+            const response = await getData(`auth/callback/42?${query}`);
+            
+            if (response.status === 200 || response.status === 201) {
+                if (response.data?.totp) {
+                    router.push('/2fa');
+                } else {
+                    setIsAuth(true);
+                    router.push('/profile');
+                }
+            }
+        } catch (error) {
+            router.push('/500');
+        }
+    };
+    
+    useEffect(() => {
+        if (!code) return;
+        fetchTokens();
 
-					router.push('/2fa');
-					// setTotp(true);
-				}
-				else {
-					setIsAuth(true);
-					router.push('/profile');
-				}
-			}
-			// else {
-			// 	router.push('/login');
-			// }
-		})
-		.catch(error => {
-			router.push('/500');
-		});
-	};
-	
-	useEffect(() => {
-		fetchTokens();
-	}, []);
+        return () => {
+            requestMade.current = false;
+        };
+    }, [code]);
 
-	// const handleInputChange = (event) => {
-    //     const value = event.target.value.replace(/\D/g, "");
-    //     setTotpValue(value);
-    // };
-
-	// if (totp) {
-	// 	return (
-	// 		<div>
-	// 			<p>Enter your 2FA code</p>
-	// 			<input className='text-white bg-transparent border outline-none p-4' placeholder='Enter 6 digits code' type="text" value={totpValue} onChange={handleInputChange} />
-	// 			<button className='bg-white text-black border p-4' onClick={fetchTokens}>Verify 2fa</button>
-	// 		</div>
-	// 	);
-	// }
-
-	return <div>Loading...callback 42</div>;
+    return <div>Loading...callback 42</div>;
 };
 
 export default AuthCallback;

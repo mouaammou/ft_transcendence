@@ -196,7 +196,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://localhost",
     "http://localhost",
     "http://frontend:3000",
-    "https://frontend:3000",
+    "https://frontend",
 ]
 
 
