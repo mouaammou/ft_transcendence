@@ -12,11 +12,11 @@ export default function Sidebar() {
 
   const sidebarItems = [
     { label: 'Home', icon: Home, route: '/l_game' },
+    { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Friends', icon: Users, route: '/friends' },
     { label: 'All Users', icon: UserPlus, route: '/allusers' },
     { label: 'Chat', icon: MessageCircle, route: '/chat' },
     { label: 'Game', icon: Gamepad2, route: '/play' },
-    { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Settings', icon: Settings, route: '/settings' },
   ];
 

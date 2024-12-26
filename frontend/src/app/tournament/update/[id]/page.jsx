@@ -50,7 +50,7 @@ export default function TournamentForm({params}) {
           match4_nickname2: response.match4_nickname2,
         });
       } catch (error) {
-        console.log('Error:', error);
+
       }
     };
     fetchTournaments();

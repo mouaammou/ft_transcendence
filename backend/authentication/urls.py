@@ -69,6 +69,10 @@ urlpatterns = [
  
 	# for game history
 	path("gamehistory/<int:user_id>", views.UserGamesListView.as_view(), name="game history"),
+
+
+    path('progress/<int:user_id>', views.get_progress, name='get_progress'),
+
 ]
 
 if settings.DEBUG:

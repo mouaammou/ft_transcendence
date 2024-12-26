@@ -8,7 +8,6 @@ import { BsSendFill } from 'react-icons/bs';
 import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { TiArrowBack } from 'react-icons/ti';
-// import Picker from 'emoji-picker-react';
 import React, { useContext , useState, useRef, useEffect} from 'react';
 import { ChatContext } from '@/app/chat/chat_context/ChatContext';
 
@@ -16,6 +15,7 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getData } from '@/services/apiCalls';
 
 const Msg_chat = () => {
 
@@ -42,9 +42,11 @@ const Msg_chat = () => {
 	blockFriend,
 	removeBlock,
 	friendStatusRequest,
+	removeBlockedUser,
+	setRemoveBlockedUser
   } = useContext(ChatContext);
 
-	const { profileData: currentuser } = useAuth();  // Current logged-in user
+	const { profileData: currentuser } = useAuth();
 	const router = useRouter();
 	const inviteToGame = () => {
 		if (selectedUser?.id) {
@@ -57,19 +59,17 @@ const Msg_chat = () => {
 		}
 		localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
 		router.push('/waiting_friends_game');
-		console.log('Invite to game');
+
 	};
 
-	const handleBlockClick = () => {
-		console.log('friendStatusRequest => ', friendStatusRequest);
-        if (friendStatusRequest === 'blocked') {
-			console.log('Remove block');
-            removeBlock();
-        } else {
-			console.log('block friend');
-            blockFriend();
-        }
-    };
+	const handleRemoveBlock = () => {
+		setRemoveBlockedUser('blocked');
+		removeBlock();
+	};
+
+	const handleBlockFriend = () => {
+		blockFriend();
+	}
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -86,18 +86,25 @@ const Msg_chat = () => {
 					/>
 					</Link>
 				<p className='user_prof'>{selectedUser.username}</p>
-					{/* Typing indicator */}
 					{typingUsers.includes(selectedUser.username) && (
 						<p className="typing-indicator">Typing...</p>
 					)}
 				</div>
 				<div className="section_action">
-				<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
-				{friendStatusRequest === 'blocked' ? (
-                <ImEyeBlocked onClick={handleBlockClick} className="ImEyeBlocked" />
-				) : (
-					<ImBlocked onClick={handleBlockClick} className="ImBlocked" />
+				{
+					friendStatusRequest === 'accepted' &&
+					<LiaGamepadSolid onClick={inviteToGame}  className="LiaGamepadSolid" />
+
+				}
+				{removeBlockedUser  === 'blocking' && (
+                	<ImEyeBlocked onClick={handleRemoveBlock} className="ImEyeBlocked" />
 				)}
+				{
+					friendStatusRequest === 'accepted' ? 
+					<ImBlocked onClick={handleBlockFriend} className="ImBlocked" />
+					: removeBlockedUser === 'blocked' ?
+					<ImBlocked className="ImBlocked" /> : ''
+				}
 				</div>
 			</div>
 
@@ -141,57 +148,45 @@ const Msg_chat = () => {
 						</div>
 					))}
 
-				{/* Scroll to the bottom of the chat */}
 				<div ref={endRef}></div>
 				</div>
-
-				{/* Message input and emoji picker */}
 				<div className="bottom-chat">
-				<div className="div_message_input">
-					<input
-					// className="message_input"
-					className={`message_input ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
-					type="text"
-					placeholder="Type a message..."
-					//   onChange={e => setText(e.target.value)}
-					onChange={e => {setText(e.target.value)
-					}}
-					value={text}
-					onKeyDown={handleKeyPress}
-					disabled={friendStatusRequest === 'blocked'}
-					/>
-				</div>
-				{/* <div className="emoji" ref={emojiPickerRef}>
-					<BsEmojiSmile className="BsEmojiSmile" onClick={() => setOpen(prev => !prev)} />
-					{open && (
-					<div className="Picker">
-						<EmojiPicker onEmojiClick={handleEmojiClick} />
+					<div className="div_message_input">
+						<input
+						className={`message_input ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
+						type="text"
+						placeholder="Type a message..."
+						onChange={e => {setText(e.target.value)
+						}}
+						value={text}
+						onKeyDown={handleKeyPress}
+						disabled={friendStatusRequest === 'blocked'}
+						/>
 					</div>
-					)}
-				</div> */}
-				<div className={`emoji ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`} ref={emojiPickerRef}>
-					<BsEmojiSmile 
-						className="BsEmojiSmile" 
-						onClick={() => {
-							if (friendStatusRequest !== 'blocked') {
-								setOpen(prev => !prev);
-							}
-						}} 
-					/>
-					{open && (
-						<div className="Picker">
-							<EmojiPicker onEmojiClick={handleEmojiClick} />
-						</div>
-					)}
-				</div>
-				<button 
-					// className="buttom-send" 
-					className={`buttom-send ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
-					onClick={handleSendMessage}
-					disabled={friendStatusRequest === 'blocked'}
-				>
-					<BsSendFill className="send-icon" />
-				</button>
+					<div className={`emoji ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`} ref={emojiPickerRef}>
+						<BsEmojiSmile 
+							className="BsEmojiSmile" 
+							onClick={() => {
+								if (friendStatusRequest !== 'blocked') {
+									setOpen(prev => !prev);
+								}
+							}} 
+						/>
+						
+						{open && (
+							<div className="Picker">
+								<EmojiPicker 
+								className='stylePicker' onEmojiClick={handleEmojiClick} />
+							</div>
+						)}
+					</div>
+					<button 
+						className={`buttom-send ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
+						onClick={handleSendMessage}
+						disabled={friendStatusRequest === 'blocked'}
+					>
+						<BsSendFill className="send-icon" />
+					</button>
 				</div>
 			</div>
 			</>

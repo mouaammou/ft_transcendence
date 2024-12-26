@@ -30,8 +30,8 @@ export const apiPlayRegularGame = async () => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };
 
@@ -53,7 +53,7 @@ export const apiPlayTournamentGame = async (tournaments_id=-1) => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };

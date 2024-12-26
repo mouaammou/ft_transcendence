@@ -224,7 +224,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 				drawGame();
 			}
 		} catch (error) {
-			console.error('Error processing message:', error);
+
 		}
 	}, [lastMessage]);
 

@@ -74,7 +74,7 @@ export default function FuturisticPongCanvas({
     socketRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/local/`);
 
     socketRef.current.onopen = () => {
-      console.log("WebSocket connected");
+
     };
 
     socketRef.current.onmessage = (event) => {
@@ -89,7 +89,7 @@ export default function FuturisticPongCanvas({
     };
 
     socketRef.current.onclose = () => {
-      console.log("WebSocket disconnected");
+
     };
 
     // Update game logic

@@ -11,7 +11,7 @@ const TwoFactorAuthPage = () => {
 
     const handleValidate = async () => {
         const response = await apiValidateTwoFactorAuth(code);
-        console.log(response);
+
     }
 
     return (

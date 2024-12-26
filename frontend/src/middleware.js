@@ -24,8 +24,8 @@ export async function middleware(request) {
     // If you have at least the refresh token, then validate it in the backend
     try {
         // const backendUrl = ;
-        // console.log('ENV PUBLIC BACKEND: ', `|${backendUrl}/verifyTokens|`);
-        // console.log('ENV PUBLIC FRONTEND: ', backendUrl2);
+
+
       // const backendResponse = await fetch('http://localhost:8000/verifyTokens', {
         const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_BACKEND_API_URL}/backend/verifyTokens`, {
         method: 'POST',
@@ -45,7 +45,7 @@ export async function middleware(request) {
         return response;
       }
     } catch (error) {
-      console.error('Fetch failed:', error);
+
       return NextResponse.redirect(new URL('/500', request.url));
     }
   }

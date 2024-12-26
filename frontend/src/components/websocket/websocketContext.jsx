@@ -25,9 +25,9 @@ export const WebSocketProvider = ({ url, children }) => {
 
 	useEffect(() => {
 		if (readyState === WebSocket.OPEN) {
-		console.log('WebSocket is CONNECTED.');
+
 		} else if (readyState === WebSocket.CLOSED) {
-		console.log('WebSocket is CLOSED.');
+
 		}
 	}, [readyState]);
 
@@ -37,7 +37,7 @@ export const WebSocketProvider = ({ url, children }) => {
 		try {
 			const data = JSON.parse(message.data);
 			if (data.type === 'user_status_change') {
-			console.log('WebSocket ONLINE STATUS:', data);
+
 			setFriendStatusChange(true);
 			setUsers(prevUsers =>
 				prevUsers.map(user =>
@@ -46,7 +46,7 @@ export const WebSocketProvider = ({ url, children }) => {
 			);
 			}
 		} catch (error) {
-			console.error('Error in handleOnlineStatus:', error);
+
 		}
 		},
 		[isConnected]
@@ -69,7 +69,7 @@ export const WebSocketProvider = ({ url, children }) => {
 			setPageNotFound(true);
 			}
 		} catch (error) {
-			console.error('Error fetching users:', error);
+
 			setPageNotFound(true);
 		}
 		router.replace(`/${endpoint}?page=${pageNumber}`);

@@ -53,7 +53,7 @@ export const NotificationProvider = ({ children }) => {
 			NOTIFICATION_TYPES.INVITE_TOURNAMENT, NOTIFICATION_TYPES.ACCEPT_TOURNAMENT,
       NOTIFICATION_TYPES.ROUND
 		].includes(data.type)) {
-			console.log('WebSocket FOR Notifications:', data);
+
 			// setNotifications((prev) => [...prev, { ...data }]);
 
         setNotifications(prevNotifications => {
@@ -89,7 +89,7 @@ export const NotificationProvider = ({ children }) => {
       }
     } catch (err) {
       setError('Failed to fetch notifications');
-      console.error('Error fetching notifications:', err);
+
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +99,7 @@ export const NotificationProvider = ({ children }) => {
     async notificationId => {
       try {
         await postData(`/notifications/${notificationId}/read`);
-        console.log('Notification marked as read:::', notificationId);
+
 
         // Filter out the read notification instead of updating it
         const updatedNotifications = notifications.filter(notif => notif.id !== notificationId);
@@ -107,7 +107,7 @@ export const NotificationProvider = ({ children }) => {
         setNotifications(updatedNotifications);
         updateUnreadCount(updatedNotifications);
       } catch (err) {
-        console.error('Error marking notification as read:', err);
+
       }
     },
     [notifications, updateUnreadCount]
@@ -125,7 +125,7 @@ export const NotificationProvider = ({ children }) => {
       setNotifications(updatedNotifications);
       setUnreadCount(0);
     } catch (err) {
-      console.error('Error marking all notifications as read:', err);
+
     }
   }, [notifications]);
 

@@ -12,12 +12,12 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
 
     const sendAction = useCallback((action, notif_type) => {
         let messageType = null;
-        console.log("\n Notification type: ", notif_type);
-        console.log("\n Action: ", action);
+
+
         if (notif_type === NOTIFICATION_TYPES.FRIENDSHIP) {
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
         } else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
-            console.log("\n Notification type: 1002 ", notif_type);
+
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
             if (action === 'accepted'){
                 router.push('/game');
@@ -119,7 +119,7 @@ const NotificationBell = () => {
                         : notif
                 )
             );
-        console.log("\n Notification DATA: ", data);
+
         markAsRead(data.id);
     }, [markAsRead, setNotifications]);
 

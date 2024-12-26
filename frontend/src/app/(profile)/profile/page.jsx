@@ -1,24 +1,54 @@
 'use client';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/loginContext.jsx';
-import {  MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
+import { MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
 import { TfiStatsUp } from 'react-icons/tfi';
 import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
 import { GiBattleAxe } from 'react-icons/gi';
 import Image from 'next/image';
 import DoughnutChart from '@/components/userStats/userStatsCharts';
 import GameHistory from '@/components/history/GameHistory';
+import { getData, postData } from '@/services/apiCalls';
+import { useEffect, useState, useCallback } from 'react';
 
 const Profile = () => {
 	const { profileData: data } = useAuth();
-	
+
+	const [progressData, setProgressData] = useState({
+        level: 0,
+        progress: 0,
+        currentXp: 0,
+    });
+
+	const fetchProgressData = useCallback(async (userId) => {
+		if ( ! userId )
+			return ;
+        try {
+
+            const response = await getData(`/progress/${userId}`);
+            if (response.status === 200) { 
+                setProgressData({
+                    level: response.data.level,
+                    progress: response.data.progress,
+                    currentXp: response.data.current_xp,
+                });
+            }
+        } catch (error) {
+
+        }
+    }, []);
+
+    useEffect(() => {
+		fetchProgressData(data.id);
+    }, [data]);
+
 	return (
 		data && (
 			<div className="min-h-screen bg-gray-900 text-white">
 				{/* Hero Section with Background */}
 				<div className="relative h-72 w-full overflow-hidden">
-					<Image
-						src="/gaming-demo.jpeg"
+					<img
+						src="/gaming-demo.jpeg" 
 						alt="profile background"
 						width={1920}
 						height={1080}
@@ -38,7 +68,7 @@ const Profile = () => {
 								className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
 							/>
 							<div className="absolute -bottom-2 -right-2 bg-sky-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-								Level 5
+								Level {progressData.level}
 							</div>
 						</div>
 
@@ -52,13 +82,13 @@ const Profile = () => {
 							<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
 								<div
 									className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
-									style={{ width: '45%' }}
+									style={{ width: `${progressData.progress}%` }}
 								>
 								</div>
 							</div>
 							<div className="flex justify-between text-sm mt-1">
-								<span>Level 5</span>
-								<span>45/100 XP</span>
+								<span>Level {progressData.level}</span>
+								<span>{progressData.currentXp}/100 XP</span>
 							</div>
 						</div>
 					</div>

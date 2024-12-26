@@ -30,8 +30,8 @@ export const apiValidateTwoFactorAuth = async (code) => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };
 
@@ -53,8 +53,8 @@ export const apiEnableTwoFactorAuth = async (code) => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };
 
@@ -77,8 +77,8 @@ export const apiDisableTwoFactorAuth = async () => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };
 
@@ -100,8 +100,8 @@ export const apiTwoFactorAuthQrcode = async () => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };
 
@@ -123,7 +123,7 @@ export const apiTwoFactorAuthIsEnabled = async () => {
         }
     }
     finally {
-        // console.log("--response--");
-        // console.log(data);
+
+
     }
 };

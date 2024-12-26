@@ -30,7 +30,7 @@ const ConnectFour = () => {
                 setPlayer(response.data);
             }
         } catch (error) {
-            console.error('Failed to fetch player data:', error);
+
         }
     };
 
@@ -38,7 +38,7 @@ const ConnectFour = () => {
     useEffect(() => {
         if (lastMessage !== null) {
             const data = JSON.parse(lastMessage.data);
-              console.log("data from waiting page ", data);
+
 
             if (data.status === 'GAME_DATA' && !dataFetched) {
                 // Fetch player details

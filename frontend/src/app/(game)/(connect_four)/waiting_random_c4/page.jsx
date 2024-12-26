@@ -20,7 +20,7 @@ const WaitingPage = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       const data = JSON.parse(lastMessage.data);
-      console.log("data from waiting page ", data);
+
       if (data.type === 'redirect_to_game_page') {
         const opponent_id = data.opponent;
         const fetchOpponentData = async () => {
@@ -32,10 +32,10 @@ const WaitingPage = () => {
                 router.push('/connect_four');
               }, 1500);
             } else {
-              console.error('Fetched user data is invalid');
+
             }
           } catch (error) {
-            console.error('Failed to fetch opponent data', error);
+
           }
         };
         fetchOpponentData();

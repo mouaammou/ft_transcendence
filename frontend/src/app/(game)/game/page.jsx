@@ -31,7 +31,7 @@ const GamePage = () => {
   useEffect(() => {
     if (lastMessage === null) return;
     const data = JSON.parse(lastMessage.data);
-    // console.log('data -----> ', data);
+
     if (data.status == 'GAME_DATA') {
       setPlayer1_id(data.player_1);
       setPlayer2_id(data.player_2);
@@ -50,7 +50,7 @@ const GamePage = () => {
         return fetchedUser.data;
       }
     } catch (error) {
-      console.log('Failed to fetch player data', error);
+
     }
   };
 
@@ -76,7 +76,7 @@ const GamePage = () => {
         <div className={style.left_score}>{score2}</div>
         <div className={style.vs_section}>
           <div className={style.vs_image}>
-            <Image src="/vs.svg" alt="vs" priority className={style.vs_image} width={70} height={70} />
+            <img src="/vs.svg" alt="vs" className={style.vs_image} width={70} height={70} />
           </div>
           <CountdownTimer />
         </div>
@@ -85,7 +85,7 @@ const GamePage = () => {
       <div className={style.down_section}>
         {player1 ? (
           <div className={style.left_user}>
-            <img // i have to resolve the issue with <Image/>
+            <img // i have to resolve the issue with <img/>
               className={style.left_user_img}
               src={player1.avatar}
               alt="user1"
@@ -102,7 +102,7 @@ const GamePage = () => {
         </div>
         {player2 ? (
           <div className={style.right_user}>
-            <img // i have to resolve the issue with <Image/>
+            <img // i have to resolve the issue with <img/>
               className={style.right_user_img}
               src={player2?.avatar}
               alt="user1"

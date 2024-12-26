@@ -27,13 +27,13 @@ const TournamentList = ({filter, searchQuery, currentPage, setCurrentPage}) => {
         setLoading(true);
         try {
             const data = await searchTournaments(query); // API call
-            console.log('Search data:', data);
+
             setTournaments(data.results);
             setPrevPage(data.previous);
             setnextPage(data.next);
             setTotalPages(Math.ceil(data.count / 21));
         } catch (error) {
-            console.error('Error fetching search results:', error);
+
         } finally {
             setLoading(false);
         }

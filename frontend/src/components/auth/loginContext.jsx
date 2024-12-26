@@ -55,7 +55,7 @@ export const LoginProvider = ({ children }) => {
 				handleError(res);
 			}
 		} catch (error) {
-			console.error('Error during authentication:', error);
+
 		}
 		return {};
 	};
@@ -98,7 +98,7 @@ export const LoginProvider = ({ children }) => {
         setProfileData(res.data.user);
       }
     } catch (error) {
-      console.error('Failed to fetch profile data:', error);
+
     }
   }, []);
 

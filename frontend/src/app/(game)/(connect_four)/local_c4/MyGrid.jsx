@@ -203,7 +203,7 @@ const MyGrid = ({username}) => {
     const handleClick = (index) => {
         if (yetCelebrated)
             return;
-        console.log('clicked', index);
+
         let column = index % 7;
         let row = 5;
 

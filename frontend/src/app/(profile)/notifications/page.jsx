@@ -45,7 +45,7 @@ export default function NotificationsPage() {
             setPrevPage(response.data.previous ? page - 1 : null);
             setPageNumber(page);
         } catch (error) {
-            console.error('Error fetching notifications:', error);
+
         } finally {
             setLoading(false);
         }

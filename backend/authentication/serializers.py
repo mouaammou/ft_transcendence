@@ -13,30 +13,58 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import datetime, timedelta
 from  game.models import GameHistory
+from django.db.models import Q 
 import uuid
 
 User = get_user_model()
 
 #============= Friendship Serializer +++++++++++++++
 
+from rest_framework import serializers
+from django.db.models import Q
+from .models import Friendship
+
 class UserWithStatusSerializer(serializers.Serializer):
-	id = serializers.IntegerField(source='friend.id')
-	first_name = serializers.CharField(source='friend.first_name')
-	last_name = serializers.CharField(source='friend.last_name')
-	username = serializers.CharField(source='friend.username')
-	email = serializers.EmailField(source='friend.email')
-	avatar = serializers.ImageField(source='friend.avatar')
-	status = serializers.CharField(source='friend.status')
-	friendship_status = serializers.CharField()
+    id = serializers.IntegerField(source='friend.id')
+    first_name = serializers.CharField(source='friend.first_name')
+    last_name = serializers.CharField(source='friend.last_name')
+    username = serializers.CharField(source='friend.username')
+    email = serializers.EmailField(source='friend.email')
+    avatar = serializers.ImageField(source='friend.avatar')
+    status = serializers.CharField(source='friend.status')
+    friendship_status = serializers.SerializerMethodField()
+    received_status = serializers.SerializerMethodField()
 
-	class Meta:
-		fields = ['id', 'first_name', 'last_name', 'username', 'email', 'avatar', 'status', 'friendship_status']
+    class Meta:
+        fields = ['id', 'first_name', 'last_name', 'username', 'email', 
+                  'avatar', 'status', 'friendship_status', 'received_status']
 
-	def to_representation(self, instance):
-		representation = super().to_representation(instance)
-		if representation['avatar'] and not representation['avatar'].startswith('http'):
-				representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
-		return representation
+    def get_friendship_status(self, obj):
+        friendships = Friendship.objects.filter(
+            Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
+            Q(sender=self.context['request'].customUser, receiver=obj['friend'])
+        )
+        if friendships.exists():
+            return friendships.first().status
+        return None
+
+    def get_received_status(self, obj):
+        friendships = Friendship.objects.filter(
+            Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
+            Q(sender=self.context['request'].customUser, receiver=obj['friend'])
+        )
+        if friendships.exists():
+            friendship = friendships.first()
+            if friendship.sender == self.context['request'].customUser:
+                return friendship.received_status
+            return friendship.received_status if friendship.status == 'blocking' else friendship.status
+        return None
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation['avatar'] and not representation['avatar'].startswith('http'):
+            representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+        return representation
 	# end Friendship Serializer ================
 
 #-------------- Notificaion Serializer ================#

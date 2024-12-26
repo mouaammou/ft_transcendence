@@ -34,7 +34,7 @@ const Friends = () => {
 			const response = await getData(`/${endpoint}?page=${pageNumber}`);
 			if (response.status === 200) {
 				setUsers(response.data.results);
-				console.log(response.data.results);
+
 				setNextPage(response.data.next ? pageNumber + 1 : null);
 				setPrevPage(response.data.previous ? pageNumber - 1 : null);
 				setPageNumber(pageNumber);
@@ -42,13 +42,13 @@ const Friends = () => {
 				// setPageNotFound(true);
 			}
 		} catch (error) {
-			console.log('Error fetching users:', error);
+
 			// setPageNotFound(true);
 		}
 	},[]);
 
 	const sendFriendRequest = useCallback((user) => {
-		console.log('Sending friend request to:', user);
+
 		if (isConnected && user?.id) {
 			sendMessage(
 				JSON.stringify({

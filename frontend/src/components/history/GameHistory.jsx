@@ -27,7 +27,7 @@ const GameHistory = ({profileId}) => {
 				setPageNumber(pageNumber);
 			}
 		} catch (error) {
-			console.error('Error fetching game history:', error);
+
 		}
 	}, []);
 

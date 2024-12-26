@@ -1,36 +1,3 @@
-// const { add } = require('date-fns');
-// const defaultTheme = require("tailwindcss/defaultTheme");
-// const colors = require("tailwindcss/colors");
-const {
-  default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
-
-// /** @type {import('tailwindcss').Config} */
-// module.exports = {
-//   content: ["./src/**/*.{ts,tsx}"],
-//   darkMode: "class",
-//   theme: {
-//     // rest of the code
-//   },
-//   plugins: [
-//     // rest of the code
-//     addVariablesForColors,
-//   ],
-// };
-
-// This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
-function addVariablesForColors({
-  addBase,
-  theme
-}) {
-  let allColors = flattenColorPalette(theme("colors"));
-  let newVars = Object.fromEntries(Object.entries(allColors).map(([key, val]) => [`--${key}`, val]));
-
-  addBase({
-    ":root": newVars,
-  });
-}
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ['class'],
@@ -133,7 +100,7 @@ module.exports = {
     		},
 			screens: {
 				tablet: '990px',
-				larg_screen: '1750px'
+				larg_screen: '1300px'
 			},
 			animation: {
 			brightening: 'brightening 1.5s infinite',
@@ -143,15 +110,7 @@ module.exports = {
     	}
     },
 	plugins: [
-		addVariablesForColors,
 		require('tailwind-scrollbar'),
-        require("tailwindcss-animate"),
-		function ({addUtilities}) {
-			addUtilities({
-				'.brightness-70': {
-					filter: 'brightness(70%)'
-				},
-			});
-		}
+        require("tailwindcss-animate")
     ],
 };

@@ -35,13 +35,13 @@ const ChoseGame = () => {
             // const response = await] getData('/game/play-regular/');
             const response = await postData("/game/play-regular", {});
 
-            console.log('=======>', response);
-            // console.log(res);
+
+
             router.push('/l_game');
         }
         catch {
-            console.log('===error====>');
-            console.log('')
+
+
         }
     };
 
@@ -53,7 +53,7 @@ const ChoseGame = () => {
             {/* <img className='absolute top-0 left-0 w-full h-auto' src="/tournament/ping.png" alt="sss" /> */}
 			{/* Hero Section with Background */}
 			{/* <div className="absolute inset-0 h-full max-w-screen w-full overflow-hidden">
-                <Image
+                <img
                     src="/tournament/ping1.png"
                     alt="tournament background"
                     width={1920}

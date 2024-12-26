@@ -17,9 +17,9 @@ const AuthCallback = () => {
 		await getData(`auth/callback/42?${query}`)
 		.then(response => {
 			if (response.status == 200 || response.status == 201) {
-				// console.log('response: ', response);
+
 				if (response.data?.totp) {
-					// console.log("totp:  *** ", response.data.totp);
+
 					router.push('/2fa');
 					// setTotp(true);
 				}
