@@ -6,8 +6,8 @@ services:
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     restart: on-failure
     networks:
       - ft_transcendence
@@ -17,8 +17,8 @@ services:
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     restart: on-failure
     networks:
       - ft_transcendence
@@ -30,8 +30,8 @@ services:
       context: ./frontend
     hostname: frontend
     container_name: frontend
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     restart: on-failure
     networks:
       - ft_transcendence
@@ -48,8 +48,8 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     restart: on-failure
     env_file:
       - .env
@@ -73,6 +73,10 @@ services:
       - ft_transcendence
     env_file:
       - .env
+    volumes:
+      - ./backend/media:/backend/media
+      - ./backend/staticfiles:/backend/staticfiles
+
 
 volumes:
   postgres-data:

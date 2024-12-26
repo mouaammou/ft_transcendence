@@ -21,7 +21,7 @@ class TokenVerificationMiddleWare:
 	def __call__(self, request):
 		unrestricted_paths = [
 			"/auth/login/42", "/auth/callback/42",
-			"/signup", "/login", "/logout",
+			"/signup-user", "/login-user", "/logout",
 			"/token", "/token/refresh",
 			"/reset-password","/forgot-password",
 			'/2fa/verify/user/', '/2fa/verify/user',

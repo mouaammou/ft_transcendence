@@ -10,7 +10,8 @@ os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
+# BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
+BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BACKEND_API_URL"))
 
 
 # Quick-start development settings - unsuitable for production
