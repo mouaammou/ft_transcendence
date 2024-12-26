@@ -23,16 +23,15 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body className={inter.className}>
 				<WebSocketProvider url="ws://localhost:8000/ws/online/">
-					<ConnectFourWebSocketProvider > {/* unmounted ?? */}
-						<GlobalWebSocketProvider >
-							{/* Single WebSocketProvider: Use a single WebSocketProvider to manage multiple WebSocket connections internally,  */}
+					<GlobalWebSocketProvider >
+						<ConnectFourWebSocketProvider >
 							<LoginProvider>
 								<NotificationProvider>
 									<MainLayout children={children} />
 								</NotificationProvider>
 							</LoginProvider>
-						</GlobalWebSocketProvider>
-					</ConnectFourWebSocketProvider>
+						</ConnectFourWebSocketProvider>
+					</GlobalWebSocketProvider>
 				</WebSocketProvider>
 			</body>
 		</html>

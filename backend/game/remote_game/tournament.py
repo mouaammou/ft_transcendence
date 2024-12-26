@@ -16,51 +16,7 @@
 # create a model for the tournament and the round
 # the round model should have a foreign key to the tournament model, so we can get the rounds of a tournament, and 
 # the round model should contain the number of players, and the players, and the status of the round (quarter, semi-final, final), and the winner or winners of the round
- # Create and save a TournamentHistory instance
-
-
-    # how can i save a tournament
-# tournament = TournamentHistory.objects.create(
-#     # Set the attributes of the tournament
-# )
-# tournament.save()
-
-# # Create and save a Round instance
-# round = Round.objects.create(
-#     tournament=tournament,
-#     status='quarter',
-#     # Set the other attributes of the round
-# )
-# round.save()
-
-
-    # how can i save rounds of a tournament
-# # Assuming you have a TournamentHistory instance `tournament`
-# # and a list of CustomUser instances `players`
-
-# # Create a quarter-final round
-# quarter_final_round = Round.objects.create(
-#     tournament=tournament,
-#     status='quarter',
-# )
-# quarter_final_round.players.set(players)
-# quarter_final_round.save()
-
-# # Create a semi-final round
-# semi_final_round = Round.objects.create(
-#     tournament=tournament,
-#     status='semi-final',
-# )
-# semi_final_round.players.set(players)
-# semi_final_round.save()
-
-# # Create a final round
-# final_round = Round.objects.create(
-#     tournament=tournament,
-#     status='final',
-# )
-# final_round.players.set(players)
-# final_round.save()
+# Create and save a TournamentHistory instance
 
 import uuid
 from game.models import TournamentHistory, RoundHistroy
@@ -279,7 +235,7 @@ class Tournament:
     def __init__(self, organizer, name):      
         self.id = str(uuid.uuid4())
         self.name = name  
-        self.max_participants =  2 # 8
+        self.max_participants =  8 # 8
         #how to say that the tournament players list will have a size of 15
         self.players = [-1] * 15
         self.players[0] =  organizer

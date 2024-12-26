@@ -16,6 +16,7 @@ export const LoginProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(() => JSON.parse(Cookies.get('isAuth') || 'false'));
   const [mounted, setMounted] = useState(false);
   const [profileData, setProfileData] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // WebSocket context
   const { isConnected, sendMessage } = useWebSocketContext();
@@ -126,6 +127,8 @@ export const LoginProvider = ({ children }) => {
       fetchProfile,
       profileData,
       setProfileData,
+      selectedUser,
+      setSelectedUser,
     }),
     [errors, AuthenticateTo, Logout, isAuth, profileData]
   );

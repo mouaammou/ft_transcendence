@@ -67,11 +67,17 @@ urlpatterns = [
 	path("2fa/<str:action>/", TwoFactorAuthView.as_view(), name="2fa"),
  
  
-	# for game history
-	path("gamehistory/<int:user_id>", views.UserGamesListView.as_view(), name="game history"),
+    path("gamehistory/<int:user_id>", views.UserGamesListView.as_view(), name="game_history"),
+ 
 
+    # for progress history
+    path('progress/<int:user_id>', views.ProgressLevelView.as_view(), name='get_progress'),
+    
+    # connect four stats
+    path('stats/<int:user_id>', views.ConnectFourStatsView.as_view(), name='get_stats'),
 
-    path('progress/<int:user_id>', views.get_progress, name='get_progress'),
+    # ping pong stats
+    path('pongstats/<int:user_id>/', views.GameHistoryStatsView.as_view(), name='game_history_stats'),
 
 ]
 

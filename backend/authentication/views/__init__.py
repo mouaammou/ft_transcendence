@@ -9,3 +9,6 @@ from .search        import  SearchClass
 from .forget_reset_pass      import  ForgotPasswordView, ResetPasswordView
 from .gamehistory  import  UserGamesListView
 from .progress import get_progress
+from .progress_level import ProgressLevelView
+from .connect_four_stats import ConnectFourStatsView
+from .ping_pong_stats import GameHistoryStatsView

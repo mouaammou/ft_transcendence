@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
+import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 
 
 export default function FriendProfile({ params }) {
@@ -30,32 +31,105 @@ export default function FriendProfile({ params }) {
 	const [matches, setMatches] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
 	const { profileData: data } = useAuth();
+	const [pongData, setPongData] = useState([]);
+	const [c4stats, setC4Stats] = useState([]);
+
 
 	const [progressData, setProgressData] = useState({
-        level: 0,
-        progress: 0,
-        currentXp: 0,
-    });
+		level: 0,
+		progress: 0,
+		currentXp: 0,
+	});
 
 	const fetchProgressData = useCallback(async (userId) => {
-        try {
+		try {
 
-            const response = await getData(`/progress/${userId}`);
-            if (response.status === 200) { 
-                setProgressData({
-                    level: response.data.level,
-                    progress: response.data.progress,
-                    currentXp: response.data.current_xp,
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching progress data:', error);
-        }
-    }, []);
+			const response = await getData(`/progress/${userId}`);
+			if (response.status === 200) {
+				setProgressData({
+					level: response.data.level,
+					progress: response.data.progress,
+					currentXp: response.data.current_xp,
+				});
+			}
+		} catch (error) {
+			console.error('Error fetching progress data:', error);
+		}
+	}, []);
+	const fetchPongData = useCallback(async (userId) => {
+		try {
+		  const response = await fetch(`http://localhost:8000/pongstats/${userId}`, {
+			credentials: 'include', // Include cookies (credentials)
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+		  });
+	  
+		  console.log('Response fetched:', response);
+	  
+		  if (!response.ok) {
+			// Handle non-200 responses
+			const contentType = response.headers.get('content-type');
+			if (contentType && contentType.includes('application/json')) {
+			  const errorData = await response.json();
+			  throw { status: response.status, data: errorData };
+			} else {
+			  const errorText = await response.text();
+			  throw { status: response.status, data: errorText };
+			}
+		  }
+	  
+		  const data = await response.json();
+		  console.log('Pong data received:', data);
+		  const formattedData = data.map(item => ({
+			date: item.date,
+			wins: item.wins,
+			losses: item.losses
+		  }));
+		  setPongData(formattedData);
+		  console.log('Formatted pong data:', formattedData);
+		} catch (error) {
+		  if (error.status === 404) {
+			// console.error('Resource not found:', error.data);
+		  } else {
+			// console.error('Error fetching game history stats:', error);
+		  }
+		}
+	  }, []);
 
-    useEffect(() => {
+	const fetchC4StatsData = useCallback(async (userId) => {
+		try {
+			const response = await getData(`/stats/${userId}`);
+			if (response.status === 200) {
+				setC4Stats(response.data);
+			}
+		} catch (error) {
+			console.error('Error fetching stats data:', error);
+		}
+	}, []);
+
+	useEffect(() => {
 		fetchProgressData(profile.id);
-    }, [profile]);
+		fetchPongData(profile.id);
+		fetchC4StatsData(profile.id);
+	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData]);
+
+
+	const RADIAN = Math.PI / 180;
+	const COLORS = ['#82ca9d', '#ef4444', '#ef4444', '#f97316'];
+
+
+	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+		const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+		const x = cx + radius * Math.cos(-midAngle * RADIAN);
+		const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+		return (
+			<text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+				{`${(percent * 100).toFixed(0)}%`}
+			</text>
+		);
+	};
 	const fetchGameHistory = useCallback(async (userId) => {
 		try {
 
@@ -104,29 +178,29 @@ export default function FriendProfile({ params }) {
 
 	const blockFriend = useCallback(() => {
 		if (profile?.id)
-		postData(`/blockFriend/${profile.id}`)
-			.then(response => {
-			if (response.status === 200) {
-				setFriendStatusRequest('blocking');
-			}
-			})
-			.catch(error => {
-			console.log(error);
-			});
+			postData(`/blockFriend/${profile.id}`)
+				.then(response => {
+					if (response.status === 200) {
+						setFriendStatusRequest('blocking');
+					}
+				})
+				.catch(error => {
+					console.log(error);
+				});
 	}, [profile?.id, setFriendStatusRequest]);
 
 	const removeBlock = useCallback(() => {
 		//http request to block friend
 		if (profile?.id)
-		deleteData(`/removeBlock/${profile.id}`)
-			.then(response => {
-			if (response.status === 200) {
-				setFriendStatusRequest('accepted');
-			}
-			})
-			.catch(error => {
-			console.log(error);
-			});
+			deleteData(`/removeBlock/${profile.id}`)
+				.then(response => {
+					if (response.status === 200) {
+						setFriendStatusRequest('accepted');
+					}
+				})
+				.catch(error => {
+					console.log(error);
+				});
 	}, [profile?.id]);
 
 	const sendFriendRequest = useCallback(() => {
@@ -234,20 +308,19 @@ export default function FriendProfile({ params }) {
 					<div className="flex items-center mb-12 justify-around w-full">
 						{/* USER PROFILE */}
 						<div className='user-profile w-96'>
-						<div className="relative w-fit">
-							<img
-								src={profile.avatar}
-								alt="profile avatar"
-								className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
-							/>
-							<div
-								className={`absolute -bottom-1 -right-2 px-3 py-1 rounded-full text-sm font-semibold ${
-								profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
-								} text-white`}
-							>
-								{profile?.status  == 'online' ? 'Online' : 'Offline' }
+							<div className="relative w-fit">
+								<img
+									src={profile.avatar}
+									alt="profile avatar"
+									className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
+								/>
+								<div
+									className={`absolute -bottom-1 -right-2 px-3 py-1 rounded-full text-sm font-semibold ${profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
+										} text-white`}
+								>
+									{profile?.status == 'online' ? 'Online' : 'Offline'}
+								</div>
 							</div>
-						</div>
 
 							<div className="mt-4 text-center">
 								<h1 className="text-3xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h1>
@@ -256,18 +329,18 @@ export default function FriendProfile({ params }) {
 
 							{/* Level Progress Bar */}
 							<div className="w-full max-w-md mt-6">
-							<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
-								<div
-									className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
-									style={{ width: `${progressData.progress}%` }}
-								>
+								<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
+									<div
+										className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
+										style={{ width: `${progressData.progress}%` }}
+									>
+									</div>
+								</div>
+								<div className="flex justify-between text-sm mt-1">
+									<span>Level {progressData.level}</span>
+									<span>{progressData.currentXp}/100 XP</span>
 								</div>
 							</div>
-							<div className="flex justify-between text-sm mt-1">
-								<span>Level {progressData.level}</span>
-								<span>{progressData.currentXp}/100 XP</span>
-							</div>
-						</div>
 						</div>
 
 						{/* USER ACTIONS */}
@@ -326,16 +399,16 @@ export default function FriendProfile({ params }) {
 									<MdDoNotDisturbOff className="mr-2" /> Remove Block
 								</button>
 							)}
-		
+
 							{friendStatusRequest === 'rejected' && (
 								<span className="text-red-400">Friend Request Rejected</span>
 							)}
 
-						{friendStatusRequest === 'blocked' && (
-							<span className="text-red-400 bg-red-100 border border-red-400 rounded px-2 py-1">
-								Add Friend
-							</span>
-						)}
+							{friendStatusRequest === 'blocked' && (
+								<span className="text-red-400 bg-red-100 border border-red-400 rounded px-2 py-1">
+									Add Friend
+								</span>
+							)}
 						</div>
 					</div>
 
@@ -364,10 +437,8 @@ export default function FriendProfile({ params }) {
 							</div>
 						</div>
 
-						{/* Match Histsafaory Card */}
-						{
-							profile &&
-							<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+						{/* Game History Card */}
+						<div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
 							<h2 className="text-xl font-semibold mb-6 flex items-center">
 								<FaHistory className="mr-2" /> Recent Matches
 							</h2>
@@ -435,19 +506,90 @@ export default function FriendProfile({ params }) {
 								</div>
 							</div>
 						</div>
-
-						}
-					</div>
-
-					{/* Stats Section */}
-					<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
-						<h2 className="text-xl font-semibold mb-6 flex items-center">
-							<TfiStatsUp className="mr-2" /> Statistics
-						</h2>
-						<div className="w-full h-[500px] md:h-[700px]"> {/* Add fixed heights and full width */}
-							<DoughnutChart />
+						{/* Stats Section */}
+						
+						<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
+							<h2 className="text-xl font-semibold mb-6 flex items-center">
+								<TfiStatsUp className="mr-2" /> Ping Pong Stats
+							</h2>
+							<ResponsiveContainer width="100%" height={300}>
+								<AreaChart data={pongData}
+									margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+									<defs>
+										<linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+											<stop offset="45%" stopColor="#d62929" stopOpacity={0.8} />
+											<stop offset="95%" stopColor="#d62929" stopOpacity={0} />
+										</linearGradient>
+										<linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+											<stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+											<stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+										</linearGradient>
+									</defs>
+									<XAxis dataKey="date" />
+									<YAxis />
+									{/* <CartesianGrid strokeDasharray="3 3" /> */}
+									<Tooltip />
+									<Area type="monotone" dataKey="losses" stroke="#d62929" fillOpacity={1} fill="url(#colorUv)" />
+									<Area type="monotone" dataKey="wins" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />
+								</AreaChart>
+							</ResponsiveContainer>
+						</div>
+						<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
+							<h2 className="text-xl font-semibold flex mb-6 items-center">
+								<TfiStatsUp className="mr-2" /> Connect Four Stats
+							</h2>
+							<div className="flex flex-wrap justify-center">
+								<div className="flex items-center mr-4 mb-2">
+									<div className="w-5 h-5 rounded-xl bg-[#82ca9d] mr-2"></div>
+									<span>Wins</span>
+								</div>
+								<div className="flex items-center mr-4 mb-2">
+									<div className="w-5 h-5 rounded-xl bg-yellow-500 mr-2"></div>
+									<span>Draws</span>
+								</div>
+								<div className="flex items-center mr-4 mb-2">
+									<div className="w-5 h-5 rounded-xl bg-red-500 mr-2"></div>
+									<span>Losses</span>
+								</div>
+								<div className="flex items-center mr-4 mb-2">
+									<div className="w-5 h-5 rounded-xl bg-orange-500 mr-2"></div>
+									<span>Disconnects</span>
+								</div>
+							</div>
+							<ResponsiveContainer width="100%" height={300}>
+								<PieChart >
+									<Pie
+										data={c4stats}
+										cx="50%"
+										cy="50%"
+										labelLine={false}
+										label={renderCustomizedLabel}
+										outerRadius={120}
+										fill="#8884d8"
+										dataKey="value"
+										innerRadius={5}
+										startAngle={0}
+										endAngle={360}
+										paddingAngle={3}
+										minAngle={1}
+										nameKey="name"
+										blendStroke={true}
+										rootTabIndex={2}
+									>
+										{c4stats.map((entry, index) => (
+											<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+										))}
+									</Pie>
+								</PieChart>
+							</ResponsiveContainer>
+							{/* <div className="max-w-3xl mx-auto">
+								<DoughnutChart />
+								
+							</div> */}
 						</div>
 					</div>
+
+					
 				</div>
 			</div>
 		)
