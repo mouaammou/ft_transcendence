@@ -2,13 +2,12 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import '@/styles/chat/UserCard.css';
-import { formatDistanceToNow } from 'date-fns'; // Optionally for formatting the timestamp
-// usetate
+import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
 
 const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , currentUser}) => {
   if (!user) {
-    return null; // Return null if user is undefined
+    return null;
   }
   const borderColor = user.status === 'online' ? 'green' : 'red';
   const imageSize = listType === 'online' ? '65' : '45';
@@ -21,7 +20,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
     // Replace long phrases with shorter equivalents
     return fullString
       .replace('less than a minute', 'now')
-      .replace('about', '') // Removes "about"
+      .replace('about', '')
       .replace('minutes', 'min')
       .replace('minute', 'min')
       .replace('hours', 'h')
@@ -56,9 +55,6 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
     // Clean up the interval on component unmount
     return () => clearInterval(interval);
   }, [lastMessage.timestamp]);
-
-
-   // Helper to determine if it's a placeholder
    const isPlaceholder = user.isPlaceholder;
 
    const handleClick = () => {
@@ -68,35 +64,10 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
    };
 
   return listType === 'online' ? (
-    // Render using Card and CardContent for "online" listType
     <div 
-      // onClick={() => onUserSelect(user)}
-
-
       onClick={handleClick}
       className={`usercard-card-wrapper ${isPlaceholder ? 'placeholder' : ''}`}
-      // className="usercard-card-wrapper"
-    //   style={{ cursor: isPlaceholder ? 'default' : 'pointer',
-    //   transform: isPlaceholder ? 'none' : 'translateY(-3px)',
-    //   transition: 'transform 0.2s ease-in-out', // Smooth animation (optional) 
-    // }}
-      
-      // style={{ cursor: isPlaceholder ? 'default' : 'pointer' }}
     >
-      {/* <Card className="usercard-card" onClick={() => onUserSelect(user)}>
-        <CardContent 
-          className="flex aspect-square items-center justify-center"
-        >
-          <img
-            src={user.avatar}
-            alt={user.username}
-            width={imageSize}
-            height={imageSize}
-            className="w-full h-full object-cover"
-          />
-        </CardContent>
-      </Card> */}
-
       <Card className="h-full">
           <CardContent className="relative p-2">
             <div className="aspect-square overflow-hidden rounded-lg">
@@ -119,15 +90,11 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
 
     </div>
   ) : (
-    // Render default structure for "all" listType
     <div
-      // className={`usercard ${listType === 'online' ? 'UserCardOnline' : 'UserCardAll'}`}
       className={`usercard ${listType !== 'online' ? 'UserCardAll' : ''}`}
       onClick={() => onUserSelect(user)}
     >
-      {/* <div style={{flexGrow: '1',}}> */}
       <div style={{}}>
-      {/* <div style={{width: '20%'}}> */}
         <img
           src={user.avatar}
           alt={user.username}
@@ -152,9 +119,8 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
               flexDirection: 'column',
               gap: '5px',
               flexGrow: '1',
-              // width: '70%',
               padding: '0px 10px',
-              overflow: 'hidden', // Ensure child elements respect overflow
+              overflow: 'hidden', 
             }}
           >
             <p style={{
@@ -170,15 +136,12 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
                   fontWeight: lastMessage.is_read ? 'normal' : 'bold',
                   color: lastMessage.is_read ? '#BFBFBF' : '#f9f9f9',
                   fontFamily:'"Times New Roman", Times, serif',
-                  whiteSpace: 'nowrap', // Prevents text from wrapping
-                  overflow: 'hidden', // Hides overflowing text
-                  textOverflow: 'ellipsis', // Adds ellipsis for truncated text
-                  // maxWidth: '250px', // Set a maximum width for the text container
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden', 
+                  textOverflow: 'ellipsis', 
                 }}
               >
-                {lastMessage.message}
-                {/* {truncatedMessage} */}
-                
+                {lastMessage.message}                
               </p>
             )}
             {isTyping && (
@@ -200,7 +163,6 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
                     lastMessage.unread_count > 0 && (
                       <div
                         style={{
-                          // backgroundColor: 'blue',
                           backgroundColor: '#5faffe',
                           color: 'white',
                           borderRadius: '50%',

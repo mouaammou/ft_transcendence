@@ -1,9 +1,6 @@
-// add "use client" because of onChange in input;
 'use client';
-
 import '@/styles/chat/list_chat.css';
 import Image from 'next/image';
-// import { BiSolidBellRing } from "react-icons/bi";
 import { HiBell } from 'react-icons/hi2';
 import UserList from '@/components/chat/list/UserList/UserList';
 import React, { useContext } from 'react';
@@ -13,19 +10,14 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 const list_chat = () => {
   const { isChatVisible, allUsers, handleSearch, currentUser, onlineUsers} = useContext(ChatContext);
-  // const { isChatVisible, allUsers = [], handleSearch} = useContext(ChatContext);
   const limitedOnlineUsers = onlineUsers.slice(0, 6);
 
-  // const { profileData: currentuser} = useAuth();
 
   return (
-    // <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`} ref={scrollRef}>
     <div className={`list_chat ${isChatVisible ? 'hidden' : ''}`}>
       <div className="user-chat">
         <div className="info-user">
           <img
-            // src="/med.jpeg"
-            // alt="mohammed"
             src={currentUser.avatar}
             alt={currentUser?.username}
             className="img-info-user"
@@ -33,7 +25,6 @@ const list_chat = () => {
             height={65}
             style={{ borderRadius: '50%', border: '3px solid #F1FAEE' }}
           />
-          {/* <p> mohammed </p> */}
           <p> {currentUser?.username} </p>
         </div>
       </div>
