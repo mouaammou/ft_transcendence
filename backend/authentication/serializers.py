@@ -13,11 +13,16 @@ from django.core.mail import send_mail
 from django.conf import settings
 from datetime import datetime, timedelta
 from  game.models import GameHistory
+from django.db.models import Q 
 import uuid
 
 User = get_user_model()
 
 #============= Friendship Serializer +++++++++++++++
+
+from rest_framework import serializers
+from django.db.models import Q
+from .models import Friendship
 
 class UserWithStatusSerializer(serializers.Serializer):
     id = serializers.IntegerField(source='friend.id')
@@ -32,23 +37,28 @@ class UserWithStatusSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['id', 'first_name', 'last_name', 'username', 'email', 
-                'avatar', 'status', 'friendship_status', 'received_status']
+                  'avatar', 'status', 'friendship_status', 'received_status']
 
     def get_friendship_status(self, obj):
-        friendship = Friendship.objects.get(
+        friendships = Friendship.objects.filter(
             Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
             Q(sender=self.context['request'].customUser, receiver=obj['friend'])
         )
-        return friendship.status
+        if friendships.exists():
+            return friendships.first().status
+        return None
 
     def get_received_status(self, obj):
-        friendship = Friendship.objects.get(
+        friendships = Friendship.objects.filter(
             Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
             Q(sender=self.context['request'].customUser, receiver=obj['friend'])
         )
-        if friendship.sender == self.context['request'].customUser:
-            return friendship.received_status
-        return friendship.received_status if friendship.status == 'blocking' else friendship.status
+        if friendships.exists():
+            friendship = friendships.first()
+            if friendship.sender == self.context['request'].customUser:
+                return friendship.received_status
+            return friendship.received_status if friendship.status == 'blocking' else friendship.status
+        return None
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
