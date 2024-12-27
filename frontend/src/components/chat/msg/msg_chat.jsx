@@ -46,11 +46,11 @@ const Msg_chat = () => {
 	setRemoveBlockedUser
   } = useContext(ChatContext);
 
-	const { profileData: currentuser } = useAuth();
+	const { profileData: currentuser, setSelectedUser} = useAuth();
 	const router = useRouter();
 	const inviteToGame = () => {
 		if (selectedUser?.id) {
-	
+			setSelectedUser(selectedUser);
 			if (isConnected)
 			sendMessage(JSON.stringify({
 				type: NOTIFICATION_TYPES.INVITE_GAME,
