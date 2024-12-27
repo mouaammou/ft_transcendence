@@ -41,8 +41,6 @@ const Profile = () => {
 				setPageNumber(pageNumber);
 			}
 		} catch (error) {
-			console.log('Error fetching game history:', error);
-			fetchGameHistory(userId);
 		}
 	}, []);
 
@@ -60,7 +58,6 @@ const Profile = () => {
 				});
 			}
 		} catch (error) {
-			console.error('Error fetching progress data:', error);
 		}
 	}, []);
 
@@ -71,12 +68,11 @@ const Profile = () => {
 				setC4Stats(response.data);
 			}
 		} catch (error) {
-			console.error('Error fetching stats data:', error);
 		}
 	}, []);
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-			const response = await fetch(`http://localhost:8000/pongstats/${userId}`, {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/pongstats/${userId}`, {
 				credentials: 'include', // Include cookies (credentials)
 				headers: {
 					'Content-Type': 'application/json',
@@ -90,29 +86,26 @@ const Profile = () => {
 			}
 
 			const data = await response.json();
-			console.log('Pong data received:', data);
 			const formattedData = data.map(item => ({
 				date: item.date,
 				wins: item.wins,
 				losses: item.losses
 			}));
 			setPongData(formattedData);
-			console.log('Formatted pong data:', formattedData);
 		} catch (error) {
 			if (error.status === 404) {
-				console.error('Resource not found:', error.data);
+
 			} else {
-				console.error('Error fetching game history stats:', error);
+
 			}
 		}
 	}, []);
 
 	useEffect(() => {
-		if (!data) return;
+		if (!data.id) return;
 		fetchGameHistory(data.id);
 		fetchProgressData(data.id);
 		fetchC4StatsData(data.id);
-		console.log('pong data 0 ----------->:', data);
 		fetchPongData(data.id);
 	}, [data, fetchGameHistory, fetchProgressData, fetchC4StatsData, fetchPongData]);
 

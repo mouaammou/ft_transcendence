@@ -55,40 +55,22 @@ export default function FriendProfile({ params }) {
 				});
 			}
 		} catch (error) {
-			console.error('Error fetching progress data:', error);
+
 		}
 	}, []);
+
+
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-		  const response = await fetch(`http://localhost:8000/pongstats/${userId}`, {
-			credentials: 'include', // Include cookies (credentials)
-			headers: {
-			  'Content-Type': 'application/json',
-			},
-		  });
-	  
-		  console.log('Response fetched:', response);
-	  
-		  if (!response.ok) {
-			// Handle non-200 responses
-			const contentType = response.headers.get('content-type');
-			if (contentType && contentType.includes('application/json')) {
-			  const errorData = await response.json();
-			  throw { status: response.status, data: errorData };
-			} else {
-			  const errorText = await response.text();
-			  throw { status: response.status, data: errorText };
-			}
-		  }
-	  
-		  const data = await response.json();
-		  console.log('Pong data received:', data);
-		  const formattedData = data.map(item => ({
-			date: item.date,
-			wins: item.wins,
-			losses: item.losses
-		  }));
-		  setPongData(formattedData);
+		  const response = await getData(`/pongstats/${userId}`);
+		  if (response.status === 200) {
+			const formattedData = data.map(item => ({
+				date: item.date,
+				wins: item.wins,
+				losses: item.losses
+			  }));
+			  setPongData(formattedData);
+		}
 		  console.log('Formatted pong data:', formattedData);
 		} catch (error) {
 		  if (error.status === 404) {
@@ -106,11 +88,29 @@ export default function FriendProfile({ params }) {
 				setC4Stats(response.data);
 			}
 		} catch (error) {
-			console.error('Error fetching stats data:', error);
+
+		}
+	}, []);
+
+
+	const fetchGameHistory = useCallback(async (userId) => {
+		if ( ! userId)
+			return ;
+		try {
+
+			const response = await getData(`/gamehistory/${userId}?page=${1}`);
+			if (response.status === 200) {
+				setMatches(response.data.results);
+				setNextPage(response.data.next ? pageNumber + 1 : null);
+				setPrevPage(response.data.previous ? pageNumber - 1 : null);
+				setPageNumber(pageNumber);
+			}
+		} catch (error) {
 		}
 	}, []);
 
 	useEffect(() => {
+		if (!profile.id) return;
 		fetchProgressData(profile.id);
 		fetchPongData(profile.id);
 		fetchC4StatsData(profile.id);
@@ -134,23 +134,6 @@ export default function FriendProfile({ params }) {
 			</text>
 		);
 	};
-	const fetchGameHistory = useCallback(async (userId) => {
-		if ( ! userId)
-			return ;
-		try {
-
-			const response = await getData(`/gamehistory/${userId}?page=${1}`);
-			if (response.status === 200) {
-				setMatches(response.data.results);
-				setNextPage(response.data.next ? pageNumber + 1 : null);
-				setPrevPage(response.data.previous ? pageNumber - 1 : null);
-				setPageNumber(pageNumber);
-			}
-		} catch (error) {
-
-			fetchGameHistory(userId);
-		}
-	}, []);
 
 	const {
 		isConnected,
