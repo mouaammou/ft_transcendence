@@ -28,11 +28,11 @@ export default function CreateJoinTournamentPage() {
       if (response.status === 200) {
         return response.data;
       } else {
-        console.log(response);
+
         return null;
       }
     } catch (error) {
-      console.log(`Failed to fetch player with id ${playerId}: ${error}`);
+
       return null;
     }
   };
@@ -79,7 +79,7 @@ export default function CreateJoinTournamentPage() {
   const fetchData = async () => {
     if (lastMessage === null) return;
     const data = JSON.parse(lastMessage.data);
-    console.log(data);
+
     if (data.status === 'tournaments_created') {
       setTab(data.tournaments);
       const playersAvatar = {};
@@ -115,7 +115,7 @@ export default function CreateJoinTournamentPage() {
   useEffect(() => {
     if (lastMessage === null) return;
     const data = JSON.parse(lastMessage.data);
-    console.log(data);
+
     if (data.status === 'already_in_tournament') {
       setInputError({ ...inputError, alreadyInTournament: true });
       setTimeout(() => {
@@ -126,7 +126,7 @@ export default function CreateJoinTournamentPage() {
       setTimeout(() => {
         router.push('/game');
       }, 2000);
-      console.log('pushed to game');
+
     } else if (data.status === 'already_in_tournament_join') {
       setInputError({ ...inputError, alreadyInTournamentJoin: true });
       setTimeout(() => {

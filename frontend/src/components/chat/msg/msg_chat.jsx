@@ -59,7 +59,7 @@ const Msg_chat = () => {
 		}
 		localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
 		router.push('/waiting_friends_game');
-		console.log('Invite to game');
+
 	};
 
 	const handleRemoveBlock = () => {

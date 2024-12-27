@@ -41,7 +41,7 @@ const Links = () => {
           </Link>
         ))}
       </div>
-      <Image
+      <img
         src="/menu.png"
         alt="menu"
         width={30}

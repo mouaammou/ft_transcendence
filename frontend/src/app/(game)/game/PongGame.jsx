@@ -5,7 +5,7 @@ import YouLose from '@/components/modals/YouLose';
 import YouWin from '@/components/modals/YouWin';
 import { useRouter, usePathname } from 'next/navigation';
 import { set } from 'date-fns';
-import style from '@/Styles/game/game.module.css';
+import style from '@/styles/game/game.module.css';
 
 
 const INITIAL_CONFIG = {
@@ -224,7 +224,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 				drawGame();
 			}
 		} catch (error) {
-			console.error('Error processing message:', error);
+
 		}
 	}, [lastMessage]);
 

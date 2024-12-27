@@ -18,7 +18,9 @@ import { useRouter } from 'next/navigation';
 // import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: '/api/', // Replace with your Django backend URL
+  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/`,
+  timeout: 10000,
+  withCredentials: true,
 });
 
 //chck if the response is a 401 then redirect to the login page
@@ -28,9 +30,9 @@ axiosInstance.interceptors.response.use(
   },
   error => {
     //add redirect_to_login query param to the current url
-    console.log('error status', error.response.status);
+
     if (error.response.status === 401) {
-      console.log('hello response 4001');
+
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
@@ -48,13 +50,13 @@ export default axiosInstance;
 
 //     axiosInstance.interceptors.response.use(
 //         (response) => {
-//             console.log("response status: ", response.status);
+
 //             return response;
 //         },
 //         (error) => {
-//             console.log("error status", error.response.status);
+
 //             if (error.response.status === 401) {
-//                 console.log("hello response 4001");
+
 //                 router.push('/login'); // Use router for navigation
 //             }
 //             return Promise.reject(error); // Ensure to return a rejected promise for error handling

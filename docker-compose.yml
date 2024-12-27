@@ -6,35 +6,39 @@ services:
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: ft_transcendence
-      POSTGRES_USER: mouad
-      POSTGRES_PASSWORD: mouad
+    # ports:
+    #   - "5432:5432"
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
 
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
 
   frontend:
     build:
       context: ./frontend
     hostname: frontend
     container_name: frontend
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     restart: on-failure
     networks:
       - ft_transcendence
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/frontend
 
   backend:
     build:
@@ -44,20 +48,15 @@ services:
     depends_on:
       - postgres
       - redis
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://mouad:mouad@postgres:5432/ft_transcendence
-      - REDIS_URL=redis://redis:6379
-      - DJANGO_SETTINGS_MODULE=core.settings
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     restart: on-failure
     env_file:
       - .env
     networks:
       - ft_transcendence
+    volumes:
+      - ./backend:/backend
 
   nginx:
     build:
@@ -65,13 +64,19 @@ services:
     hostname: nginx
     container_name: nginx
     ports:
-      - '80:80'
+      # - '80:80'
       - '443:443'
     depends_on:
       - backend
       - frontend
     networks:
       - ft_transcendence
+    env_file:
+      - .env
+    # volumes:
+    #   - ./backend/media:/backend/media
+    #   - ./backend/staticfiles:/backend/staticfiles
+
 
 volumes:
   postgres-data:

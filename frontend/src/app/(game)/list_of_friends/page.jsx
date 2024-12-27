@@ -40,7 +40,7 @@ const Friends = () => {
 
     const handleNextClick = () => {
         if (selectedFriend) {
-            console.log('selectedFriend :: ', selectedFriend);
+
             sendGameInvitation();
             router.push('/waiting_friends_game');
         } else {
@@ -57,7 +57,7 @@ const Friends = () => {
                 setFriends(response.data.results);
             }
         } catch (error) {
-            console.error("Error fetching users in friends page:", error);
+
         }
     };
 

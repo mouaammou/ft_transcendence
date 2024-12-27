@@ -2,14 +2,11 @@ import axios from 'axios';
 
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/2fa/',
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/2fa/`,
     timeout: 10000,
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
-    },
-    validateStatus: function (status) {
-        return status < 500;
     }
 });
 
@@ -33,8 +30,8 @@ export const apiValidateTwoFactorAuth = async (code) => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };
 
@@ -56,8 +53,8 @@ export const apiEnableTwoFactorAuth = async (code) => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };
 
@@ -80,8 +77,8 @@ export const apiDisableTwoFactorAuth = async () => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };
 
@@ -103,8 +100,8 @@ export const apiTwoFactorAuthQrcode = async () => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };
 
@@ -126,7 +123,7 @@ export const apiTwoFactorAuthIsEnabled = async () => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };

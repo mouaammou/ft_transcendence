@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
-import styles from '@/Styles/game/connect_four/connect_four.module.css';
+import styles from '@/styles/game/connect_four/connect_four.module.css';
 import PlayerCard from './PlayerCard';
 import { getData } from '@/services/apiCalls'; // Assuming this exists
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
@@ -30,7 +30,7 @@ const ConnectFour = () => {
                 setPlayer(response.data);
             }
         } catch (error) {
-            console.error('Failed to fetch player data:', error);
+
         }
     };
 
@@ -38,7 +38,7 @@ const ConnectFour = () => {
     useEffect(() => {
         if (lastMessage !== null) {
             const data = JSON.parse(lastMessage.data);
-              console.log("data from waiting page ", data);
+
 
             if (data.status === 'GAME_DATA' && !dataFetched) {
                 // Fetch player details

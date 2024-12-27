@@ -42,7 +42,9 @@ export default function FriendProfile({ params }) {
 	});
 
 	const fetchProgressData = useCallback(async (userId) => {
-		try {
+		if ( ! userId )
+			return ;
+        try {
 
 			const response = await getData(`/progress/${userId}`);
 			if (response.status === 200) {
@@ -112,7 +114,9 @@ export default function FriendProfile({ params }) {
 		fetchProgressData(profile.id);
 		fetchPongData(profile.id);
 		fetchC4StatsData(profile.id);
-	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData]);
+		fetchGameHistory(profile.id);
+
+	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory]);
 
 
 	const RADIAN = Math.PI / 180;
@@ -131,6 +135,8 @@ export default function FriendProfile({ params }) {
 		);
 	};
 	const fetchGameHistory = useCallback(async (userId) => {
+		if ( ! userId)
+			return ;
 		try {
 
 			const response = await getData(`/gamehistory/${userId}?page=${1}`);
@@ -141,14 +147,11 @@ export default function FriendProfile({ params }) {
 				setPageNumber(pageNumber);
 			}
 		} catch (error) {
-			console.log('Error fetching game history:', error);
+
 			fetchGameHistory(userId);
 		}
 	}, []);
 
-	useEffect(() => {
-		fetchGameHistory(profile.id);
-	}, [fetchGameHistory, profile]);
 	const {
 		isConnected,
 		notificationType,
@@ -172,35 +175,35 @@ export default function FriendProfile({ params }) {
 					}
 				})
 				.catch(error => {
-					console.log(error);
+
 				});
 	}, [profile?.id]);
 
 	const blockFriend = useCallback(() => {
 		if (profile?.id)
-			postData(`/blockFriend/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('blocking');
-					}
-				})
-				.catch(error => {
-					console.log(error);
-				});
+		postData(`/blockFriend/${profile.id}`)
+			.then(response => {
+			if (response.status === 200) {
+				setFriendStatusRequest('blocking');
+			}
+			})
+			.catch(error => {
+
+			});
 	}, [profile?.id, setFriendStatusRequest]);
 
 	const removeBlock = useCallback(() => {
 		//http request to block friend
 		if (profile?.id)
-			deleteData(`/removeBlock/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('accepted');
-					}
-				})
-				.catch(error => {
-					console.log(error);
-				});
+		deleteData(`/removeBlock/${profile.id}`)
+			.then(response => {
+			if (response.status === 200) {
+				setFriendStatusRequest('accepted');
+			}
+			})
+			.catch(error => {
+
+			});
 	}, [profile?.id]);
 
 	const sendFriendRequest = useCallback(() => {
@@ -243,10 +246,10 @@ export default function FriendProfile({ params }) {
 			try {
 				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
 				if (response.status === 200) {
-					console.log("friend user:: ==> ", response.data);
+
 					setProfile(response.data);
 					setFriendStatusRequest(response.data.friend);
-					console.log("friend user:: ==> ", response);
+
 				} else {
 					setPageNotFound(true);
 				}
@@ -292,7 +295,7 @@ export default function FriendProfile({ params }) {
 			<div className="min-h-screen bg-gray-900 text-white">
 				{/* Hero Section with Background */}
 				<div className="relative h-72 w-full overflow-hidden">
-					<Image
+					<img
 						src="/gaming-demo.jpeg"
 						alt="profile background"
 						width={1920}

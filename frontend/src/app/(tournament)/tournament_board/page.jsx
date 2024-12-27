@@ -79,12 +79,12 @@ export default function TournamentBoardPage() {
   useEffect(() => {
     if (!lastMessage) return;
     const data = JSON.parse(lastMessage.data);
-    // console.log('data  ---> ', data);
+
     if (data.status === 'players') {
-      // console.log('bla bla bla bla', data.data);
+
       setPlayers(data.data);
     } else if (data.status === 'no_tournament_found') {
-      // console.log('the player does not exist in any tournament');
+
       router.push('/create_join_tournament');
     } else if (data.status === 'fulfilled') {
       setFulfilled(true);
@@ -100,7 +100,7 @@ export default function TournamentBoardPage() {
       );
       setExitTournament(true);
     } else if (data.status === 'you_can_not_leave') {
-      // console.log('you can not leave the tournament');
+
       setModalOpen(true);
       setModalMessage('Tournament Participation in Progress');
       setMsgDescription(
@@ -108,7 +108,7 @@ export default function TournamentBoardPage() {
       Please remain engaged to support the event and your fellow players. Thank you for your commitment!'
       );
     } else if (data.status === 'organizer_can_not_leave') {
-      // console.log('you can not leave the tournament');
+
       setModalOpen(true);
       setModalMessage('Stay Engaged as Tournament Organizer');
       setMsgDescription(
@@ -161,11 +161,11 @@ export default function TournamentBoardPage() {
       if (response.status === 200) {
         return response.data;
       } else {
-        // console.log(response);
+
         return null;
       }
     } catch (error) {
-      console.error(`Failed to fetch player with i ${playerId}: ${error}`);
+
       return null;
     }
   };
@@ -177,15 +177,15 @@ export default function TournamentBoardPage() {
       if (player === -1) {
         newFetchedPlayers.push(defaultPlayer);
       } else if (existingPlayer) {
-        // console.log('player is added \n');
+
         newFetchedPlayers.push(existingPlayer);
       } else {
         const newPlayer = await fetchPlayer(player);
         if (newPlayer !== null) {
-          // console.log('player is fetched ', newPlayer);
+
           newFetchedPlayers.push(newPlayer);
         } else {
-          // console.log('Failed to fetch a player');
+
         }
       }
     }
@@ -193,8 +193,8 @@ export default function TournamentBoardPage() {
   };
 
   useEffect(() => {
-    // console.log('hi\n');
-    // console.log(players);
+
+
 
     fetchPlayers();
   }, [players]);
@@ -211,7 +211,7 @@ export default function TournamentBoardPage() {
 
   const organizerUsername = userNames?.userName1;
 
-  // console.log('image Urls --> ', imageUrls);
+
   return (
     <div>
       <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12  gap-8">

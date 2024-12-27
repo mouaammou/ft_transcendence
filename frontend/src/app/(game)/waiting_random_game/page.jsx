@@ -30,10 +30,10 @@ const WaitingPage = () => {
           router.push('/game');
         }, 1000);
       } else {
-        console.log('Fetched user data is invalid');
+
       }
     } catch (error) {
-      console.log('Failed to fetch opponent data', error);
+
     }
   };
 

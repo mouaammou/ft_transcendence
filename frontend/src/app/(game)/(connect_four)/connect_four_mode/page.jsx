@@ -19,7 +19,7 @@ const ChooseMode = () => {
         //         setRetryCount(retryCount + 1);
         //         setTimeout(sendGetRoomsMessage, retryInterval);
         //     } else {
-        //         console.log("not send GET_ROOMS message after maximum retries");
+
         //     }
         // };
 

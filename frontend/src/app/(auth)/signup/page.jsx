@@ -88,12 +88,10 @@ export default function Signup() {
                 Create an account
               </h1>
               <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl w-full h-80 my-10">
-                <Image
+                <img
                   src="/sign-up-pong.gif"
                   alt="Pong Game Animation"
-                  fill
                   className="object-cover saturate-0"
-                  priority
                 />
               </div>
             </div>

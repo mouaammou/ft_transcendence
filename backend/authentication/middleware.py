@@ -20,15 +20,15 @@ class TokenVerificationMiddleWare:
 
 	def __call__(self, request):
 		unrestricted_paths = [
-			"/auth/login/42", "/auth/callback/42",
-			"/signup", "/login", "/logout",
-			"/token", "/token/refresh",
-			"/reset-password","/forgot-password",
-			'/2fa/verify/user/', '/2fa/verify/user',
+			"/backend/auth/login/42", "/backend/auth/callback/42",
+			"/backend/signup", "/backend/login", "/backend/logout",
+			"/backend/token", "/backend/token/refresh",
+			"/backend/reset-password","/backend/forgot-password",
+			'/backend/2fa/verify/user/', '/backend/2fa/verify/user',
 		]
 		request.customUser = AnonymousUser()
 		# request.jwt_payload = {}
-		if request.path.startswith("/admin") or request.path in unrestricted_paths:
+		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
 			# print("----> ", f"|{request.path}|");
 			return self.get_response(request)  # Proceed with the request
 

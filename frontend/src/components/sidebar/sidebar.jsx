@@ -11,6 +11,7 @@ export default function Sidebar() {
   const { Logout, isAuth } = useAuth();
 
   const sidebarItems = [
+    { label: 'Home', icon: Home, route: '/l_game' },
     { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Friends', icon: Users, route: '/friends' },
     { label: 'All Users', icon: UserPlus, route: '/allusers' },

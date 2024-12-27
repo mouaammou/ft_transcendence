@@ -8,7 +8,7 @@ const NotFound = () => {
 		<div >
 			{/* 404 not found
 				<p> sorry this page is not available for now</p> */}
-      <Image
+      <img
         src="/404.svg"
         width={800}
         height={800}

@@ -10,7 +10,8 @@ os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
+# BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
+BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BACKEND_API_URL_MEDIA"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -20,7 +21,7 @@ BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -141,12 +142,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
+
+REDIS_HOST=os.getenv('REDIS_HOST')
+REDIS_PORT=os.getenv('REDIS_PORT')
+
 CHANNEL_LAYERS = {
 	'default': {
 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
 		'CONFIG': {
-			# "hosts": [('redis', 6379)],
-			"hosts": [('localhost', 6379)],
+			"hosts": [(REDIS_HOST, REDIS_PORT)],
+			# "hosts": [('localhost', 6379)],
 		},
 	},
 #  'default': {
@@ -168,30 +173,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': "ft_transcendence",
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
-#         'PORT': os.getenv('POSTGRES_PORT'),
-#     }
-# }
-
 DATABASES = {
-	
-	'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': BASE_DIR / 'db.sqlite3',
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "ft_transcendence",
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
+        'PORT': os.getenv('POSTGRES_PORT'),
+    }
 }
+
+# DATABASES = {
+	
+# 	'default': {
+# 		'ENGINE': 'django.db.backends.sqlite3',
+# 		'NAME': BASE_DIR / 'db.sqlite3',
+# 	}
+# }
 
 CORS_ALLOWED_ORIGINS = [
     "https://localhost",
     "http://localhost",
     "http://frontend:3000",
-    "https://frontend:3000",
+    "https://frontend",
 ]
 
 

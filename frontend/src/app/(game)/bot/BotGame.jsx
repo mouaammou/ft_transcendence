@@ -102,8 +102,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
     const updateGame = () => {
       ball.x += ball.velocityX * ball.speed;
       ball.y += ball.velocityY * ball.speed;
-      console.log('ball.velocityX * ball.speed --> ', ball.velocityX * ball.speed);
-      console.log('ball.velocityX * ball.speed --> ', ball.velocityY * ball.speed);
+
+
       computer.y = ball.y * 1 - computer.height / 2; // 1 is the level of the computer and it is the hardest level
       // Check for collision with the top edge of the table
       if (ball.y - ball.radius <= 0) {
@@ -145,8 +145,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
         // Optional: Adjust ball's vertical direction based on where it hits the paddle
         const collisionPoint = ball.y - (player.y + player.height / 2);
         ball.velocityY += collisionPoint / (player.height / 2); // Adjust bounce angle
-        // console.log("why ?? here -->");
-        // console.log(ball.velocityY);
+
+
         if (ball.speed <= 10) ball.speed += 0.4; // Increase speed slightly on collision
       }
 
@@ -154,8 +154,8 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
         ball.velocityX = -ball.velocityX; // Reverse direction
         const collisionPoint = ball.y - (computer.y + computer.height / 2);
         ball.velocityY += collisionPoint / (computer.height / 2); // Adjust bounce angle
-        // console.log("here -->");
-        // console.log(ball.velocityY);
+
+
         if (ball.speed <= 10) ball.speed += 0.5; // Increase speed slightly on collision
       }
 
@@ -198,19 +198,19 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
       // Draw the ball
       drawCircle(ball.x, ball.y, ball.radius, ball.color);
       context.closePath();
-      console.log(ball.speed);
+
     };
 
     // Keyboard event handlers  // ArrowUp ArrowDown q s
     // add the key to the keys object when a key is pressed, if it's not already there, to keep track of multiple key presses
     const handleKeyDown = event => {
-      console.log(event.key);
+
       keys[event.key] = true;
     };
 
     // set the key to false when the key is released
     const handleKeyUp = event => {
-      console.log(event.key);
+
       keys[event.key] = false;
     };
 

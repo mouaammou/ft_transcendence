@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import MyGrid from "./MyGrid";
-import styles from '@/Styles/game/connect_four/connect_four.module.css';
+import styles from '@/styles/game/connect_four/connect_four.module.css';
 import PlayerCard from './PlayerCard'
 import { useAuth } from '@/components/auth/loginContext.jsx';
 

@@ -47,7 +47,9 @@ const Profile = () => {
 	}, []);
 
 	const fetchProgressData = useCallback(async (userId) => {
-		try {
+		if ( ! userId )
+			return ;
+        try {
 
 			const response = await getData(`/progress/${userId}`);
 			if (response.status === 200) {
@@ -173,8 +175,8 @@ const Profile = () => {
 			<div className="min-h-screen bg-gray-900 text-white">
 				{/* Hero Section with Background */}
 				<div className="relative h-72 w-full overflow-hidden">
-					<Image
-						src="/gaming-demo.jpeg"
+					<img
+						src="/gaming-demo.jpeg" 
 						alt="profile background"
 						width={1920}
 						height={1080}

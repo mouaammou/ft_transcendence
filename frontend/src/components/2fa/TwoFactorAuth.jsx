@@ -53,7 +53,7 @@ const TwoFactorAuth = () => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 3000);
             })
-            .catch(err => console.error('Failed to copy text:', err));
+
         } else {
             'Clipboard API not supported in this browser.';
         }
@@ -171,7 +171,7 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 3000);
             })
-            .catch(err => console.error('Failed to copy text:', err));
+
         } else {
             'Clipboard API not supported in this browser.';
         }

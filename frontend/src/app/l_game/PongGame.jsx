@@ -28,7 +28,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       !websocketRef.current.readyState  != WebSocket.OPEN ||
       websocketRef.current.readyState != WebSocket.CONNECTING)
     {
-      websocketRef.current = new WebSocket('ws://localhost:8000/ws/local/');
+      websocketRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/local/`);
     }
   }
 
@@ -38,7 +38,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 	useEffect(() => {
     connectWebsocket();
 
-    // console.log('nnnnnnaaames:', leftNickname, rightNickname)
+
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
 
@@ -207,7 +207,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 			}
 			else if (data.config)
 			{
-				console.log('config: ', data.config);
+
 				gameConfig = data.config;
 				canvas.width = gameConfig.window_size[0];
 				canvas.height = gameConfig.window_size[1];
@@ -234,12 +234,12 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
         }
         if (data.config.local_game_type === 'tournament')
         {
-          console.log('=======================troun================>>>>>>>>>');
-          console.log(`/l_game/${data.config.tournament_id}`);
+
+
           router.push(`/l_game/${data.config.tournament_id}`);
         } else if (data.config.local_game_type === 'regular')
           {
-          console.log('========================regular===============>>>>>>>>>')
+
           router.push(`/l_game`);
         }
 				if (data.config.left_nickname)
@@ -254,7 +254,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 				{
           setTitle(data.config.title);
 				}
-        console.log('local game type: ', data.config.local_game_type)
+
 				drawGame();
 			}
 		}
@@ -284,9 +284,9 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
     }
 
     function sendVisibilityStatus() {
-      // console.log('Visibility: ');
+
       // if (conectionOn === true) {
-      // console.log('visibility->: ', document.visibilityState);
+
       let isTabFocused = canvasRef.current.visibilityState === 'visible';
       // socket.send(JSON.stringify({ tabFocused: isTabFocused }));
       websocketSend({ tabFocused: isTabFocused });
@@ -304,7 +304,8 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
-      websocketRef.current?.close();
+      if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN )
+        websocketRef.current.close();
 		};
 	}, [winner, leftNickname, rightNickname, playStart]); // to reset to default
 	return (

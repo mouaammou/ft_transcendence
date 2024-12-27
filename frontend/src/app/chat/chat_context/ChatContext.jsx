@@ -57,33 +57,33 @@ export const ChatProvider = ({ children }) => {
             const response = await getData(url);
             
             if (response.status === 200) {
-                console.log('response.data => ', response.data)
+
                 const newUsers = response.data;
                 if (!search) {
                     setOriginalUsers(newUsers);
                 }
                 setAllUsers(newUsers);
-                console.log('newUsers => ', newUsers);
+
             }
             // Handle unauthorized response
             else if (response.status === 401) {
                 // Handle unauthorized response
-                console.error("Unauthorized access ");
+
             } 
             else {
-                console.error(" ****** Unexpected response status:", response);
+
             }
         } catch (error) {
-            console.error("Failed to fetch friends:", error);
+
         }
     };
 
     // ************************  Fetch fetchOnlineUsers ************************
 
      const fetchOnlineUsers = () => {
-        console.log('originalUsers => ', originalUsers);
+
         const onlineUsers = originalUsers.filter(user => user.friend && user.friend.status === 'online');
-        console.log('onlineUsers => ', onlineUsers);
+
         setOnlineUsers(onlineUsers);
     };
 
@@ -114,7 +114,7 @@ export const ChatProvider = ({ children }) => {
             {
                 const data = JSON.parse(message.data);
                 if (data.type === 'user_status_change') {
-                    console.log('WebSocket ONLINE STATUS:', data);
+
                     setAllUsers((prevUsers) =>
                         prevUsers.map((user) =>
                             user.friend && user.friend.username === data.username
@@ -130,7 +130,7 @@ export const ChatProvider = ({ children }) => {
                     );
                 }
             } catch (error) {
-                console.error('Error in handleOnlineStatus:', error);
+
             }
         },
         [isConnected]
@@ -206,7 +206,7 @@ export const ChatProvider = ({ children }) => {
     const fetchChatHistory = async (receiver_id, page = 1) => {
         if (isFetchingRef.current) 
         {
-            console.log("Fetch skipped: another fetch is in progress.");
+
             return; // Prevent multiple requests at once
         }
         try {
@@ -217,7 +217,7 @@ export const ChatProvider = ({ children }) => {
             if (response.status === 200 && response.data.results) {
                 const messagesList = response.data.results;
                 const groupedMessages = groupMessagesByDate(messagesList);
-                console.log('****** groupedMessages *** => ', groupedMessages)
+
                 if (page === 1) {
                     setMessages({
                         [receiver_id]: mergeAndSortMessages({}, groupedMessages, selectedUserRef, receiver_id),
@@ -233,17 +233,17 @@ export const ChatProvider = ({ children }) => {
                     ? new URL(nextPageUrl).searchParams.get('page')
                     : null;
                 setNextPage(nextPageNumber ? Number(nextPageNumber) : null);
-                console.log("Next page set to:", nextPageNumber);
+
             }
             else {
                 console.warn("No results in response or invalid response format.");
                 setNextPage(null);
             }
         } catch (error) {
-            console.error('Error fetching chat history:', error);
+
         } finally {
             isFetchingRef.current = false;
-            console.log("Fetch completed, isFetchingRef.current reset to false.");
+
         }
     };
     
@@ -290,16 +290,16 @@ export const ChatProvider = ({ children }) => {
             setRemoveBlockedUser('blocking');
         else if (selectedUserStatus === 'blocked')
             setRemoveBlockedUser('blocked');
-        console.log('****** selectedUserStatus => ', selectedUserStatus);
+
         if (selectedUserStatus === 'blocking' || selectedUserStatus === 'blocked')
         {
 
-            console.log('****** setFriendStatusRequest is  blocked => ');
+
             setFriendStatusRequest('blocked');
         }
         else
         {
-            console.log('****** setFriendStatusRequest is  accepted => ');
+
             setFriendStatusRequest('accepted');
         }
     };
@@ -308,12 +308,12 @@ export const ChatProvider = ({ children }) => {
     // *********** block friends ********
 
     const blockFriend = useCallback(() => {
-        console.log('selectedUser.id in blockFriend => ', selectedUserRef.current?.id)
+
         if (selectedUserRef.current?.id && friendStatusRequest !== 'blocked')
             postData(`/blockFriend/${selectedUserRef.current.id}`)
                 .then((response) => {
                     if (response.status === 200 && response.data?.status == 'blocking') {
-                        console.log(" ** response => ", response.data);
+
                         setFriendStatusRequest('blocked');
                         setRemoveBlockedUser('blocking');
                         setAllUsers((prevUsers) =>
@@ -335,19 +335,19 @@ export const ChatProvider = ({ children }) => {
                         setRemoveBlockedUser('blocked');
                     }
                     else {
-                        console.log('Failed to block friend, response status:', response);
+
                     }
                 })
                 .catch((error) => {
-                    console.log(error);
-                    console.log('Error blocking friend:', error);
+
+
                 });
 
     }, [selectedUserRef.current?.id]);
 
 
     const removeBlock = useCallback(() => {
-        console.log('selectedUser.id in removeBlock => ', selectedUserRef.current?.id)
+
         if (selectedUserRef.current?.id)
             deleteData(`/removeBlock/${selectedUserRef.current.id}`)
                 .then((response) => {
@@ -368,12 +368,12 @@ export const ChatProvider = ({ children }) => {
                         );
                     }
                     else {
-                        console.log('Failed to remove block, response status:', response);
+
                     }
                 })
                 .catch((error) => {
-                    console.log(error);
-                    console.log('Error removing block:', error);
+
+
                 });
 
     }, [selectedUserRef.current?.id]);
@@ -381,28 +381,28 @@ export const ChatProvider = ({ children }) => {
 
   //  ************************  ************************
   const handleSendMessage = () => {
-    console.log('Sending message...');
+
 
 
     // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
     if (text.trim() && selectedUser && socket) {
-        console.log('selectedUser.username =>' , selectedUser.username)
+
         const messageData = {
             sender: currentUser.username,
             receiver: selectedUser.username,
             message: text.trim(),
         };
 
-      console.log('Sending message:', messageData);
+
 
       socket.send(JSON.stringify(messageData));
 
       setText('');
     }
     else {
-        if (!text.trim()) console.log('Message not sent: Text is empty.');
-        if (!selectedUser) console.log('Message not sent: No selected user.');
-        if (!socket || socket.readyState !== WebSocket.OPEN) console.log('Message not sent: WebSocket is not open.');
+
+
+
     }
 
     };
@@ -443,7 +443,7 @@ export const ChatProvider = ({ children }) => {
     const handleKeyPress = (event) => {
         
         if (friendStatusRequest === 'blocked') {
-            console.log('Message not sent: The selected user is blocked.');
+
             return;
         }
         if (event.key === 'Enter') {
@@ -483,16 +483,16 @@ export const ChatProvider = ({ children }) => {
     // ************************ Manage WebSocket connection ************************
     const connectWebSocket = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
-        console.log('If there is already an open WebSocket, close it before opening a new one');
+
         socket.close(); 
         }else {
-            console.log('WebSocket is not open');
+
         }
 
-        const ws = new WebSocket('ws://localhost:8000/ws/chat');
+        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/chat`);
 
         ws.onopen = () => {
-        console.log('WebSocket chat connected');
+
         };
 
         ws.onmessage = (event) => {
@@ -507,8 +507,8 @@ export const ChatProvider = ({ children }) => {
                     if (ws.readyState === WebSocket.OPEN) {
                         ws.send(JSON.stringify({ mark_read: true, contact: sender }));
                     }else {
-                        console.log('Socket:', ws);
-                        console.log('Socket Ready State:', ws ? ws.readyState : 'Socket is null');                          
+
+
                     }
                     updateLastMessage(sender_id, message, true, receivedData.timestamp);
                 } else {
@@ -562,12 +562,12 @@ export const ChatProvider = ({ children }) => {
         };
 
         ws.onclose = event => {
-        console.log(event);
-        console.log('WebSocket chat disconnected');
+
+
         };
 
         ws.onerror = error => {
-        console.error('WebSocket chat error:', error);
+
         };
 
         setSocket(ws);
@@ -593,7 +593,7 @@ export const ChatProvider = ({ children }) => {
 
     const handleFetchOlderMessages = async () => {
         if (!nextPage) {
-            console.log("Skipping fetch: isFetchingRef.current =", isFetchingRef.current, ", nextPage =", nextPage);
+
             return;
         }            
         const chatContainer = chatContainerRef.current;
@@ -609,10 +609,10 @@ export const ChatProvider = ({ children }) => {
             const scrollDelta = chatContainer.scrollHeight - prevScrollHeight;
             chatContainer.scrollTop = scrollDelta;
         } catch (error) {
-            console.error("Failed to fetch chat history:", error);
+
         } finally {
             isFetchingRef.current = false;
-            console.log("Fetch completed, isFetchingRef.current reset to:", isFetchingRef.current);
+
         }
     };
 
@@ -657,7 +657,7 @@ export const ChatProvider = ({ children }) => {
         return () => {
         if (socket) {
             socket.close();
-            console.log('WebSocket is closed');
+
             setSocket(null);
         }
         selectedUserRef.current = null;

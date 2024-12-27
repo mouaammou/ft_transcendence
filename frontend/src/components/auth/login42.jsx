@@ -5,7 +5,7 @@ const Login42 = () => {
   const handleLogin = async () => {
     getData('/auth/login/42').then(res => {
       if (res.status === 200) {
-        console.log(res);
+
         window.location.href = res.data.auth_url;
       }
     });

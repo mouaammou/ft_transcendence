@@ -34,7 +34,7 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('formData: in login::  ', formData);
+
         let resp = await AuthenticateTo('/login', formData);
         if (!totp && resp?.totp) {
             setTotp(true);
@@ -58,7 +58,7 @@ export default function LoginPage() {
                 Start your Ping pong Journey with Us
             </h1>
             <div className="mt-6">
-                <Image
+                <img
                 src="/anime-pong.gif"
                 alt="Ping Pong Animation"
                 width={400}
@@ -75,7 +75,7 @@ export default function LoginPage() {
                 type="text"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Username Or Email"
+                placeholder="Username"
                 className='custom-input w-full'
                 required
                 disabled={totp}

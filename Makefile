@@ -1,14 +1,45 @@
-#!/bin/bash
+COMPOSE_FILE = docker-compose.yml
 
-all:
-	npx kill-port 3000
-	cd frontend && npm run dev
+.PHONY: all
+all: build up
 
-back:
-	cd backend && source venv/bin/activate &&  python manage.py runserver
+.PHONY: build
+build:
+	docker compose -f $(COMPOSE_FILE) build
 
-clear_db:
-	cd backend && source venv/bin/activate &&  python manage.py clear_db
 
-redis:
-	/Users/samjaabo/.brew/opt/redis/bin/redis-server /Users/samjaabo/.brew/etc/redis.conf
+.PHONY: up
+up:
+	docker compose -f $(COMPOSE_FILE) up -d --build
+
+
+.PHONY: down
+down:
+	docker compose -f $(COMPOSE_FILE) down
+
+
+.PHONY: clean
+clean:
+	docker compose -f $(COMPOSE_FILE) down -v --rmi all
+
+.PHONY: logs
+logs:
+	docker compose -f $(COMPOSE_FILE) logs -f
+
+.PHONY: ps
+ps:
+	docker compose -f $(COMPOSE_FILE) ps
+
+.PHONY: exec
+exec:
+	docker compose -f $(COMPOSE_FILE) exec $$(SERVICE) $$(COMMAND)
+
+
+.PHONY: prune
+prune:
+	docker container prune -f
+
+
+.PHONY: all
+all: build up
+

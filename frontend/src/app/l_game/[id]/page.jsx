@@ -2,7 +2,7 @@
 import PongGame from "../PongGame";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import '@/styles/game/game.css';
+// import '@/styles/game/game.css';
 import CountdownTimer from "@/components/countDown/CountDown.jsx";
 import Image from 'next/image';
 import { fetchStartPlayTournament, fetchTournamentMatchPlayers } from '@/services/apiCalls';
@@ -51,7 +51,7 @@ const GamePage = ({params}) => {
 	const handlePlayClick = async () => {
 		const response = await apiPlayTournamentGame(tournament_id);
 		setPlayStart(true);
-		// console.log(response);
+
 	}
 
 
@@ -74,16 +74,16 @@ const GamePage = ({params}) => {
 			//not finished
 			if (response.finished === false) {
 				//post request to start the game
-				console.log('start game');
+
             	// response = await fetchStartPlayTournament(identical.id);
 				// setLeftNickname(response);
-				// console.log(response);
+
 			} else
 			{
 				redirectFinishedTournament();
 			}
           } catch (error) {
-            console.log('Error:', error);
+
           }
         };
         fetchTournaments();
@@ -107,7 +107,7 @@ const GamePage = ({params}) => {
 					</div>
 						<div className="vs-section">
 							<div className="vs-image mt-4">
-								<Image className="max-sm:w-8 " src="/vs.svg" alt="vs" width={70} height={70} />
+								<img className="max-sm:w-8 " src="/vs.svg" alt="vs" width={70} height={70} />
 							</div>
 							<CountdownTimer className='w-full h-auto flex justify-center  max-sm:text-sm' />
 							<div className='w-full h-auto flex flex-col justify-center items-center text-xl max-sm:text-sm text-red-600' >

@@ -2,14 +2,11 @@ import axios from 'axios';
 
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/game/',
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/game/`,
     timeout: 10000,
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
-    },
-    validateStatus: function (status) {
-        return status < 500;
     }
 });
 
@@ -33,8 +30,8 @@ export const apiPlayRegularGame = async () => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };
 
@@ -56,7 +53,7 @@ export const apiPlayTournamentGame = async (tournaments_id=-1) => {
         }
     }
     finally {
-        console.log("--response--");
-        console.log(data);
+
+
     }
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from '@/Styles/game/connect_four/MyGrid.module.css'
+import styles from '@/styles/game/connect_four/MyGrid.module.css'
 import { Modal } from '@/components/modals/Modal';
 import { useRouter } from "next/navigation";
 
@@ -203,7 +203,7 @@ const MyGrid = ({username}) => {
     const handleClick = (index) => {
         if (yetCelebrated)
             return;
-        console.log('clicked', index);
+
         let column = index % 7;
         let row = 5;
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from '@/Styles/game/connect_four/MyGrid.module.css'
+import styles from '@/styles/game/connect_four/MyGrid.module.css'
 import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 import './mypage.css'
 
@@ -47,7 +47,7 @@ const MyGrid = () => {
         if (lastMessage) {
             try {
                 const data = JSON.parse(lastMessage.data);
-                // console.log("data from waiting page ", data);
+
                 switch (data.status) {
                     case 'GAME_DATA':
                         // setPlayerId(data.your_id);
@@ -62,19 +62,19 @@ const MyGrid = () => {
                         // setTimer(30);
                         break;
                     case 'TIMER_UPDATE':
-                        // console.log("timer update", data.time);
+
                         setTimer(data.time);
                         break;
                     case 'WINNER':
                         celebration(data.winner_color);
                         break;
                     case 'TURN_CHANGE':
-                        console.log("current turn ------>  ", data.current_turn);
+
                         setYourTurn(data.current_turn);
                         break;
                 }
             } catch (error) {
-                console.log('Failed to parse lastMessage:', error);
+
             }
         }
     }, [lastMessage]);

@@ -37,7 +37,7 @@ export default function ResetPassword() {
 			toast.error('Passwords do not match');
 			return;
 		}
-		console.log("here is the token", token);
+
 		try {
 			const res = await postData('/reset-password', {
 				new_password: formData.newPassword,
@@ -53,8 +53,8 @@ export default function ResetPassword() {
 				}
 			else
 			{
-				console.log("Failed to change password ", res?.response?.data);
-				toast.error(res?.response?.message);
+
+				toast.error(res?.response?.message || "Failed to change password, Invalid token or link");
 
 			}
 		}
