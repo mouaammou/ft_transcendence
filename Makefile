@@ -21,6 +21,7 @@ down:
 .PHONY: clean
 clean:
 	docker compose -f $(COMPOSE_FILE) down -v --rmi all
+	docker volume prune -f
 
 .PHONY: logs
 logs:
