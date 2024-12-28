@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import { useAuth } from '@/components/auth/loginContext.jsx';
 
 import { getData } from "@/services/apiCalls";
 import useNotificationContext from '@/components/navbar/useNotificationContext';
@@ -20,14 +21,16 @@ const Friends = () => {
     const [modalMessage, setModalMessage] = useState('');
     const [msgDescription, setMsgDescription] = useState('');
 
+
+    const {setSelectedUser} = useAuth();
     const handleFriendClick = (friend) => {
         setSelectedFriend(friend);
     }
 
     const sendGameInvitation = () => {
         if (selectedFriend?.id) {
-
-
+            console.log('sending game invitation to: ', selectedFriend);
+            setSelectedUser(selectedFriend);
             sendMessage(JSON.stringify({
                 type: NOTIFICATION_TYPES.INVITE_GAME,
                 to_user_id: selectedFriend.id,

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
 import { useAuth } from '@/components/auth/loginContext';
@@ -16,8 +16,9 @@ const AuthCallback = () => {
         requestMade.current = true;
 
         try {
-            let query = `code=${code}`;
-            const response = await getData(`auth/callback/42?${query}`);
+            const query = `code=${code}`;
+            // Remove leading slash from endpoint
+            const response = await getData('auth/callback/42?' + query);
             
             if (response.status === 200 || response.status === 201) {
                 if (response.data?.totp) {
@@ -28,12 +29,16 @@ const AuthCallback = () => {
                 }
             }
         } catch (error) {
+            console.error('Auth callback error:', error);
             router.push('/500');
         }
     };
     
     useEffect(() => {
-        if (!code) return;
+        if (!code) {
+            router.push('/login');
+            return;
+        }
         fetchTokens();
 
         return () => {

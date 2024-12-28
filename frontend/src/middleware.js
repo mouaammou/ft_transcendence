@@ -12,6 +12,11 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL("/2fa", request.url));
   }
 
+  //if the request is /, then redirect to /login if not authenticated
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
   const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
   const isRoot = request.nextUrl.pathname === "/";
 

@@ -1,15 +1,14 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
-
     return [
       {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PRIVATE_BACKEND_API_URL}/:path*`,
+        source: '/backend/:path*',
+        destination: 'http://backend:8000/:path*',
       },
     ];
   },
 };
-
 
 export default nextConfig;

@@ -27,7 +27,7 @@ const GAME_MESSAGES = {
 };
 
 const WaitingFriendPage = () => {
-  const { profileData: userData } = useAuth();
+  const { profileData: userData, selectedUser } = useAuth();
   const [myFriend, setMyFriend] = useState(null);
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -99,14 +99,11 @@ const WaitingFriendPage = () => {
   }, [lastMessage, handleGameMessage]);
 
   useEffect(() => {
-    const selectedFriend = localStorage.getItem('selectedFriend');
-    if (selectedFriend) {
       try {
-        setMyFriend(JSON.parse(selectedFriend));
+        setMyFriend(selectedUser);
       } catch (error) {
 
       }
-    }
   }, []);
 
   useEffect(() => {

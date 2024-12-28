@@ -489,7 +489,7 @@ export const ChatProvider = ({ children }) => {
 
         }
 
-        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/chat`);
+        const ws = new WebSocket(`wss://localhost/ws/chat`);
 
         ws.onopen = () => {
 
