@@ -72,7 +72,8 @@ const Profile = () => {
 	}, []);
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-			const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/pongstats/${userId}`, {
+			// const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://localhost';
+			const response = await fetch(`https://localhost/backend/pongstats/${userId}`, {
 				credentials: 'include', // Include cookies (credentials)
 				headers: {
 					'Content-Type': 'application/json',

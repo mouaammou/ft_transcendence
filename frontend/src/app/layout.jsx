@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<WebSocketProvider url={`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/online/`}>
+				<WebSocketProvider url={`wss://localhost/ws/online/`}>
 					<GlobalWebSocketProvider >
 						<ConnectFourWebSocketProvider > {/* unmounted ?? */}
 							{/* Single WebSocketProvider: Use a single WebSocketProvider to manage multiple WebSocket connections internally,  */}

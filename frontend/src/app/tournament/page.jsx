@@ -9,7 +9,8 @@ const TournamentList = () => {
   // Fetch all tournaments
   const fetchTournaments = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/game/local-tournaments/`, {
+      // const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://localhost';
+      const response = await fetch(`https://localhost/backend/game/local-tournaments/`, {
         method: 'GET',
       });
 

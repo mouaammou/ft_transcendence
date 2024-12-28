@@ -30,15 +30,16 @@ services:
       context: ./frontend
     hostname: frontend
     container_name: frontend
-    # ports:
-    #   - "3000:3000"
     restart: on-failure
     networks:
       - ft_transcendence
     env_file:
       - .env
     volumes:
-      - ./frontend:/frontend
+      - ./frontend/src:/frontend/src
+      - ./frontend/public:/frontend/public
+      - /frontend/node_modules
+      - /frontend/.next
 
   backend:
     build:

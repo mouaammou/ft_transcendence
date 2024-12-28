@@ -4,7 +4,7 @@ import YouWin from '@/components/modals/YouWin';
 import YouLose from '@/components/modals/YouLose';
 import { useRouter } from 'next/navigation';
 import react from '@heroicons/react';
-import style from '@/Styles/game/game.module.css';
+import style from '@/styles/game/game.module.css';
 
 export default function PongBot({ score1, score2, setScore1, setScore2 }) {
   const canvasRef = useRef(null);

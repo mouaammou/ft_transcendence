@@ -37,7 +37,7 @@ exec:
 
 .PHONY: prune
 prune:
-	docker container prune -f
+	docker system prune -a --volumes -f
 
 
 .PHONY: all
