@@ -124,7 +124,7 @@ class EventLoopManager:
         except: pass
 
     
-    @classmethod
+    @classmethod 
     def stop(cls, channel_name):
         game_obj = cls.runing.get(channel_name)
         if game_obj:

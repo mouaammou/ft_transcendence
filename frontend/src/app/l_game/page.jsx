@@ -11,6 +11,8 @@ import { FaUser } from 'react-icons/fa';
 import { MdScoreboard } from "react-icons/md";
 import { apiPlayRegularGame } from '@/services/gameApi';
 import { MdOutlineSportsScore } from "react-icons/md";
+// import { LoadingComponent } from '@/components/multipleStepLoader/MultipleStepLoader';
+
 
 
 
@@ -93,7 +95,7 @@ const GamePage = () => {
 				</div>
 				<div
 					onClick={handlePlayClick}
-					className="mt-16 flex justify-center items-center max-w-96 w-full max-sm:w-fit max-sm:text-sm h-fit mx-auto custom-button "
+					className="mt-16 max-md:mt-2 flex justify-center items-center max-w-96 w-full max-sm:w-fit max-sm:text-sm h-fit mx-auto custom-button "
 				>
 					Play
 				</div>

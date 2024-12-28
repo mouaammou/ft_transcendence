@@ -6,14 +6,16 @@ from datetime import timedelta
 load_dotenv()
 import certifi
 
+
 os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', 'http://localhost:8000')
-BACKEND_BASE_URL = os.environ.get('BACKEND_BASE_URL', os.getenv("NEXT_PUBLIC_BACKEND_API_URL_MEDIA"))
+BACKEND_BASE_URL = os.getenv("NEXT_PUBLIC_BACKEND_API_URL")
+BACKEND_BASE_URL_MEDIA = os.getenv("NEXT_PUBLIC_BACKEND_API_URL_MEDIA")
 
-
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -83,7 +85,7 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 # Frontend URL for reset link
-FRONTEND_URL = os.getenv('FRONTEND_URL', default='http://localhost:3000')
+FRONTEND_URL = os.getenv('FRONTEND_URL', default='https://localhost')
 # Create token expiry time
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 

@@ -19,7 +19,7 @@ output events:
 """
 
 import asyncio
-  
+
 
 # DONT FORGET: DO NOT UPDATE THE GAME ON DISCONNECTION
 
@@ -93,3 +93,4 @@ class LocalGameDisconnection:
         self._outside_callback = None
         self._outside_callback_args = list()
         self._outside_callback_kwargs = dict()
+
