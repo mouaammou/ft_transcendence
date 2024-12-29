@@ -159,25 +159,25 @@ h6 {
 /* final componenets */
 
 .custom-card {
-	@apply bg-gray-800 p-4 rounded-lg shadow-[3px_3px_#fafafa] border-2 border-white;
+	@apply bg-gray-800 p-4 rounded-xl shadow-[3px_3px_#fafafa] border-2 border-white;
 }
 
 .custom-button {
-	@apply bg-gray-800 px-4 py-2 text-white rounded-lg text-lg
+	@apply bg-gray-800 px-4 py-2 text-white rounded-xl text-lg
 	capitalize border-2 border-white  active:translate-x-[3px]
 	hover:border-blue-400 hover:shadow-[3px_3px_#60a5fa] hover:text-gray-200
 	active:translate-y-[3px] active:shadow-none shadow-[3px_3px_#fafafa] duration-75;
 }
 
 .custom-button-error {
-	@apply bg-gray-800 px-4 py-2 text-white rounded-lg text-lg
+	@apply bg-gray-800 px-4 py-2 text-white rounded-xl text-lg
 	capitalize border-2 border-red-600  active:translate-x-[3px]
 	hover:border-blue-400 hover:shadow-[3px_3px_#60a5fa]
 	active:translate-y-[3px] active:shadow-none shadow-[3px_3px_#dc2626] duration-75;
 }
 
 .custom-button-secondary {
-	@apply bg-gray-800 px-4 py-2 text-gray-400 rounded-lg text-lg
+	@apply bg-gray-800 px-4 py-2 text-gray-400 rounded-xl text-lg
 	capitalize border-2 border-gray-400  active:translate-x-[3px]
 	hover:border-blue-400 hover:shadow-[3px_3px_#60a5fa]
 	active:translate-y-[3px] active:shadow-none shadow-[3px_3px_#9ca3af] duration-75;
@@ -186,14 +186,14 @@ h6 {
 .custom-input {
 	@apply placeholder:font-light disabled:cursor-not-allowed
 	placeholder:text-gray-400 placeholder:lowercase  bg-gray-800
-	px-4 py-2 text-white rounded-lg text-lg border-2 border-white
+	px-4 py-2 text-white rounded-xl text-lg border-2 border-white
 	focus:border-blue-400 focus:shadow-[3px_3px_#60a5fa] focus:duration-75 outline-none;
 }
 
 .custom-input-error {
 	@apply placeholder:font-light disabled:cursor-not-allowed
 	placeholder:text-gray-400 placeholder:lowercase  bg-gray-800
-	px-4 py-2 text-white rounded-lg text-lg border-2 border-red-600
+	px-4 py-2 text-white rounded-xl text-lg border-2 border-red-600
 	focus:shadow-[3px_3px_#dc2626] focus:duration-75 outline-none;
 }
 @layer utilities {

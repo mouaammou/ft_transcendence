@@ -218,22 +218,6 @@ const UserCart = ({ user, sendFriendRequest}) => {
 							View friend profile
 						</span>
 					</Link>
-					<Link href="/mode"
-						className="flex items-center w-full px-6 py-3 rounded-2xl
-								bg-gray-700/50 hover:bg-gray-600/50 
-								text-gray-200 
-								transition-all duration-200
-								group focus:outline-none focus:ring-2 focus:ring-blue-500"
-					>
-						<span className="flex items-center justify-center w-8 h-8 
-									text-gray-300 group-hover:text-white
-									transition-colors duration-200">
-							<FaGamepad className="text-xl" />
-						</span>
-						<span className="flex-1 text-center text-sm font-medium">
-							Invite to game
-						</span>
-					</Link>
 					<Link href="/chat"
 						className="flex items-center w-full px-6 py-3 rounded-2xl
 								bg-gray-700/50 hover:bg-gray-600/50 

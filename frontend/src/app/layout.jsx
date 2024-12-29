@@ -4,8 +4,6 @@ import { Inter } from 'next/font/google';
 import { LoginProvider, useAuth } from '@components/auth/loginContext';
 import { WebSocketProvider } from '@/components/websocket/websocketContext';
 import { NotificationProvider } from '@components/navbar/useNotificationContext';
-import { GlobalWebSocketProvider } from '@/utils/WebSocketManager';
-import { ConnectFourWebSocketProvider } from '@/utils/FourGameWebSocketManager';
 import MainLayout from '@/components/main/main-layout';
 
 import '@/styles/globals.css';
@@ -23,16 +21,11 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body className={inter.className}>
 				<WebSocketProvider url={`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/online/`}>
-					<GlobalWebSocketProvider >
-						<ConnectFourWebSocketProvider > {/* unmounted ?? */}
-							{/* Single WebSocketProvider: Use a single WebSocketProvider to manage multiple WebSocket connections internally,  */}
-							<LoginProvider>
-								<NotificationProvider>
-									<MainLayout children={children} />
-								</NotificationProvider>
-							</LoginProvider>
-						</ConnectFourWebSocketProvider>
-					</GlobalWebSocketProvider>
+					<LoginProvider>
+						<NotificationProvider>
+							<MainLayout children={children} />
+						</NotificationProvider>
+					</LoginProvider>
 				</WebSocketProvider>
 			</body>
 		</html>

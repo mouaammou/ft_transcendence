@@ -7,7 +7,6 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 import { useDebounce } from 'use-debounce';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import { all } from 'axios';
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
@@ -293,8 +292,6 @@ export const ChatProvider = ({ children }) => {
 
         if (selectedUserStatus === 'blocking' || selectedUserStatus === 'blocked')
         {
-
-
             setFriendStatusRequest('blocked');
         }
         else
@@ -411,41 +408,36 @@ export const ChatProvider = ({ children }) => {
 
     // ************************ Handle keypress event and typing indication ************************
 
-        const handleTyping = () => {
+    const handleTyping = () => {
+        if (selectedUser && socket) {
+            const typingData = {
+                sender: currentUser.username,
+                receiver: selectedUser.username,
+                typing: true,
+            };
+            socket.send(JSON.stringify(typingData));
+        }
+
+            // Clear the existing typing timeout if user continues typing
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Set a timeout to stop typing after 2 seconds of inactivity
+        typingTimeoutRef.current = setTimeout(() => {
             if (selectedUser && socket) {
-                const typingData = {
+                const stopTypingData = {
                     sender: currentUser.username,
                     receiver: selectedUser.username,
-                    typing: true,
+                    typing: false,
                 };
-                socket.send(JSON.stringify(typingData));
+                socket.send(JSON.stringify(stopTypingData));
             }
-
-             // Clear the existing typing timeout if user continues typing
-            if (typingTimeoutRef.current) {
-                clearTimeout(typingTimeoutRef.current);
-            }
-
-            // Set a timeout to stop typing after 2 seconds of inactivity
-            typingTimeoutRef.current = setTimeout(() => {
-                if (selectedUser && socket) {
-                    const stopTypingData = {
-                        sender: currentUser.username,
-                        receiver: selectedUser.username,
-                        typing: false,
-                    };
-                    socket.send(JSON.stringify(stopTypingData));
-                }
-            }, 2000);
-        };
+        }, 2000);
+    };
 
 
     const handleKeyPress = (event) => {
-        
-        if (friendStatusRequest === 'blocked') {
-
-            return;
-        }
         if (event.key === 'Enter') {
             event.preventDefault();
             handleSendMessage();
@@ -457,7 +449,7 @@ export const ChatProvider = ({ children }) => {
     };
     // ************************ end ***********************
 
-    // *********** end old methode ********
+    // *********** updateLastMessage ********
 
     const updateLastMessage = (userId, message, is_read, timestamp) => {
         setAllUsers((prevUsers) =>
@@ -651,13 +643,12 @@ export const ChatProvider = ({ children }) => {
 
     // ************************ Manage WebSocket connection based on selected user ************************
 
-        useEffect(() => {
+    useEffect(() => {
         connectWebSocket();
         // Cleanup WebSocket on unmount
         return () => {
         if (socket) {
             socket.close();
-
             setSocket(null);
         }
         selectedUserRef.current = null;
