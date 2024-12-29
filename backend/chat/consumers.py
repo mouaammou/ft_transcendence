@@ -44,18 +44,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         receiver = await self.get_user_by_username(receiver_username)
 
-        # Handle the message
-        if message and receiver:
+        # Retrieve the friendship object
+        if receiver:
             user_id = self.user.id
             friend_id = receiver.id
-            
+
             friendship = await sync_to_async(lambda: Friendship.objects.filter(
                 Q(sender_id=user_id, receiver_id=friend_id) |
                 Q(sender_id=friend_id, receiver_id=user_id)
             ).first())()
-            
-            if friendship and friendship.status != 'accepted':
+
+            if not friendship or friendship.status != 'accepted':
                 return
+
+        # Handle the message
+        if message and receiver:
             await self.save_message(self.user, receiver, message)
             await self.send_message_to_groups(self.user.id, receiver.id, receiver_username, message)
 
@@ -79,10 +82,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     lambda: Message.objects.filter(sender=contact_user, receiver=self.user, is_read=False).exists()
                 )()
 
-                if unread_messages_exist:
-                    await self.update_message_read_status(self.user, contact_user)
-                    # Notify sender and receiver
-                    await self.send_mark_read_status(contact_user.id, contact_username)
+                # if unread_messages_exist:
+                #     await self.update_message_read_status(self.user, contact_user)
+                #     # Notify sender and receiver
+                #     await self.send_mark_read_status(contact_user.id, contact_username)
+
+                # test
+                if not unread_messages_exist:
+                    return  # No unread messages, do not display check marks
+
+                await self.update_message_read_status(self.user, contact_user)
+                # Notify sender and receiver
+                await self.send_mark_read_status(contact_user.id, contact_username)
             except Exception as e:
                 logger.error(f"Error marking messages as read: {e}")
         
