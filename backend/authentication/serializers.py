@@ -1,3 +1,5 @@
+from .models import Friendship
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from .models import CustomUser, Friendship, Notification
 from rest_framework import serializers
@@ -12,17 +14,14 @@ from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.conf import settings
 from datetime import datetime, timedelta
-from  game.models import GameHistory
-from django.db.models import Q 
+from game.models import GameHistory
+from django.db.models import Q
 import uuid
 
 User = get_user_model()
 
-#============= Friendship Serializer +++++++++++++++
+# ============= Friendship Serializer +++++++++++++++
 
-from rest_framework import serializers
-from django.db.models import Q
-from .models import Friendship
 
 class UserWithStatusSerializer(serializers.Serializer):
 	id = serializers.IntegerField(source='friend.id')
@@ -36,9 +35,9 @@ class UserWithStatusSerializer(serializers.Serializer):
 	received_status = serializers.SerializerMethodField()
 
 	class Meta:
-		fields = ['id', 'first_name', 'last_name', 'username', 'email', 
+		fields = ['id', 'first_name', 'last_name', 'username', 'email',
 				  'avatar', 'status', 'friendship_status', 'received_status']
-	
+
 	# def get_avatar(self, obj):
 	# 	print('+==========xxxxxxxxxx===========+')
 	# 	print(obj)
@@ -50,7 +49,8 @@ class UserWithStatusSerializer(serializers.Serializer):
 	def get_friendship_status(self, obj):
 		friendships = Friendship.objects.filter(
 			Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
-			Q(sender=self.context['request'].customUser, receiver=obj['friend'])
+			Q(sender=self.context['request'].customUser,
+			  receiver=obj['friend'])
 		)
 		if friendships.exists():
 			return friendships.first().status
@@ -59,7 +59,8 @@ class UserWithStatusSerializer(serializers.Serializer):
 	def get_received_status(self, obj):
 		friendships = Friendship.objects.filter(
 			Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
-			Q(sender=self.context['request'].customUser, receiver=obj['friend'])
+			Q(sender=self.context['request'].customUser,
+			  receiver=obj['friend'])
 		)
 		if friendships.exists():
 			friendship = friendships.first()
@@ -74,14 +75,14 @@ class UserWithStatusSerializer(serializers.Serializer):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
 			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		else:
-			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
 		# print(representation)
 		# print('+=====================+')
 		return representation
 	# end Friendship Serializer ================
 
-#-------------- Notificaion Serializer ================#
+# -------------- Notificaion Serializer ================#
+
+
 class NotificationSerializer(serializers.ModelSerializer):
 	username = serializers.CharField(source='sender.username', read_only=True)
 	avatar = serializers.ImageField(source='sender.avatar', read_only=True)
@@ -93,18 +94,18 @@ class NotificationSerializer(serializers.ModelSerializer):
 			'message', 'created_at', 'is_read', 'notif_type', 'notif_status'
 		)
 		read_only_fields = ['created_at']
-	
+
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		else:
-			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
 		return representation
 
-#-------------- # Notificaion Serializer ================#
+# -------------- # Notificaion Serializer ================#
 
-#============= friendship Serializer +++++++++++++++
+# ============= friendship Serializer +++++++++++++++
+
+
 class FriendsSerializer(serializers.ModelSerializer):
 	sender = serializers.SerializerMethodField()
 	receiver = serializers.SerializerMethodField()
@@ -116,7 +117,8 @@ class FriendsSerializer(serializers.ModelSerializer):
 
 	def validate(self, data):
 		if data['sender'] == data['receiver']:
-			raise serializers.ValidationError("Sender and receiver cannot be the same user.")
+			raise serializers.ValidationError(
+				"Sender and receiver cannot be the same user.")
 		if not data.get('receiver'):
 			raise serializers.ValidationError("Receiver is not provided!")
 		return data
@@ -125,8 +127,9 @@ class FriendsSerializer(serializers.ModelSerializer):
 		user = UserSerializer(user).data
 		return {
 			'username': user.get('username'),
-			'avatar': user.get('avatar')  # Assuming avatar is an ImageField
-		}	
+			# Assuming avatar is an ImageField
+			'avatar': user.get('avatar')
+		}
 
 	def get_sender(self, obj):
 		return self.get_user_data(obj.sender)
@@ -135,47 +138,50 @@ class FriendsSerializer(serializers.ModelSerializer):
 		return self.get_user_data(obj.receiver)
 # end friendship Serializer ================
 
-#============= CustomeUser Serializer +++++++++++++++
+# ============= CustomeUser Serializer +++++++++++++++
+
+
 class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ("id", "first_name", "last_name", "username", "email", "password", "avatar", "status")
+		fields = ("id", "first_name", "last_name", "username",
+				  "email", "password", "avatar", "status")
 		extra_kwargs = {"username": {"read_only": True}}
 		extra_kwargs = {"password": {"write_only": True}}
 
-	def create(self, validated_data):#maybe you can use the baseMOdelManger for this ??
-		return CustomUser.objects.create_user(**validated_data)#use it for hash the password
+	def create(self, validated_data):  # maybe you can use the baseMOdelManger for this ??
+		# use it for hash the password
+		return CustomUser.objects.create_user(**validated_data)
 
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		else:
-			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
 		return representation
 # end CustomeUser Serializer ================
 
-#============= CustomeUser Update Serializer +++++++++++++++
+# ============= CustomeUser Update Serializer +++++++++++++++
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CustomUser
-		fields = ['username', 'email', 'first_name', 'last_name', 'password', 'avatar']
+		fields = ['username', 'email', 'first_name',
+				  'last_name', 'password', 'avatar']
 		extra_kwargs = {
-				'first_name': {'required': False},
-				'last_name': {'required': False},
-				'username': {'required': False},
-				'email': {'required': False},
-				'avatar': {'required': False},
-				'password': {'write_only': True, 'required': False}
+			'first_name': {'required': False},
+			'last_name': {'required': False},
+			'username': {'required': False},
+			'email': {'required': False},
+			'avatar': {'required': False},
+			'password': {'write_only': True, 'required': False}
 		}
 
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		else:
-			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
 		return representation
 
 	def update(self, instance, validated_data):
@@ -183,15 +189,15 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 		avatar = validated_data.get('avatar')
 		# If an avatar is provided and is empty, don't update it
 		if 'avatar' in validated_data and (avatar is None or not avatar):
-				validated_data.pop('avatar')
+			validated_data.pop('avatar')
 
-		# Update fields other than password 
+		# Update fields other than password
 		for attr, value in validated_data.items():
-				if attr == 'password':
-					instance.set_password(value)  # Hash the password
-				else:
-					setattr(instance, attr, value)  # Update other fields
-		
+			if attr == 'password':
+				instance.set_password(value)  # Hash the password
+			else:
+				setattr(instance, attr, value)  # Update other fields
+
 		instance.save()  # Save the updated instance
 		return instance
 # end CustomeUser Update Serializer ================
@@ -205,14 +211,15 @@ class ForgotPasswordSerializer(serializers.Serializer):
 		try:
 			self.user = User.objects.get(email=value)
 		except User.DoesNotExist:
-			raise serializers.ValidationError("No user found with this email address")
+			raise serializers.ValidationError(
+				"No user found with this email address")
 		return value
 
 	def save(self):
 		# Generate unique token
 		token = default_token_generator.make_token(self.user)
 		uid = urlsafe_base64_encode(force_bytes(self.user.pk))
-		
+
 		# Save token to user
 		self.user.reset_password_token = token
 		self.user.reset_password_expire = datetime.now() + timedelta(hours=1)
@@ -232,11 +239,13 @@ class ForgotPasswordSerializer(serializers.Serializer):
 ########################## password forget ############################
 
 ########################## password reset ############################
+
+
 class ResetPasswordSerializer(serializers.Serializer):
 	token = serializers.CharField()
 	uidb64 = serializers.CharField()
 	new_password = serializers.CharField(min_length=1, write_only=True)
-	
+
 	def validate(self, data):
 		try:
 			uid = urlsafe_base64_decode(data['uidb64']).decode()
@@ -262,6 +271,7 @@ class MinimiseUser(serializers.ModelSerializer):
 	class Meta:
 		model = CustomUser
 		fields = ['id', 'username', 'avatar']
+
 
 class GameSerializer(serializers.ModelSerializer):
 	player_1 = MinimiseUser()
