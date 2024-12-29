@@ -6,18 +6,11 @@ const GlobalWebSocket = createContext(null);
 export const GlobalWebSocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
-    const { sendMessage, lastMessage, readyState, lastJsonMessage } = useWebSocket( `wss://localhost/ws/global/`, {
+    const { sendMessage, lastMessage, readyState, lastJsonMessage } = useWebSocket( `${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/global/`, {
         onOpen: () => {
 
             setIsConnected(true);
         },
-        // onClose: () => {
-
-        //     setIsConnected(false);
-        // },
-        // onError: (error) => {
-
-        // },
         shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
     });
 

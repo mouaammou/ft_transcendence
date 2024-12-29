@@ -28,7 +28,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       !websocketRef.current.readyState  != WebSocket.OPEN ||
       websocketRef.current.readyState != WebSocket.CONNECTING)
     {
-      websocketRef.current = new WebSocket(`wss://localhost/ws/local/`);
+      websocketRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/local/`);
     }
   }
 

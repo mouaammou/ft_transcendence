@@ -22,7 +22,7 @@ export const postData = async (endPoint, data, headers = {}) => {
 		});
 		return response;
 	} catch (error) {
-		throw error;
+		console.log(error);
 	}
 };
 

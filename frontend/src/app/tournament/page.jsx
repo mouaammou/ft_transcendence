@@ -2,6 +2,8 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
 
 const TournamentList = () => {
   const [tournaments, setTournaments] = useState([]);
@@ -9,8 +11,7 @@ const TournamentList = () => {
   // Fetch all tournaments
   const fetchTournaments = async () => {
     try {
-      // const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://localhost';
-      const response = await fetch(`https://localhost/backend/game/local-tournaments/`, {
+      const response = await fetch(`${baseUrl}/backend/game/local-tournaments/`, {
         method: 'GET',
       });
 

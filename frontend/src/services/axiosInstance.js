@@ -1,10 +1,10 @@
 'use client';
 import axios from 'axios';
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://localhost';
 
 const axiosInstance = axios.create({
-  baseURL: `${baseURL}/backend`,  // Use the environment variable
+  baseURL: `${baseUrl}/backend`,  // Use the environment variable
   timeout: 5000,
   withCredentials: true,
   headers: {

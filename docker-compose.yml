@@ -28,6 +28,13 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        NEXT_PRIVATE_BACKEND_API_URL: ${NEXT_PRIVATE_BACKEND_API_URL}
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+        NEXT_PUBLIC_BACKEND_API_URL: ${NEXT_PUBLIC_BACKEND_API_URL}
+        NEXT_PUBLIC_BACKEND_API_URL_MEDIA: ${NEXT_PUBLIC_BACKEND_API_URL_MEDIA}
+        NEXT_PUBLIC_WEBSOCKET_API_URL: ${NEXT_PUBLIC_WEBSOCKET_API_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     hostname: frontend
     container_name: frontend
     restart: on-failure
@@ -35,11 +42,11 @@ services:
       - ft_transcendence
     env_file:
       - .env
-    volumes:
-      - ./frontend/src:/frontend/src
-      - ./frontend/public:/frontend/public
-      - /frontend/node_modules
-      - /frontend/.next
+    # volumes:
+    #   - ./frontend/src:/frontend/src
+    #   - ./frontend/public:/frontend/public
+    #   - /frontend/node_modules
+    #   - /frontend/.next
 
   backend:
     build:

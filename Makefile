@@ -1,16 +1,17 @@
 COMPOSE_FILE = docker-compose.yml
+ENV_FILE = .env
 
 .PHONY: all
 all: build up
 
 .PHONY: build
 build:
-	docker compose -f $(COMPOSE_FILE) build
+	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) build
 
 
 .PHONY: up
 up:
-	docker compose -f $(COMPOSE_FILE) up -d --build
+	docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d --build
 
 
 .PHONY: down

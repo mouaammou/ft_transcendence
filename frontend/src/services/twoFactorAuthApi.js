@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const api = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/backend/2fa/`,
+    baseURL: `${baseUrl}/backend/2fa/`,
     timeout: 10000,
     withCredentials: true,
     headers: {

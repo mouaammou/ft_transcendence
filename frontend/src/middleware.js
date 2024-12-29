@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+
 export async function middleware(request) {
   const access_token = request.cookies.get('access_token');
   const refresh_token = request.cookies.get('refresh_token');

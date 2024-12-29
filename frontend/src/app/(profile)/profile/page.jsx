@@ -14,6 +14,8 @@ import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContai
 import {useRouter} from 'next/navigation';
 
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
 const Profile = () => {
 	const { profileData: data } = useAuth();
 	const [matches, setMatches] = useState([]);
@@ -72,8 +74,7 @@ const Profile = () => {
 	}, []);
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-			// const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://localhost';
-			const response = await fetch(`https://localhost/backend/pongstats/${userId}`, {
+			const response = await fetch(`${baseUrl}/backend/pongstats/${userId}`, {
 				credentials: 'include', // Include cookies (credentials)
 				headers: {
 					'Content-Type': 'application/json',
