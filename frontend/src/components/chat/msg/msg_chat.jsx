@@ -57,7 +57,6 @@ const Msg_chat = () => {
 				to_user_id: selectedUser.id,
 			}));
 		}
-		localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
 		router.push('/waiting_friends_game');
 
 	};

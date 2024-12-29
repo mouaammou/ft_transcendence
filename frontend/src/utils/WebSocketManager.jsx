@@ -11,13 +11,6 @@ export const GlobalWebSocketProvider = ({ children }) => {
 
             setIsConnected(true);
         },
-        // onClose: () => {
-
-        //     setIsConnected(false);
-        // },
-        // onError: (error) => {
-
-        // },
         shouldReconnect: (closeEvent) => true, // Will attempt to reconnect on all close events
     });
 
