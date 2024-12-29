@@ -25,16 +25,19 @@ const GamePage = () => {
 	const [rightNickname, setRightNickname] = useState("right player");
 	const [title, setTitle] = useState("Local Game");
 	const [playStart, setPlayStart] = useState(false);
+	const [disabled, setDisabled] = useState(false);
+
 
 
 	const handlePlayClick = async () => {
 		const response = await apiPlayRegularGame();
 		setPlayStart(true);
+		setDisabled(true);
 	}
 
 	return (
 		<>
-		<TopBar />
+		<TopBar disable={disabled} />
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">

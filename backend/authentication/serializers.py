@@ -61,9 +61,13 @@ class UserWithStatusSerializer(serializers.Serializer):
 		return None
 
 	def to_representation(self, instance):
+		print('+==========d===========+')
+		print(instance)
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
 			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+		print(representation)
+		print('+=====================+')
 		return representation
 	# end Friendship Serializer ================
 

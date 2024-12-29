@@ -28,6 +28,14 @@ clean:
 logs:
 	docker compose -f $(COMPOSE_FILE) logs -f
 
+.PHONY: frontend_logs
+frontend_logs:
+	docker compose -f $(COMPOSE_FILE) logs -f frontend
+
+.PHONY: backend_logs
+backend_logs:
+	docker compose -f $(COMPOSE_FILE) logs -f backend
+
 .PHONY: ps
 ps:
 	docker compose -f $(COMPOSE_FILE) ps
