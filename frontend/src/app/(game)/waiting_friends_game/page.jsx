@@ -51,7 +51,7 @@ const WaitingFriendPage = () => {
     if (redirectPath) {
       setTimeout(() => {
         router.push(redirectPath);
-      }, 2000);
+      }, 5000);
     }
   }, [router]);
 
@@ -115,7 +115,7 @@ const WaitingFriendPage = () => {
   useEffect(() => {
     if (!lastJsonMessage || !selectedUser) return;
 
-    if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_GAME) {
+    if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_GAME && myFriend && myFriend.id) {
       sendMessage(JSON.stringify({
         type: 'FRIEND_GAME_REQUEST',
         player_1_id: userData?.id,
