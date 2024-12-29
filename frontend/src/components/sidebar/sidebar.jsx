@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@components/auth/loginContext';
 import { usePathname } from 'next/navigation';
-import { Home, Users, MessageCircle, Gamepad2, User, Settings, LogOut, UserPlus} from 'lucide-react';
+import { Users, MessageCircle, Gamepad2, User, Settings, LogOut, UserPlus} from 'lucide-react';
 import Link from 'next/link';
 
 export default function Sidebar() {
@@ -11,7 +11,6 @@ export default function Sidebar() {
   const { Logout, isAuth } = useAuth();
 
   const sidebarItems = [
-    { label: 'Home', icon: Home, route: '/l_game' },
     { label: 'Profile', icon: User, route: '/profile' },
     { label: 'Friends', icon: Users, route: '/friends' },
     { label: 'All Users', icon: UserPlus, route: '/allusers' },

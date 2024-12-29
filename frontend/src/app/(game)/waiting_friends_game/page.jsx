@@ -94,20 +94,26 @@ const WaitingFriendPage = () => {
       const data = JSON.parse(lastMessage.data);
       handleGameMessage(data);
     } catch (error) {
-
+      console.log('Error parsing message:', error);
     }
   }, [lastMessage, handleGameMessage]);
 
   useEffect(() => {
       try {
         setMyFriend(selectedUser);
+        if (!selectedUser) {
+          setMyFriend({
+            username: 'Friend',
+            avatar: 'defaultAvatar.svg'
+          });
+        }
       } catch (error) {
-
+        console.log('Error parsing selected friend:', error);
       }
   }, []);
 
   useEffect(() => {
-    if (!lastJsonMessage) return;
+    if (!lastJsonMessage || !selectedUser) return;
 
     if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_GAME) {
       sendMessage(JSON.stringify({
@@ -122,27 +128,23 @@ const WaitingFriendPage = () => {
     }
   }, [lastJsonMessage]);
 
-  if (!userData || !myFriend) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="bg-gray-400 bg-opacity-50 rounded-2xl max-w-md w-full p-6">
         <h1 className="text-lg md:text-2xl text-center font-balsamiq mb-12">
-          Waiting for {myFriend.username} to join
+          Waiting for {myFriend?.username} to join
         </h1>
         <div className="flex flex-col md:flex-row items-center gap-1 justify-center mb-4">
           <img 
-            src={userData.avatar} 
-            alt={`${userData.username}'s avatar`} 
+            src={userData?.avatar} 
+            alt={`${userData?.username}'s avatar`} 
             className="w-20 h-20 rounded-full bg-gray-700"
           />
           <span className="text-lg md:text-2xl font-balsamiq mx-14">VS</span>
           <div className="relative loader">
             <img 
-              src={myFriend.avatar} 
-              alt={`${myFriend.username}'s avatar`}
+              src={myFriend?.avatar} 
+              alt={`firend's avatar`}
               className="w-20 h-20 rounded-full bg-gray-700"
             />
           </div>

@@ -82,12 +82,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     lambda: Message.objects.filter(sender=contact_user, receiver=self.user, is_read=False).exists()
                 )()
 
-                # if unread_messages_exist:
-                #     await self.update_message_read_status(self.user, contact_user)
-                #     # Notify sender and receiver
-                #     await self.send_mark_read_status(contact_user.id, contact_username)
-
-                # test
                 if not unread_messages_exist:
                     return  # No unread messages, do not display check marks
 

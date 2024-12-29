@@ -7,7 +7,6 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 import { useDebounce } from 'use-debounce';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
-import { all } from 'axios';
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
@@ -439,11 +438,6 @@ export const ChatProvider = ({ children }) => {
 
 
     const handleKeyPress = (event) => {
-        
-        if (friendStatusRequest === 'blocked') {
-
-            return;
-        }
         if (event.key === 'Enter') {
             event.preventDefault();
             handleSendMessage();
