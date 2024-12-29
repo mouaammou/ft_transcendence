@@ -74,8 +74,8 @@ class UserWithStatusSerializer(serializers.Serializer):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
 			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		# else:
-		# 	representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/')
+		else:
+			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
 		# print(representation)
 		# print('+=====================+')
 		return representation
@@ -97,10 +97,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-				print()
-				print(representation['avatar'])
-				print()
 				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+		else:
+			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
 		return representation
 
 #-------------- # Notificaion Serializer ================#
@@ -152,6 +151,8 @@ class UserSerializer(serializers.ModelSerializer):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
 				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+		else:
+			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
 		return representation
 # end CustomeUser Serializer ================
 
@@ -173,6 +174,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
 				representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+		else:
+			representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/', 1)
 		return representation
 
 	def update(self, instance, validated_data):
