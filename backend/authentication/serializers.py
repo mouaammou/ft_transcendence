@@ -38,6 +38,14 @@ class UserWithStatusSerializer(serializers.Serializer):
 	class Meta:
 		fields = ['id', 'first_name', 'last_name', 'username', 'email', 
 				  'avatar', 'status', 'friendship_status', 'received_status']
+	
+	# def get_avatar(self, obj):
+	# 	print('+==========xxxxxxxxxx===========+')
+	# 	print(obj)
+	# 	avatar_url = getattr(obj['friend'], 'avatar', None)
+	# 	if avatar_url:
+	# 		return 'backendxx/' + avatar_url.url
+	# 	return None
 
 	def get_friendship_status(self, obj):
 		friendships = Friendship.objects.filter(
@@ -61,13 +69,15 @@ class UserWithStatusSerializer(serializers.Serializer):
 		return None
 
 	def to_representation(self, instance):
-		print('+==========d===========+')
-		print(instance)
+		# print('+==========d===========+')
+		# print(instance)
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
 			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
-		print(representation)
-		print('+=====================+')
+		# else:
+		# 	representation['avatar'] = representation['avatar'].replace('/media/avatars/', '/backend/media/avatars/')
+		# print(representation)
+		# print('+=====================+')
 		return representation
 	# end Friendship Serializer ================
 
