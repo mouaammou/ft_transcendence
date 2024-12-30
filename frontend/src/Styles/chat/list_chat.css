@@ -1,28 +1,9 @@
 .list_chat {
-  /* flex-grow: 0.5; */
-
   background-color: rgba(163, 218, 232, 0.2);
   border-radius: 10px;
-  /* margin: 55px 10px 55px 0px; */
-  /* width: 500px; */
-  /* flex-shrink: 0; Prevent shrinking below 400px */
-
-  /* commant */
-  /* overflow-y: auto;
-    overflow-x: hidden; */
-  /* commant */
-
   width: 25%;
-  /* width: 100%; */
   margin-right: 5px;
-  /* overflow: hidden; */
-
-  /* change responsive  */
-  /* height: 1290px; */
-  
-  /* change responsive  */
   height: 1120px;
-
 }
 
 
@@ -34,10 +15,7 @@ h2 {
 .user-chat {
   display: flex;
   align-items: center;
-  /* justify-content: space-around; */
   gap: 20%;
-  /* margin: 14px; */
-  /* padding: 20px; */
   padding: 30px;
   padding-left: 20%;
   width: 100%;
@@ -54,14 +32,7 @@ h2 {
   font-size: 30px;
 }
 
-/* change responsive  */
-/* .HiBell {
-  font-size: 35px;
-  color: white;
-} */
-
 .div-Search {
-  /* border: solid red; */
   margin: 10px;
   display: flex;
   justify-content: center;
@@ -77,7 +48,6 @@ h2 {
   border: none;
   outline: none;
   color: white;
-  /* color: white; */
 }
 
 input[type='text']:focus {
@@ -97,65 +67,8 @@ input[type='text']:focus::placeholder {
 .all-user {
   display: flex;
   justify-content: center;
-  /* add */
-
-  /* height: 700px; */
-  /* add */
-
-  /* for new test */
   height: 500px;
-  /* for new test */
-
-  /* overflow-y: auto;
-    overflow-x: hidden;
-    height: 600px; */
 }
-
-/* .all-user::-webkit-scrollbar {
-    width: 3px;
-}
-
-.all-user::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.all-user::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: linear-gradient(#642bff, #22fffb);
-} */
-
-/* Custom scrollbar styling */
-
-/* commante */
-
-/* .list_chat::-webkit-scrollbar {
-    width: 3px;
-} */
-
-/* .list_chat::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.list_chat::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: linear-gradient(#642bff, #22fffb);
-} */
-
-/* commante */
-
-/* addd just to test */
-
-/* 
-.hidden {
-    display: none;
-} */
-
-/* addd just to test */
-
-
-
 
 @media (max-width: 1800px) {
   .info-user p {
@@ -178,32 +91,8 @@ input[type='text']:focus::placeholder {
 
 @media (max-width: 1300px) {
   .list_chat {
-    /* background-color: rgba(233, 114, 131, 0.2); */
-    /* width: 400px; */
-    /*flex-shrink: 0; /* Prevent shrinking below 400px */
-    /* width: 400px; */
-    /* flex-shrink: 0; */
-    /* width: 100%; */
-    /* width: 35%; */
-
-    /* add */
-
-    /* change responsive  */
-    /* height: 1280px; */
-
-    /* change responsive  */
     height: 1120px;
-
   }
-  /* .user-chat{
-        gap: 10px;
-    } */
-
-  /* change responsive  */
-  /* .HiBell {
-    font-size: 25px;
-  } */
-
   h2 {
     text-align: center;
     margin-left: 0;
@@ -213,30 +102,14 @@ input[type='text']:focus::placeholder {
   }
   .user-chat {
     gap: 17%;
-    /* margin: 10px; */
   }
 }
 
 @media (max-width: 990px) {
   .list_chat {
     flex-grow: 1;
-    /* margin: 40px 40px 40px 0px; */
-    /* margin: 20px 20px 20px 0px; */
-    /* padding: 20px 20px 20px 0px; */
     margin-right: 0px;
-    /* margin-right: 40px; */
-    /* width: 500px; */
-    /* width: 97%; */
-    /* margin-right: 24px; */
-    /* margin: 20px 20px 20px 0px; */
-    /* height: 1175px; */
   }
-
-    /* change responsive  */
-  /* .HiBell {
-    font-size: 35px;
-  } */
-
   .user-chat{
     justify-content: space-around;
     padding-left: 0%;
@@ -251,39 +124,21 @@ input[type='text']:focus::placeholder {
 }
 @media (max-width: 800px) {
   .list_chat {
-    /* margin: 10px 10px 90px 10px; */
-    /* margin: 0px 0px 0px 0px; */
-    /* margin: 20px 20px 20px 20px; */
-    /* margin: 20px; */
-    /* width: auto; */
-    /* width: 100%; */
     margin-right: 0px;
     margin: 20px;
   }
   .user-chat {
     gap: 10px;
-    /* margin: 10px; */
-    /* margin: 10px 0px; */
-    /* margin: 10px 0px; */
-    /* margin: 10px 10px 90px 10px; */
   }
 }
 
 @media (max-width: 600px) {
   .list_chat {
     margin: 5px;
-    /*  test  */
     height: fit-content;
   }
 }
 @media (max-width: 400px) {
-  /* .user-chat{
-        gap: 10%;
-        margin: 10px;
-    } */
-  /* .list_chat{
-        margin: 5px;
-    } */
   .info-user {
     gap: 5%;
   }
@@ -292,14 +147,8 @@ input[type='text']:focus::placeholder {
     height: 50px;
   }
   .info-user p {
-    /* font-weight: bold; */
     font-size: 15px;
   }
-
-  /* change responsive  */
-  /* .HiBell {
-    font-size: 22px;
-  } */
   .user-chat {
     gap: 15%;
     margin: 20px 0px;
@@ -319,13 +168,3 @@ input[type='text']:focus::placeholder {
   }
 }
 
-/* addd just to test */
-
-/* 
-@media (max-width: 990px) {
-    .list_chat.hidden {
-        display: none;
-    }
-} */
-
-/* addd just to test */

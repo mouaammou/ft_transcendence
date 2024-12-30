@@ -74,7 +74,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
               <img
                 src={user.avatar}
                 alt={user.username}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-full"
               />
               <div 
                 className="status-indicator"

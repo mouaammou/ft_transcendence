@@ -1,39 +1,19 @@
 .UserCardAll {
   display: flex;
   flex-direction: row;
-  /* justify-content: space-around; */
   align-items: center;
-  /* gap: 20%; */
-  /* gap: 6%; */
-  /* margin: 10px 30px 10px 30px; */
-
-  /* change responsive  */
-  /* margin: 5px 30px; */
-  /* change responsive  */
   margin: 5px 0px;
   width: 100%;
-  /* end change responsive  */
-
   cursor: pointer;
-  /* transition: border 0.3s, border-radius 0.3s; */
   padding: 10px 5px;
   border: 1px solid transparent;
-  /* border-radius: 24px; */
   border-radius: 10px;
-  /* background: #060B16; */
   position: relative;
-  /* border-bottom: solid 1px; */
-  /* border: 1px solid; */
-
-  /* add  */
   height: 80px;
   gap: 5px;
-  /* width: 100%; */
-
   transition: all 0.2s ease;
   background: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
-  /* padding: 0.75rem; */
   padding: 10px;
 }
 
@@ -44,21 +24,14 @@
 
 
 .UserCardAll:hover {
-  /* border: 1px solid #ffffff; */
   transform: translateY(-3px);
-  
-  /* background-color: #5faffe; */
-  /* background-color: #1a2980; */
-  /* background-color: #3b82f680; */
-  
-  /* background-color: #041921; */
   background: rgba(255, 255, 255, 0.2);
 }
 
 /* Styling for clicked card */
 .usercard.clicked {
-  border: 1px solid #333; /* Solid border when clicked */
-  border-radius: 5px; /* Reduced border radius when clicked */
+  border: 1px solid #333;
+  border-radius: 5px;
 }
 
 .usercard-card-wrapper{
@@ -71,7 +44,6 @@
 }
 
 .usercard-card-wrapper.placeholder:hover {
-  /* transform: none; */
   transform: translateY(-3px);
   cursor: default;
 }
@@ -82,10 +54,8 @@
 
 .status {
   border: 2px solid #fff;
-  /* border-radius: 50%; */
   width: 15px;
   height: 15px;
-  /* background-color: red; */
   position: absolute;
 }
 
@@ -101,38 +71,20 @@
 
 .typing_indicator_card {
   font-style: italic;
-  /* position: absolute; */
   right: 20;
   color: #f7d3d3;
   font-weight:bold;
 }
-
-/* .img-usercard{
-    position: fixed;
-} */
-
-/* .img-usercard .status{
-    bottom: 34px;
-    left: 86px;
-} */
 
 @media (max-width: 1600px) {
   .UserCardOnline .img-usercard {
     width: 55px;
     height: 55px;
   }
-  /* .UserCardAll .img-usercard{
-        width: 45px;
-        height: 45px;
-    } */
 }
 
 @media (max-width: 1200px) {
   .UserCardAll{
-
-    /* margin: 5px 10px; */
-
-    /* change responsive  */
     margin: 5px 0px;
   }
 }
@@ -142,29 +94,16 @@
 @media (max-width: 990px) {
 
   .UserCardAll {
-  /* change responsive  */
-  /* margin: 5px 30px; */
   margin: 5px 0px;   
   }
-  /* .UserCardAll{
-        gap: 40px;
-    } */
   .UserCardOnline .img-usercard {
     width: 65px;
     height: 65px;
   }
-  /* .UserCardAll .img-usercard{
-        width: 45px;
-        height: 45px;
-    } */
 }
 @media (max-width: 400px) {
   .UserCardAll {
-    /* margin: 10px 15px; */
-    /* padding: 0px; */
     padding: 5px;
-
-    /* gap: 12%; */
     gap: 5px;
   }
 
