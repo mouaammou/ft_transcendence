@@ -35,7 +35,7 @@ class UserSerializerChat(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if representation['avatar'] and not representation['avatar'].startswith('http'):
-                representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+                representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
         return representation
 
 class FriendWithLastMessageSerializer(serializers.Serializer):

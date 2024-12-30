@@ -8,7 +8,7 @@ from psycopg2 import connect, OperationalError
 import psycopg2
 
 # Check for required environment variables
-REQUIRED_ENV_VARS = ["DATABASE_URL", "REDIS_URL", "DJANGO_SETTINGS_MODULE"]
+REQUIRED_ENV_VARS = [ "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE"]
 
 def check_environment_variables():
     for var in REQUIRED_ENV_VARS:
@@ -36,7 +36,11 @@ def wait_for_postgres():
 
 # Wait for Redis to be ready
 def wait_for_redis():
-    redis_url = os.environ.get("REDIS_URL", "redis://redis:6379/0")  # Update default URL
+    DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME') #REDIS_HOST
+    DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT') #REDIS_PORT
+    redis_url = "redis://redis:6379"  # Update default URL
+    if DOCKER_REDIS_HOSTNAME and DOCKER_REDIS_PORT:
+        redis_url = f"redis://{DOCKER_REDIS_HOSTNAME}:{DOCKER_REDIS_PORT}"
     redis_client = Redis.from_url(redis_url)
     for attempt in range(10):
         try:

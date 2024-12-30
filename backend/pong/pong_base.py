@@ -21,8 +21,8 @@ class Base:
         # old ones
         # self.window_width = 1600   
         # self.window_height = 1200
-        self.window_width = 900
-        self.window_height = 400
+        self.window_width = 900*1.5
+        self.window_height = 400*1.5
         
         self.paddle_width = 15
         self.paddle_height = self.window_height/3.5
@@ -30,9 +30,9 @@ class Base:
         
         self.ball_width = 25
         self.ball_height = self.ball_width
-        self.ball_speed = 12
+        self.ball_speed = 15
         self.max_ball_speed = 25
-        self.ball_speed_increase_factor = 0.2 
+        self.ball_speed_increase_factor = 0.5
         self.ball_start_speed = 5 # ball restart speed on score increase
         self.ball_reset_speed = self.ball_speed # for reset on ball restart
         

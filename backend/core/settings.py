@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from datetime import timedelta
+import sys
 
 load_dotenv()
 import certifi
@@ -11,21 +12,75 @@ os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# all env variables used in the project
+ALL_USED_ENV_VARS = [
+	"DOMAIN_NAME",
+	"DOCKER_REDIS_HOSTNAME",
+	"DOCKER_REDIS_PORT",
+    "SECRET_KEY",
+    "DEBUG",
+    "OAUTH42_CLIENT_ID",
+    "OAUTH42_CLIENT_SECRET",
+    "OAUTH42_REDIRECT_URI",
+    "OAUTH42_AUTH_URL",
+    "OAUTH42_TOKEN_URL",
+    "OAUTH42_USER_URL",
+    "EMAIL_HOST_USER",
+    "EMAIL_HOST_PASSWORD",
+    "POSTGRES_DB",
+	"POSTGRES_USER",
+	"POSTGRES_PASSWORD",
+    "DOCKER_POSTGRES_PORT",
+    "DOCKER_POSTGRES_HOSTNAME",
+    "DOCKER_BACKEND_PORT",
+    "DOCKER_BACKEND_HOSTNAME",
+]
 
-BACKEND_BASE_URL = os.getenv("NEXT_PUBLIC_BACKEND_API_URL")
+missing_vars = [var for var in ALL_USED_ENV_VARS if os.getenv(var) is None]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+if missing_vars:
+    print(f"Error: The following environment variables are not set: {', '.join(missing_vars)}", file=sys.stderr)
+    sys.exit(1)
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
+DOMAIN_NAME = os.getenv("DOMAIN_NAME")
+DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME')
+DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
 SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", False)
+# Set your 42 OAuth credentials
+OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
+OAUTH42_CLIENT_SECRET = os.getenv("OAUTH42_CLIENT_SECRET")
+OAUTH42_REDIRECT_URI = os.getenv("OAUTH42_REDIRECT_URI")
+OAUTH42_AUTH_URL = os.getenv("OAUTH42_AUTH_URL")
+OAUTH42_TOKEN_URL = os.getenv("OAUTH42_TOKEN_URL")
+OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False or os.getenv("DEBUG", False)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-ALLOWED_HOSTS = ['e2r8p8.1337.ma',
-				'backend',]
+POSTGRES_DB=os.getenv("POSTGRES_DB")
+POSTGRES_USER=os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD")
+DOCKER_POSTGRES_PORT=os.getenv("DOCKER_POSTGRES_PORT")
+DOCKER_POSTGRES_HOSTNAME=os.getenv("DOCKER_POSTGRES_HOSTNAME")
+
+DOCKER_BACKEND_PORT=os.getenv("DOCKER_BACKEND_PORT") #frontend will use this port to connect to backend
+DOCKER_BACKEND_HOSTNAME=os.getenv("DOCKER_BACKEND_HOSTNAME") #frontend will use this hostname to connect to backend
+
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # its is a https request from the client but it is forwarded to the backend as http request
+
+
+ALLOWED_HOSTS = [
+	DOMAIN_NAME,
+    f"{DOCKER_BACKEND_HOSTNAME}",
+]
+print("-------------------------ALLOWED_HOSTS--------------------------------")
+print(ALLOWED_HOSTS)
+print()
+
 
 AUTH_USER_MODEL = "authentication.CustomUser"
 
@@ -68,24 +123,16 @@ SIMPLE_JWT = {
 	"REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
 }
 
-# Set your 42 OAuth credentials
-OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
-OAUTH42_CLIENT_SECRET = os.getenv("OAUTH42_CLIENT_SECRET")
-OAUTH42_REDIRECT_URI = os.getenv("OAUTH42_REDIRECT_URI")
-OAUTH42_AUTH_URL = os.getenv("OAUTH42_AUTH_URL")
-OAUTH42_TOKEN_URL = os.getenv("OAUTH42_TOKEN_URL")
-OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
+
 
 ## Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-# Frontend URL for reset link
-FRONTEND_URL = os.getenv('FRONTEND_URL', default='https://localhost')
+
+
 # Create token expiry time
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
@@ -144,16 +191,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
-
-REDIS_HOST=os.getenv('REDIS_HOST')
-REDIS_PORT=os.getenv('REDIS_PORT')
-
 CHANNEL_LAYERS = {
 	'default': {
 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
 		'CONFIG': {
-			"hosts": [(REDIS_HOST, REDIS_PORT)],
-			# "hosts": [('localhost', 6379)],
+			"hosts": [(DOCKER_REDIS_HOSTNAME, DOCKER_REDIS_PORT)],
 		},
 	},
 #  'default': {
@@ -178,13 +220,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "ft_transcendence",
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'postgres',  # Use the service name defined in docker-compose.yml
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': DOCKER_POSTGRES_HOSTNAME,  # Use the service name defined in docker-compose.yml
+        'PORT': DOCKER_POSTGRES_PORT,
     }
 }
+
+print("-------------------------DATABASES--------------------------------")
+print(DATABASES)
 
 # DATABASES = {
 	
@@ -195,12 +240,12 @@ DATABASES = {
 # }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://localhost",
-    "http://localhost",
-    "http://frontend:3000",
-    "https://frontend",
+	"https://" + DOMAIN_NAME,
+	# f"http://{DOCKER_BACKEND_HOSTNAME}:{DOCKER_BACKEND_PORT}",
 ]
 
+print("-------------------------CORS_ALLOWED_ORIGINS--------------------------------")
+print(CORS_ALLOWED_ORIGINS)
 
 CORS_ALLOW_METHODS = [
 	'DELETE',

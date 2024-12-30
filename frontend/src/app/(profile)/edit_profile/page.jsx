@@ -143,7 +143,7 @@ const EditProfile = () => {
 						<div className="relative group">
 							<div className="w-40 h-40 rounded-full overflow-hidden border-4 border-blue-100 shadow-lg">
 								<img
-								src={data.avatar || '/default-avatar.png'}
+								src={data.avatar || '/def_prof.jpeg'}
 								alt="Profile"
 								className="w-full h-full object-cover"
 								/>

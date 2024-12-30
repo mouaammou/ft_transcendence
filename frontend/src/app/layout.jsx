@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<WebSocketProvider url={`${process.env.NEXT_PUBLIC_WEBSOCKET_API_URL}/ws/online/`}>
+				<WebSocketProvider url={`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/ws/online/`}>
 					<LoginProvider>
 						<NotificationProvider>
 							<MainLayout children={children} />
