@@ -14,7 +14,7 @@ import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContai
 import {useRouter} from 'next/navigation';
 
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 const Profile = () => {
 	const { profileData: data } = useAuth();

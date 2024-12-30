@@ -59,8 +59,7 @@ class UserWithStatusSerializer(serializers.Serializer):
 	def get_received_status(self, obj):
 		friendships = Friendship.objects.filter(
 			Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
-			Q(sender=self.context['request'].customUser,
-			  receiver=obj['friend'])
+			Q(sender=self.context['request'].customUser, receiver=obj['friend'])
 		)
 		if friendships.exists():
 			friendship = friendships.first()
@@ -74,7 +73,7 @@ class UserWithStatusSerializer(serializers.Serializer):
 		# print(instance)
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+			representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
 		# print(representation)
 		# print('+=====================+')
 		return representation
@@ -98,7 +97,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+			representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
 		return representation
 
 # -------------- # Notificaion Serializer ================#
@@ -157,7 +156,7 @@ class UserSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+			representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
 		return representation
 # end CustomeUser Serializer ================
 
@@ -181,7 +180,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
+			representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
 		return representation
 
 	def update(self, instance, validated_data):
@@ -226,7 +225,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 		self.user.save()
 
 		# Create reset link
-		reset_url = f"{settings.FRONTEND_URL}/reset_password?token={token}&uid={uid}"
+		reset_url = f"https://{settings.DOMAIN_NAME}/reset_password?token={token}&uid={uid}"
 
 		# Send email
 		send_mail(
