@@ -74,7 +74,7 @@ class UserWithStatusSerializer(serializers.Serializer):
 		# print(instance)
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
 		# print(representation)
 		# print('+=====================+')
 		return representation
@@ -98,7 +98,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar'] and not representation['avatar'].startswith('http'):
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
 		return representation
 
 # -------------- # Notificaion Serializer ================#
@@ -157,7 +157,7 @@ class UserSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
 		return representation
 # end CustomeUser Serializer ================
 
@@ -181,7 +181,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 	def to_representation(self, instance):
 		representation = super().to_representation(instance)
 		if representation['avatar']:
-			representation['avatar'] = f"{settings.BACKEND_BASE_URL_MEDIA}{representation['avatar']}"
+			representation['avatar'] = f"{settings.BACKEND_BASE_URL}{representation['avatar']}"
 		return representation
 
 	def update(self, instance, validated_data):

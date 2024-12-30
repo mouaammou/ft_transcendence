@@ -36,6 +36,10 @@ frontend_logs:
 backend_logs:
 	docker compose -f $(COMPOSE_FILE) logs -f backend
 
+.PHONY: nginx_logs
+nginx_logs:
+	docker compose -f $(COMPOSE_FILE) logs -f nginx
+
 .PHONY: ps
 ps:
 	docker compose -f $(COMPOSE_FILE) ps
@@ -43,6 +47,10 @@ ps:
 .PHONY: exec
 exec:
 	docker compose -f $(COMPOSE_FILE) exec $$(SERVICE) $$(COMMAND)
+
+# .PHONY: exec_frontend
+# exec:
+# 	docker compose -f $(COMPOSE_FILE) exec $$(SERVICE) $$(COMMAND)
 
 
 .PHONY: prune

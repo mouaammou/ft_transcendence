@@ -69,6 +69,8 @@ services:
   nginx:
     build:
       context: ./services/nginx
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
     hostname: nginx
     container_name: nginx
     ports:
