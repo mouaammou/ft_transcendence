@@ -1,133 +1,13 @@
 .main-chat {
   display: flex;
-  /* add */
   align-items: center;
-
-  /* change responsive  */
-  /* padding-right: 30px; */
-
-  /* flex-grow: 1; */
-  /* border: solid rgb(0, 125, 10); */
-  /* width: auto; */
-  /* width: 100%; */
   width: 100%;
-
-  /* change responsive  */
   padding: 50px 120px;
-
-  /* padding: 50px 50px 50px 0px; */
 }
-
-/* .hidden{
-    display: none;
-} */
 
 h2 {
   font-size: 30px;
 }
-
-/* -------------- */
-/* .div_list{
-    width: 25%;
-}
-.div_msg{
-    width: 75%;
-} */
-
-/*  ---------- test ------------ */
-/* .list-chat {
-    display: block;
-}
-
-.msg-chat {
-    display: none;
-}
-
-.list-chat.hidden {
-    display: none;
-}
-
-.msg-chat.hidden {
-    display: block;
-}
-
-@media (min-width: 990px) {
-    .list-chat,
-    .msg-chat {
-        display: block;
-    }
-
-    .list-chat.hidden,
-    .msg-chat.hidden {
-        display: block;
-    }
-} */
-
-/* .chat-mini-sidebare
-{
-    display: none;
-} */
-
-/* .main-chat .containerSidebar .sidebar
-{
-    display: none;
-} */
-
-/* add */
-
-/* .main-chat .containerSidebar
-{
-    display: none;
-}
-
-
-@media (min-width: 990px) {
-    .hidden{
-        display: block;
-    }
-} */
-
-/* .hidden{
-    display: block;
-}
-@media (max-width: 990px) {
-    .main-chat .containerSidebar
-    {
-        display: none;
-    }
-} */
-
-/* .hidden {
-    display: none;
-}
-
-@media (max-width: 990px) {
-    .list_chat {
-        display: block;
-    }
-
-    .list_chat.hidden {
-        display: none;
-    }
-
-    .msg_chat {
-        display: none;
-    }
-
-    .msg_chat.hidden {
-        display: block;
-    }
-
-    .sidebar {
-        display: none;
-    }
-
-    .sidebar.visible {
-        display: block;
-    }
-} */
-
-/* -------------- ---------------- */
 
 .hidden {
   display: none;
@@ -167,9 +47,6 @@ h2 {
   .msg_chat.hidden {
     display: none;
   }
-  .main-chat {
-    /* padding: 5px 5px 5px 0px; */
-  }
 }
 
 @media (max-width: 800px) {
@@ -180,8 +57,6 @@ h2 {
     display: block;
   }
   .main-chat {
-    /* padding-right: 0px;
-    padding-top: 0px; */
     padding: 0px;
   }
 }

@@ -1,13 +1,3 @@
-/* .user-grid{
-    display: flex;
-    flex-direction: row;
-} */
-
-/* .all-user{
-    overflow-y: auto;
-    overflow-x: hidden;
-} */
-
 
 /*  for carousel    */
 
@@ -34,9 +24,6 @@
   width: 95%;
   overflow-y: auto;
   overflow-x: hidden;
-  /* overflow-y: auto;
-    overflow-x: hidden; */
-  /* height: 100%; */
 }
 
 /* Custom scrollbar styling */
@@ -60,63 +47,20 @@
 
 
 
-
-
-.user-carousel {
-
-}
-
-
 .carousel-content{
   width: 100%;
 }
 
-/* .user-carousel {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-
-.carousel-content {
-  display: flex;
-  gap: 1rem;
-  scroll-snap-align: start;
-}
-
-
-.carousel-item {
-  flex: 1 0 50%;
-  max-width: 50%;
-  scroll-snap-align: center;
-}
-
-@media (min-width: 640px) {
-  .carousel-item {
-    flex: 1 0 33.33%; 
-    max-width: 33.33%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .carousel-item {
-    flex: 1 0 25%; 
-    max-width: 25%;
-  }
-} */
-
-
-
 /* Carousel content layout using CSS Grid */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Responsive sizing */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1rem;
 }
 
 .carousel-item {
-  /* Ensure CarouselItem maintains aspect ratio and consistent spacing */
   width: 100%;
-  max-width: 160px; /* Limit max width */
+  max-width: 160px;
 }
 
 
@@ -127,21 +71,11 @@
 @media (max-width: 990px) {
   .UserListAll {
     width: 65%;
-    /* margin-bottom: 100px; */
   }
 }
 
 @media (max-width: 500px) {
   .UserListAll {
     width: 95%;
-    /* margin-bottom: 100px; */
   }
 }
-
-/*
-@media (max-width: 400px) {
-  .UserListAll {
-    width: 85%;
-    margin-bottom: 60px;
-  }
-} */

@@ -29,14 +29,14 @@ const UserList = ({ users, listType , currentUser}) => {
   let updatedUsers = sortedUsers;
 
   if (listType === 'online') {
-    const onlineUsers = sortedUsers.filter(user => user.friend.status === 'online'); // Filter online users
-    const numPlaceholders = Math.max(0, 4 - onlineUsers.length); // Calculate missing slots
+    const onlineUsers = sortedUsers.filter(user => user.friend.status === 'online');
+    const numPlaceholders = Math.max(0, 4 - onlineUsers.length);
 
     // Create placeholder users
     const placeholders = Array.from({ length: numPlaceholders }).map((_, index) => ({
       friend: {
         id: `placeholder-${index}`, // Unique ID for placeholders
-        avatar: '/def_prof.jpeg', // Default avatar from public folder
+        avatar: '/defaultAvatar.svg', // Default avatar from public folder
         username: '?', // Placeholder username
         status: 'offline', // Placeholder status
         isPlaceholder: true, // Mark as placeholder
@@ -73,7 +73,7 @@ const UserList = ({ users, listType , currentUser}) => {
                   >
                     <UserCard
                       user={user.friend}
-                      lastMessage={user.last_message} // Pass last message details
+                      lastMessage={user.last_message}
                       listType={listType}
                       typingUsers={typingUsers}
                       onUserSelect={handleUserClick}
