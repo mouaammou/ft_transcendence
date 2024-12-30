@@ -71,15 +71,15 @@ DOCKER_BACKEND_HOSTNAME=os.getenv("DOCKER_BACKEND_HOSTNAME") #frontend will use 
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # its is a https request from the client but it is forwarded to the backend as http request
-
+# Ensure that cookies are only sent over HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = [
 	DOMAIN_NAME,
     f"{DOCKER_BACKEND_HOSTNAME}",
 ]
-print("-------------------------ALLOWED_HOSTS--------------------------------")
-print(ALLOWED_HOSTS)
-print()
+
 
 
 AUTH_USER_MODEL = "authentication.CustomUser"
@@ -111,10 +111,10 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
 	"AUTH_COOKIE": "jwt",
-	"AUTH_COOKIE_SECURE": False,  # Change to True in production
+	"AUTH_COOKIE_SECURE": True,  # Change to True in production
 	"AUTH_COOKIE_HTTP_ONLY": True,
 	"AUTH_COOKIE_PATH": "/",
-	"AUTH_COOKIE_SAMESITE": "Lax",  # Change to 'Strict' or 'None' as needed
+	"AUTH_COOKIE_SAMESITE": "Strict",  # Change to 'Strict' or 'None' as needed
 	"ROTATE_REFRESH_TOKENS": True,
 	'BLACKLIST_AFTER_ROTATION': True,
 	'SIGNING_KEY': SECRET_KEY,
@@ -228,8 +228,7 @@ DATABASES = {
     }
 }
 
-print("-------------------------DATABASES--------------------------------")
-print(DATABASES)
+
 
 # DATABASES = {
 	
@@ -244,8 +243,6 @@ CORS_ALLOWED_ORIGINS = [
 	# f"http://{DOCKER_BACKEND_HOSTNAME}:{DOCKER_BACKEND_PORT}",
 ]
 
-print("-------------------------CORS_ALLOWED_ORIGINS--------------------------------")
-print(CORS_ALLOWED_ORIGINS)
 
 CORS_ALLOW_METHODS = [
 	'DELETE',
@@ -300,17 +297,4 @@ STATIC_URL = '/backend-static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOW_ALL_ORIGINS = True
-
-
-# CORS_ALLOW_HEADERS = [
-#     'content-type',
-#     'x-csrftoken',
-#     'authorization',  # Allow Authorization header if needed
-# ]
-
-# CORS_EXPOSE_HEADERS = [
-#     'X-CSRFToken',
-#     'Set-Cookie',  # Expose the Set-Cookie header if you're using session cookies
-# ]
