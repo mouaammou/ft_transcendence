@@ -86,7 +86,7 @@ const YouWin = ({ onClose }) => {
         </p>
         <button
           onClick={handleClose}
-          className="cursor-pointer bg-white text-black font-semibold font-open px-4 py-2 mt-4 rounded-lg"
+          className="cursor-pointer bg-white text-black font-semibold font-open px-4 py-2 mt-4 rounded-xl"
         >
           Close
         </button>

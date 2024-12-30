@@ -89,7 +89,7 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 	const [showWinModal, setShowWinModal] = useState(false);
 	const [showLoseModal, setShowLoseModal] = useState(false);
 	const router = useRouter();
-	const pathname = usePathname();
+	const [gameStartTime, setGameStartTime] = useState(null);
 	const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
 	const gameStateRef = useRef(createInitialGameState());
 	const handleVisibilityChange = () => {
@@ -128,11 +128,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 
 
 	useEffect(() => {
-		drawGame();
-		document.addEventListener('keydown', e => handleKeyboardEvents(e, 'keydown'));
-		document.addEventListener('keyup', e => handleKeyboardEvents(e, 'keyup'));
-		document.addEventListener('visibilitychange', handleVisibilityChange);
+		const handleKeyDown = (e) => handleKeyboardEvents(e, 'keydown');
+		const handleKeyUp = (e) => handleKeyboardEvents(e, 'keyup');
 
+		drawGame();
+		document.addEventListener('keydown', handleKeyDown);
+		document.addEventListener('keyup', handleKeyUp);
+		document.addEventListener('visibilitychange', handleVisibilityChange);
 
 		if (isConnected) {
 			sendMessage(JSON.stringify({ tabFocused: true }));
@@ -142,8 +144,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 			if (isConnected) {
 				sendMessage(JSON.stringify({ tabFocused: false }));
 			}
-			document.removeEventListener('keydown', e => handleKeyboardEvents(e, 'keydown'));
-			document.removeEventListener('keyup', e => handleKeyboardEvents(e, 'keyup'));
+			document.removeEventListener('keydown', handleKeyDown);
+			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', handleVisibilityChange);
 			setShowWinModal(false);
 			setShowLoseModal(false);
@@ -156,12 +158,12 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		try {
 			const data = JSON.parse(lastMessage.data);
 			const state = gameStateRef.current;
-			if (data.status === 'win') {
+			if (data.status === 'win' && gameStartTime) {
 				setShowWinModal(true);
-			} else if (data.status === 'lose') {
+			} else if (data.status === 'lose' && gameStartTime) {
 				setShowLoseModal(true);
 			}
-			else if (data.status == 'GAME_DATA') {
+			else if (data.status == 'GAME_DATA' && setGameStartTime(Date.now())) {
 				setShowWinModal(false);
 				setShowLoseModal(false);
 			}
@@ -226,7 +228,13 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		} catch (error) {
 
 		}
-	}, [lastMessage]);
+
+		return () => {
+			setShowWinModal(false);
+			setShowLoseModal(false);
+			lastMessage = null;
+		}
+	}, [lastMessage, gameStartTime]);
 
 
 

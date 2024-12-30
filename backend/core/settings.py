@@ -24,7 +24,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False or os.getenv("DEBUG", False)
 
-ALLOWED_HOSTS = ['e2r7p9.1337.ma']
+ALLOWED_HOSTS = ['e2r8p8.1337.ma',
+				'backend',]
 
 AUTH_USER_MODEL = "authentication.CustomUser"
 

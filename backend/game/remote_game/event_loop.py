@@ -81,7 +81,7 @@ class EventLoopManager:
         try:
             RemoteGameOutput.add_callback(
                 player_id, consumer
-            )  # i should test this later
+            )  
         except Exception as e:
             logger.error("Failed to add callback for player %s: %s", player_id, e)
             return False
@@ -739,32 +739,44 @@ class EventLoopManager:
 
     @classmethod
     async def send_game_data(cls, player_id):
-        print("in the send_game_data methode")
-        game_obj = cls.active_players.get(player_id)
-        if game_obj:
-            print(f"game_obj {game_obj} is fulfilled {game_obj.is_fulfilled()}")
-        if game_obj and game_obj.is_fulfilled():
-            RemoteGameOutput._send_to_consumer_group(
-                player_id,
-                {
-                    "status": "GAME_DATA",
-                    "player_1": game_obj.player_1,
-                    "player_2": game_obj.player_2,
-                    "game_type": game_obj.remote_type,
-                    "modal": False,
-                },
-            )
-            game_obj.pause()
-            await asyncio.sleep(1)
-            if game_obj.unfocused is None:
-                RemoteGameOutput.send_config(player_id, game_obj)
-                game_obj.play()
-                print("game is played")
-        else:
-            # print("NO GAME DATA because the game is not fulfilled or none")
-            RemoteGameOutput._send_to_consumer_group(
-                player_id, {"status": "NO_GAME_DATA"}
-            )
+        print("in the send_game_data method")
+        
+        # Maximum number of retries
+        MAX_RETRIES = 3
+        # Time to wait between retries (in seconds)
+        RETRY_DELAY = 0.5
+        
+        for retry in range(MAX_RETRIES):
+            game_obj = cls.active_players.get(player_id)
+            
+            if game_obj and game_obj.is_fulfilled():
+                RemoteGameOutput._send_to_consumer_group(
+                    player_id,
+                    {
+                        "status": "GAME_DATA",
+                        "player_1": game_obj.player_1,
+                        "player_2": game_obj.player_2,
+                        "game_type": game_obj.remote_type,
+                        "modal": False,
+                    },
+                )
+                game_obj.pause()
+                await asyncio.sleep(1)
+                if game_obj.unfocused is None:
+                    RemoteGameOutput.send_config(player_id, game_obj)
+                    game_obj.play()
+                    print("game is played")
+                return
+                
+            if retry < MAX_RETRIES - 1:
+                print(f"Game data not found for player {player_id}, retrying... (attempt {retry + 1})")
+                await asyncio.sleep(RETRY_DELAY)
+        
+        # If we get here, we've exhausted all retries
+        print(f"NO GAME DATA after {MAX_RETRIES} retries for player {player_id}")
+        RemoteGameOutput._send_to_consumer_group(
+            player_id, {"status": "NO_GAME_DATA"}
+        )
 
     @classmethod
     def check_for_game(cls, player_id):
