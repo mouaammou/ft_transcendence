@@ -157,7 +157,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
                     </p>
                   )}
 
-                  {lastMessage.is_read ? (
+                  {lastMessage.is_read && lastMessage.message ? (
                     <span style={{ fontSize: '14px', color: '#4caf50', fontWeight:'bold' }}>✓✓</span>
                   ) : (
                     lastMessage.unread_count > 0 && (

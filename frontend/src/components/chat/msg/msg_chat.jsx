@@ -57,7 +57,6 @@ const Msg_chat = () => {
 				to_user_id: selectedUser.id,
 			}));
 		}
-		localStorage.setItem('selectedFriend', JSON.stringify(selectedUser));// where can i get the user you are chatting with
 		router.push('/waiting_friends_game');
 
 	};
@@ -153,23 +152,20 @@ const Msg_chat = () => {
 				<div className="bottom-chat">
 					<div className="div_message_input">
 						<input
-						className={`message_input ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
+						className="message_input"
 						type="text"
 						placeholder="Type a message..."
 						onChange={e => {setText(e.target.value)
 						}}
 						value={text}
 						onKeyDown={handleKeyPress}
-						disabled={friendStatusRequest === 'blocked'}
 						/>
 					</div>
-					<div className={`emoji ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`} ref={emojiPickerRef}>
+					<div className="emoji" ref={emojiPickerRef}>
 						<BsEmojiSmile 
 							className="BsEmojiSmile" 
 							onClick={() => {
-								if (friendStatusRequest !== 'blocked') {
 									setOpen(prev => !prev);
-								}
 							}} 
 						/>
 						
@@ -181,9 +177,8 @@ const Msg_chat = () => {
 						)}
 					</div>
 					<button 
-						className={`buttom-send ${friendStatusRequest === 'blocked' ? 'not-allowed' : ''}`}
+						className="buttom-send"
 						onClick={handleSendMessage}
-						disabled={friendStatusRequest === 'blocked'}
 					>
 						<BsSendFill className="send-icon" />
 					</button>

@@ -151,6 +151,9 @@ module.exports = {
 				'.brightness-70': {
 					filter: 'brightness(70%)'
 				},
+				'.brightness-80': {
+                    filter: 'brightness(50%)'
+                },
 			});
 		}
     ],

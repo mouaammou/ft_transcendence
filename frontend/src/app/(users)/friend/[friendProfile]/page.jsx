@@ -23,17 +23,16 @@ import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
 import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 
-
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
 	const [matches, setMatches] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
-	const { profileData: data } = useAuth();
+	const { profileData: data, setSelectedUser } = useAuth();
 	const [pongData, setPongData] = useState([]);
 	const [c4stats, setC4Stats] = useState([]);
-
+	const router = useRouter();
 
 	const [progressData, setProgressData] = useState({
 		level: 0,
@@ -41,10 +40,23 @@ export default function FriendProfile({ params }) {
 		currentXp: 0,
 	});
 
+	const inviteToGame = () => {
+		if (profile?.id) {
+			setSelectedUser(profile);
+			if (isConnected)
+				sendMessage(JSON.stringify({
+					type: NOTIFICATION_TYPES.INVITE_GAME,
+					to_user_id: profile.id,
+				}));
+		}
+		router.push('/waiting_friends_game');
+
+	};
+
 	const fetchProgressData = useCallback(async (userId) => {
-		if ( ! userId )
-			return ;
-        try {
+		if (!userId)
+			return;
+		try {
 
 			const response = await getData(`/progress/${userId}`);
 			if (response.status === 200) {
@@ -62,24 +74,24 @@ export default function FriendProfile({ params }) {
 
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-		  const response = await getData(`/pongstats/${userId}`);
-		  if (response.status === 200) {
-			const formattedData = data.map(item => ({
-				date: item.date,
-				wins: item.wins,
-				losses: item.losses
-			  }));
-			  setPongData(formattedData);
-		}
-		  console.log('Formatted pong data:', formattedData);
+			const response = await getData(`/pongstats/${userId}`);
+			if (response.status === 200) {
+				const formattedData = data.map(item => ({
+					date: item.date,
+					wins: item.wins,
+					losses: item.losses
+				}));
+				setPongData(formattedData);
+			}
+			console.log('Formatted pong data:', formattedData);
 		} catch (error) {
-		  if (error.status === 404) {
-			// console.error('Resource not found:', error.data);
-		  } else {
-			// console.error('Error fetching game history stats:', error);
-		  }
+			if (error.status === 404) {
+				// console.error('Resource not found:', error.data);
+			} else {
+				// console.error('Error fetching game history stats:', error);
+			}
 		}
-	  }, []);
+	}, []);
 
 	const fetchC4StatsData = useCallback(async (userId) => {
 		try {
@@ -94,8 +106,8 @@ export default function FriendProfile({ params }) {
 
 
 	const fetchGameHistory = useCallback(async (userId) => {
-		if ( ! userId)
-			return ;
+		if (!userId)
+			return;
 		try {
 
 			const response = await getData(`/gamehistory/${userId}?page=${1}`);
@@ -146,7 +158,6 @@ export default function FriendProfile({ params }) {
 
 	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
 	const [pageNotFound, setPageNotFound] = useState(false);
-	const router = useRouter();
 
 	const removeFriend = useCallback(() => {
 		//http request to remove friend
@@ -164,29 +175,29 @@ export default function FriendProfile({ params }) {
 
 	const blockFriend = useCallback(() => {
 		if (profile?.id)
-		postData(`/blockFriend/${profile.id}`)
-			.then(response => {
-			if (response.status === 200) {
-				setFriendStatusRequest('blocking');
-			}
-			})
-			.catch(error => {
+			postData(`/blockFriend/${profile.id}`)
+				.then(response => {
+					if (response.status === 200) {
+						setFriendStatusRequest('blocking');
+					}
+				})
+				.catch(error => {
 
-			});
+				});
 	}, [profile?.id, setFriendStatusRequest]);
 
 	const removeBlock = useCallback(() => {
 		//http request to block friend
 		if (profile?.id)
-		deleteData(`/removeBlock/${profile.id}`)
-			.then(response => {
-			if (response.status === 200) {
-				setFriendStatusRequest('accepted');
-			}
-			})
-			.catch(error => {
+			deleteData(`/removeBlock/${profile.id}`)
+				.then(response => {
+					if (response.status === 200) {
+						setFriendStatusRequest('accepted');
+					}
+				})
+				.catch(error => {
 
-			});
+				});
 	}, [profile?.id]);
 
 	const sendFriendRequest = useCallback(() => {
@@ -337,7 +348,7 @@ export default function FriendProfile({ params }) {
 							{friendStatusRequest === 'no' && (
 								<button
 									onClick={sendFriendRequest}
-									className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+									className="w-full mt-6 bg-sky-500 rounded-xl hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 								>
 									<FaUserPlus className="mr-2" /> Add Friend
 								</button>
@@ -346,24 +357,24 @@ export default function FriendProfile({ params }) {
 							{(friendStatusRequest === 'accepted') && (
 								<>
 									<Link href="/create_join_tournament"
-										className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+										className="w-full mt-6  rounded-xl bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 									>
 										<FaTrophy className="mr-2" />Create Tournament
 									</Link>
-									<Link href="/mode"
-										className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-									>
+									<button
+										className="w-full mt-6  rounded-xl bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+										onClick={inviteToGame}>
 										<FaGamepad className="mr-2" /> Play Game
-									</Link>
+									</button>
 									<button
 										onClick={blockFriend}
-										className="w-full mt-6 bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+										className="w-full mt-6  rounded-xl bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 									>
 										<FaBan className="mr-2" /> Block
 									</button>
 									<button
 										onClick={removeFriend}
-										className="w-full mt-6 bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+										className="w-full mt-6  rounded-xl bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
 									>
 										<IoPersonRemove className="mr-2" /> Remove Friend
 									</button>
@@ -390,11 +401,11 @@ export default function FriendProfile({ params }) {
 								<span className="text-red-400">Friend Request Rejected</span>
 							)}
 
-							{friendStatusRequest === 'blocked' && (
+							{/* {friendStatusRequest === 'blocked' && (
 								<span className="text-red-400 bg-red-100 border border-red-400 rounded px-2 py-1">
 									Add Friend
 								</span>
-							)}
+							)} */}
 						</div>
 					</div>
 
@@ -493,7 +504,7 @@ export default function FriendProfile({ params }) {
 							</div>
 						</div>
 						{/* Stats Section */}
-						
+
 						<div className="bg-gray-800 rounded-2xl p-6 shadow-lg mb-12">
 							<h2 className="text-xl font-semibold mb-6 flex items-center">
 								<TfiStatsUp className="mr-2" /> Ping Pong Stats
@@ -575,7 +586,7 @@ export default function FriendProfile({ params }) {
 						</div>
 					</div>
 
-					
+
 				</div>
 			</div>
 		)

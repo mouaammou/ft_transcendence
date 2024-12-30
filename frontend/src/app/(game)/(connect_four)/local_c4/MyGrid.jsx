@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import styles from '@/styles/game/connect_four/MyGrid.module.css'
 import { Modal } from '@/components/modals/Modal';
 import { useRouter } from "next/navigation";
+import "../connect_four/mypage.css"
 
 
 const MyGrid = ({username}) => {
@@ -74,7 +75,7 @@ const MyGrid = ({username}) => {
             setModalMessage('Game over!');
             setMsgDescription(`🎉 Congratulations to ${winner} ! 🎉`
             );
-        },2000)
+        },10000)
         setCircleColor(circleColor);
     }
 
@@ -167,20 +168,20 @@ const MyGrid = ({username}) => {
             const discElement = document.querySelector(`.${styles.cell}:nth-child(${index + 1}) .${styles.disc}`);
             
             if (discElement) {
-                // Add flash animation class
-                // discElement.style.animation = 'flash 1s infinite';
+                discElement.style.animation = 'flash 1s infinite';
                 
                 // Create inner white circle
                 const innerCircle = document.createElement('div');
                 innerCircle.style.cssText = `
                     position: absolute;
-                    top: 23%;
-                    left: 23%;
-                    width: 50%;
-                    height: 50%;
+                    top: 45%;
+                    left: 45%;
+                    width: 70%;
+                    height: 70%;
                     background-color: #EAE6E6;
                     border-radius: 50%;
                     z-index: 99;
+                    animation: innerCircleFadeIn 0.5s forwards;
                 `;
                 
                 // Remove any existing inner circle before adding new one
