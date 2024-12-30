@@ -2,7 +2,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 
 const TournamentList = () => {
