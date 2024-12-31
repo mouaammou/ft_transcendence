@@ -436,46 +436,64 @@ class EventLoopManager:
         if tournament_id:
             tournament = cls.active_tournaments.get(tournament_id)
             if tournament and tournament.round:
-                # if tournament.round.status == 'quarter' and tournament.send_once:
-                #     return
-                # tournament.send_once = True
                 players_in_round = tournament.round.get_players()
                 if players_in_round:
                     try:
+                        print(f"Starting notifications for round: {tournament.round.status}")
+                        
+                        # Clean up existing game states
+                        for player in players_in_round:
+                            if player != -1:
+                                if player in cls.active_players:
+                                    print(f"Cleaning up state for player {player}")
+                                    cls.active_players.pop(player, None)
+                        
+                        # Send notifications
                         await cls.send_tournament_notifications(
                             players_in_round,
                             tournament.round.status,
                             tournament.organizer,   
                         )
-                    except Exception as e:
-                        print(f"Error sending notifications: {e}")
-                    try:
+                        
                         await asyncio.sleep(15)
+                        
+                        if TournamentManager.check_tournament_is_cancelled(tournament):
+                            print("Tournament cancelled during notification period")
+                            cls.end_tournament(tournament_id)
+                            return
+                        
+                        # Set up new game states
+                        for game in tournament.games:
+                            if not game.is_finished():
+                                print(f"Setting up game for {game.player_1} vs {game.player_2}")
+                                cls.tournament_games[game] = [game.player_1, game.player_2]
+                                cls.active_players[game.player_1] = game
+                                cls.active_players[game.player_2] = game
+                                game.pause()
+                                game.unfocused = None  # Reset focus state
+                                game.disconnected = False  # Reset connection state
+                        
+                        # Push players to game
+                        print(f"Pushing players to game for round {tournament.round.status}")
+                        RemoteGameOutput.send_tournament_players(
+                            players_in_round, {"status": "PUSH_TO_GAME"}
+                        )
+                        
                     except Exception as e:
-                        print(f"Error during sleep: {e}")
-                    if TournamentManager.check_tournament_is_cancelled(tournament):
-                        cls.end_tournament(tournament_id)
-                        return
-                    TournamentManager.players_in_same_game_left_board_page(tournament)
-                    # RemoteGameOutput.send_tournament_players(
-                    #     players_in_round, {"status": "PUSH_TO_GAME"}
-                    # )
+                        print(f"Error in send_notifications_to_players: {e}")
+                        raise
                 else:
-                    print(
-                        f"No players found in the current round of tournament {tournament_id}"
-                    )
+                    print("No players found for current round")
             else:
-                print(
-                    f"No active tournament found with id {tournament_id} or tournament round is None"
-                )
+                print("Tournament or round not found")
         else:
-            print("Player is not registered in any tournament")
+            print("Tournament ID not found")
 
     @classmethod
     def start_tournament(cls, player_id):
-        print("in the start_tournament methode")
+        print("Starting tournament")
         if cls.tournament_task is None or cls.tournament_task.done():
-            print("******** init the tournament task **********")
+            print("Initializing tournament task")
             cls.tournament_task = asyncio.create_task(
                 cls.run_tournaments_with_exception_handling()
             )
@@ -484,19 +502,19 @@ class EventLoopManager:
         if tournament_id is not None:
             tournament = cls.active_tournaments.get(tournament_id)
             if tournament and tournament.round is not None:
+                print(f"Starting tournament round: {tournament.round.status}")
                 asyncio.create_task(cls.send_notifications_to_players(player_id))
                 tournament.status = "started"
+                
+                # Initialize games
                 for game in tournament.round.games:
+                    print(f"Setting up game: {game.player_1} vs {game.player_2}")
                     cls.tournament_games[game] = [game.player_1, game.player_2]
                     cls.active_players[game.player_1] = game
                     cls.active_players[game.player_2] = game
                     game.pause()
-        #     else:
-        #         RemoteGameOutput._send_to_consumer_group(player_id, { 'status': 'no_tournament_found'})
-        #         print(f"No active tournament found with id {tournament_id} or tournament round is None ")
-        # else:
-        #     RemoteGameOutput._send_to_consumer_group(player_id, { 'status': 'no_tournament_found'})
-        #     print("Player is not registered in any tournament dfghbdfxg")
+
+
 
     @classmethod
     async def run_tournaments_with_exception_handling(cls):
@@ -514,26 +532,17 @@ class EventLoopManager:
         print("in the end_tournament methode")
         tournament = cls.active_tournaments.get(tournament_id)
         if tournament is not None:
-            # print(f"ACTIVE PLAYERS BEFORE  {cls.active_players}")
             if tournament.round is not None:
                 [
                     cls.active_players.pop(player_id, None)
                     for player_id in tournament.players
                 ]
-                # print(f"ACTIVE PLAYERS AFTER  {cls.active_players}")
-                # print(f"players_in_tournaments BEFORE  {cls.players_in_tournaments}")
                 [
                     cls.players_in_tournaments.pop(player_id, None)
                     for player_id in tournament.players
                 ]
-            # print(f"players_in_tournaments AFTER     {cls.players_in_tournaments}")
-            # print(f"tournament games berore {cls.tournament_games}")
             [cls.tournament_games.pop(game, None) for game in tournament.games]
-            # print(f"tournament games after {cls.tournament_games}")
-            # print(f"tournaments  before {cls.active_tournaments}")
             cls.active_tournaments.pop(tournament_id)
-            # print(f"tournaments  after {cls.active_tournaments}")
-            # print(f"tournament {tournament_id} is deleted")
         else:
             print(f"No active tournament found with id {tournament_id}")
 
@@ -634,8 +643,7 @@ class EventLoopManager:
         if game_obj and game_obj.game_mode == "remote":
             cls.handle_remote_game_input(game_obj, player_id, event_dict)
             return None
-        # if 'inBoardPage' not in event_dict:
-        #     RemoteGameOutput._send_to_consumer_group(player_id, {'status': 'NO_GAME_DATA'})
+
 
     @classmethod
     def handle_tournament(cls, event_dict, player_id):
@@ -739,44 +747,54 @@ class EventLoopManager:
 
     @classmethod
     async def send_game_data(cls, player_id):
-        print("in the send_game_data method")
-        
-        # Maximum number of retries
+        print(f"Sending game data for player {player_id}")
         MAX_RETRIES = 3
-        # Time to wait between retries (in seconds)
         RETRY_DELAY = 0.5
         
         for retry in range(MAX_RETRIES):
             game_obj = cls.active_players.get(player_id)
+            print(f"Attempt {retry + 1}: Game object found: {game_obj is not None}")
             
             if game_obj and game_obj.is_fulfilled():
-                RemoteGameOutput._send_to_consumer_group(
-                    player_id,
-                    {
-                        "status": "GAME_DATA",
-                        "player_1": game_obj.player_1,
-                        "player_2": game_obj.player_2,
-                        "game_type": game_obj.remote_type,
-                        "modal": False,
-                    },
-                )
-                game_obj.pause()
-                await asyncio.sleep(1)
-                if game_obj.unfocused is None:
+                try:
+                    # Reset any stale game state
+                    game_obj.unfocused = None
+                    game_obj.disconnected = False
+                    
+                    # Send game data
+                    RemoteGameOutput._send_to_consumer_group(
+                        player_id,
+                        {
+                            "status": "GAME_DATA",
+                            "player_1": game_obj.player_1,
+                            "player_2": game_obj.player_2,
+                            "game_type": game_obj.remote_type,
+                            "modal": False,
+                        },
+                    )
+                    
+                    # Ensure proper game start sequence
+                    game_obj.pause()
+                    await asyncio.sleep(1)
                     RemoteGameOutput.send_config(player_id, game_obj)
                     game_obj.play()
-                    print("game is played")
-                return
-                
+                    print(f"Game started for player {player_id}")
+                    return
+                    
+                except Exception as e:
+                    print(f"Error sending game data: {e}")
+                    continue
+            
             if retry < MAX_RETRIES - 1:
-                print(f"Game data not found for player {player_id}, retrying... (attempt {retry + 1})")
+                print(f"Retrying game data send for player {player_id}")
                 await asyncio.sleep(RETRY_DELAY)
         
-        # If we get here, we've exhausted all retries
-        print(f"NO GAME DATA after {MAX_RETRIES} retries for player {player_id}")
+        print(f"Failed to send game data for player {player_id}")
         RemoteGameOutput._send_to_consumer_group(
             player_id, {"status": "NO_GAME_DATA"}
         )
+
+
 
     @classmethod
     def check_for_game(cls, player_id):
