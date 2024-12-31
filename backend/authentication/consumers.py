@@ -174,20 +174,21 @@ class NotificationConsumer(BaseConsumer):
 			'blocked': event.get('blocked'),
 			'error': event.get('error'),
 			'message': event.get('message'),
+			'to_user_id': event.get('to_user_id'),
 		}))
 	
 	async def remove_block_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'remove_block',
 			'success': event.get('success'),
-			'user_id': event.get('user_id'),
+			'to_user_id': event.get('to_user_id'),
 		}))
 	
 	async def remove_friend_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'remove_friend',
 			'success': event.get('success'),
-			'user_id': event.get('user_id'),
+			'to_user_id': event.get('to_user_id'),
 		}))
 
 	async def accept_game_notif(self, event):
@@ -226,7 +227,7 @@ class NotificationConsumer(BaseConsumer):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend_request',
 			'success': event.get('success'),
-			'user_id': event.get('user_id'),
+			'to_user_id': event.get('to_user_id'),
 			**event.get('notification')
 		}))
 
@@ -234,7 +235,7 @@ class NotificationConsumer(BaseConsumer):
 		await self.send(text_data=json.dumps({
 			'type': 'accepted_done',
 			'success': event.get('success'),
-			'user_id': event.get('user_id'),
+			'to_user_id': event.get('to_user_id'),
 			**event.get('notification')
 		}))
 
@@ -288,6 +289,7 @@ class NotificationConsumer(BaseConsumer):
 			if not friendship:
 				await self.send_notification_alert(self.user.id, {
 					'type': 'remove_friend_notif',
+					'to_user_id': self.user.id,
 					'success': False,
 					'message': 'Friendship not found'
 				})
@@ -297,6 +299,7 @@ class NotificationConsumer(BaseConsumer):
 			if friendship.status != 'accepted':
 				await self.send_notification_alert(self.user.id, {
 					'type': 'remove_friend_notif',
+					'to_user_id': self.user.id,
 					'success': False,
 					'message': 'This request has already been processed'
 				})
@@ -312,6 +315,7 @@ class NotificationConsumer(BaseConsumer):
 			# Send notification to removed friend
 			await self.send_notification_alert(user_id, {
 				'type': 'remove_friend_notif',
+				'to_user_id': self.user.id,
 				'success': True,
 				'message': 'You have been removed from friends list'
 			})
@@ -319,6 +323,7 @@ class NotificationConsumer(BaseConsumer):
 			# Send confirmation to user who removed
 			await self.send_notification_alert(self.user.id, {
 				'type': 'remove_friend_notif',
+				'to_user_id': user_id,
 				'success': True,
 				'message': 'Friend removed from friends list'
 			})
@@ -327,6 +332,7 @@ class NotificationConsumer(BaseConsumer):
 			logger.error(f"\nError removing friend: {e}\n")
 			await self.send_notification_alert(self.user.id, {
 				'type': 'remove_friend_notif',
+				'to_user_id': self.user.id,
 				'success': False,
 				'error': str(e)
 			})
@@ -350,6 +356,7 @@ class NotificationConsumer(BaseConsumer):
 			if not friendship:
 				await self.send_notification_alert(self.user.id, {
 					'type': 'remove_block_notif',
+					'to_user_id': self.user.id,
 					'success': False,
 					'message': 'No blocking relationship found'
 				})
@@ -365,12 +372,14 @@ class NotificationConsumer(BaseConsumer):
 			# Send notifications to both users
 			await self.send_notification_alert(user_id, {
 				'type': 'remove_block_notif',
+				'to_user_id': self.user.id,
 				'success': True,
 				'message': 'Block removed successfully, friendship accepted'
 			})
 			
 			await self.send_notification_alert(self.user.id, {
 				'type': 'remove_block_notif',
+				'to_user_id': user_id,
 				'success': True,
 				'message': 'Block removed successfully, friendship accepted'
 			})
@@ -379,6 +388,7 @@ class NotificationConsumer(BaseConsumer):
 			logger.error(f"\nError unblocking user: {e}\n")
 			await self.send_notification_alert(self.user.id, {
 				'type': 'remove_block_notif',
+				'to_user_id': self.user.id,
 				'success': False,
 				'error': str(e)
 			})
@@ -401,7 +411,8 @@ class NotificationConsumer(BaseConsumer):
 				await self.send_notification_alert(self.user.id, {
 					'type': 'block_user_notif',
 					'success': False,
-					'message': 'Cannot block: No friendship exists between users'
+					'message': 'Cannot block: No friendship exists between users',
+					'to_user_id': self.user.id
 				})
 				return
 
@@ -410,7 +421,8 @@ class NotificationConsumer(BaseConsumer):
 				await self.send_notification_alert(self.user.id, {
 					'type': 'block_user_notif',
 					'success': False,
-					'message': 'Already blocked'
+					'message': 'Already blocked',
+					'to_user_id': self.user.id
 				})
 				return
 
@@ -438,17 +450,20 @@ class NotificationConsumer(BaseConsumer):
 			updated_friendship = await block_friendship()
 
 			# Send notifications
+			logger.error(f"\n\n\n *** user id: {user_id} ***\n\n\n")
 			await self.send_notification_alert(user_id, {
 				'type': 'block_user_notif',
 				'success': True,
 				'message': 'You have been blocked',
-				'blocked': True
+				'blocked': True,
+				'to_user_id': self.user.id
 			})
 			
 			await self.send_notification_alert(self.user.id, {
 				'type': 'block_user_notif',
 				'success': True,
-				'message': 'User blocked successfully'
+				'message': 'User blocked successfully',
+				'to_user_id': user_id
 			})
 
 		except Exception as e:
@@ -456,7 +471,8 @@ class NotificationConsumer(BaseConsumer):
 			await self.send_notification_alert(self.user.id, {
 				'type': 'block_user_notif',
 				'success': False,
-				'error': str(e)
+				'error': str(e),
+				'to_user_id': self.user.id
 			})
 
 
@@ -557,14 +573,14 @@ class NotificationConsumer(BaseConsumer):
 			await self.send_notification_alert(self.user.id, {
 				'type': 'accepted_notif',
 				'success': success,
-				'user_id': notif_data.get('id'),
+				'to_user_id': to_user_id,
 				'notification': notif_data,
 			})
 
 			await self.send_notification_alert(to_user_id, {
 				'type': 'accept_request_notif',
 				'success': success,
-				'user_id': notif_data.get('id'),
+				'to_user_id': self.user.id,
 				'notification': notif_data,
 			})
 
@@ -574,7 +590,7 @@ class NotificationConsumer(BaseConsumer):
 		await self.send_notification_alert(rejected_user_id, {
 			'type': 'reject_request_notif',
 			'success': True,
-			'user_id': self.user.id,
+			'to_user_id': self.user.id,
 		})
 
 	async def receive(self, text_data):
