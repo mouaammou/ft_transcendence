@@ -268,7 +268,7 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
   }, []);
   return (
     <>
-      <canvas className={style.play_ground} ref={canvasRef} width={900} height={400}></canvas>
+      <canvas className={style.play_ground} ref={canvasRef} width={1200} height={500}></canvas>
       {showWinModal && (
         <YouWin
           onClose={() => {
