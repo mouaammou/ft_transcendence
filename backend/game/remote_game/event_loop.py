@@ -457,9 +457,9 @@ class EventLoopManager:
                         cls.end_tournament(tournament_id)
                         return
                     TournamentManager.players_in_same_game_left_board_page(tournament)
-                    # RemoteGameOutput.send_tournament_players(
-                    #     players_in_round, {"status": "PUSH_TO_GAME"}
-                    # )
+                    RemoteGameOutput.send_tournament_players(
+                        players_in_round, {"status": "PUSH_TO_GAME"}
+                    )
                 else:
                     print(
                         f"No players found in the current round of tournament {tournament_id}"

@@ -104,7 +104,11 @@ def create_superuser():
         print(f"Error creating superuser: {e}")
 
 def run_server():
-    os.system("python3 manage.py runserver 0.0.0.0:8000")
+    print("[###### daphne ######] Starting server...")
+    #cuurent directory is 
+    print('cuurnt dir: ->>>>>>> ', os.getcwd())
+    os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
+    # os.system("python3 manage.py runserver 0.0.0.0:8000")
 
 
 # Main function
