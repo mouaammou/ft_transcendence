@@ -15,6 +15,7 @@ import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
 import { AreaChart, XAxis, YAxis, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
+import { Toaster, toast } from 'react-hot-toast';
 
 ////////////////////////
 
@@ -49,8 +50,8 @@ const ActionLink = ({ href, variant = "primary", icon: Icon, children }) => {
 
 	return (
 		<Link href={href} className={`${baseStyle} ${variants[variant]}`}>
-		<Icon className="mr-2 text-lg" />
-		{children}
+			<Icon className="mr-2 text-lg" />
+			{children}
 		</Link>
 	);
 };
@@ -292,8 +293,8 @@ export default function FriendProfile({ params }) {
 		}, [isConnected, profile?.id, sendMessage]);
 
 	const blockFriend = useCallback(() => {
-		console.log('Blocking friend:', profile);
 		if (isConnected && profile?.id) {
+			console.log('Blocking friend:', profile);
 			setFriendStatusRequest('blocking');
 				sendMessage(
 					JSON.stringify({
@@ -338,21 +339,7 @@ export default function FriendProfile({ params }) {
 		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND && notificationType.status) {
 			setFriendStatusRequest('no');
 		}
-		if (notificationType.type === NOTIFICATION_TYPES.BLOCK) {
-			// lastJsonMessage
-			/**
-			 * 
-			 * 'type': 'block_user',
-					'success': True,
-					'user_id': user_id,
-			 */
-			console.log('Last json message:', lastJsonMessage);
-			if (lastJsonMessage.success == 'true' && lastJsonMessage.user_id == profile.id)
-				{
-					console.log('Blocked user:', lastJsonMessage);
-					setFriendStatusRequest('blocked');
-				}
-		}
+
 	}, [notificationType, NOTIFICATION_TYPES, lastMessage]);
 
 	// Fetch initial profile and friend status
@@ -387,6 +374,9 @@ export default function FriendProfile({ params }) {
 
 	// Handle websocket messages
 	useEffect(() => {
+
+		if (lastJsonMessage)
+			console.log(' ** ** Last json message: ** ** ', lastJsonMessage);
 		if (!lastJsonMessage || !isConnected) return;
 
 		if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
@@ -402,6 +392,31 @@ export default function FriendProfile({ params }) {
 		) {
 			setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
 		}
+
+		if (lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_BLOCK && lastJsonMessage.success) {
+			setFriendStatusRequest('accepted');
+		}
+		
+		if (lastJsonMessage.type === NOTIFICATION_TYPES.BLOCK && lastJsonMessage.success ) {
+			if (lastJsonMessage.blocked) {
+				setFriendStatusRequest('blocked');
+			}
+			else
+				setFriendStatusRequest('blocking');
+		}
+		if (lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND && lastJsonMessage.success) {
+			setFriendStatusRequest('no');
+		}
+		if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPTED_DONE && lastJsonMessage.success) {
+			setFriendStatusRequest('accepted');
+		}
+
+		if ((lastJsonMessage.type === NOTIFICATION_TYPES.BLOCK ||
+			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_BLOCK ||
+			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND) && ! lastJsonMessage.success) {
+			setFriendStatusRequest('accepted');
+			toast.error("ERROR: ", lastJsonMessage.message || lastJsonMessage.error);
+		}
 	}, [lastJsonMessage, isConnected, profile.username, lastMessage]);
 
 	useEffect(() => {
@@ -416,6 +431,8 @@ export default function FriendProfile({ params }) {
 	}, [pageNotFound, friendStatusRequest]);
 
 	return (
+		<Toaster position="top-right" toastOptions={{ duration: 3000, style: { backgroundColor: '#333', color: '#fff', padding: '16px', } }} />
+		&&
 		profile && (data.username !== profile.friendProfile) && !pageNotFound && (
 			<div className="min-h-screen bg-gray-900 text-white">
 				{/* Hero Section with Background */}

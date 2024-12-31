@@ -108,8 +108,6 @@ class BlockFriendshipView(generics.GenericAPIView):
 				Q(sender_id=user_id, receiver_id=friend_id) |
 				Q(sender_id=friend_id, receiver_id=user_id)
 			).first()
-
-			print(f"\n 333: {friendship}")
 			
 			if not friendship:
 				friendship = Friendship.objects.create(

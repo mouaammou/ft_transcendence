@@ -9,6 +9,7 @@ const NOTIFICATION_TYPES = {
   REMOVE_FRIEND: 'remove_friend',
   REMOVE_BLOCK: 'remove_block',
 	ACCEPT_FRIEND: 'accept_friend_request',
+  ACCEPTED_DONE: 'accepted_done',
 	REJECT_FRIEND: 'reject_friend_request',
 	INVITE_GAME: 'invite_to_game',
 	ACCEPT_GAME: 'accept_game',
