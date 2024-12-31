@@ -44,7 +44,7 @@ staticfiles/
 static/
 
 # Media files
-backend/media/
+# backend/media/
 
 # Django collectstatic
 staticfiles/

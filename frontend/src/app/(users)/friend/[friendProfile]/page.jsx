@@ -8,25 +8,145 @@ import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
 import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import { IoPersonRemove } from 'react-icons/io5';
-import { MdDoNotDisturbOff } from 'react-icons/md';
-import { MdOutlineAlternateEmail, MdDataSaverOff, MdEmail, MdUpdate } from 'react-icons/md';
-import { IoMdPhonePortrait } from 'react-icons/io';
-import { GrHistory } from 'react-icons/gr';
-import { CiUser } from 'react-icons/ci';
-import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
-import { GiBattleAxe } from 'react-icons/gi';
-import Image from 'next/image';
-import DoughnutChart from '@/components/userStats/userStatsCharts';
+import { MdEmail, MdUpdate } from 'react-icons/md';
+import { FaUser, FaUserCheck, FaHistory } from 'react-icons/fa';
 import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
-import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
+import { AreaChart, XAxis, YAxis, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
+
+////////////////////////
+
+import { HiShieldExclamation, HiShieldCheck } from 'react-icons/hi';
+
+const ActionButton = ({ onClick, variant = "primary", icon: Icon, children }) => {
+	const baseStyle = "w-full flex items-center justify-center px-4 py-2.5 rounded-xl font-medium transition-all duration-200";
+	const variants = {
+		primary: "bg-blue-500/90 hover:bg-blue-600 text-white",
+		success: "bg-emerald-500/90 hover:bg-emerald-600 text-white",
+		danger: "bg-rose-500/90 hover:bg-rose-600 text-white",
+		warning: "bg-amber-500/90 hover:bg-amber-600 text-white",
+	};
+
+	return (
+		<button
+		onClick={onClick}
+		className={`${baseStyle} ${variants[variant]}`}
+		>
+		<Icon className="mr-2 text-lg" />
+		{children}
+		</button>
+	);
+};
+
+const ActionLink = ({ href, variant = "primary", icon: Icon, children }) => {
+	const baseStyle = "w-full flex items-center justify-center px-4 py-2.5 rounded-xl font-medium transition-all duration-200";
+	const variants = {
+		primary: "bg-blue-500/90 hover:bg-blue-600 text-white",
+		success: "bg-emerald-500/90 hover:bg-emerald-600 text-white",
+	};
+
+	return (
+		<Link href={href} className={`${baseStyle} ${variants[variant]}`}>
+		<Icon className="mr-2 text-lg" />
+		{children}
+		</Link>
+	);
+};
+
+const FriendProfileActions = ({
+	friendStatusRequest,
+	sendFriendRequest,
+	inviteToGame,
+	blockFriend,
+	removeFriend,
+	removeBlock
+}) => {
+	return (
+		<div className="w-full max-w-96 bg-gray-800 rounded-xl p-5 shadow-lg">
+		<h2 className="text-lg font-medium text-gray-200 mb-4">Actions</h2>
+
+		<div className="space-y-3">
+			{friendStatusRequest === 'no' && (
+			<ActionButton
+				onClick={sendFriendRequest}
+				variant="primary"
+				icon={FaUserPlus}
+			>
+				Add Friend
+			</ActionButton>
+			)}
+
+			{friendStatusRequest === 'accepted' && (
+			<>
+				<ActionLink
+				href="/create_join_tournament"
+				variant="success"
+				icon={FaTrophy}
+				>
+				Create Tournament
+				</ActionLink>
+				
+				<ActionButton
+				onClick={inviteToGame}
+				variant="primary"
+				icon={FaGamepad}
+				>
+				Play Game
+				</ActionButton>
+				
+				<div className="pt-3 border-t border-gray-700">
+				<ActionButton
+					onClick={blockFriend}
+					variant="warning"
+					icon={HiShieldExclamation}
+				>
+					Block User
+				</ActionButton>
+				<div className='mt-3'></div>
+				<ActionButton
+					onClick={removeFriend}
+					variant="danger"
+					icon={IoPersonRemove}
+				>
+					Remove Friend
+				</ActionButton>
+				</div>
+			</>
+			)}
+
+			{friendStatusRequest === 'pending' && (
+			<div className="flex items-center space-x-3 px-4 py-2.5 rounded-lg bg-gray-700/50">
+				<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+				<span className="text-blue-400 text-sm">Request Pending</span>
+			</div>
+			)}
+
+			{friendStatusRequest === 'blocking' && (
+			<ActionButton
+				onClick={removeBlock}
+				variant="warning"
+				icon={HiShieldCheck}
+			>
+				Unblock User
+			</ActionButton>
+			)}
+
+			{friendStatusRequest === 'rejected' && (
+			<div className="px-4 py-2.5 rounded-lg bg-rose-500/10 text-rose-400 text-sm text-center">
+				Request Rejected
+			</div>
+			)}
+		</div>
+		</div>
+	);
+};
+
+
 
 export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
-	const [nextPage, setNextPage] = useState(null);
-	const [prevPage, setPrevPage] = useState(null);
 	const [matches, setMatches] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
 	const { profileData: data, setSelectedUser } = useAuth();
@@ -113,8 +233,6 @@ export default function FriendProfile({ params }) {
 			const response = await getData(`/gamehistory/${userId}?page=${1}`);
 			if (response.status === 200) {
 				setMatches(response.data.results);
-				setNextPage(response.data.next ? pageNumber + 1 : null);
-				setPrevPage(response.data.previous ? pageNumber - 1 : null);
 				setPageNumber(pageNumber);
 			}
 		} catch (error) {
@@ -153,6 +271,7 @@ export default function FriendProfile({ params }) {
 		NOTIFICATION_TYPES,
 		lastJsonMessage,
 		sendMessage,
+		lastMessage
 	} = useNotificationContext();
 
 
@@ -160,45 +279,42 @@ export default function FriendProfile({ params }) {
 	const [pageNotFound, setPageNotFound] = useState(false);
 
 	const removeFriend = useCallback(() => {
-		//http request to remove friend
-		if (profile?.id)
-			deleteData(`/removeFriend/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('no');
-					}
-				})
-				.catch(error => {
 
-				});
-	}, [profile?.id]);
+			if (isConnected && profile?.id) {
+				setFriendStatusRequest('no');
+				sendMessage(
+					JSON.stringify({
+						type: NOTIFICATION_TYPES.REMOVE_FRIEND,
+						to_user_id: profile.id,
+					})
+				);
+			}
+		}, [isConnected, profile?.id, sendMessage]);
 
 	const blockFriend = useCallback(() => {
-		if (profile?.id)
-			postData(`/blockFriend/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('blocking');
-					}
-				})
-				.catch(error => {
-
-				});
-	}, [profile?.id, setFriendStatusRequest]);
+		console.log('Blocking friend:', profile);
+		if (isConnected && profile?.id) {
+			setFriendStatusRequest('blocking');
+				sendMessage(
+					JSON.stringify({
+						type: NOTIFICATION_TYPES.BLOCK,
+						to_user_id: profile.id,
+					})
+				);
+		}
+	}, [isConnected, profile?.id, sendMessage]);
 
 	const removeBlock = useCallback(() => {
-		//http request to block friend
-		if (profile?.id)
-			deleteData(`/removeBlock/${profile.id}`)
-				.then(response => {
-					if (response.status === 200) {
-						setFriendStatusRequest('accepted');
-					}
+		if (isConnected && profile?.id) {
+			setFriendStatusRequest('accepted');
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.REMOVE_BLOCK,
+					to_user_id: profile.id,
 				})
-				.catch(error => {
-
-				});
-	}, [profile?.id]);
+			);
+		}
+	}, [isConnected, profile?.id, sendMessage]);
 
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
@@ -210,7 +326,7 @@ export default function FriendProfile({ params }) {
 				})
 			);
 		}
-	}, [isConnected, profile?.id, NOTIFICATION_TYPES, sendMessage]);
+	}, [isConnected, profile?.id, sendMessage]);
 
 	// Handle notification status changes
 	useEffect(() => {
@@ -222,7 +338,22 @@ export default function FriendProfile({ params }) {
 		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND && notificationType.status) {
 			setFriendStatusRequest('no');
 		}
-	}, [notificationType, NOTIFICATION_TYPES]);
+		if (notificationType.type === NOTIFICATION_TYPES.BLOCK) {
+			// lastJsonMessage
+			/**
+			 * 
+			 * 'type': 'block_user',
+					'success': True,
+					'user_id': user_id,
+			 */
+			console.log('Last json message:', lastJsonMessage);
+			if (lastJsonMessage.success == 'true' && lastJsonMessage.user_id == profile.id)
+				{
+					console.log('Blocked user:', lastJsonMessage);
+					setFriendStatusRequest('blocked');
+				}
+		}
+	}, [notificationType, NOTIFICATION_TYPES, lastMessage]);
 
 	// Fetch initial profile and friend status
 	useEffect(() => {
@@ -271,7 +402,7 @@ export default function FriendProfile({ params }) {
 		) {
 			setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
 		}
-	}, [lastJsonMessage, isConnected, profile.username]);
+	}, [lastJsonMessage, isConnected, profile.username, lastMessage]);
 
 	useEffect(() => {
 		if (pageNotFound) {
@@ -341,72 +472,14 @@ export default function FriendProfile({ params }) {
 						</div>
 
 						{/* USER ACTIONS */}
-						<div className="actions max-w-96 w-full  bg-gray-800 rounded-2xl p-6 shadow-lg">
-							<h2 className="text-xl font-semibold mb-6 flex items-center">
-								<FaUserPlus className="mr-2" /> Actions
-							</h2>
-							{friendStatusRequest === 'no' && (
-								<button
-									onClick={sendFriendRequest}
-									className="w-full mt-6 bg-sky-500 rounded-xl hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-								>
-									<FaUserPlus className="mr-2" /> Add Friend
-								</button>
-							)}
-
-							{(friendStatusRequest === 'accepted') && (
-								<>
-									<Link href="/create_join_tournament"
-										className="w-full mt-6  rounded-xl bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-									>
-										<FaTrophy className="mr-2" />Create Tournament
-									</Link>
-									<button
-										className="w-full mt-6  rounded-xl bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-										onClick={inviteToGame}>
-										<FaGamepad className="mr-2" /> Play Game
-									</button>
-									<button
-										onClick={blockFriend}
-										className="w-full mt-6  rounded-xl bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-									>
-										<FaBan className="mr-2" /> Block
-									</button>
-									<button
-										onClick={removeFriend}
-										className="w-full mt-6  rounded-xl bg-orange-500 hover:bg-orange-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-									>
-										<IoPersonRemove className="mr-2" /> Remove Friend
-									</button>
-								</>
-							)}
-
-							{friendStatusRequest === 'pending' && (
-								<div className="flex items-center space-x-2">
-									<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-									<span className="text-yellow-400">Friend Request Pending</span>
-								</div>
-							)}
-
-							{friendStatusRequest === 'blocking' && (
-								<button
-									onClick={removeBlock}
-									className="w-full mt-6 bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
-								>
-									<MdDoNotDisturbOff className="mr-2" /> Remove Block
-								</button>
-							)}
-
-							{friendStatusRequest === 'rejected' && (
-								<span className="text-red-400">Friend Request Rejected</span>
-							)}
-
-							{/* {friendStatusRequest === 'blocked' && (
-								<span className="text-red-400 bg-red-100 border border-red-400 rounded px-2 py-1">
-									Add Friend
-								</span>
-							)} */}
-						</div>
+						<FriendProfileActions {...{
+							friendStatusRequest,
+							sendFriendRequest,
+							inviteToGame,
+							blockFriend,
+							removeFriend,
+							removeBlock
+						}} />
 					</div>
 
 					{/* Grid Layout for Info Cards */}

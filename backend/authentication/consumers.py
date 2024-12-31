@@ -11,6 +11,8 @@ from .serializers import NotificationSerializer
 from django.db import transaction, DatabaseError
 from asgiref.sync import sync_to_async
 import time
+from rest_framework.test import APIRequestFactory
+from authentication.views import BlockFriendshipView  # Update with your actual import path
 # from .notif_consumers import notification_consumers 
 
 User = get_user_model()
@@ -33,11 +35,6 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			self.user_windows = f"user_{self.user.id}"
 			self.user_data = UserSerializer(self.user).data
 			await self.add_user_to_groups()
-        # Add the consumer to the notification_consumers dictionary
-		# if self.user.id in notification_consumers:
-		# 	notification_consumers[self.user.id].append(self.channel_name)
-		# else:
-		# 	notification_consumers[self.user.id] = [self.channel_name]
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
@@ -161,9 +158,16 @@ class NotificationConsumer(BaseConsumer):
 			)
 		except Exception as e:
 			logger.error(f"\nError sending notification alert: {e}\n")
- 
-	# Handler for friend_request_received event
-  
+
+# ************************ handlers for notificatins ************************
+
+	async def block_user(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'block_user',
+			'success': event.get('success'),
+			'user_id': event.get('user_id'),
+		}))
+
 	async def accept_game_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_game',
@@ -177,14 +181,14 @@ class NotificationConsumer(BaseConsumer):
 			'success': event.get('success'),
 			**event.get('notification')
 		}))
- 
+
 	async def invite_to_game_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'invite_to_game',
 			'success': event.get('success'),
 			**event.get('notification')
 		}))
- 
+
 	async def friend_request_notif(self, event):
 		print(f"\nfriend_request_notif: {event}\n")
 		try:
@@ -196,7 +200,6 @@ class NotificationConsumer(BaseConsumer):
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
 
-	# Handler for accept_friend_request event
 	async def accept_request_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend_request',
@@ -205,7 +208,6 @@ class NotificationConsumer(BaseConsumer):
 			**event.get('notification')
 		}))
 
-	# ************************ for rejecting friend request ************************
 	async def reject_request_notif(self, event):
 		print(f"\nreject_request_notif: {event}\n")
 		await self.send(text_data=json.dumps({
@@ -213,6 +215,7 @@ class NotificationConsumer(BaseConsumer):
 			'success': event.get('success'),
 			'user_id': event.get('user_id'),
 		}))
+# ************************ END handlers for notificatins ************************ #
 
 	async def handle_event(self, data):
 		message_type = data.get('type')
@@ -229,9 +232,110 @@ class NotificationConsumer(BaseConsumer):
 		elif message_type == 'user_status_online':
 			await self.track_user_connection()
 		elif message_type == 'user_status_offline':
-			await self.untrack_user_connection() 
-   
-   
+			await self.untrack_user_connection()
+		elif message_type == 'block_user':
+			await self.block_user(data)
+		elif message_type == 'remove_block':
+			await self.remove_block(data)
+		
+
+	
+
+	async def remove_block(self, data):
+		user_id = data.get('to_user_id')
+		try:
+			# Create a fake request to call the RemoveBlockedFriend view
+			factory = APIRequestFactory()
+			request = factory.delete(f'/removeBlock/{user_id}')
+			request.customUser = self.user  # Add the user to the request
+			
+			# Get the view class
+			view = RemoveBlockedFriend.as_view()
+			
+			# Call the view using sync_to_async and get the response
+			response = await database_sync_to_async(view)(request, pk=user_id)
+			await database_sync_to_async(getattr)(response, 'render')()  # Ensure response is rendered
+			
+			response_data = {} if not hasattr(response, 'data') else response.data
+			status_code = response.status_code
+			
+			if status_code == 200:
+				unblocked_user = await database_sync_to_async(User.objects.get)(id=user_id)
+				
+				# Send notification to unblocked user
+				await self.send_notification_alert(user_id, {
+					'type': 'unblock_user',
+					'success': True,
+				})
+				
+			elif status_code == 404:
+				error_message = response_data.get('error', 'No blocking relationship found')
+				await self.send_notification_alert(self.user.id, {
+					'type': 'unblock_user',
+					'success': False,
+					'error': error_message
+				})
+			else:
+				error_message = response_data.get('error', 'Unknown error occurred')
+				await self.send_notification_alert(self.user.id, {
+					'type': 'unblock_user',
+					'success': False,
+					'error': error_message
+				})
+				
+		except Exception as e:
+			logger.error(f"\nError unblocking user: {e}\n")
+			await self.send_notification_alert(self.user.id, {
+				'type': 'unblock_user',
+				'success': False,
+				'error': str(e)
+			})
+
+
+	async def block_user(self, data):
+		user_id = data.get('to_user_id')
+		try:
+			# Create a fake request to call the BlockFriendshipView
+			factory = APIRequestFactory()
+			request = factory.post(f'/blockFriend/{user_id}')
+			request.customUser = self.user  # Add the user to the request
+			
+			# Get the view class
+			view = BlockFriendshipView.as_view()
+			
+			# Call the view using sync_to_async and get the response
+			response = await database_sync_to_async(view)(request, pk=user_id)
+			await database_sync_to_async(getattr)(response, 'render')()  # Ensure response is rendered
+			
+			response_data = {} if not hasattr(response, 'data') else response.data
+			status_code = response.status_code
+			
+			if status_code == 200:
+
+				blocked_user = await database_sync_to_async(User.objects.get)(id=user_id)
+				
+				# Send notification to blocked user
+				await self.send_notification_alert(user_id, {
+					'type': 'block_user',
+					'success': True,
+				})
+
+			else:
+				error_message = response_data.get('error', 'Unknown error occurred')
+				await self.send_notification_alert(self.user.id, {
+					'type': 'block_user',
+					'success': False,
+					'error': error_message
+				})
+				
+		except Exception as e:
+			logger.error(f"\nError blocking user: {e}\n")
+			await self.send_notification_alert(self.user.id, {
+				'type': 'block_user',
+				'success': False,
+				'error': str(e)
+			})
+
 	async def handle_accept_game(self, data):
 		print(f"\naccept_game: {data}\n")
 		to_user_id = data.get('to_user_id')

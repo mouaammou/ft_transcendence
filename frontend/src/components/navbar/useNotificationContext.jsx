@@ -5,6 +5,9 @@ import { useWebSocketContext } from '@components/websocket/websocketContext';
 
 const NOTIFICATION_TYPES = {
 	FRIENDSHIP: 'send_friend_request',
+  BLOCK: 'block_user',
+  REMOVE_FRIEND: 'remove_friend',
+  REMOVE_BLOCK: 'remove_block',
 	ACCEPT_FRIEND: 'accept_friend_request',
 	REJECT_FRIEND: 'reject_friend_request',
 	INVITE_GAME: 'invite_to_game',
@@ -131,10 +134,10 @@ export const NotificationProvider = ({ children }) => {
 
   // Handle new WebSocket messages
   useEffect(() => {
-    if (lastJsonMessage) {
+    if (isConnected) {
       handleNotifications(lastJsonMessage);
     }
-  }, [lastMessage]);
+  }, [lastMessage, isConnected, lastJsonMessage]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(
