@@ -106,9 +106,9 @@ def create_superuser():
 def run_server():
     print("[###### daphne ######] Starting server...")
     #cuurent directory is 
-    print('cuurnt dir: ->>>>>>> ', os.getcwd())
-    os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
-    # os.system("python3 manage.py runserver 0.0.0.0:8000")
+    # print('cuurnt dir: ->>>>>>> ', os.getcwd())
+    # os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
+    os.system("python3 manage.py runserver 0.0.0.0:8000")
 
 
 # Main function

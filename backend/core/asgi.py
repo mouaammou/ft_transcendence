@@ -11,10 +11,11 @@ import django
 django.setup() # keep this at the top, wh: to avoid django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
 
 import os
-from channels.security.websocket import AllowedHostsOriginValidator
+from channels.security.websocket import AllowedHostsOriginValidator, OriginValidator
 from channels.routing import URLRouter
 from channels.routing import ProtocolTypeRouter
 from django.core.asgi import get_asgi_application
+from django.conf import settings
 
 from authentication.routing import websocket_urlpatterns
 from game.middlewares import CookiesJWTAuthMiddleware
@@ -31,10 +32,15 @@ django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
-    'websocket':CookiesJWTAuthMiddleware( UserOnlineStatusMiddleware(
-            # URLRouter(websocket_urlpatterns),
-            # URLRouter(websocket_urlpatterns + routing.websocket_urlpatterns),
-            URLRouter(websocket_urlpatterns + game_urls + chat_urls + connect_four_urls),
-        ))
+    'websocket': OriginValidator(
+                    AllowedHostsOriginValidator(
+                        CookiesJWTAuthMiddleware(
+                            UserOnlineStatusMiddleware(
+                                URLRouter(websocket_urlpatterns + game_urls + chat_urls + connect_four_urls),
+                            ),
+                        ),
+                    ),
+                settings.CORS_ALLOWED_ORIGINS,
+                ),
 })
 
