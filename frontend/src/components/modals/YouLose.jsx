@@ -3,17 +3,15 @@ import React, { useEffect } from "react";
 const YouLose = ({ onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleClose();
-    }, 15000);
+      onClose();
+    }, 12000);
 
     return () => {
       clearTimeout(timer);
     };
   }, []);
 
-  const handleClose = () => {
-    onClose();
-  };
+  // 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">

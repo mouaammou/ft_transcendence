@@ -228,12 +228,6 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 		} catch (error) {
 
 		}
-
-		return () => {
-			setShowWinModal(false);
-			setShowLoseModal(false);
-			lastMessage = null;
-		}
 	}, [lastMessage, gameStartTime]);
 
 
