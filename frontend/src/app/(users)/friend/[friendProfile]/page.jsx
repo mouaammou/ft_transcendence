@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
-import { AreaChart, XAxis, YAxis, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
+import { AreaChart, XAxis, YAxis, Tooltip, Area,CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import { Toaster, toast } from 'react-hot-toast';
 
 ////////////////////////
@@ -150,7 +150,7 @@ export default function FriendProfile({ params }) {
 	const [profile, setProfile] = useState({});
 	const [matches, setMatches] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
-	const { profileData: data, setSelectedUser } = useAuth();
+	const { profileData: data, setSelectedUser, isAuth } = useAuth();
 	const [pongData, setPongData] = useState([]);
 	const [c4stats, setC4Stats] = useState([]);
 	const router = useRouter();
@@ -194,24 +194,14 @@ export default function FriendProfile({ params }) {
 	}, []);
 
 
+	
 	const fetchPongData = useCallback(async (userId) => {
 		try {
 			const response = await getData(`/pongstats/${userId}`);
 			if (response.status === 200) {
-				const formattedData = data.map(item => ({
-					date: item.date,
-					wins: item.wins,
-					losses: item.losses
-				}));
-				setPongData(formattedData);
+				setPongData(response.data);
 			}
-			console.log('Formatted pong data:', formattedData);
 		} catch (error) {
-			if (error.status === 404) {
-				// console.error('Resource not found:', error.data);
-			} else {
-				// console.error('Error fetching game history stats:', error);
-			}
 		}
 	}, []);
 
@@ -242,7 +232,7 @@ export default function FriendProfile({ params }) {
 	}, []);
 
 	useEffect(() => {
-		if (!profile.id) return;
+		if (!profile.id || !isAuth) return;
 		fetchProgressData(profile.id);
 		fetchPongData(profile.id);
 		fetchC4StatsData(profile.id);
@@ -641,7 +631,7 @@ export default function FriendProfile({ params }) {
 									</defs>
 									<XAxis dataKey="date" />
 									<YAxis />
-									{/* <CartesianGrid strokeDasharray="3 3" /> */}
+									<CartesianGrid strokeDasharray="3 3" />
 									<Tooltip />
 									<Area type="monotone" dataKey="losses" stroke="#d62929" fillOpacity={1} fill="url(#colorUv)" />
 									<Area type="monotone" dataKey="wins" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />

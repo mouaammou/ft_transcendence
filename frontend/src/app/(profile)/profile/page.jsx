@@ -17,7 +17,7 @@ import {useRouter} from 'next/navigation';
 const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 const Profile = () => {
-	const { profileData: data } = useAuth();
+	const { profileData: data, isAuth } = useAuth();
 	const [matches, setMatches] = useState([]);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
@@ -72,39 +72,20 @@ const Profile = () => {
 		} catch (error) {
 		}
 	}, []);
+
+	
 	const fetchPongData = useCallback(async (userId) => {
 		try {
-			const response = await fetch(`${baseUrl}/backend/pongstats/${userId}`, {
-				credentials: 'include', // Include cookies (credentials)
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			});
-			console.log('presponse fet ----------->:', response);
-			if (!response.ok) {
-				// Handle non-200 responses
-				const errorData = await response.json();
-				throw { status: response.status, data: errorData };
+			const response = await getData(`/pongstats/${userId}`);
+			if (response.status === 200) {
+				setPongData(response.data);
 			}
-
-			const data = await response.json();
-			const formattedData = data.map(item => ({
-				date: item.date,
-				wins: item.wins,
-				losses: item.losses
-			}));
-			setPongData(formattedData);
 		} catch (error) {
-			if (error.status === 404) {
-
-			} else {
-
-			}
 		}
 	}, []);
 
 	useEffect(() => {
-		if (!data.id) return;
+		if (!data.id || !isAuth) return;
 		fetchGameHistory(data.id);
 		fetchProgressData(data.id);
 		fetchC4StatsData(data.id);
@@ -341,7 +322,7 @@ const Profile = () => {
 									</defs>
 									<XAxis dataKey="date" />
 									<YAxis />
-									{/* <CartesianGrid strokeDasharray="3 3" /> */}
+									<CartesianGrid strokeDasharray="3 3" />
 									<Tooltip />
 									<Area type="monotone" dataKey="losses" stroke="#d62929" fillOpacity={1} fill="url(#colorUv)" />
 									<Area type="monotone" dataKey="wins" stroke="#82ca9d" fillOpacity={1} fill="url(#colorPv)" />
