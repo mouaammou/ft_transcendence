@@ -103,6 +103,7 @@ def create_superuser():
     except Exception as e:
         print(f"Error creating superuser: {e}")
 
+
 def run_server():
     print("[###### daphne ######] Starting server...")
     #cuurent directory is 

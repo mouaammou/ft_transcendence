@@ -1,44 +1,45 @@
-import { useClient } from 'next/client';
+// import { useClient } from 'next/client';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LocalGameWinner from '@/components/modals/LocalGameWinner';
+import useWebSocket from 'react-use-websocket';
+// import { set } from 'date-fns';
 
 
 
-export default function PongGame({ setScore1, setScore2, setMaxScore, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1}) {
+export default function PongGame({ setScore1, setScore2, setMaxScore, title, setTitle, setLeftNickname, playStart, setRightNickname, leftNickname, rightNickname, tournament_id=-1, setDisabled}) {
 	const canvasRef = useRef(null);
-	const websocketRef = useRef(null);
+	const onMessageCallback = useRef(null);
 	const router = useRouter();
 	const [winner, setWinner] = useState('');
+  const [reloadGame, setReloadGame] = useState(false);
   const allowedKeys = ['ArrowUp', 'ArrowDown', 'w', 's', 'p', 'W', 'S', 'P'];
-	// const [leftNickname, setleftNickname] = useState("default");
-	// const [rightNickname, setrightNickname] = useState("default");
-	// const [socket, setSocket] = useRef(null);
+  const { sendMessage, lastMessage, lastJsonMessage, readyState } = useWebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/ws/local/`, {
+		shouldReconnect: () => true, // Automatically reconnect on disconnection
+    onOpen: () => {
+      setDisabled(false);
+    }
+	});
 
   const websocketSend = (data_obj) => {
-    if (!websocketRef.current)
-        return ;
-    if (websocketRef.current.readyState !== WebSocket.OPEN)
-        return ;
-    websocketRef.current.send(JSON.stringify(data_obj));
+    sendMessage(JSON.stringify(data_obj), false);
   }
 
-  const connectWebsocket = () => {
-    if (!websocketRef.current ||
-      !websocketRef.current.readyState  != WebSocket.OPEN ||
-      websocketRef.current.readyState != WebSocket.CONNECTING)
+  useEffect(() => {
+    if (lastJsonMessage && Object.keys(lastJsonMessage).length !== 0 && onMessageCallback.current)
     {
-      websocketRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/ws/local/`);
+      try {
+        onMessageCallback.current(lastJsonMessage);
+      } catch (error) {
+        setReloadGame(!reloadGame);
+      }
     }
-  }
+  }, [lastJsonMessage]);
 
   
 
 
 	useEffect(() => {
-    connectWebsocket();
-
-
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
 
@@ -91,11 +92,6 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 
     let num = 0;
     let number = 1;
-    // const drawNet = () => {
-    //   for (let y = 0; y < canvas.height; y += 45) {
-    //     drawRect(net.x, y, net.width, net.height, net.color);
-    //   }
-    // };
     const drawNet = () => {
       const netWidth = 4;
       const netHeight = 20;
@@ -105,12 +101,6 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       }
     };
 
-    // const drawEllipse = () => {
-    // }
-    // const drawRect = (x, y, width, height, color) => {
-    //   context.fillStyle = color;
-    //   context.fillRect(x, y, width, height);
-    // };
     const drawRect = (x, y, width, height, color) => {
       context.shadowBlur = 20;
       context.shadowColor = color;
@@ -119,22 +109,6 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       context.shadowBlur = 0; // Reset shadow
     };
 
-    // const resetBall = () => {
-    // 	ball.x = canvas.width / 2;
-    // 	ball.y = canvas.height / 2;
-    // 	ball.speed = 8;
-    // 	ball.velocityX = 5;
-    // 	ball.velocityY = 5;
-    // 	ball.velocityX = -ball.velocityX;
-    // }
-
-    // const drawCircle = (x, y, radius, color) => {
-    //   context.fillStyle = color;
-    //   context.beginPath();
-    //   context.arc(x, y, radius, 0, Math.PI * 2, false);
-    //   context.closePath();
-    //   context.fill();
-    // };
     const drawCircle = (x, y, radius, color) => {
       context.shadowBlur = 20;
       context.shadowColor = color;
@@ -145,7 +119,6 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       context.shadowBlur = 0; // Reset shadow
     };
 
-    // Draw game elements
     const drawGame = () => {
       // Clear the canvas
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -155,17 +128,30 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       // Draw paddles
       drawRect(user.x, user.y, user.width, user.height, user.color);
       drawRect(computer.x, computer.y, computer.width, computer.height, computer.color);
-      // drawRect(rectBall.x, rectBall.y, rectBall.width, rectBall.height, rectBall.color);
 
       // Draw the ball
       drawCircle(ball.x, ball.y, ball.radius, ball.color);
       context.closePath();
     };
+    let defaultConfig = {
+      "window_size": [1350.0, 600.0],
+      "paddles_size": [15, 171.42857142857142],
+      "left_paddle_pos": [0, 214.28571428571428],
+      "right_paddle_pos": [1335.0, 214.28571428571428],
+      "ball_size": [25, 25],
+      "ball_pos": [662.5, 287.5],
+      "left_player_score": 0,
+      "right_player_score": 0,
+      "max_score": 3,
+      "left_nickname": null,
+      "right_nickname": null,
+      "title": null,
+      "local_game_type": null,
+      "tournament_id": null
+    };
+    // let defaultConfig = {};
 
-    let gameConfig = {};
-
-		const handleIncomingMessages = function (message) {
-			const data = JSON.parse(message.data);
+		const handleIncomingMessages = function (data) {
 			if (data.update)
 			{
 				if (data.update.left_paddle_pos)
@@ -178,7 +164,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 					computer.x = data.update.right_paddle_pos[0];
 					computer.y = data.update.right_paddle_pos[1];
 				}
-				ball.radius = gameConfig.ball_size[0] / 2;
+				ball.radius = defaultConfig.ball_size[0] / 2;
 				ball.x = data.update.ball_pos[0] + ball.radius;
 				ball.y = data.update.ball_pos[1] + ball.radius;
 				if (data.update.left_player_score)
@@ -199,47 +185,44 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 				{
 					if (data.update.finished === 'left_player')
 						setWinner(leftNickname);
-					else if (data.update.finished === 'right_player')
+          else if (data.update.finished === 'right_player')
 						setWinner(rightNickname);
+          setDisabled(false);
 				}
 				drawGame();
-
 			}
 			else if (data.config)
 			{
-
-				gameConfig = data.config;
-				canvas.width = gameConfig.window_size[0];
-				canvas.height = gameConfig.window_size[1];
+				defaultConfig = data.config;
+				canvas.width = defaultConfig.window_size[0];
+				canvas.height = defaultConfig.window_size[1];
 				net.x = canvas.width / 2 - 2;
-				computer.width = gameConfig.paddles_size[0];
-				computer.height = gameConfig.paddles_size[1];
-				user.width = gameConfig.paddles_size[0];
-				user.height = gameConfig.paddles_size[1];
-				user.x = gameConfig.left_paddle_pos[0];
-				user.y = gameConfig.left_paddle_pos[1];
-				computer.x = gameConfig.right_paddle_pos[0];
-				computer.y = gameConfig.right_paddle_pos[1];
-				ball.radius = gameConfig.ball_size[0] / 2;
-				ball.x = gameConfig.ball_pos[0] + ball.radius;
-				ball.y = gameConfig.ball_pos[1] + ball.radius;
-				ball.radius = gameConfig.ball_size[0] / 2;
-				user.score = gameConfig.left_player_score;
-				setScore2(score2 => gameConfig.left_player_score);
-				computer.score = gameConfig.right_player_score;
-				setScore1(score1 => gameConfig.right_player_score);
+				computer.width = defaultConfig.paddles_size[0];
+				computer.height = defaultConfig.paddles_size[1];
+				user.width = defaultConfig.paddles_size[0];
+				user.height = defaultConfig.paddles_size[1];
+				user.x = defaultConfig.left_paddle_pos[0];
+				user.y = defaultConfig.left_paddle_pos[1];
+				computer.x = defaultConfig.right_paddle_pos[0];
+				computer.y = defaultConfig.right_paddle_pos[1];
+				ball.radius = defaultConfig.ball_size[0] / 2;
+				ball.x = defaultConfig.ball_pos[0] + ball.radius;
+				ball.y = defaultConfig.ball_pos[1] + ball.radius;
+				ball.radius = defaultConfig.ball_size[0] / 2;
+				user.score = defaultConfig.left_player_score;
+				setScore2(score2 => defaultConfig.left_player_score);
+				computer.score = defaultConfig.right_player_score;
+				setScore1(score1 => defaultConfig.right_player_score);
         if (data.config.max_score)
         {
           setMaxScore(data.config.max_score);
         }
         if (data.config.local_game_type === 'tournament')
         {
-
-
           router.push(`/l_game/${data.config.tournament_id}`);
-        } else if (data.config.local_game_type === 'regular')
-          {
-
+        } 
+        else if (data.config.local_game_type === 'regular')
+        {
           router.push(`/l_game`);
         }
 				if (data.config.left_nickname)
@@ -264,7 +247,6 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
         return;
       }
       event.preventDefault();
-      // socket.send(JSON.stringify({ onPress: event.key.trim() }));
       websocketSend({ onPress: event.key.trim() });
     };
 
@@ -274,27 +256,16 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
         return;
       }
       event.preventDefault();
-      // socket.send(JSON.stringify({ onRelease: event.key.trim() }));
       websocketSend({ onRelease: event.key.trim() });
     };
-
-    const handleWebsocketOpen  = (event) => {
-      websocketRef.current.onmessage = handleIncomingMessages;
-      drawGame();
-    }
+    onMessageCallback.current = handleIncomingMessages;
 
     function sendVisibilityStatus() {
-
-      // if (conectionOn === true) {
-
       let isTabFocused = canvasRef.current.visibilityState === 'visible';
-      // socket.send(JSON.stringify({ tabFocused: isTabFocused }));
-      websocketSend({ tabFocused: isTabFocused });
-      // }
+      sendMessage(JSON.stringify({ tabFocused: isTabFocused }));
     }
 
     // Event listeners
-    websocketRef.current.addEventListener('open', handleWebsocketOpen);
 		document.addEventListener('keydown', handleKeyDown);
 		document.addEventListener('keyup', handleKeyUp);
 		document.addEventListener('visibilitychange', sendVisibilityStatus);
@@ -304,10 +275,8 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 			document.removeEventListener('keydown', handleKeyDown);
 			document.removeEventListener('keyup', handleKeyUp);
 			document.removeEventListener('visibilitychange', sendVisibilityStatus);
-      if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN )
-        websocketRef.current.close();
 		};
-	}, [winner, leftNickname, rightNickname, playStart]); // to reset to default
+	}, [winner, leftNickname, rightNickname, playStart, reloadGame]); // to reset to default
 	return (
     <>
       {winner && <LocalGameWinner reset={() => setWinner('')} winner={winner} tournament_id={tournament_id} />}

@@ -10,14 +10,13 @@ import { FaListUl } from "react-icons/fa";
 import { TbDeviceGamepad3 } from "react-icons/tb";
 
 
-const TopBar = ({activeIndex=0, disable=false}) => {
+const TopBar = ({activeIndex=0, disabled=false}) => {
 
     return (
         <div className="flex max-md:flex-col justify-center w-full h-fit gap-x-4 bg-white/10 text-white/75 border-t">
             <Link
-                disable={disable}
-                dis
-                href={"/l_game"}
+                onClick={(e) => disabled && e.preventDefault()}
+                href={disabled?"#" : "/l_game"}
                 className={`flex items-center justify-center ${activeIndex === 0?"text-blue-400":""} hover:text-blue-400 text-sm w-full sm:w-56 px-4 py-2  font-bold font-mono hover:opacity-90 uppercase text-center`}
             >
                  <TbDeviceGamepad3 className='h-6 w-auto pr-1' />
@@ -25,8 +24,8 @@ const TopBar = ({activeIndex=0, disable=false}) => {
                  Game
             </Link>
             <Link
-                disable={disable}
-                href={"/local_game/tournament"}
+                onClick={(e) => disabled && e.preventDefault()}
+                href={disabled? "#" : "/local_game/tournament"}
                 className={`flex items-center justify-center ${activeIndex === 1?"text-blue-400":""} hover:text-blue-400 text-sm w-full sm:w-56 px-4 py-2 font-bold font-mono hover:opacity-90 uppercase text-center`}
             >
                 <IoList className='h-6 w-auto pr-1' />

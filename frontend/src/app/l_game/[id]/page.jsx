@@ -153,6 +153,7 @@ const GamePage = ({params}) => {
 					setTitle={setTitle}
 					tournament_id={tournament_id}
 					playStart={playStart}
+					setDisabled={setDisabled}
 				/>
 				<div className="flex w-full h-fit justify-center items-center text-2xl  max-sm:text-sm py-4 capitalize break-all">
 					{title}
