@@ -38,9 +38,8 @@ export default function Board({
   const newboard = '/board.svg';
   return (
     <div>
-      {/* <img src={mobileImg} alt="" /> */}
       <svg
-        className="lg:hidden"
+        className="lg:hidden md:mt-40 sm:mt-20 mt-10 w-full"
         width="283"
         height="600"
         viewBox="0 0 283 632"
@@ -423,7 +422,7 @@ export default function Board({
       </svg>
 
       <svg
-        className="hidden lg:flex "
+        className="hidden lg:flex w-full max-w-[1010px] h-auto"
         width="1010"
         height="700"
         viewBox="0 0 1310 741"

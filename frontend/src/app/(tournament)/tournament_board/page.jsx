@@ -217,8 +217,6 @@ export default function TournamentBoardPage() {
       <div className="flex flex-col justify-evenly items-center  p-4 lg:p-12  gap-8">
         <Board {...imageUrls} {...userNames} />
         <button
-          // className="hidden md:block font-bold text-slate-950 md:relative md:text-[16px] md:w-[114px]
-          //          md:h-[32px] md:border-white  md:rounded-xl md:bg-gray-200"
           className='custom-button w-fit'
           onClick={leaveTournament}
         >
@@ -227,7 +225,7 @@ export default function TournamentBoardPage() {
         {fulfilled && profileData.username === organizerUsername && (
           <button
             onClick={startTournament}
-            className="relative text-[16px] w-[114px] h-8  p-[2px]  border-white  rounded-xl bg-blue-950">
+            className="relative custom-button w-fit">
               Start
           </button>
         )}

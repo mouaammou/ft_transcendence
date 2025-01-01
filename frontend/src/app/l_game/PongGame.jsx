@@ -151,9 +151,28 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
       "local_game_type": null,
       "tournament_id": null
     };
+    canvas.width = defaultConfig.window_size[0];
+    canvas.height = defaultConfig.window_size[1];
+    net.x = canvas.width / 2 - 2;
+    computer.width = defaultConfig.paddles_size[0];
+    computer.height = defaultConfig.paddles_size[1];
+    user.width = defaultConfig.paddles_size[0];
+    user.height = defaultConfig.paddles_size[1];
+    user.x = defaultConfig.left_paddle_pos[0];
+    user.y = defaultConfig.left_paddle_pos[1];
+    computer.x = defaultConfig.right_paddle_pos[0];
+    computer.y = defaultConfig.right_paddle_pos[1];
+    ball.radius = defaultConfig.ball_size[0] / 2;
+    ball.x = defaultConfig.ball_pos[0] + ball.radius;
+    ball.y = defaultConfig.ball_pos[1] + ball.radius;
+    ball.radius = defaultConfig.ball_size[0] / 2;
+    user.score = defaultConfig.left_player_score;
+    drawGame();
     // let defaultConfig = {};
 
 		const handleIncomingMessages = function (data) {
+
+      
 			if (data.update)
 			{
 				if (data.update.left_paddle_pos)

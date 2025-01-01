@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 
 
 
-
-const YouWin = ({ onClose }) => {
+const YouWin = ({ onClose, gameType }) => {
   const intervalRef = useRef(null);
   const animationPlayed = useRef(false);
 
@@ -14,6 +13,16 @@ const YouWin = ({ onClose }) => {
   const randomInRange = (min, max) => {
     return Math.random() * (max - min) + min;
   };
+
+  const handleCloseLocal = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      confetti.reset();
+    }
+    onClose();
+  };
+
+
 
   // Function for the confetti celebration
   const winnerCelebration = () => {
@@ -50,18 +59,21 @@ const YouWin = ({ onClose }) => {
   useEffect(() => {
     winnerCelebration();
     
-    const timer = setTimeout(() => {
-      handleClose();
-    }, 12000);
-
-    return () => {
-      clearTimeout(timer);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        confetti.reset();
-      }
-    };
-  }, []);
+    // Only auto-close for non-tournament games
+    if (gameType === 'tournament') {
+      const timer = setTimeout(() => {
+        handleCloseLocal();
+      }, 12000);
+      
+      return () => {
+        clearTimeout(timer);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          confetti.reset();
+        }
+      };
+    }
+  }, [gameType]);
 
   const handleClose = () => {
     if (intervalRef.current) {
@@ -74,10 +86,6 @@ const YouWin = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
       <div className="text-center">
-      {/* <Confetti
-      width={2000}
-      height={2000}
-    /> */}
         <h1 className="text-white font-semibold font-balsamiq text-4xl md:text-5xl">
           <span className='pr-2 text-green-400'></span>Congratulations You Win 🎉
         </h1>

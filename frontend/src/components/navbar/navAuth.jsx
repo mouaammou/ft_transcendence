@@ -21,80 +21,87 @@ const Logo = () => (
 	</div>
   );
 
-const UserDropdown = ({ isOpen, setIsOpen, data, Logout }) => (
-  <div className="relative">
-    <button
-      type="button"
-      onClick={() => setIsOpen(!isOpen)}
-      className="overflow-hidden flex rounded-full border-2 border-gray-300 transition-all duration-300 hover:border-gray-400"
-    >
-      <img 
-        className="w-10 h-10 sm:w-12 sm:h-12 object-cover" 
-        src={data.avatar} 
-        alt="user-avatar" 
-      />
-    </button>
-
-    {isOpen && (
-      <div
-        onClick={() => setIsOpen(false)}
-        className="z-50 absolute right-0 mt-4 text-base divide-y rounded-lg shadow-2xl w-56 bg-white border border-gray-100"
-      >
-        <div className="px-4 py-3">
-          <span className="block text-sm font-semibold text-gray-900">{data.username}</span>
-          <span className="block text-sm truncate text-gray-500">{data.email}</span>
-        </div>
-        <ul className="py-2">
-          {[
-            { href: '/profile', label: 'Profile' },
-            { href: '/settings', label: 'Settings' },
-            { href: '/tournament', label: 'Create Tournament' },
-            { href: '/play', label: 'Start Game' },
-          ].map(({ href, label }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                {label}
-              </Link>
-            </li>
-          ))}
-          <li>
-            <button
-              onClick={Logout}
-              className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-            >
-              Logout
-              <IoLogOut className="ml-2 text-lg" />
-            </button>
-          </li>
-        </ul>
-      </div>
-    )}
-  </div>
-);
-
-const AuthenticatedNav = ({ data, Logout }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const UserDropdown = ({ isOpen, setIsOpen, data, Logout }) => {
+    const handleMouseLeave = () => {
+      setIsOpen(false);
+    };
   
-  return (
-    <div className="flex items-center h-16 bg-white px-4 sm:px-6 shadow-sm">
-      <div className="w-[200px] sm:w-[400px]">
+    return (
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="relative overflow-hidden flex rounded-full ring-2 ring-gray-700 hover:ring-blue-500 transition-all duration-300 group"
+        >
+          <img 
+            className="w-10 h-10 sm:w-12 sm:h-12 object-cover transform group-hover:scale-105 transition-transform duration-300" 
+            src={data.avatar} 
+            alt="user-avatar" 
+          />
+        </button>
+  
+        {isOpen && (
+          <div className="absolute right-0 mt-3 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700/50 overflow-hidden z-50 animate-fadeIn" onMouseLeave={handleMouseLeave}>
+            <div className="p-4 border-b border-gray-700/50 bg-gray-800/90">
+              <p className="text-gray-100 font-semibold">{data.username}</p>
+              <p className="text-gray-400 text-sm truncate mt-0.5">{data.email}</p>
+            </div>
+            
+            <nav className="p-2">
+              {[
+                { label: 'Profile', href: '/profile', icon: '👤' },
+                { label: 'Settings', href: '/settings', icon: '⚙️' },
+                { label: 'Create Tournament', href: '/tournament', icon: '🏆' },
+                { label: 'Start Game', href: '/play', icon: '🎮' },
+              ].map(({ label, href, icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex items-center px-4 py-2.5 text-gray-300 hover:bg-gray-700/50 rounded-lg transition-colors group"
+                >
+                  <span className="mr-3 text-lg">{icon}</span>
+                  <span className="group-hover:text-gray-100 transition-colors">{label}</span>
+                </Link>
+              ))}
+              
+              <div className="px-2 pt-2 mt-2 border-t border-gray-700/50">
+                <button
+                  onClick={Logout}
+                  className="w-full flex items-center px-4 py-2.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors group"
+                >
+                  <IoLogOut className="mr-3 text-lg group-hover:text-red-300 transition-colors" />
+                  <span className="group-hover:text-red-300 transition-colors">Logout</span>
+                </button>
+              </div>
+            </nav>
+          </div>
+        )}
+      </div>
+    );
+  };
+  
+  const AuthenticatedNav = ({ data, Logout }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    
+    return (
+      <div className="flex items-center h-20 bg-gray-800 px-6 shadow-lg">
         <SearchProfileComponent />
-      </div>
-      <div className="ml-auto flex items-center space-x-4">
-        <div className="flex items-center justify-center">
+        <div className="ml-auto flex items-center space-x-6">
           <NotificationBell />
+          <div className="hidden md:block">
+            <h3 className="text-gray-200 font-medium">{data.username}</h3>
+          </div>
+          <UserDropdown 
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen} 
+            data={data} 
+            Logout={Logout} 
+          />
         </div>
-        <div className="hidden md:block">
-          <h3 className="text-gray-900 font-medium">{data.username}</h3>
-        </div>
-        <UserDropdown isOpen={isOpen} setIsOpen={setIsOpen} data={data} Logout={Logout} />
       </div>
-    </div>
-  );
-};
+    );
+  };
+  
 
 const UnauthenticatedNav = ({ loginPage }) => (
 	<div className="container p-[0px] mx-auto flex flex-row items-center justify-between sm:space-y-0">

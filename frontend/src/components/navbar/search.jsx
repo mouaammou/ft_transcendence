@@ -1,24 +1,20 @@
-'use client';
-
 import { getData } from '@/services/apiCalls';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useDebounce } from 'use-debounce';
 
-const SearchedItem = ({ result , setResults}) => {
+const SearchedItem = ({ result, setResults }) => {
   return (
-  <Link href={`/friend/${result.username}`} onClick={() => setResults({})}>
-    <div className="flex flex-col sm:flex-row items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors duration-200 rounded-lg shadow-sm bg-white w-full sm:w-96 my-1">
-      <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+    <Link href={`/friend/${result.username}`} onClick={() => setResults({})}>
+      <div className="flex items-center space-x-4 p-3 cursor-pointer hover:bg-gray-700/50 transition-colors duration-200 rounded-lg border border-gray-700/50 bg-gray-800 w-full my-1">
         <img
           src={result.avatar}
           alt="Profile"
-          className="w-10 h-10 rounded-full object-cover border border-gray-200"
+          className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-700 group-hover:ring-blue-500"
         />
-        <span className="font-medium text-gray-800 text-sm">{result.username}</span>
+        <span className="font-medium text-gray-200 text-sm group-hover:text-white">{result.username}</span>
       </div>
-    </div>
-  </Link>
+    </Link>
   );
 };
 
@@ -53,16 +49,15 @@ const SearchProfileComponent = () => {
     }
     if (debouncedSearchTerm) {
       searchQuery();
-    };
+    }
   }, [debouncedSearchTerm, searchTerm]);
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-2xl">
       <div className="relative w-full">
-        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+        <div className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
           <svg
-            className="w-4 h-4 text-gray-500"
-            aria-hidden="true"
+            className="w-5 h-5 text-gray-400"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 20 20"
@@ -78,21 +73,24 @@ const SearchProfileComponent = () => {
         </div>
         <input
           type="search"
-          id="default-search"
-          className="block w-full ps-10 py-2.5 text-gray-900 text-sm rounded-lg bg-gray-50/50 border border-gray-200 focus:border-gray-300 focus:outline-none transition-colors duration-200"
-          placeholder="Search for users, friends, tournaments"
+          className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-lg bg-gray-700/50 border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200"
+          placeholder="Search for users, friends, tournaments..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
 
-        {/* Results of Search */}
-        <div className="absolute top-12 left-0 bg-transparent z-40">
-          {loading &&
-            results.length > 0 &&
-            results.map((result, index) => <SearchedItem key={index} result={result} setResults={setResults}
-            />)
-          }
-        </div>
+        {/* Results Dropdown */}
+        {loading && results.length > 0 && (
+          <div className="absolute top-full left-0 w-full mt-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
+            <div className="max-h-[300px] overflow-y-auto">
+              {results.map((result, index) => (
+                <div key={index} className="group">
+                  <SearchedItem result={result} setResults={setResults} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,13 +5,21 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
 from .redis_connection import redis_conn
-from .models import Friendship, Notification
+from .models import Friendship, Notification, CustomUser
 from django.db.models import Q
 from .serializers import NotificationSerializer
 from django.db import transaction, DatabaseError
 from asgiref.sync import sync_to_async
 import time
+from rest_framework.test import APIRequestFactory
+from authentication.views import BlockFriendshipView  # Update with your actual import path
+from authentication.views import RemoveBlockedFriend  # Update with your actual import path
+from authentication.views import RemoveFriend  # Update with your actual import path
 # from .notif_consumers import notification_consumers 
+
+from rest_framework.response import Response
+from rest_framework import status
+
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -33,11 +41,6 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			self.user_windows = f"user_{self.user.id}"
 			self.user_data = UserSerializer(self.user).data
 			await self.add_user_to_groups()
-        # Add the consumer to the notification_consumers dictionary
-		# if self.user.id in notification_consumers:
-		# 	notification_consumers[self.user.id].append(self.channel_name)
-		# else:
-		# 	notification_consumers[self.user.id] = [self.channel_name]
 
 	async def disconnect(self, close_code):
 		print("\n DISCONNECT\n")
@@ -161,9 +164,32 @@ class NotificationConsumer(BaseConsumer):
 			)
 		except Exception as e:
 			logger.error(f"\nError sending notification alert: {e}\n")
- 
-	# Handler for friend_request_received event
-  
+
+# ************************ handlers for notificatins ************************
+
+	async def block_user_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'block_user',
+			'success': event.get('success'),
+			'blocked': event.get('blocked'),
+			'error': event.get('error'),
+			'message': event.get('message'),
+		}))
+	
+	async def remove_block_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'remove_block',
+			'success': event.get('success'),
+			'user_id': event.get('user_id'),
+		}))
+	
+	async def remove_friend_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'remove_friend',
+			'success': event.get('success'),
+			'user_id': event.get('user_id'),
+		}))
+
 	async def accept_game_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_game',
@@ -177,14 +203,14 @@ class NotificationConsumer(BaseConsumer):
 			'success': event.get('success'),
 			**event.get('notification')
 		}))
- 
+
 	async def invite_to_game_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'invite_to_game',
 			'success': event.get('success'),
 			**event.get('notification')
 		}))
- 
+
 	async def friend_request_notif(self, event):
 		print(f"\nfriend_request_notif: {event}\n")
 		try:
@@ -196,7 +222,6 @@ class NotificationConsumer(BaseConsumer):
 		except Exception as e:
 			logger.error(f"Error handling friend_request_received: {e}")
 
-	# Handler for accept_friend_request event
 	async def accept_request_notif(self, event):
 		await self.send(text_data=json.dumps({
 			'type': 'accept_friend_request',
@@ -205,7 +230,14 @@ class NotificationConsumer(BaseConsumer):
 			**event.get('notification')
 		}))
 
-	# ************************ for rejecting friend request ************************
+	async def accepted_notif(self, event):
+		await self.send(text_data=json.dumps({
+			'type': 'accepted_done',
+			'success': event.get('success'),
+			'user_id': event.get('user_id'),
+			**event.get('notification')
+		}))
+
 	async def reject_request_notif(self, event):
 		print(f"\nreject_request_notif: {event}\n")
 		await self.send(text_data=json.dumps({
@@ -213,6 +245,7 @@ class NotificationConsumer(BaseConsumer):
 			'success': event.get('success'),
 			'user_id': event.get('user_id'),
 		}))
+# ************************ END handlers for notificatins ************************ #
 
 	async def handle_event(self, data):
 		message_type = data.get('type')
@@ -229,9 +262,205 @@ class NotificationConsumer(BaseConsumer):
 		elif message_type == 'user_status_online':
 			await self.track_user_connection()
 		elif message_type == 'user_status_offline':
-			await self.untrack_user_connection() 
-   
-   
+			await self.untrack_user_connection()
+		elif message_type == 'block_user':
+			await self.block_user(data)
+		elif message_type == 'remove_block':
+			await self.remove_block(data)
+		elif message_type == 'remove_friend':
+			await self.remove_friend(data)
+		
+
+
+	async def remove_friend(self, data):
+		user_id = data.get('to_user_id')
+		try:
+			@database_sync_to_async
+			def get_friendship():
+				return Friendship.objects.filter(
+					Q(sender_id=self.user.id, receiver_id=user_id) | 
+					Q(sender_id=user_id, receiver_id=self.user.id)
+				).first()
+
+			# Get friendship
+			friendship = await get_friendship()
+
+			if not friendship:
+				await self.send_notification_alert(self.user.id, {
+					'type': 'remove_friend_notif',
+					'success': False,
+					'message': 'Friendship not found'
+				})
+				return
+
+			# Check if friendship is in accepted status
+			if friendship.status != 'accepted':
+				await self.send_notification_alert(self.user.id, {
+					'type': 'remove_friend_notif',
+					'success': False,
+					'message': 'This request has already been processed'
+				})
+				return
+
+			@database_sync_to_async
+			def delete_friendship():
+				friendship.delete()  # This will also delete the reciprocal friendship due to your model's delete method
+
+			# Delete the friendship
+			await delete_friendship()
+
+			# Send notification to removed friend
+			await self.send_notification_alert(user_id, {
+				'type': 'remove_friend_notif',
+				'success': True,
+				'message': 'You have been removed from friends list'
+			})
+			
+			# Send confirmation to user who removed
+			await self.send_notification_alert(self.user.id, {
+				'type': 'remove_friend_notif',
+				'success': True,
+				'message': 'Friend removed from friends list'
+			})
+
+		except Exception as e:
+			logger.error(f"\nError removing friend: {e}\n")
+			await self.send_notification_alert(self.user.id, {
+				'type': 'remove_friend_notif',
+				'success': False,
+				'error': str(e)
+			})
+
+
+	async def remove_block(self, data):
+		user_id = data.get('to_user_id')
+		try:
+			@database_sync_to_async
+			def get_blocking_friendship():
+				return Friendship.objects.filter(
+					Q(sender_id=self.user.id, receiver_id=user_id, status='blocking') |
+					Q(sender_id=user_id, receiver_id=self.user.id, status='blocked') |
+					Q(sender_id=self.user.id, receiver_id=user_id, status='blocked') |
+					Q(sender_id=user_id, receiver_id=self.user.id, status='blocking')
+				).first()
+
+			# Get the blocking friendship
+			friendship = await get_blocking_friendship()
+
+			if not friendship:
+				await self.send_notification_alert(self.user.id, {
+					'type': 'remove_block_notif',
+					'success': False,
+					'message': 'No blocking relationship found'
+				})
+				return
+
+			@database_sync_to_async
+			def accept_friendship():
+				friendship.accept()  # This will handle both statuses and reciprocal relationship
+
+			# Execute the unblocking
+			await accept_friendship()
+
+			# Send notifications to both users
+			await self.send_notification_alert(user_id, {
+				'type': 'remove_block_notif',
+				'success': True,
+				'message': 'Block removed successfully, friendship accepted'
+			})
+			
+			await self.send_notification_alert(self.user.id, {
+				'type': 'remove_block_notif',
+				'success': True,
+				'message': 'Block removed successfully, friendship accepted'
+			})
+
+		except Exception as e:
+			logger.error(f"\nError unblocking user: {e}\n")
+			await self.send_notification_alert(self.user.id, {
+				'type': 'remove_block_notif',
+				'success': False,
+				'error': str(e)
+			})
+
+
+	async def block_user(self, data):
+		user_id = data.get('to_user_id')
+		try:
+			@database_sync_to_async
+			def get_friendship():
+				return Friendship.objects.filter(
+					Q(sender=self.user, receiver_id=user_id) |
+					Q(sender_id=user_id, receiver=self.user)
+				).first()
+
+			# Get friendship using the wrapped function
+			friendship = await get_friendship()
+
+			if not friendship:
+				await self.send_notification_alert(self.user.id, {
+					'type': 'block_user_notif',
+					'success': False,
+					'message': 'Cannot block: No friendship exists between users'
+				})
+				return
+
+			# If already blocking/blocked, don't do anything
+			if friendship.status in ['blocking', 'blocked']:
+				await self.send_notification_alert(self.user.id, {
+					'type': 'block_user_notif',
+					'success': False,
+					'message': 'Already blocked'
+				})
+				return
+
+			@database_sync_to_async
+			def block_friendship():
+				# If user is receiver, swap positions
+				if friendship.sender != self.user:
+					# Store the users
+					sender = friendship.sender
+					receiver = friendship.receiver
+					# Delete current friendship
+					friendship.delete()
+					# Create new friendship with correct positions
+					new_friendship = Friendship.objects.create(
+						sender=receiver,
+						receiver=sender
+					)
+					new_friendship.block()  # This will handle status and received_status
+					return new_friendship
+				else:
+					friendship.block()  # This will handle status and received_status
+					return friendship
+
+			# Execute the blocking
+			updated_friendship = await block_friendship()
+
+			# Send notifications
+			await self.send_notification_alert(user_id, {
+				'type': 'block_user_notif',
+				'success': True,
+				'message': 'You have been blocked',
+				'blocked': True
+			})
+			
+			await self.send_notification_alert(self.user.id, {
+				'type': 'block_user_notif',
+				'success': True,
+				'message': 'User blocked successfully'
+			})
+
+		except Exception as e:
+			logger.error(f"\nError blocking user: {e}\n")
+			await self.send_notification_alert(self.user.id, {
+				'type': 'block_user_notif',
+				'success': False,
+				'error': str(e)
+			})
+
+
+
 	async def handle_accept_game(self, data):
 		print(f"\naccept_game: {data}\n")
 		to_user_id = data.get('to_user_id')
@@ -325,6 +554,13 @@ class NotificationConsumer(BaseConsumer):
 		success, message, notif = await self.accept_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
 		if (success):
+			await self.send_notification_alert(self.user.id, {
+				'type': 'accepted_notif',
+				'success': success,
+				'user_id': notif_data.get('id'),
+				'notification': notif_data,
+			})
+
 			await self.send_notification_alert(to_user_id, {
 				'type': 'accept_request_notif',
 				'success': success,
