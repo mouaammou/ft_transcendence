@@ -34,7 +34,7 @@ const UserCard = ({ user, listType, onUserSelect, typingUsers, lastMessage , cur
       .trim(); // Trim extra spaces
   };
   // Check if the user is typing
-  const isTyping = typingUsers.includes(user.username);
+  const isTyping = typingUsers.includes(user.id);
 
   // Dynamic timestamp state
   const [formattedTimestamp, setFormattedTimestamp] = useState(

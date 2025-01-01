@@ -36,13 +36,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data.get('message')
-        receiver_username = data.get('receiver')
+        receiver_id = data.get('receiver_id')
         mark_read = data.get('mark_read', False)  # Detect mark as read request
+        contact_id = data.get('contact')  # Used for marking messages as read
 
-        # add conact
-        contact_username = data.get('contact')  # Used for marking messages as read
-
-        receiver = await self.get_user_by_username(receiver_username)
+        # Retrieve the receiver user by ID
+        receiver = await self.get_user_by_id(receiver_id)
 
         # Retrieve the friendship object
         if receiver:
@@ -60,21 +59,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Handle the message
         if message and receiver:
             await self.save_message(self.user, receiver, message)
-            await self.send_message_to_groups(self.user.id, receiver.id, receiver_username, message)
+            await self.send_message_to_groups(self.user.id, receiver.id, receiver.username, message)
 
         # Handle typing indication
         if 'typing' in data:
             typing_status = data['typing']
-            await self.send_typing_indicator(self.user.id, receiver.id, self.user.username, receiver_username, typing_status)
+            await self.send_typing_indicator(self.user.id, receiver.id, self.user.username, receiver.username, typing_status)
 
         # Handle marking messages as read
-        if mark_read and contact_username:
-            await self.mark_messages_as_read(contact_username)
+        if mark_read and contact_id:
+            await self.mark_messages_as_read(contact_id)
             return
 
 
-    async def mark_messages_as_read(self, contact_username):
-        contact_user = await self.get_user_by_username(contact_username)
+    async def mark_messages_as_read(self, contact_id):
+        contact_user = await self.get_user_by_id(contact_id)
         if contact_user:
         # Check if there are unread messages before updating
             try:
@@ -87,7 +86,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 await self.update_message_read_status(self.user, contact_user)
                 # Notify sender and receiver
-                await self.send_mark_read_status(contact_user.id, contact_username)
+                await self.send_mark_read_status(contact_user.id, contact_user.username)
             except Exception as e:
                 logger.error(f"Error marking messages as read: {e}")
         
@@ -138,6 +137,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         typing_data = {
             'typing': typing_status,
             'sender': sender_username,
+            'sender_id': sender_id,
             'receiver': receiver_username,
         }
         # Send typing indicator to both the sender's and receiver's groups
@@ -161,6 +161,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'typing': event['typing'],  # True or False
             'sender': event['sender'],
+            'sender_id': event['sender_id'],
             'receiver': event['receiver'],
         }))
   
@@ -215,9 +216,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    def get_user_by_username(self, username):
+    def get_user_by_id(self, user_id):
         try:
-            return User.objects.get(username=username)
+            return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return None
 
