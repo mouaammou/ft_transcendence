@@ -126,7 +126,7 @@ const NotificationBell = () => {
 
     useEffect(() => {
         UnreadNotifications();
-    }, []);
+    }, [lastMessage]);
 
 
     const toggleDropdown = () => setIsOpen((prev) => !prev);

@@ -99,36 +99,82 @@ class TokenVerificationMiddleWare:
 		return self.get_response(request)  # Proceed with the request
 
 
+# class UserOnlineStatusMiddleware(BaseMiddleware):
 class UserOnlineStatusMiddleware(BaseMiddleware):
 	async def __call__(self, scope, receive, send):
 		try:
 			headers = dict(scope["headers"])
 			access_token = None
 
+			# Extract access token from cookies
 			if b'cookie' in headers:
-					cookie_str = headers[b'cookie'].decode('utf-8')
-					cookies_dict = dict(cookie.split('=', 1) for cookie in cookie_str.split('; '))
+				cookie_str = headers[b'cookie'].decode('utf-8')
+				try:
+					cookies_dict = {}
+					for cookie in cookie_str.split('; '):
+						if '=' in cookie:
+							name, value = cookie.split('=', 1)
+							cookies_dict[name] = value
 					access_token = cookies_dict.get('access_token')
-			
-			if not access_token:
-					scope['user'] = AnonymousUser()
-			try:
-					user = await self.get_user_from_token(str(access_token))
-					scope['user'] = user
-			except TokenError:
-					scope['user'] = AnonymousUser()
+				except Exception as e:
+					logger.error(f"Cookie parsing error: {e}")
+					access_token = None
 
+			# Clear existing user from scope
+			scope['user'] = AnonymousUser()
+
+			# Only proceed with token validation if we have a token
+			if access_token:
+				try:
+					# Validate token and get user
+					user = await self.get_user_from_token(str(access_token))
+					if user and user.is_active:
+						scope['user'] = user
+						logger.debug(f"Authenticated user: {user.username}")
+					else:
+						logger.debug("User not active or not found")
+				except TokenError as e:
+					logger.debug(f"Token validation failed: {e}")
+				except Exception as e:
+					logger.error(f"Unexpected error during token validation: {e}")
+
+			# Check final authentication state
 			if isinstance(scope['user'], AnonymousUser):
-					raise DenyConnection("Authentication Required !")
+				logger.debug("Connection denied: User not authenticated")
+				raise DenyConnection("Authentication Required!")
+
+			return await super().__call__(scope, receive, send)
+
+		except DenyConnection as e:
+			# Re-raise DenyConnection
+			raise
 		except Exception as e:
-			logger.error(f"\nConnection Denied: {e}\n")
-		return await super().__call__(scope, receive, send)
+			logger.error(f"Middleware error: {e}")
+			raise DenyConnection(f"Connection error: {str(e)}")
 
 	@database_sync_to_async
 	def get_user_from_token(self, token):
 		try:
-			user_id = AccessToken(token).get("user_id")
-			user = User.objects.get(id=user_id)
+			# Verify token and get user_id
+			decoded_token = AccessToken(token)
+			user_id = decoded_token.get("user_id")
+			
+			if not user_id:
+				raise TokenError("Invalid token: no user_id found")
+
+			# Get user from database
+			user = User.objects.filter(id=user_id).first()
+			if not user:
+				raise User.DoesNotExist(f"User {user_id} not found")
+
 			return user
-		except (TokenError, User.DoesNotExist):
-			raise TokenError("token is not valid")
+
+		except TokenError as e:
+			logger.debug(f"Token validation failed: {e}")
+			raise
+		except User.DoesNotExist as e:
+			logger.debug(f"User lookup failed: {e}")
+			raise
+		except Exception as e:
+			logger.error(f"Unexpected error in token validation: {e}")
+			raise TokenError(f"Token validation failed: {str(e)}")

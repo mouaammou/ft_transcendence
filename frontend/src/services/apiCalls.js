@@ -16,15 +16,25 @@ export const getData = async (endPoint) => {
 // for post request
 export const postData = async (endPoint, data, headers = {}) => {
 	try {
-		const response = await axiosInstance.post(endPoint, data, {
-		headers,
+	  // If data is FormData, make sure we don't have a default Content-Type
+	  const config = {
+		headers: {
+		  ...headers
+		},
 		withCredentials: true,
-		});
-		return response;
+	  };
+  
+	  // If it's FormData, let axios set the correct Content-Type
+	  if (data instanceof FormData) {
+		delete config.headers['Content-Type'];
+	  }
+  
+	  const response = await axiosInstance.post(endPoint, data, config);
+	  return response;
 	} catch (error) {
-		console.log(error);
+	  return error;
 	}
-};
+  };
 
 // for put request
 export const putData = async (endPoint, data, headers) => {

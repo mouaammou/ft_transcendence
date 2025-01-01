@@ -31,7 +31,6 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		self.user_windows = None
 		self.user = None
 		self.user_data = None
-		# self.channel_name = None
 
 	async def connect(self):
 		print("\n CONNECTED\n")
@@ -46,7 +45,16 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		print("\n DISCONNECT\n")
 		if self.user and self.user.is_authenticated:
 			await self.remove_user_from_groups()
+			await self.cleanup_user_state()
 			await self.close()
+
+	async def cleanup_user_state(self):
+		"""Clean up all user-related state"""
+		await self.untrack_user_connection()
+		self.user = None
+		self.user_data = None
+		self.user_windows = None
+		self.scope['user'] = None
 
 	async def receive(self, text_data):
 		print("\n RECEIVED\n")
@@ -57,19 +65,54 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 		print(f"data Received :: {text_data_json}\n")
 
-		if user:
-			self.user = await database_sync_to_async(User.objects.get)(username=user)
-			self.user_data = UserSerializer(self.user).data
-		# Handle logout event
-		if logout and self.user.is_authenticated:
-			await self.untrack_user_connection()
-			self.scope['user'] = None  # Set the scope user to None
-			print(f"\n scope user: {self.scope['user']}\n")
-			# await self.close()
+		if logout and self.user and self.user.is_authenticated:
+			print(f"Handling logout for user: {self.user.username}")
+			await self.remove_user_from_groups()
+			await self.cleanup_user_state()
+			print(f"After logout cleanup - user: {self.user}, scope user: {self.scope.get('user')}")
+			return
 
-		# Handle online event
-		elif online and self.user.is_authenticated:
+		if online and user:
+			# Only update user info if not already set or if different user
+			if not self.user or self.user.username != user:
+				try:
+					self.user = await database_sync_to_async(User.objects.get)(username=user)
+					self.user_data = UserSerializer(self.user).data
+					self.user_windows = f"user_{self.user.id}"
+					await self.add_user_to_groups()
+					print(f"User updated to: {self.user.username}")
+				except User.DoesNotExist:
+					print(f"User not found: {user}")
+					return
 			await self.track_user_connection()
+
+	async def track_user_connection(self):
+		if not self.user:
+			return
+			
+		user_id = str(self.user.id)
+		channel_name = self.channel_name
+
+		redis_conn.sadd(user_id, channel_name)
+		if redis_conn.scard(user_id) == 1:
+			print(f"\n broadcasting online for user: {self.user.username}\n")
+			await self.save_user_status("online")
+			await self.broadcast_online_status(self.user_data, "online")
+
+	async def untrack_user_connection(self):
+		if not self.user:
+			return
+			
+		print(f"untrack_user_connection: {self.user.username}")
+		user_id = str(self.user.id)
+		channel_name = self.channel_name
+
+		redis_conn.srem(user_id, channel_name)
+		if redis_conn.scard(user_id) == 0:
+			print(f"\n broadcasting offline for user: {self.user.username}\n")
+			await self.broadcast_online_status(self.user_data, "offline")
+			await self.save_user_status("offline")
+
 
 	async def add_user_to_groups(self):
 		try:
@@ -79,32 +122,12 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		except Exception as e:
 			logger.error(f"\nError during connection: {e}\n")
 
-	async def track_user_connection(self):
-		user_id = str(self.user.id)
-		channel_name = self.channel_name
-
-		redis_conn.sadd(user_id, channel_name) # Add the user's channel name to the set
-		if redis_conn.scard(user_id) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
-			await self.save_user_status("online")
-			await self.broadcast_online_status(self.user_data, "online")
 
 	@database_sync_to_async
 	def save_user_status(self, status):
 		current_user = User.objects.get(id=self.user.id)
 		current_user.status = status
 		current_user.save()
-
-	async def untrack_user_connection(self):
-		print(f"untrack_user_connection: {self.user}")
-		user_id = str(self.user.id)
-		channel_name = self.channel_name
-
-		redis_conn.srem(user_id, channel_name)
-		if redis_conn.scard(user_id) == 0:
-			print(f"\n broadcasting offline when logout: {self.user}\n")
-			await self.broadcast_online_status(self.user_data, "offline")
-			await self.save_user_status("offline")
 
 	async def remove_user_from_groups(self):
 		try:
