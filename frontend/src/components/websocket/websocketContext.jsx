@@ -18,7 +18,12 @@ export const WebSocketProvider = ({ url, children }) => {
 	const { sendMessage, lastMessage, lastJsonMessage, readyState } = useWebSocket(url, {
 		shouldReconnect: () => true, // Automatically reconnect on disconnection
 		reconnectAttempts: 5,
-		reconnectInterval: 3000,
+		reconnectInterval: 1000,
+		onOpen: () => {
+			setDisabled(false);
+		},
+		share: true,
+		retryOnError: true,
 	});
 
 	const isConnected = readyState === WebSocket.OPEN;
