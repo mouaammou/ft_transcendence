@@ -365,6 +365,13 @@ export default function FriendProfile({ params }) {
 	useEffect(() => {
 		if (!lastJsonMessage || !isConnected || !profile.id) return;
 		
+		if (
+			lastJsonMessage.type === 'user_status_change' &&
+			lastJsonMessage.username === profile.username
+		) {
+			setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
+		}
+
 		// Get the relevant user ID from the message
 		const messageUserId = lastJsonMessage.from_user_id || lastJsonMessage.to_user_id;
 		
@@ -385,9 +392,6 @@ export default function FriendProfile({ params }) {
 			break;
 			
 			//
-
-			//
-
 			case NOTIFICATION_TYPES.ACCEPT_FRIEND:
 			if (lastJsonMessage.to_user_id === profile.id) {
 				updateFriendStatus(profile.id, 'accepted');
@@ -439,7 +443,7 @@ export default function FriendProfile({ params }) {
 		if (profile?.id) {
 		const timeoutId = setTimeout(() => {
 			if (friendStatusRequests[profile.id] === 'pending') {
-			updateFriendStatus(profile.id, 'no');
+				updateFriendStatus(profile.id, 'no');
 			}
 		}, 2000);
 		return () => clearTimeout(timeoutId);
