@@ -235,7 +235,6 @@ export const ChatProvider = ({ children }) => {
 
             }
             else {
-                console.warn("No results in response or invalid response format.");
                 setNextPage(null);
             }
         } catch (error) {
@@ -377,7 +376,7 @@ export const ChatProvider = ({ children }) => {
     }, [selectedUserRef.current?.id]);
     // *********** end block friends ********
 
-  //  ************************  ************************
+  //  ************************ handleSendMessage  ************************
   const handleSendMessage = () => {
     // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
     if (text.trim() && selectedUser && socket) {
@@ -387,7 +386,19 @@ export const ChatProvider = ({ children }) => {
             receiver_id: selectedUser.id,
             message: text.trim(),
         };
-      socket.send(JSON.stringify(messageData));
+
+        // Send stop typing signal first
+        const stopTypingData = {
+            sender: currentUser.username,
+            receiver_id: selectedUser.id,
+            typing: false,
+        };
+        socket.send(JSON.stringify(stopTypingData));
+    
+        // Send the actual message after a small delay
+        setTimeout(() => {
+            socket.send(JSON.stringify(messageData));
+        }, 500);
 
       setText('');
     }
@@ -429,7 +440,7 @@ export const ChatProvider = ({ children }) => {
                 };
                 socket.send(JSON.stringify(stopTypingData));
             }
-        }, 2000);
+        }, 1000);
     };
 
 
