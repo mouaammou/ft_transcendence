@@ -16,6 +16,7 @@ import useNotificationContext from '@/components/navbar/useNotificationContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getData } from '@/services/apiCalls';
+import Allusers from '@/app/(users)/allusers/page';
 
 
 // ChatActions.jsx - Separate component
@@ -24,6 +25,7 @@ import { getData } from '@/services/apiCalls';
 const ChatActions = ({ selectedUser, blockFriend, removeBlock, inviteToGame, currentStatus }) => {
     const friendshipStatus = currentStatus || selectedUser?.friendship_status;
 
+	console.log("\n ** USER STATUS ** ", friendshipStatus);
     // Same logic as FriendProfile: show unblock button only when you blocked them (blocking)
     if (friendshipStatus === 'blocking') {
         return (
@@ -57,9 +59,9 @@ const ChatInput = ({
     setOpen,
     handleEmojiClick,
     emojiPickerRef,
-    selectedUser 
+    currentStatus 
 }) => {
-    const friendshipStatus = selectedUser?.friendship_status;
+    const friendshipStatus = currentStatus;
     const isDisabled = ['blocking', 'blocked'].includes(friendshipStatus);
     
     const getPlaceholderText = () => {
@@ -129,6 +131,7 @@ const Msg_chat = () => {
         chatContainerRef,
         blockFriend,
         removeBlock,
+		allUsers
     } = useContext(ChatContext);
 
     const { profileData: currentuser, setSelectedUser } = useAuth();
@@ -148,20 +151,18 @@ const Msg_chat = () => {
         }
     };
 
-	useEffect(() => {
-		console.log("selectedUser", selectedUser);
-		console.log("status", selectedUser?.friendship_status);
-	}, [selectedUser]);
-
-
-
     const [userStatus, setUserStatus] = useState(selectedUser?.friendship_status);
 
     useEffect(() => {
-        if (selectedUser?.friendship_status) {
-            setUserStatus(selectedUser.friendship_status);
+        if (!selectedUser?.id || !allUsers) return;
+
+        // Find the user in allUsers and get their current status
+        const currentUser = allUsers.find(user => user.friend.id === selectedUser.id);
+        if (currentUser?.friend?.friendship_status) {
+            console.log("Status changing to:", currentUser.friend.friendship_status);
+            setUserStatus(currentUser.friend.friendship_status);
         }
-    }, [selectedUser?.friendship_status]);
+    }, [allUsers, selectedUser?.id, selectedUser?.friendship_status, currentuser]);
 
 	return (
 		<div className={`msg_chat ${isChatVisible ? '' : 'hidden'}`}>
@@ -244,7 +245,7 @@ const Msg_chat = () => {
                             setOpen={setOpen}
                             handleEmojiClick={handleEmojiClick}
                             emojiPickerRef={emojiPickerRef}
-                            selectedUser={selectedUser}
+                            currentStatus={userStatus}
                         />
                 </div>
             </>

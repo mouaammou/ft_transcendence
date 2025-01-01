@@ -310,25 +310,7 @@ export const ChatProvider = ({ children }) => {
     // *********** block friends ********
 
     const blockFriend = useCallback(() => {
-        
-//         blocked
-// : 
-// null
-// error
-// : 
-// null
-// message
-// : 
-// "User blocked successfully"
-// success
-// : 
-// true
-// to_user_id
-// : 
-// 2
-// type
-// : 
-// "block_user"
+
 
 
 
