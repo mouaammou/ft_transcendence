@@ -19,6 +19,8 @@ export const WebSocketProvider = ({ url, children }) => {
 		shouldReconnect: () => true, // Automatically reconnect on disconnection
 		reconnectAttempts: 5,
 		reconnectInterval: 3000,
+		share: true,
+		retryOnError: true,
 	});
 
 	const isConnected = readyState === WebSocket.OPEN;

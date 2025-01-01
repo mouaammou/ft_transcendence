@@ -96,7 +96,7 @@ const GamePage = ({params}) => {
 	// }
 	return (
 		<>
-		<TopBar activeIndex={1} disable={disabled} />
+		<TopBar activeIndex={1} disabled={disabled} />
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">

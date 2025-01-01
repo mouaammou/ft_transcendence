@@ -18,7 +18,9 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 		shouldReconnect: () => true, // Automatically reconnect on disconnection
     onOpen: () => {
       setDisabled(false);
-    }
+    },
+    share: true,
+    retryOnError: true,
 	});
 
   const websocketSend = (data_obj) => {
