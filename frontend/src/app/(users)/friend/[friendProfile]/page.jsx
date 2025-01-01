@@ -511,12 +511,12 @@ export default function FriendProfile({ params }) {
 						{/* USER ACTIONS */}
 
 						<FriendProfileActions
-						friendStatusRequest={friendStatusRequests[profile?.id] || 'no'}
-						sendFriendRequest={sendFriendRequest}
-						inviteToGame={inviteToGame}
-						blockFriend={blockFriend}
-						removeFriend={removeFriend}
-						removeBlock={removeBlock}
+							friendStatusRequest={friendStatusRequests[profile?.id] || 'no'}
+							sendFriendRequest={sendFriendRequest}
+							inviteToGame={inviteToGame}
+							blockFriend={blockFriend}
+							removeFriend={removeFriend}
+							removeBlock={removeBlock}
 						/>
 					</div>
 
@@ -696,8 +696,6 @@ export default function FriendProfile({ params }) {
 							</div> */}
 						</div>
 					</div>
-
-
 				</div>
 			</div>
 		)
