@@ -10,7 +10,8 @@ import { PiShareNetworkFill } from "react-icons/pi";
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
   const router = useRouter();
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+  const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,
@@ -162,7 +163,6 @@ export default function CreateJoinTournamentPage() {
               }}></div>
             <div>
               <h2 className="flex flex-row text-[26px] lg:text-[40px] font-ibm font-semibold mb-6 text-center lg:text-left">
-                {/* <FontAwesomeIcon icon="fa-light fa-network-wired" /> */}
                 <FaNetworkWired className='mr-3' />
                 Create tournament
               </h2>

@@ -31,10 +31,12 @@ const Friends = () => {
         if (selectedFriend?.id) {
             console.log('sending game invitation to: ', selectedFriend);
             setSelectedUser(selectedFriend);
-            sendMessage(JSON.stringify({
-                type: NOTIFICATION_TYPES.INVITE_GAME,
-                to_user_id: selectedFriend.id,
-            }));
+            if (isConnected) {
+                sendMessage(JSON.stringify({
+                    type: NOTIFICATION_TYPES.INVITE_GAME,
+                    to_user_id: selectedFriend.id,
+                }));
+            }
         }
     }
 
@@ -88,7 +90,7 @@ const Friends = () => {
                             )
                         })}
                     </div>
-                    <button onClick={handleNextClick} className="px-4 py-2 m-auto items-center justify-center text-white bg-blue-500 rounded-md hover:bg-blue-700">
+                    <button onClick={handleNextClick} className="custom-button">
                         Next
                     </button>
                 </div>

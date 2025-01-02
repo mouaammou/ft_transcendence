@@ -3,11 +3,6 @@ import Image from 'next/image';
 const NotFound = () => {
   return (
     <div>
-      {/* 404 not found
-	return (
-		<div >
-			{/* 404 not found
-				<p> sorry this page is not available for now</p> */}
       <img
         src="/404.svg"
         width={800}

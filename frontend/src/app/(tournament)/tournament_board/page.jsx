@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import Board from './board';
-import Image from 'next/image';
-import mysocket from '@/utils/WebSocketManager';
 import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
@@ -36,7 +34,8 @@ function winner_celebration() {
 }
 
 export default function TournamentBoardPage() {
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
   const [players, setPlayers] = useState([]);
   const [fulfilled, setFulfilled] = useState(false);
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
@@ -131,11 +130,11 @@ export default function TournamentBoardPage() {
 
   useEffect(() => {
 
-    // if (isConnected)
-    sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    // if (isConnected)
-    sendMessage(JSON.stringify({ inBoardPage: true }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {
       data = { round1: Array(1), round2: null, round3: null }

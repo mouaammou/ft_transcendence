@@ -12,11 +12,17 @@ const axiosInstance = axios.create({
   }
 });
 
-// Add request interceptor
+// Modified request interceptor to handle FormData
 axiosInstance.interceptors.request.use(
   config => {
     // Remove any double slashes in the URL except after http(s):
     config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
+    
+    // If the request data is FormData, remove the Content-Type header
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   error => Promise.reject(error)

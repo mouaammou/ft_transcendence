@@ -69,9 +69,6 @@ const data = [
 ];
 
 export default function Board({ imageUrls }) {
-  const mobileImg = '/mobile_board.svg';
-  const newboard = '/board.svg';
-
   return (
     <div>
       <MobileBoard imageUrls={imageUrls} />

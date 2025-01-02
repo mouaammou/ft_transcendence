@@ -222,7 +222,7 @@ const UserCart = ({ user, sendFriendRequest}) => {
 							<AiFillProfile className="text-xl" />
 						</span>
 						<span className="flex-1 text-center text-sm font-medium">
-							View friend profile
+							View profile
 						</span>
 					</Link>
 					<button

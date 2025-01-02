@@ -4,10 +4,13 @@ import { IoCheckmarkDoneOutline, IoCheckmarkOutline, IoCloseOutline } from "reac
 import Link from 'next/link';
 import useNotificationContext from '@components/navbar/useNotificationContext';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
     const { sendMessage } = useNotificationContext();
     const router = useRouter();
+    const pathname = usePathname();
+    const paths_game = ['/game', '/tournament_board'];
 
     const sendAction = useCallback((action, notif_type) => {
         let messageType = null;
@@ -19,10 +22,11 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
             if (action === 'accepted'){
                 router.push('/game');
             }
-        } else if (notif_type === NOTIFICATION_TYPES.ROUND) {
+        } else if (notif_type === NOTIFICATION_TYPES.ROUND && !paths_game.includes(pathname)) {
             router.push('/tournament_board');
         }
-        
+        console.log(" -- -- -- messageType  - ", messageType);
+        console.log(" -- -- -- data.sender  - ", data.sender);
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,

@@ -17,7 +17,8 @@ const GamePage = () => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
   const [gameType, setGameType] = useState('vsfriend');
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 
 
   const Skeleton = () => (
@@ -85,7 +86,7 @@ const GamePage = () => {
       <div className={style.down_section}>
         {player1 ? (
           <div className={style.left_user}>
-            <img // i have to resolve the issue with <img/>
+            <img
               className={style.left_user_img}
               src={player1.avatar}
               alt="user1"
@@ -102,7 +103,7 @@ const GamePage = () => {
         </div>
         {player2 ? (
           <div className={style.right_user}>
-            <img // i have to resolve the issue with <img/>
+            <img
               className={style.right_user_img}
               src={player2?.avatar}
               alt="user1"

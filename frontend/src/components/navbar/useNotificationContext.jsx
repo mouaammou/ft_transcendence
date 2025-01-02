@@ -32,6 +32,8 @@ export const NotificationProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [notificationType, setNotificationType] = useState({});
+  const [isInitialized, setIsInitialized] = useState(false);
+
 
   // Update the unread count based on the notifications
   const updateUnreadCount = useCallback(notifs => {
@@ -73,7 +75,7 @@ export const NotificationProvider = ({ children }) => {
         setUnreadCount(prev => prev + 1);
       }
     },
-    [isConnected, lastMessage]
+    [isConnected, lastMessage, setNotifications, setUnreadCount, setNotificationType]
   );
 
   // Fetch notifications when the user is logged in
@@ -98,6 +100,21 @@ export const NotificationProvider = ({ children }) => {
       setIsLoading(false);
     }
   }, []);
+
+    // Initialize notifications when WebSocket connects
+    useEffect(() => {
+      if (isConnected && !isInitialized) {
+        UnreadNotifications();
+        setIsInitialized(true);
+      }
+    }, [isConnected, isInitialized, UnreadNotifications]);
+
+      // Reset initialization when connection is lost
+    useEffect(() => {
+      if (!isConnected) {
+        setIsInitialized(false);
+      }
+    }, [isConnected]);
 
   const markAsRead = useCallback(
     async notificationId => {
@@ -135,10 +152,11 @@ export const NotificationProvider = ({ children }) => {
 
   // Handle new WebSocket messages
   useEffect(() => {
+    console.log(' **-- lastJsonMessage --**', lastJsonMessage);
     if (isConnected) {
       handleNotifications(lastJsonMessage);
     }
-  }, [lastMessage, isConnected, lastJsonMessage]);
+  }, [lastMessage, isConnected, lastJsonMessage, handleNotifications]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(

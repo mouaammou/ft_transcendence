@@ -11,6 +11,8 @@ import { FaUser } from 'react-icons/fa';
 import { MdScoreboard } from "react-icons/md";
 import { apiPlayTournamentGame } from '@/services/gameApi';
 import { MdOutlineSportsScore } from "react-icons/md";
+import { LoadingComponent } from '@/components/multipleStepLoader/LocalMultipleStepLoader';
+
 
 
 
@@ -97,6 +99,7 @@ const GamePage = ({params}) => {
 	return (
 		<>
 		<TopBar activeIndex={1} disabled={disabled} />
+		<LoadingComponent />
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">

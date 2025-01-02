@@ -12,7 +12,8 @@ import { useGlobalWebSocket } from '@/utils/WebSocketManager';
 const Skeleton = () => <div className="animate-pulse bg-gray-600 rounded-full w-16 h-16 ml-2" />;
 
 const WaitingPage = () => {
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
   const { profileData: user_data } = useAuth();
   const [opponent, setOpponent] = useState(null);
   const router = useRouter();

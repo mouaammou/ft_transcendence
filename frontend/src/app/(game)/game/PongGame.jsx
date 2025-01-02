@@ -61,16 +61,6 @@ const createInitialGameState = () => ({
 	gameConfig: {}
 });
 
-// Helper functions
-const createPaddle = (x, y, width, height, color) => ({
-	x,
-	y,
-	width,
-	height,
-	color,
-	score: 0
-});
-
 const drawRect = (context, x, y, width, height, color) => {
 	context.fillStyle = color;
 	context.fillRect(x, y, width, height);
@@ -90,7 +80,8 @@ export default function PongGame({ score1, score2, setScore1, setScore2, gameTyp
 	const [showLoseModal, setShowLoseModal] = useState(false);
 	const router = useRouter();
 	const [gameStartTime, setGameStartTime] = useState(null);
-	const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+	  const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 	const gameStateRef = useRef(createInitialGameState());
 	const handleVisibilityChange = () => {
 		const isTabFocused = document.visibilityState === 'visible';

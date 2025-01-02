@@ -11,7 +11,7 @@ import GameHistory from '@/components/history/GameHistory';
 import { getData, postData } from '@/services/apiCalls';
 import { useEffect, useState, useCallback } from 'react';
 import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
-import {useRouter} from 'next/navigation';
+import {useRouter, usePathname} from 'next/navigation';
 
 
 const baseUrl = process.env.NEXT_PUBLIC_URL;
@@ -19,18 +19,16 @@ const baseUrl = process.env.NEXT_PUBLIC_URL;
 const Profile = () => {
 	const { profileData: data, isAuth } = useAuth();
 	const [matches, setMatches] = useState([]);
-	const [nextPage, setNextPage] = useState(null);
-	const [prevPage, setPrevPage] = useState(null);
 	const [c4stats, setC4Stats] = useState([]);
 	const [pongData, setPongData] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
 	const router = useRouter();
+	const pathname = usePathname()
 	const [progressData, setProgressData] = useState({
 		level: 0,
 		progress: 0,
 		currentXp: 0,
 	});
-	let formattedData = [];
 
 	const fetchGameHistory = useCallback(async (userId) => {
 		try {
@@ -90,7 +88,7 @@ const Profile = () => {
 		fetchProgressData(data.id);
 		fetchC4StatsData(data.id);
 		fetchPongData(data.id);
-	}, [data, fetchGameHistory, fetchProgressData, fetchC4StatsData, fetchPongData]);
+	}, [data, fetchGameHistory, fetchProgressData, fetchC4StatsData, fetchPongData, pathname]);
 
 	const RADIAN = Math.PI / 180;
 	const COLORS = ['#82ca9d', '#ef4444', '#ef4444', '#f97316'];
@@ -108,43 +106,6 @@ const Profile = () => {
 		);
 	};
 
-	const dataa = [
-		{
-			"date": "12/20",
-			"wins": 40,
-			"losses": 24,
-		},
-		{
-			"date": "12/21",
-			"wins": 30,
-			"losses": 18,
-		},
-		{
-			"date": "12/22",
-			"wins": 90,
-			"losses": 20,
-		},
-		{
-			"date": "12/23",
-			"wins": 20,
-			"losses": 8,
-		},
-		{
-			"date": "12/24",
-			"wins": 10,
-			"losses": 40,
-		},
-		{
-			"date": "12/25",
-			"wins": 20,
-			"losses": 30,
-		},
-		{
-			"date": "12/26",
-			"wins": 30,
-			"losses": 40,
-		}
-	]
 
 	return (
 		data && (
@@ -377,13 +338,8 @@ const Profile = () => {
 									</Pie>
 								</PieChart>
 							</ResponsiveContainer>
-							{/* <div className="max-w-3xl mx-auto">
-								<DoughnutChart />
-								
-							</div> */}
 						</div>
 					</div>
-					{/* Stats Section */}
 				</div>
 			</div>
 		)

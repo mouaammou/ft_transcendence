@@ -135,17 +135,16 @@ export const LoadingComponent = () => {
     const router = useRouter();
 
     const loadingStates = [
-        { text: "Start the game" },
-        { text: "Choose to play locally or online with friends or online with randomly or connect four" },
+        { text: "Choose to play locally or online with friends or a random online game." },
         { text: "You can select to play against a bot" },
         { text: "Create a tournament or join an existing one" },
         { text: "Move the ball with the keys 'w', 's', ArrowUp '⬆️', ArrowDown '⬇️'" },
         { text: "Score points by making your opponent miss" },
         { text: "Keep the focus on your game page" },
         { text: "If you leave the playing page for 30 seconds, you will lose the game." },
+        { text: "If you come before 30 seconds, you will continue the game." },
         { text: "You win the Connect Four game by connecting four discs horizontally, vertically, or diagonally" },
         { text: "Enjoy the match!" },
-        { text: "Welcome to F**** C***" },
     ];
 
     return (

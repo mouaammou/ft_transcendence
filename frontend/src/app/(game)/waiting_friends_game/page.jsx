@@ -36,7 +36,7 @@ const WaitingFriendPage = () => {
   });
   const router = useRouter();
   const { lastJsonMessage, NOTIFICATION_TYPES } = useNotificationContext();
-  const { sendMessage, lastMessage } = useGlobalWebSocket();
+  const { sendMessage, lastMessage, isConnected } = useGlobalWebSocket();
 
   const handleModalClose = useCallback(() => {
     setModalState(prev => ({ ...prev, isOpen: false }));
@@ -116,11 +116,13 @@ const WaitingFriendPage = () => {
     if (!lastJsonMessage || !selectedUser) return;
 
     if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_GAME && myFriend && myFriend.id) {
-      sendMessage(JSON.stringify({
-        type: 'FRIEND_GAME_REQUEST',
-        player_1_id: userData?.id,
-        player_2_id: myFriend?.id,
-      }));
+      if (isConnected) {
+        sendMessage(JSON.stringify({
+          type: 'FRIEND_GAME_REQUEST',
+          player_1_id: userData?.id,
+          player_2_id: myFriend?.id,
+        }));
+      }
       lastJsonMessage.type = null;
       router.push('/game');
     } else if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_GAME) {

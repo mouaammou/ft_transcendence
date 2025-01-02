@@ -10,24 +10,6 @@ const ConnectFour = () => {
     const imgRef = useRef(null);
     const { profileData: user_data } = useAuth();
 
-    useEffect(() => {
-        const updateImage = () => {
-            if (window.innerWidth >= 1560) {
-                imgRef.current.src = 'BigGrid.svg'
-            } else {
-                imgRef.current.src = 'Subtract.svg'
-            }
-        }
-
-        // window.addEventListener('resize', updateImage);
-        // updateImage();
-
-        return () => {
-            // window.removeEventListener('resize', updateImage);
-        }
-    }, [])
-
-
     return (
         <div className={styles.container}>
             <div className={styles.playersContainer}>

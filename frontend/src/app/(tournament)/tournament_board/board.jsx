@@ -1,6 +1,4 @@
-import Image from 'next/image';
 
-const board = '/board.svg';
 
 export default function Board({
   imageUrl1,
@@ -34,12 +32,10 @@ export default function Board({
   imageUrl15,
   userName15,
 }) {
-  const mobileImg = '/mobile_board.svg';
-  const newboard = '/board.svg';
   return (
     <div>
       <svg
-        className="lg:hidden md:mt-40 sm:mt-20 mt-10 w-full"
+        className="lg:hidden md:mt-30 sm:mt-20 mt-10 w-full"
         width="283"
         height="600"
         viewBox="0 0 283 632"

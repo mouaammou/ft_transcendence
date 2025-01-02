@@ -2,7 +2,6 @@ import React from 'react';
 
 const Selector = ({ title, description, Svgvar, onclick }) => {
   return (
-    //   React.createElement("div", [], React.createElement("h1", [], "Hello World!"))
     <div
       onClick={onclick}
       className="group flex flex-row  bg-whitetrspnt  p-3 sm:p-5 pr-0 lg:max-w-[500px] rounded-[20px] sm:rounded-[30px] shadow-xl  mb-10 hover:bg-bluetrspnt cursor-pointer transition ease-in-out delay-150 duration-150"

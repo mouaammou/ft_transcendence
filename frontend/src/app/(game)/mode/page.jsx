@@ -9,7 +9,8 @@ import { useEffect } from 'react';
 
 const Mode = () => {
   const router = useRouter();
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 
   const handleRandomGame = () => {
     router.push('/waiting_random_game');
@@ -28,6 +29,7 @@ const Mode = () => {
   }
 
   useEffect(() => {
+    if (isConnected)
       sendMessage(JSON.stringify({ type: 'LEET_PONG' }));
 
   }, []);

@@ -7,23 +7,10 @@ import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 
 const ChooseMode = () => {
     const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
-    const {retryCount, setRetryCount} = useState(0);
-    const maxRetries = 5;
-    const retryInterval = 1000;
 
     useEffect(() => {
-        // const sendGetRoomsMessage = () => {
-        //     if (isConnected) {
+            if (isConnected) 
                 sendMessage(JSON.stringify({ type: "GET_ROOMS" }));
-        //     } else if (retryCount < maxRetries) {
-        //         setRetryCount(retryCount + 1);
-        //         setTimeout(sendGetRoomsMessage, retryInterval);
-        //     } else {
-
-        //     }
-        // };
-
-        // sendGetRoomsMessage();
     }, []);
 
     const router = useRouter();

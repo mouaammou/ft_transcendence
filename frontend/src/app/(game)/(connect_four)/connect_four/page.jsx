@@ -88,23 +88,9 @@ const ConnectFour = () => {
     }, [lastMessage]);
 
     useEffect(() => {
-        sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
+        if (isConnected)
+            sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
     }, []);
-
-    // useEffect(() => {
-    //     const updateImage = () => {
-    //         if (window.innerWidth >= 1560) {
-    //             imgRef.current.src = 'BigGrid.svg';
-    //         } else {
-    //             imgRef.current.src = 'Subtract.svg';
-    //         }
-    //     };
-
-    //     updateImage(); // Call on mount
-    //     window.addEventListener('resize', updateImage);
-
-    //     return () => window.removeEventListener('resize', updateImage); // Cleanup on unmount
-    // }, []);
 
     return (
         <div className={styles.container}>

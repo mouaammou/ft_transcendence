@@ -64,12 +64,6 @@ class TournamentHistory(models.Model):
         CustomUser,
         related_name='get_tournaments',
     )
-    # how to save a list of players objects in the database
-    # players_objects = models.ManyToManyField(
-    #     CustomUser[max_players],
-    #     related_name='get_tournaments_objects',
-
-    # )
     
         
 
@@ -130,13 +124,6 @@ class RoundHistroy(models.Model):
         null=True,
         blank=True
     )
-    # it has to be a list of winners
-    # winners = models.ManyToManyField(
-    #     CustomUser,
-    #     related_name='get_winning_rounds',
-    #     null=True,
-    #     blank=True
-    # )
     
     status = models.CharField(max_length=255, choices=[
         ('quarter', 'Quarter'),
