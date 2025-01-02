@@ -183,7 +183,7 @@ const Profile = () => {
 							</div>
 
 							<Link href="/edit_profile">
-								<button className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+								<button className="w-full mt-6  rounded-lg transition-colors flex items-center justify-center custom-button">
 									<MdUpdate className="mr-2" /> Update Profile
 								</button>
 							</Link>

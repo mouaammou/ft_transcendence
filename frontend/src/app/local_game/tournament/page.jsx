@@ -17,7 +17,7 @@ const HomePage = () => {
 
     return (
         <>
-            <TopBar activeIndex={1} />
+        <TopBar activeIndex={1} />
         <div className="container">
             <div className="flex max-lg:flex-col justify-center items-center max-lg:gap-y-4 gap-x-4 mx-auto w-full max-w-96 py-4">
                 <input
