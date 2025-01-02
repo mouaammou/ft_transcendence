@@ -238,7 +238,7 @@ export default function FriendProfile({ params }) {
 
 
 	const RADIAN = Math.PI / 180;
-	const COLORS = ['#82ca9d', '#ef4444', '#ef4444', '#f97316'];
+	const COLORS = ['#82ca9d', '#F59E0B', '#ef4444', '#f97316'];
 
 
 	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -577,7 +577,7 @@ export default function FriendProfile({ params }) {
 												{/* VS */}
 												<div className="flex flex-col items-center">
 													<div className="text-l font-bold text-gray-400">
-														{match.finish_type == 'defeat' ? '' : 'Disconnection'}
+													{match.finish_type == 'defeat' ? '' : match.finish_type == 'draw' ? 'Draw' : 'Disconnection'}
 													</div>
 													<div className="text-sm text-gray-400 mt-1">
 														{match.game_type == 'connect_four' ? '🚥 Connect Four 🚥' : '🏓 Ping Pong 🏓'}
