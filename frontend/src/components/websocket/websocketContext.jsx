@@ -3,6 +3,7 @@ import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback, createContext, useContext, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
+import { usePathname } from 'next/navigation'
 
 export const WebSocketContext = createContext();
 
@@ -13,21 +14,39 @@ export const WebSocketProvider = ({ url, children }) => {
 	const [pageNotFound, setPageNotFound] = useState(false);
 	const [friendStatusChange, setFriendStatusChange] = useState(false);
 	const router = useRouter();
+	const pathname = usePathname();
 
-  // useWebSocket hook from react-use-websocket
-	const { sendMessage, lastMessage, lastJsonMessage, readyState } = useWebSocket(url, {
-		shouldReconnect: () => true, // Automatically reconnect on disconnection
-		reconnectAttempts: 5,
-		reconnectInterval: 3000,
-	});
+	const [connectionEstablished, setConnectionEstablished] = useState(false);
+
+	const paths = ['/login', '/signup', '/forget_password', '/reset_password'];
+	const shouldConnect = !paths.includes(pathname);
+  
+	const { sendMessage, lastMessage, lastJsonMessage, readyState } = useWebSocket(
+	  shouldConnect ? url : null,
+	  {
+		shouldReconnect: (closeEvent) => {
+		  return shouldConnect;  // Only reconnect if we're not on excluded paths
+		},
+		reconnectInterval: 1000,
+		share: true,
+		retryOnError: true,
+		onOpen: () => {
+		  setConnectionEstablished(true);
+		},
+		onClose: () => {
+		  setConnectionEstablished(false);
+		}
+	  }
+	);
 
 	const isConnected = readyState === WebSocket.OPEN;
-
 	useEffect(() => {
 		if (readyState === WebSocket.OPEN) {
-
+			// Connection established
+			console.log("pahtname", pathname);
+			setConnectionEstablished(true);
 		} else if (readyState === WebSocket.CLOSED) {
-
+			setConnectionEstablished(false);
 		}
 	}, [readyState]);
 
@@ -94,6 +113,7 @@ export const WebSocketProvider = ({ url, children }) => {
 		setNextPage,
 		setPrevPage,
 		lastMessage,
+		connectionEstablished
     }),
 		[
 		isConnected,
@@ -104,6 +124,7 @@ export const WebSocketProvider = ({ url, children }) => {
 		pageNotFound,
 		friendStatusChange,
 		lastMessage,
+		connectionEstablished
 		]
 	);
 

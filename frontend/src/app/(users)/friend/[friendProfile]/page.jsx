@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { AreaChart, XAxis, YAxis, Tooltip, Area,CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import { Toaster, toast } from 'react-hot-toast';
 
+
 ////////////////////////
 
 import { HiShieldExclamation, HiShieldCheck } from 'react-icons/hi';
@@ -154,6 +155,7 @@ export default function FriendProfile({ params }) {
 	const [pongData, setPongData] = useState([]);
 	const [c4stats, setC4Stats] = useState([]);
 	const router = useRouter();
+	const pathname = usePathname();
 
 	const [progressData, setProgressData] = useState({
 		level: 0,
@@ -237,7 +239,7 @@ export default function FriendProfile({ params }) {
 		fetchC4StatsData(profile.id);
 		fetchGameHistory(profile.id);
 
-	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory]);
+	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname]);
 
 
 	const RADIAN = Math.PI / 180;
@@ -266,116 +268,105 @@ export default function FriendProfile({ params }) {
 	} = useNotificationContext();
 
 
-	const [friendStatusRequest, setFriendStatusRequest] = useState('no');
+	const [friendStatusRequests, setFriendStatusRequests] = useState({});
+	const [currentProfileId, setCurrentProfileId] = useState(null);
 	const [pageNotFound, setPageNotFound] = useState(false);
 
+	// Modify the friend status update functions
+	const updateFriendStatus = (userId, status) => {
+		setFriendStatusRequests(prevStatuses => ({
+		...prevStatuses,
+		[userId]: status
+		}));
+	};
+
+	// Update the friend action callbacks
 	const removeFriend = useCallback(() => {
-
-			if (isConnected && profile?.id) {
-				setFriendStatusRequest('no');
-				sendMessage(
-					JSON.stringify({
-						type: NOTIFICATION_TYPES.REMOVE_FRIEND,
-						to_user_id: profile.id,
-					})
-				);
-			}
-		}, [isConnected, profile?.id, sendMessage]);
-
+		if (isConnected && profile?.id) {
+		updateFriendStatus(profile.id, 'no');
+		sendMessage(
+			JSON.stringify({
+			type: NOTIFICATION_TYPES.REMOVE_FRIEND,
+			to_user_id: profile.id,
+			})
+		);
+		}
+	}, [isConnected, profile?.id, sendMessage]);
+	
 	const blockFriend = useCallback(() => {
 		if (isConnected && profile?.id) {
-			console.log('Blocking friend:', profile);
-			setFriendStatusRequest('blocking');
-				sendMessage(
-					JSON.stringify({
-						type: NOTIFICATION_TYPES.BLOCK,
-						to_user_id: profile.id,
-					})
-				);
+		updateFriendStatus(profile.id, 'blocking');
+		sendMessage(
+			JSON.stringify({
+			type: NOTIFICATION_TYPES.BLOCK,
+			to_user_id: profile.id,
+			})
+		);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
 	const removeBlock = useCallback(() => {
 		if (isConnected && profile?.id) {
-			setFriendStatusRequest('accepted');
-			sendMessage(
-				JSON.stringify({
-					type: NOTIFICATION_TYPES.REMOVE_BLOCK,
-					to_user_id: profile.id,
-				})
-			);
+		updateFriendStatus(profile.id, 'accepted');
+		sendMessage(
+			JSON.stringify({
+			type: NOTIFICATION_TYPES.REMOVE_BLOCK,
+			to_user_id: profile.id,
+			})
+		);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
-			setFriendStatusRequest('pending');
-			sendMessage(
-				JSON.stringify({
-					type: NOTIFICATION_TYPES.FRIENDSHIP,
-					to_user_id: profile.id,
-				})
-			);
+			console.log('Sending friend request to:', profile.id);
+		updateFriendStatus(profile.id, 'pending');
+		sendMessage(
+			JSON.stringify({
+			type: NOTIFICATION_TYPES.FRIENDSHIP,
+			to_user_id: profile.id,
+			})
+		);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
-	// Handle notification status changes
-	useEffect(() => {
-		if (!notificationType?.type) return;
-
-		if (notificationType.type === NOTIFICATION_TYPES.ACCEPT_FRIEND && notificationType.status) {
-			setFriendStatusRequest('accepted');
-		}
-		if (notificationType.type === NOTIFICATION_TYPES.REJECT_FRIEND && notificationType.status) {
-			setFriendStatusRequest('no');
-		}
-
-	}, [notificationType, NOTIFICATION_TYPES, lastMessage]);
-
-	// Fetch initial profile and friend status
+	// Update the fetch profile effect
 	useEffect(() => {
 		const fetchFriendProfile = async params => {
-			const unwrappedParams = await params;
-			if (!unwrappedParams.friendProfile) {
-				setPageNotFound(true);
-				return;
+		const unwrappedParams = await params;
+		if (!unwrappedParams.friendProfile) {
+			setPageNotFound(true);
+			return;
+		}
+	
+		if (data.username === unwrappedParams.friendProfile) {
+			router.push('/profile');
+			return;
+		}
+		
+		try {
+			const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
+			if (response.status === 200) {
+			if (currentProfileId !== response.data.id) {
+				console.log('Setting current profile id:', response.data.id);
+				setCurrentProfileId(response.data.id);
+				updateFriendStatus(response.data.id, response.data.friend);
 			}
-
-			if (data.username === unwrappedParams.friendProfile) {
-				router.push('/profile');
-				return;
+			setProfile(response.data);
+			} else {
+			setPageNotFound(true);
 			}
-			try {
-				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
-				if (response.status === 200) {
-
-					setProfile(response.data);
-					setFriendStatusRequest(response.data.friend);
-
-				} else {
-					setPageNotFound(true);
-				}
-			} catch (error) {
-				setPageNotFound(true);
-			}
+		} catch (error) {
+			setPageNotFound(true);
+		}
 		};
 		fetchFriendProfile(params);
-	}, []);
+	}, [params, data.username, pathname, currentProfileId]);
 
-	// Handle websocket messages
+	// Update the websocket message handler effect
 	useEffect(() => {
-
-		if (lastJsonMessage)
-			console.log(' ** ** Last json message: ** ** ', lastJsonMessage);
-		if (!lastJsonMessage || !isConnected) return;
-
-		if (lastJsonMessage.type === NOTIFICATION_TYPES.REJECT_FRIEND) {
-			setFriendStatusRequest('no');
-		}
-		else if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPT_FRIEND) {
-			setFriendStatusRequest('accepted');
-		}
-
+		if (!lastJsonMessage || !isConnected || !profile.id) return;
+		
 		if (
 			lastJsonMessage.type === 'user_status_change' &&
 			lastJsonMessage.username === profile.username
@@ -383,42 +374,83 @@ export default function FriendProfile({ params }) {
 			setProfile(prev => ({ ...prev, status: lastJsonMessage.status }));
 		}
 
-		if (lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_BLOCK && lastJsonMessage.success) {
-			setFriendStatusRequest('accepted');
+		// Get the relevant user ID from the message
+		const messageUserId = lastJsonMessage.from_user_id || lastJsonMessage.to_user_id;
+		
+		// Check if this message is relevant for the current friend status
+		const isRelevantMessage = messageUserId && 
+			(messageUserId === profile.id || lastJsonMessage.to_user_id === profile.id);
+		
+		if (!isRelevantMessage) {
+			return;
 		}
 		
-		if (lastJsonMessage.type === NOTIFICATION_TYPES.BLOCK && lastJsonMessage.success ) {
-			if (lastJsonMessage.blocked) {
-				setFriendStatusRequest('blocked');
+		// Handle different message types
+		switch (lastJsonMessage.type) {
+			case NOTIFICATION_TYPES.REJECT_FRIEND:
+			if (lastJsonMessage.to_user_id === profile.id) {
+				updateFriendStatus(profile.id, 'no');
 			}
-			else
-				setFriendStatusRequest('blocking');
+			break;
+			
+			//
+			case NOTIFICATION_TYPES.ACCEPT_FRIEND:
+			if (lastJsonMessage.to_user_id === profile.id) {
+				updateFriendStatus(profile.id, 'accepted');
+			}
+			break;
+			
+			case NOTIFICATION_TYPES.REMOVE_BLOCK:
+			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+				updateFriendStatus(profile.id, 'accepted');
+			}
+			break;
+			
+			case NOTIFICATION_TYPES.BLOCK:
+			if (lastJsonMessage.success && lastJsonMessage.to_user_id == profile.id) {
+				updateFriendStatus(profile.id, lastJsonMessage.blocked ? 'blocked' : 'blocking');
+			}
+			break;
+			
+			case NOTIFICATION_TYPES.REMOVE_FRIEND:
+			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+				updateFriendStatus(profile.id, 'no');
+			}
+			break;
+			
+			case NOTIFICATION_TYPES.ACCEPTED_DONE:
+			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+				updateFriendStatus(profile.id, 'accepted');
+			}
+			break;
 		}
-		if (lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND && lastJsonMessage.success) {
-			setFriendStatusRequest('no');
-		}
-		if (lastJsonMessage.type === NOTIFICATION_TYPES.ACCEPTED_DONE && lastJsonMessage.success) {
-			setFriendStatusRequest('accepted');
-		}
-
+		
+		// Handle error cases
 		if ((lastJsonMessage.type === NOTIFICATION_TYPES.BLOCK ||
 			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_BLOCK ||
-			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND) && ! lastJsonMessage.success) {
-			setFriendStatusRequest('accepted');
+			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND) && 
+			!lastJsonMessage.success && 
+			lastJsonMessage.to_user_id === profile.id) {
+			updateFriendStatus(profile.id, 'accepted');
 			toast.error("ERROR: ", lastJsonMessage.message || lastJsonMessage.error);
 		}
-	}, [lastJsonMessage, isConnected, profile.username, lastMessage]);
-
+	}, [lastJsonMessage, isConnected, profile?.id, lastMessage]);
+	
+	// Update the pending timeout effect
 	useEffect(() => {
 		if (pageNotFound) {
-			setPageNotFound(false);
-			notFound();
+		setPageNotFound(false);
+		notFound();
 		}
-		setTimeout(() => {
-			if (friendStatusRequest === 'pending')
-				setFriendStatusRequest('no');
+		if (profile?.id) {
+		const timeoutId = setTimeout(() => {
+			if (friendStatusRequests[profile.id] === 'pending') {
+				updateFriendStatus(profile.id, 'no');
+			}
 		}, 2000);
-	}, [pageNotFound, friendStatusRequest]);
+		return () => clearTimeout(timeoutId);
+		}
+	}, [pageNotFound, friendStatusRequests, profile?.id]);
 
 	return (
 		<Toaster position="top-right" toastOptions={{ duration: 3000, style: { backgroundColor: '#333', color: '#fff', padding: '16px', } }} />
@@ -479,14 +511,15 @@ export default function FriendProfile({ params }) {
 						</div>
 
 						{/* USER ACTIONS */}
-						<FriendProfileActions {...{
-							friendStatusRequest,
-							sendFriendRequest,
-							inviteToGame,
-							blockFriend,
-							removeFriend,
-							removeBlock
-						}} />
+
+						<FriendProfileActions
+							friendStatusRequest={friendStatusRequests[profile?.id] || 'no'}
+							sendFriendRequest={sendFriendRequest}
+							inviteToGame={inviteToGame}
+							blockFriend={blockFriend}
+							removeFriend={removeFriend}
+							removeBlock={removeBlock}
+						/>
 					</div>
 
 					{/* Grid Layout for Info Cards */}
@@ -665,8 +698,6 @@ export default function FriendProfile({ params }) {
 							</div> */}
 						</div>
 					</div>
-
-
 				</div>
 			</div>
 		)

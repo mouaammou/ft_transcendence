@@ -17,7 +17,8 @@ const GamePage = () => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
   const [gameType, setGameType] = useState('vsfriend');
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 
 
   const Skeleton = () => (

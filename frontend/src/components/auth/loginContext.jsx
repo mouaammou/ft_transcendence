@@ -78,18 +78,36 @@ export const LoginProvider = ({ children }) => {
   };
 
   // Logout function with WebSocket notification
-  const Logout = useCallback(() => {
-    if (isConnected) {
-      sendMessage(JSON.stringify({ logout: 'logout', user: profileData.username }));
-    }
-    setIsAuth(false);
-    Cookies.remove('isAuth');
-    postData('/logout').then(res => {
-      if (res?.status === 205) {
+  const Logout = useCallback(async () => {
+    try {
+      // First, clear the auth state and cookie
+      setIsAuth(false);
+      Cookies.remove('isAuth');
+      
+      // Send websocket message if connected
+      if (isConnected) {
+        sendMessage(JSON.stringify({ logout: 'logout', user: profileData.username }));
+      }
+  
+      // Clear profile data
+      setProfileData({});
+      
+      // Redirect to login immediately
+      router.push('/login');
+  
+      // Then call the logout endpoint
+      const res = await postData('/logout');
+      
+      // If logout fails for some reason, ensure we're still on login page
+      if (res?.status !== 205) {
         router.push('/login');
       }
-    });
-  }, [isConnected, profileData, router]);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Ensure we're on login page even if there's an error
+      router.push('/login');
+    }
+  }, [isConnected, profileData, router, sendMessage]);
 
   // Fetch profile data only if authenticated
   const fetchProfile = useCallback(async () => {
@@ -108,12 +126,14 @@ export const LoginProvider = ({ children }) => {
   }, [isAuth, fetchProfile]);
 
   // Redirect if authenticated and at a login or signup page
-  useEffect(() => {
-    setErrors({});
-    if (isAuth && ['/login', '/signup', '/callback'].includes(pathname)) {
-      router.push('/profile');
-    }
-  }, [isAuth, pathname, router]);
+  // useEffect(() => {
+  //   setErrors({});
+  //   if (!isAuth && !['/login', '/signup', '/callback'].includes(pathname)) {
+  //     router.replace('/login');
+  //   } else if (isAuth && ['/login', '/signup', '/callback'].includes(pathname)) {
+  //     router.replace('/profile');
+  //   }
+  // }, [isAuth, pathname, router]);
 
   // Memoized context value
   const contextValue = useMemo(
