@@ -243,7 +243,6 @@ export const ChatProvider = ({ children }) => {
 
             }
             else {
-                console.warn("No results in response or invalid response format.");
                 setNextPage(null);
             }
         } catch (error) {
@@ -288,7 +287,8 @@ export const ChatProvider = ({ children }) => {
         }, 100);
 
         if (socket) {            
-            socket.send(JSON.stringify({ mark_read: true, contact: user.username }));
+            // socket.send(JSON.stringify({ mark_read: true, contact: user.username }));
+            socket.send(JSON.stringify({ mark_read: true, contact: user.id }));
             setAllUsers((prevUsers) =>
                 prevUsers.map((friend) =>
                     friend.friend.id === user.id
@@ -432,28 +432,33 @@ export const ChatProvider = ({ children }) => {
         }
     }, [lastJsonMessage, isConnected]);
 
-  //  ************************  ************************
+  //  ************************ handleSendMessage  ************************
   const handleSendMessage = () => {
-
-
-
     // if (text.trim() && selectedUser && socket && socket.readyState === WebSocket.OPEN) {
     if (text.trim() && selectedUser && socket) {
-
         const messageData = {
             sender: currentUser.username,
-            receiver: selectedUser.username,
+            // receiver: selectedUser.username,
+            receiver_id: selectedUser.id,
             message: text.trim(),
         };
 
-
-
-      socket.send(JSON.stringify(messageData));
+        // Send stop typing signal first
+        const stopTypingData = {
+            sender: currentUser.username,
+            receiver_id: selectedUser.id,
+            typing: false,
+        };
+        socket.send(JSON.stringify(stopTypingData));
+    
+        // Send the actual message after a small delay
+        setTimeout(() => {
+            socket.send(JSON.stringify(messageData));
+        }, 500);
 
       setText('');
     }
     else {
-
 
 
     }
@@ -468,7 +473,8 @@ export const ChatProvider = ({ children }) => {
         if (selectedUser && socket) {
             const typingData = {
                 sender: currentUser.username,
-                receiver: selectedUser.username,
+                // receiver: selectedUser.id,
+                receiver_id: selectedUser.id,
                 typing: true,
             };
             socket.send(JSON.stringify(typingData));
@@ -484,12 +490,13 @@ export const ChatProvider = ({ children }) => {
             if (selectedUser && socket) {
                 const stopTypingData = {
                     sender: currentUser.username,
-                    receiver: selectedUser.username,
+                    // receiver: selectedUser.id,
+                    receiver_id: selectedUser.id,
                     typing: false,
                 };
                 socket.send(JSON.stringify(stopTypingData));
             }
-        }, 2000);
+        }, 1000);
     };
 
 
@@ -553,7 +560,8 @@ export const ChatProvider = ({ children }) => {
                 if (selectedUserRef.current && selectedUserRef.current.id === sender_id) {
                     // Mark the message as read since the receiver is actively viewing this chat
                     if (ws.readyState === WebSocket.OPEN) {
-                        ws.send(JSON.stringify({ mark_read: true, contact: sender }));
+                        // ws.send(JSON.stringify({ mark_read: true, contact: sender }));
+                        ws.send(JSON.stringify({ mark_read: true, contact: sender_id }));
                     }else {
 
 
@@ -598,14 +606,13 @@ export const ChatProvider = ({ children }) => {
             if (mark_read && contact) {
                 updateLastMessage(sender_id, message, true, receivedData.timestamp);
             }
-                    
-            if (typing)
-            {
-                if (!typingUsers.includes(sender)) {
-                    setTypingUsers((prev) => [...prev, sender]);
+
+            if (typing) {
+                if (!typingUsers.includes(sender_id)) {
+                    setTypingUsers((prev) => [...prev, sender_id]);
                 }
             } else {
-                    setTypingUsers((prev) => prev.filter(user => user !== sender));
+                setTypingUsers((prev) => prev.filter(user => user !== sender_id));
             }
         };
 
