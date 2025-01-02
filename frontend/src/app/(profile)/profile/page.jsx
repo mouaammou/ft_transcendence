@@ -91,7 +91,7 @@ const Profile = () => {
 	}, [data, fetchGameHistory, fetchProgressData, fetchC4StatsData, fetchPongData, pathname]);
 
 	const RADIAN = Math.PI / 180;
-	const COLORS = ['#82ca9d', '#F59E0B', '#ef4444', '#f97316'];
+	const COLORS = ['#82ca9d', '#ef4444', '#f59e0B', '#f97316'];
 
 
 	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {

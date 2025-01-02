@@ -53,7 +53,7 @@ const SearchProfileComponent = () => {
   }, [debouncedSearchTerm, searchTerm]);
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-2xl mr-4">
       <div className="relative w-full">
         <div className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
           <svg
@@ -73,8 +73,8 @@ const SearchProfileComponent = () => {
         </div>
         <input
           type="search"
-          className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-lg bg-gray-700/50 border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200"
-          placeholder="Search for users, friends, tournaments..."
+          className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-lg bg-gray-700/50 outline-none"
+          placeholder="Search"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />

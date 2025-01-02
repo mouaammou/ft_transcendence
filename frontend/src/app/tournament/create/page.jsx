@@ -83,7 +83,6 @@ export default function TournamentForm() {
           </button>
         </div>
       </form>
-      <Toaster />
     </div>
     </>
   );

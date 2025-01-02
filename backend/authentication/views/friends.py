@@ -12,64 +12,53 @@ import logging as logger
 # ***************** Friendship List View ***************** #
 
 class FriendshipListView(generics.ListAPIView):
-	serializer_class = UserWithStatusSerializer
-	pagination_class = CustomUserPagination
+    serializer_class = UserWithStatusSerializer
+    pagination_class = CustomUserPagination
 
-	def get_queryset(self):
-		custom_user = self.request.customUser
-		search_term = self.request.query_params.get('search', None)
+    def get_queryset(self):
+        custom_user = self.request.customUser
+        search_term = self.request.query_params.get('search', None)
 
-		friendships = Friendship.objects.filter(
-			Q(sender=custom_user, status__in=['accepted', 'blocking']) |
-			Q(receiver=custom_user, status__in=['accepted', 'blocked']) |
-			Q(sender=custom_user, received_status__in=['accepted', 'blocking']) |
-			Q(receiver=custom_user, received_status__in=['accepted', 'blocked'])
-		)
+        # Only get accepted friendships
+        friendships = Friendship.objects.filter(
+            (Q(sender=custom_user, status='accepted') & Q(received_status='accepted')) |
+            (Q(receiver=custom_user, status='accepted') & Q(received_status='accepted'))
+        )
 
-		unique_friends = []
-		seen_users = set()
+        unique_friends = []
+        seen_users = set()
 
-		for friendship in friendships:
-			friend = friendship.receiver if friendship.sender == custom_user else friendship.sender
-			
-			if friend.id not in seen_users:
-				friend_data = {
-					'user': friend.id,
-					'friend': friend,
-					'friendship_status': friendship.status,
-					'received_status': friendship.received_status
-				}
+        for friendship in friendships:
+            friend = friendship.receiver if friendship.sender == custom_user else friendship.sender
+            
+            if friend.id not in seen_users:
+                friend_data = {
+                    'user': friend.id,
+                    'friend': friend,
+                    'friendship_status': 'accepted',
+                    'received_status': 'accepted'
+                }
+                unique_friends.append(friend_data)
+                seen_users.add(friend.id)
 
-				# Adjust status based on relationship
-				if friendship.sender == custom_user:
-					friend_data['friendship_status'] = friendship.status
-					friend_data['received_status'] = 'blocked' if friendship.status == 'blocking' else friendship.received_status
-				else:
-					# If current user is receiver, swap the statuses
-					friend_data['friendship_status'] = 'blocked' if friendship.received_status == 'blocking' else friendship.received_status
-					friend_data['received_status'] = friendship.status
+        if search_term:
+            unique_friends = [
+                friend for friend in unique_friends 
+                if search_term.lower() in friend['friend'].username.lower()
+            ]
+            
+        return unique_friends
 
-				unique_friends.append(friend_data)
-				seen_users.add(friend.id)
-
-		if search_term:
-			unique_friends = [
-				friend for friend in unique_friends 
-				if search_term.lower() in friend['friend'].username.lower()
-			]
-			
-		return unique_friends
-
-	def list(self, request, *args, **kwargs):
-		friends_queryset = self.get_queryset()
-		paginator = self.pagination_class()
-		paginated_users = paginator.paginate_queryset(friends_queryset, request)
-		serializer = UserWithStatusSerializer(
-			paginated_users, 
-			many=True, 
-			context={'request': request}
-		)
-		return paginator.get_paginated_response(serializer.data)
+    def list(self, request, *args, **kwargs):
+        friends_queryset = self.get_queryset()
+        paginator = self.pagination_class()
+        paginated_users = paginator.paginate_queryset(friends_queryset, request)
+        serializer = UserWithStatusSerializer(
+            paginated_users, 
+            many=True, 
+            context={'request': request}
+        )
+        return paginator.get_paginated_response(serializer.data)
 	
 
 class FriendshipRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

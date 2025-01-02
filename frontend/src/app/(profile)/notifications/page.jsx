@@ -16,7 +16,7 @@ const NotificationMessage = ({ data }) => {
             </div>
             <div className="min-w-0 flex-1">
                 <Link
-                    href={`/${data.username}`}
+                    href={`/friend/${data.username}`}
                     className="inline-block text-base font-bold text-white transition-all duration-300 hover:text-blue-400 hover:scale-105"
                 >
                     {data.username}
