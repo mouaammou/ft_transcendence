@@ -19,9 +19,6 @@ export const WebSocketProvider = ({ url, children }) => {
 		shouldReconnect: () => true, // Automatically reconnect on disconnection
 		reconnectAttempts: 5,
 		reconnectInterval: 1000,
-		onOpen: () => {
-			setDisabled(false);
-		},
 		share: true,
 		retryOnError: true,
 	});
