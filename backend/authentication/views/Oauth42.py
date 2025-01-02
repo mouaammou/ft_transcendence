@@ -42,15 +42,16 @@ class OAuth42Login(APIView):
 
 
 class OAuth42Callback(APIView):
-
 	def get(self, request):
 		response = Response()
-		try:
-			code = request.GET.get('code')
-			if not code:
-				logger.error(f"\nError 42Oauth: Parameter Code not provided\n")
-				return Response({"Error": "Code not provided"}, status=status.HTTP_400_BAD_REQUEST)
+		code = request.GET.get('code')
+		
+		if not code:
+			logger.error(f"\nError 42Oauth: Parameter Code not provided\n")
+			return Response({"Error": "Code not provided"}, status=status.HTTP_400_BAD_REQUEST)
 
+		try:
+			# Add state verification if possible
 			token_data = {
 				'grant_type': 'authorization_code',
 				'client_id': settings.OAUTH42_CLIENT_ID,
@@ -58,49 +59,77 @@ class OAuth42Callback(APIView):
 				'code': code,
 				'redirect_uri': settings.OAUTH42_REDIRECT_URI,
 			}
+			
+			# Check if code was already used
+			if 'used_codes' not in request.session:
+				request.session['used_codes'] = []
+			
+			if code in request.session['used_codes']:
+				logger.warning(f"\nWarning 42Oauth: Code {code} was already used\n")
+				return Response({"Error": "Authorization code already used"}, 
+								status=status.HTTP_400_BAD_REQUEST)
+				
+			request.session['used_codes'].append(code)
+			request.session.modified = True
+
+			# Get access token
 			token_response = requests.post(settings.OAUTH42_TOKEN_URL, data=token_data)
 			token_response_data = token_response.json()
 
 			if 'access_token' not in token_response_data:
 				logger.error(f"\nError 42Oauth: Failed to obtain access token\n")
-				return Response({"Error": "Failed to obtain access token"}, status=status.HTTP_400_BAD_REQUEST)
+				return Response({"Error": "Failed to obtain access token"}, 
+								status=status.HTTP_400_BAD_REQUEST)
 
 			access_token = token_response_data['access_token']
-			user_response = requests.get(settings.OAUTH42_USER_URL, headers={'Authorization': f'Bearer {access_token}'})
+			
+			# Get user data
+			user_response = requests.get(
+				settings.OAUTH42_USER_URL, 
+				headers={'Authorization': f'Bearer {access_token}'}
+			)
 			user_data = user_response.json()
 
 			user_data_set = {
-				"username":user_data['login'],
-				"user42":user_data['login'],
-				"first_name":user_data['first_name'],
-				"last_name":user_data['last_name'],
-				"email":user_data['email'],
+				"username": user_data['login'],
+				"user42": user_data['login'],
+				"first_name": user_data['first_name'],
+				"last_name": user_data['last_name'],
+				"email": user_data['email'],
 			}
 			avatar_url = user_data['image']['versions']['medium']
 
 			try:
 				user = CustomUser.objects.get(user42=user_data['login'])
-				response.status = status.HTTP_200_OK
-				response.data = {"success":"already exists"}
-				if user is not None and user.totp_enabled:
-					response.data = {"totp":"2fa verification is required!"}
+				
+				# Handle 2FA if enabled
+				if user.totp_enabled:
 					cookie_data = get_2fa_cookie_token_for_user(user.id)
+					response = Response({"totp": "2fa verification is required!"})
 					response.set_cookie(**cookie_data)
 					return response
-					
+				
+				# Normal login flow
+				response = Response({"success": "Login successful"})
+				response = set_jwt_cookies(response, RefreshToken.for_user(user))
+				return response
+
 			except CustomUser.DoesNotExist:
-				try:
-					user = CustomUser.objects.create(**user_data_set)
-					random = CustomUser.objects.make_random_password()
-					user.set_password(make_password(random))
-					user.download_and_save_image(avatar_url)
-					user.save()
-					response.status = status.HTTP_201_CREATED
-				except Exception as e:
-					logger.error(f"\nError 42Oauth: Failed to create user {e}\n")
-					return Response({"Error": f"Failed to create user: {e}"}, status=status.HTTP_400_BAD_REQUEST)
-			response = set_jwt_cookies(response, RefreshToken.for_user(user))
-			return response
+				# Create new user
+				user = CustomUser.objects.create(**user_data_set)
+				random_password = CustomUser.objects.make_random_password()
+				user.set_password(make_password(random_password))
+				user.download_and_save_image(avatar_url)
+				user.save()
+				
+				response = Response({"success": "User created successfully"}, 
+									status=status.HTTP_201_CREATED)
+				response = set_jwt_cookies(response, RefreshToken.for_user(user))
+				return response
+
 		except Exception as e:
-			logger.error(f"Error 42Oauth: get() method: {e}")
-			return Response({"Error": f"Failed to create user: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+			logger.error(f"Error 42Oauth: {str(e)}")
+			return Response(
+				{"Error": "Authentication failed. Please try again."}, 
+				status=status.HTTP_400_BAD_REQUEST
+			)
