@@ -29,7 +29,6 @@ const TwoFactorAuthPage = () => {
 
     return (
         <>
-        <Toaster />
         <div className="relative flex flex-col items-center justify-center w-full h-full capitalize">
             <div className="flex flex-col w-fit h-fit gap-y-4">
                 <h1 className="mx-auto text-white uppercase tracking-wider text-2xl">Two-factor authentication</h1>

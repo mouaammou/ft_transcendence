@@ -563,7 +563,6 @@ export default function Board({ params })
         }
       </div>
     </div>
-    <Toaster />
     </>
   );
 }

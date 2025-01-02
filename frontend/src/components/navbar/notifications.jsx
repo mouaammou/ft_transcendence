@@ -19,19 +19,26 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_FRIEND : NOTIFICATION_TYPES.REJECT_FRIEND;
         } else if (notif_type === NOTIFICATION_TYPES.INVITE_GAME) {
             messageType = action === 'accepted' ? NOTIFICATION_TYPES.ACCEPT_GAME : NOTIFICATION_TYPES.REJECT_GAME;
-            if (action === 'accepted'){
+            if (action === 'accepted' && pathname !== '/game') {
                 router.push('/game');
             }
         } else if (notif_type === NOTIFICATION_TYPES.ROUND && !paths_game.includes(pathname)) {
             router.push('/tournament_board');
         }
-        console.log(" -- -- -- messageType  - ", messageType);
-        console.log(" -- -- -- data.sender  - ", data.sender);
+//         console.log(" -- -- -- messageType  - ", messageType);
+//         console.log(" -- -- -- data.sender  - ", data.sender);
+//         console.log(" ACTION - ", action);
+// // notif_status: "pending", notif_type: "friend"
+// // accept_friend_request
+        if (data.notif_status === 'pending' && data.notif_type === 'friend' && action === 'accepted')
+            messageType = 'accept_friend_request';
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,
         }));
     }, [data.sender, NOTIFICATION_TYPES, router]); 
+
+    console.log(" -- data sent to NotificationLayout - ", data);
 
     const onAction = (action) => {
         handleAction(action, data);
@@ -55,7 +62,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
                 
                 <div className="flex-1 min-w-0">
                     <Link 
-                        href={`/${data.username}`} 
+                        href={`/friend/${data.username}`} 
                         className="text-sm font-semibold text-gray-100 hover:text-blue-400 transition-colors duration-200"
                     >
                         {data.username}

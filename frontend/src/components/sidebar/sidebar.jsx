@@ -21,7 +21,7 @@ export default function Sidebar() {
 
   return (
     isAuth && (
-      <div className="w-[7rem] bg-gray-800 backdrop-blur-lg bg-opacity-95 min-h-screen border-r border-gray-700">
+      <div className="w-[7rem] bg-gray-800 backdrop-blur-lg bg-opacity-95 min-h-screen">
         {/* Logo Section */}
         <Link 
           href="/"

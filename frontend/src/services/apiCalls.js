@@ -3,14 +3,46 @@ import axios from 'axios';
 
 // for get request
 export const getData = async (endPoint) => {
-	try {
-		// Ensure endPoint doesn't start with a slash
-		const cleanEndPoint = endPoint.startsWith('/') ? endPoint.slice(1) : endPoint;
-		const response = await axiosInstance.get(cleanEndPoint);
-		return response;
-	} catch (error) {
-		throw error;
-	}
+    try {
+        // Clean endpoint
+        const cleanEndPoint = endPoint.startsWith('/') ? endPoint.slice(1) : endPoint;
+        
+        // Add specific config for OAuth endpoints
+        const config = cleanEndPoint.includes('auth/callback') ? {
+            // Increase timeout for OAuth requests
+            timeout: 10000,
+            // Add additional headers if needed
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        } : {};
+
+        const response = await axiosInstance.get(cleanEndPoint, config);
+        return response;
+    } catch (error) {
+        // Log the full error for debugging
+        console.log('getData Error:', {
+            endpoint: endPoint,
+            error: {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            }
+        });
+
+        // Throw a more specific error
+        if (error.response?.data?.Error) {
+            throw new Error(error.response.data.Error);
+        } else if (error.code === 'ECONNABORTED') {
+            throw new Error('Request timed out. Please try again.');
+        } else if (!error.response) {
+            throw new Error('Network error. Please check your connection.');
+        }
+
+        throw error;
+    }
 };
 
 // for post request

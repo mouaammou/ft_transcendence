@@ -38,14 +38,6 @@ class UserWithStatusSerializer(serializers.Serializer):
 		fields = ['id', 'first_name', 'last_name', 'username', 'email',
 				  'avatar', 'status', 'friendship_status', 'received_status']
 
-	# def get_avatar(self, obj):
-	# 	print('+==========xxxxxxxxxx===========+')
-	# 	print(obj)
-	# 	avatar_url = getattr(obj['friend'], 'avatar', None)
-	# 	if avatar_url:
-	# 		return 'backendxx/' + avatar_url.url
-	# 	return None
-
 	def get_friendship_status(self, obj):
 		friendships = Friendship.objects.filter(
 			Q(sender=obj['friend'], receiver=self.context['request'].customUser) |
@@ -140,24 +132,84 @@ class FriendsSerializer(serializers.ModelSerializer):
 # ============= CustomeUser Serializer +++++++++++++++
 
 
+from rest_framework import serializers
+from django.core.validators import RegexValidator
+import re
+
 class UserSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(
+        min_length=6,
+        max_length=10,
+        error_messages={
+            'blank': 'First name cannot be blank',
+            'min_length': 'First name must be at least 6 characters',
+            'max_length': 'First name cannot be longer than 10 characters'
+        }
+    )
+    
+    last_name = serializers.CharField(
+        min_length=6,
+        max_length=10,
+        error_messages={
+            'blank': 'Last name cannot be blank',
+            'min_length': 'Last name must be at least 6 characters',
+            'max_length': 'Last name cannot be longer than 10 characters'
+        }
+    )
+    
+    username = serializers.CharField(
+        min_length=6,
+        max_length=10,
+        error_messages={
+            'blank': 'Username cannot be blank',
+            'min_length': 'Username must be at least 6 characters',
+            'max_length': 'Username cannot be longer than 10 characters',
+            'unique': 'This username is already taken'
+        }
+    )
+    
+    email = serializers.EmailField(
+        error_messages={
+            'blank': 'Email cannot be blank',
+            'unique': 'This email is already registered'
+        }
+    )
+    
+    password = serializers.CharField(
+        write_only=True,
+        min_length=6,
+        error_messages={
+            'blank': 'Password cannot be blank',
+            'min_length': 'Password must be at least 6 characters'
+        }
+    )
 
-	class Meta:
-		model = CustomUser
-		fields = ("id", "first_name", "last_name", "username",
-				  "email", "password", "avatar", "status")
-		extra_kwargs = {"username": {"read_only": True}}
-		extra_kwargs = {"password": {"write_only": True}}
+    class Meta:
+        model = CustomUser
+        fields = ("id", "first_name", "last_name", "username",
+                 "email", "password", "avatar", "status", "level",
+                 "phone", "totp_enabled")
+        extra_kwargs = {
+            "username": {"read_only": True},
+            "password": {"write_only": True},
+            "level": {"read_only": True},
+            "totp_enabled": {"read_only": True},
+            "status": {"read_only": True}
+        }
 
-	def create(self, validated_data):  # maybe you can use the baseMOdelManger for this ??
-		# use it for hash the password
-		return CustomUser.objects.create_user(**validated_data)
+    def validate_username(self, value):
+        if self.Meta.model.objects.filter(username=value).exists():
+            raise serializers.ValidationError("This username is already taken")
+        return value
 
-	def to_representation(self, instance):
-		representation = super().to_representation(instance)
-		if representation['avatar']:
-			representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
-		return representation
+    def create(self, validated_data):
+        return CustomUser.objects.create_user(**validated_data)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation.get('avatar'):
+            representation['avatar'] = f"https://{settings.DOMAIN_NAME}{representation['avatar']}"
+        return representation
 # end CustomeUser Serializer ================
 
 # ============= CustomeUser Update Serializer +++++++++++++++

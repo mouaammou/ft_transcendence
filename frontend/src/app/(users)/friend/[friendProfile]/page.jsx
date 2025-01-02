@@ -151,6 +151,15 @@ export default function FriendProfile({ params }) {
 	const [c4stats, setC4Stats] = useState([]);
 	const router = useRouter();
 	const pathname = usePathname();
+	const [pageNotFound, setPageNotFound] = useState(false);
+
+
+	useEffect(() => {
+		if (!isAuth) {
+			// Direct navigation to login without going through 404
+			router.replace('/login');
+		}
+	}, [isAuth, router]);
 
 	const [progressData, setProgressData] = useState({
 		level: 0,
@@ -226,15 +235,22 @@ export default function FriendProfile({ params }) {
 		} catch (error) {
 		}
 	}, []);
-
+	
 	useEffect(() => {
 		if (!profile.id || !isAuth) return;
 		fetchProgressData(profile.id);
 		fetchPongData(profile.id);
 		fetchC4StatsData(profile.id);
 		fetchGameHistory(profile.id);
+		}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname, isAuth]);
 
-	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname]);
+		// Update the page not found effect
+		useEffect(() => {
+			if (pageNotFound && isAuth) {
+				setPageNotFound(false);
+				notFound();
+			}
+		}, [pageNotFound, isAuth]);
 
 
 	const RADIAN = Math.PI / 180;
@@ -265,7 +281,7 @@ export default function FriendProfile({ params }) {
 
 	const [friendStatusRequests, setFriendStatusRequests] = useState({});
 	const [currentProfileId, setCurrentProfileId] = useState(null);
-	const [pageNotFound, setPageNotFound] = useState(false);
+
 
 	// Modify the friend status update functions
 	const updateFriendStatus = (userId, status) => {
@@ -328,35 +344,40 @@ export default function FriendProfile({ params }) {
 	// Update the fetch profile effect
 	useEffect(() => {
 		const fetchFriendProfile = async params => {
-		const unwrappedParams = await params;
-		if (!unwrappedParams.friendProfile) {
+			// If not authenticated, don't try to fetch
+			if (!isAuth) return;
+
+			const unwrappedParams = await params;
+			if (!unwrappedParams.friendProfile) {
 			setPageNotFound(true);
 			return;
-		}
-	
-		if (data.username === unwrappedParams.friendProfile) {
+			}
+		
+			if (data.username === unwrappedParams.friendProfile) {
 			router.push('/profile');
 			return;
-		}
-		
-		try {
+			}
+			
+			try {
 			const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
 			if (response.status === 200) {
-			if (currentProfileId !== response.data.id) {
-				console.log('Setting current profile id:', response.data.id);
+				if (currentProfileId !== response.data.id) {
 				setCurrentProfileId(response.data.id);
 				updateFriendStatus(response.data.id, response.data.friend);
-			}
-			setProfile(response.data);
+				}
+				setProfile(response.data);
 			} else {
-			setPageNotFound(true);
+				setPageNotFound(true);
 			}
-		} catch (error) {
-			setPageNotFound(true);
-		}
+			} catch (error) {
+			// Only set pageNotFound if we're still authenticated
+			if (isAuth) {
+				setPageNotFound(true);
+			}
+			}
 		};
 		fetchFriendProfile(params);
-	}, [params, data.username, pathname, currentProfileId]);
+	}, [params, data.username, pathname, currentProfileId, isAuth]);
 
 	// Update the websocket message handler effect
 	useEffect(() => {
@@ -448,8 +469,6 @@ export default function FriendProfile({ params }) {
 	}, [pageNotFound, friendStatusRequests, profile?.id]);
 
 	return (
-		<Toaster position="top-right" toastOptions={{ duration: 3000, style: { backgroundColor: '#333', color: '#fff', padding: '16px', } }} />
-		&&
 		profile && (data.username !== profile.friendProfile) && !pageNotFound && (
 			<div className="min-h-screen bg-gray-900 text-white">
 				{/* Hero Section with Background */}
