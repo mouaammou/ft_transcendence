@@ -259,18 +259,14 @@ export const ChatProvider = ({ children }) => {
     //  ************************ Handle user click (select a chat) ************************
 
     const handleUserClick = (user) => {
-        console.log("user in handleUserClick *=>  ", user);
         setSelectedUser(user);
         setIsChatVisible(true);
         if (selectedUser && selectedUser.id === user.id) {
             return;
         }
-        console.log("allUsers in handleUserClick ** => ", allUsers);
         const userFriendshipStatus = allUsers.find(
             (friend) => friend.friend.id === user.id
         )?.friend.friendship_status;
-
-        console.log("userFriendshipStatus in handleUserClick ** => ", userFriendshipStatus);
         if (userFriendshipStatus === 'blocking' || userFriendshipStatus === 'blocked') {
             updateFriendStatus(user.id, 'blocking');
         } else {

@@ -20,7 +20,6 @@ import { useRouter } from 'next/navigation';
 const ChatActions = ({ selectedUser, blockFriend, removeBlock, inviteToGame, currentStatus }) => {
     const friendshipStatus = currentStatus || selectedUser?.friendship_status;
 
-	console.log("\n STATUS friendshipStatus in ChatActions** ", friendshipStatus);
     // Same logic as FriendProfile: show unblock button only when you blocked them (blocking)
     if (friendshipStatus === 'blocking') {
         return (
@@ -149,12 +148,9 @@ const Msg_chat = () => {
 
     useEffect(() => {
         if (!selectedUser?.id || !allUsers) return;
-        console.log("selectedUser in useEffect msg_chat =>: ", selectedUser);
         // Find the user in allUsers and get their current status 
         const currentUser = allUsers.find(user => user.friend.id === selectedUser.id);
-        console.log("currentUser in useEffect msg_chat =>: ", currentUser);
         if (currentUser?.friend?.friendship_status) {
-            console.log("Status changing to currentUser in useEffect msg_chat =>: ", currentUser.friend.friendship_status);
             setUserStatus(currentUser.friend.friendship_status);
         }
     }, [allUsers, selectedUser?.id, selectedUser?.friendship_status, currentuser]);
