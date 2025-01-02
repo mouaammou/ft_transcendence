@@ -156,7 +156,7 @@ export default function LoginPage() {
                     <p className="text-2xl font-light text-gray-300 mb-4">OR continue with</p>
                     <button 
                         type="button"
-                        className="px-8 py-3 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg"
+                        className="p-2 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg"
                     >
                         <Login42 />
                     </button>

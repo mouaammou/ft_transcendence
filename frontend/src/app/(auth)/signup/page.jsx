@@ -63,37 +63,75 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-
+  
     try {
       setIsSubmitting(true);
-
+  
       // Validate form before submission
       if (!validateForm()) {
         return;
       }
-
+  
       const response = await AuthenticateTo('/signup', formData);
       
       if (response?.status === 201 || response?.status === 200) {
         toast.success('Account created successfully!');
       } else if (response?.error || response?.server_error) {
         toast.error(response.error || response.server_error);
+      } else {
+        // Handle all possible validation errors
+        const errorData = response?.response?.data;
+        if (errorData) {
+          const errorFields = [
+            'username', 'email', 'password', 'first_name', 
+            'last_name', 'server_error', 'non_field_errors'
+          ];
+  
+          let hasShownError = false;
+  
+          // Show errors for each field
+          errorFields.forEach(field => {
+            if (errorData[field]) {
+              // Handle array or string error messages
+              const errorMessage = Array.isArray(errorData[field]) 
+                ? errorData[field][0] 
+                : errorData[field];
+              
+              toast.error(`${field.replace('_', ' ')}: ${errorMessage}`);
+              hasShownError = true;
+            }
+          });
+  
+          // If no specific errors were shown but we have error data
+          if (!hasShownError && typeof errorData === 'string') {
+            toast.error(errorData);
+          }
+        }
       }
-
     } catch (error) {
       // Handle specific error messages from the server
       if (errors) {
-        if (errors.username) {
-          toast.error(errors.username);
-        }
-        if (errors.email) {
-          toast.error(errors.email);
-        }
-        if (errors.password) {
-          toast.error(errors.password);
-        }
-        if (errors.server_error) {
-          toast.error(errors.server_error);
+        const errorFields = [
+          'username', 'email', 'password', 'first_name', 
+          'last_name', 'server_error', 'non_field_errors'
+        ];
+  
+        let hasShownError = false;
+  
+        errorFields.forEach(field => {
+          if (errors[field]) {
+            const errorMessage = Array.isArray(errors[field]) 
+              ? errors[field][0] 
+              : errors[field];
+            
+            toast.error(`${field.replace('_', ' ')}: ${errorMessage}`);
+            hasShownError = true;
+          }
+        });
+  
+        // If no specific errors were shown
+        if (!hasShownError) {
+          toast.error('An error occurred during signup');
         }
       } else {
         toast.error('An error occurred during signup');
