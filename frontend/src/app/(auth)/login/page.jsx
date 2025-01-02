@@ -59,8 +59,12 @@ export default function LoginPage() {
 
     return (
         <>
-<Toaster 
-    position="top-right"
+<Toaster
+    containerStyle={{
+        position: 'absolute',  // Change from fixed to absolute
+        top: 16,
+        right: 16
+    }}
     toastOptions={{
         duration: 3000,
         style: {

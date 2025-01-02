@@ -10,7 +10,8 @@ import { PiShareNetworkFill } from "react-icons/pi";
 export default function CreateJoinTournamentPage() {
   const [tournament_name, setTournamentName] = useState('');
   const router = useRouter();
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+  const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
 
   const [inputError, setInputError] = useState({
     alreadyInTournament: false,

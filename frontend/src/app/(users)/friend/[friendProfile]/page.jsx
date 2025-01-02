@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { AreaChart, XAxis, YAxis, Tooltip, Area,CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import { Toaster, toast } from 'react-hot-toast';
 
+
 ////////////////////////
 
 import { HiShieldExclamation, HiShieldCheck } from 'react-icons/hi';
@@ -238,7 +239,7 @@ export default function FriendProfile({ params }) {
 		fetchC4StatsData(profile.id);
 		fetchGameHistory(profile.id);
 
-	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory]);
+	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname]);
 
 
 	const RADIAN = Math.PI / 180;

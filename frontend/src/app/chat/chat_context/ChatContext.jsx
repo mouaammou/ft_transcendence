@@ -310,10 +310,6 @@ export const ChatProvider = ({ children }) => {
     // *********** block friends ********
 
     const blockFriend = useCallback(() => {
-
-
-
-
         if (isConnected && selectedUserRef.current?.id) {
             // Optimistic update
             setAllUsers((prevUsers) =>
@@ -411,7 +407,15 @@ export const ChatProvider = ({ children }) => {
                     );
                 }
                 break;
-                
+//                 success
+// : 
+// true
+// to_user_id
+// : 
+// 10
+// type
+// : 
+// "remove_block"
             case NOTIFICATION_TYPES.REMOVE_BLOCK:
                 if (lastJsonMessage.success && lastJsonMessage.to_user_id === selectedUserRef.current.id) {
                     setAllUsers((prevUsers) =>

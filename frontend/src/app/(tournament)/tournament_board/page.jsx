@@ -36,7 +36,8 @@ function winner_celebration() {
 }
 
 export default function TournamentBoardPage() {
-  const { sendMessage, isConnected, lastMessage } = useGlobalWebSocket();
+    const websocket = useGlobalWebSocket();
+  const { sendMessage, isConnected, lastMessage } = websocket || {};
   const [players, setPlayers] = useState([]);
   const [fulfilled, setFulfilled] = useState(false);
   const [fetchedPlayers, setFetchedPlayers] = useState([]);
@@ -131,10 +132,10 @@ export default function TournamentBoardPage() {
 
   useEffect(() => {
 
-    // if (isConnected)
+    if (isConnected)
     sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    // if (isConnected)
+    if (isConnected)
     sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {

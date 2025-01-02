@@ -134,7 +134,7 @@ const Msg_chat = () => {
     } = useContext(ChatContext);
 
     const { profileData: currentuser, setSelectedUser } = useAuth();
-    const { isConnected, sendMessage, NOTIFICATION_TYPES } = useNotificationContext();
+    const { isConnected, sendMessage, NOTIFICATION_TYPES  } = useNotificationContext();
     const router = useRouter();
 
     const inviteToGame = () => {

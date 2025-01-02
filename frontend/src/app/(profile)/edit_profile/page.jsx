@@ -144,7 +144,14 @@ const EditProfile = () => {
 
 	return (
 		<>
-			<Toaster />
+			<Toaster
+				containerStyle={{
+					position: 'absolute',  // Change from fixed to absolute
+					top: 16,
+					right: 16
+				}}
+				// ... rest of your toaster options
+			/>
 			<div className="max-w-6xl mx-auto px-4 py-8">
 			<div className="grid grid-cols-1 gap-8">
 				{/* Avatar Section */}
