@@ -3,9 +3,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { deleteData, getData, postData } from '@/services/apiCalls';
 import { TfiStatsUp } from 'react-icons/tfi';
 import { notFound, usePathname } from 'next/navigation';
-import { useWebSocketContext } from '@/components/websocket/websocketContext';
 import { FaGamepad, FaUserPlus, FaBan } from 'react-icons/fa';
-import { MdOutlineEmail, MdPerson, MdPhone } from 'react-icons/md';
+import { MdPhone } from 'react-icons/md';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import { IoPersonRemove } from 'react-icons/io5';
 import { MdEmail, MdUpdate } from 'react-icons/md';
@@ -16,10 +15,6 @@ import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
 import { AreaChart, XAxis, YAxis, Tooltip, Area,CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import { Toaster, toast } from 'react-hot-toast';
-
-
-////////////////////////
-
 import { HiShieldExclamation, HiShieldCheck } from 'react-icons/hi';
 
 const ActionButton = ({ onClick, variant = "primary", icon: Icon, children }) => {
@@ -692,10 +687,6 @@ export default function FriendProfile({ params }) {
 									</Pie>
 								</PieChart>
 							</ResponsiveContainer>
-							{/* <div className="max-w-3xl mx-auto">
-								<DoughnutChart />
-								
-							</div> */}
 						</div>
 					</div>
 				</div>

@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import Board from './board';
-import Image from 'next/image';
-import mysocket from '@/utils/WebSocketManager';
 import { useEffect, useState } from 'react';
 import { getData } from '@/services/apiCalls';
 import { useRouter } from 'next/navigation';

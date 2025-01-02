@@ -61,16 +61,6 @@ const createInitialGameState = () => ({
 	gameConfig: {}
 });
 
-// Helper functions
-const createPaddle = (x, y, width, height, color) => ({
-	x,
-	y,
-	width,
-	height,
-	color,
-	score: 0
-});
-
 const drawRect = (context, x, y, width, height, color) => {
 	context.fillStyle = color;
 	context.fillRect(x, y, width, height);

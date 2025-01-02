@@ -192,9 +192,6 @@ const MyGrid = ({username}) => {
                 
                 innerCircle.classList.add('inner-circle');
                 discElement.appendChild(innerCircle);
-                // setTimeout(() => {
-                //     discElement.style.animation = '';
-                // }, 2000);
             }
         });
     
@@ -243,7 +240,8 @@ const MyGrid = ({username}) => {
     return (
         <div className="relative flex flex-col gap-[20px] md:gap-[30px] items-center">
             <div style={{left: locator}} 
-                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden custom-lg-block md:w-5 md:h-6 rounded-sm rounded-bl-3xl rounded-br-3xl border-black animate-bounce ${yourTurn? 'bg-[#BD3B57]':'bg-[#FFCE67]'}`}>
+                className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden custom-lg-block md:w-5 md:h-6 rounded-sm rounded-bl-3xl 
+                rounded-br-3xl border-black animate-bounce ${yourTurn? 'bg-[#BD3B57]':'bg-[#FFCE67]'}`}>
             </div>
             <div ref={gridRef} className={styles.gridWrapper} >
                 <div className={styles.gridImage}>

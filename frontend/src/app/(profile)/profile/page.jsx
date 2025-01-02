@@ -19,8 +19,6 @@ const baseUrl = process.env.NEXT_PUBLIC_URL;
 const Profile = () => {
 	const { profileData: data, isAuth } = useAuth();
 	const [matches, setMatches] = useState([]);
-	const [nextPage, setNextPage] = useState(null);
-	const [prevPage, setPrevPage] = useState(null);
 	const [c4stats, setC4Stats] = useState([]);
 	const [pongData, setPongData] = useState([]);
 	const [pageNumber, setPageNumber] = useState(1);
@@ -31,7 +29,6 @@ const Profile = () => {
 		progress: 0,
 		currentXp: 0,
 	});
-	let formattedData = [];
 
 	const fetchGameHistory = useCallback(async (userId) => {
 		try {
@@ -341,13 +338,8 @@ const Profile = () => {
 									</Pie>
 								</PieChart>
 							</ResponsiveContainer>
-							{/* <div className="max-w-3xl mx-auto">
-								<DoughnutChart />
-								
-							</div> */}
 						</div>
 					</div>
-					{/* Stats Section */}
 				</div>
 			</div>
 		)

@@ -163,7 +163,6 @@ export default function CreateJoinTournamentPage() {
               }}></div>
             <div>
               <h2 className="flex flex-row text-[26px] lg:text-[40px] font-ibm font-semibold mb-6 text-center lg:text-left">
-                {/* <FontAwesomeIcon icon="fa-light fa-network-wired" /> */}
                 <FaNetworkWired className='mr-3' />
                 Create tournament
               </h2>

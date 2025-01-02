@@ -7,9 +7,6 @@ import { useConnectFourWebSocket } from '@/utils/FourGameWebSocketManager';
 
 const ChooseMode = () => {
     const { sendMessage, isConnected, lastMessage } = useConnectFourWebSocket();
-    const {retryCount, setRetryCount} = useState(0);
-    const maxRetries = 5;
-    const retryInterval = 1000;
 
     useEffect(() => {
             if (isConnected) 

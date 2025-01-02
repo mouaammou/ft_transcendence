@@ -90,7 +90,7 @@ const Friends = () => {
                             )
                         })}
                     </div>
-                    <button onClick={handleNextClick} className="px-4 py-2 m-auto items-center justify-center text-white bg-blue-500 rounded-md hover:bg-blue-700">
+                    <button onClick={handleNextClick} className="custom-button">
                         Next
                     </button>
                 </div>
