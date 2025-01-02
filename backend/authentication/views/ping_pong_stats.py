@@ -25,19 +25,20 @@ class GameHistoryStatsView(APIView):
             date = seven_days_ago + timedelta(days=i)
             games_on_date = game_history.filter(creation_date=date)
             total_games = games_on_date.count()
+            day_name = date.strftime('%a')
             if total_games > 0:
                 wins = games_on_date.filter(winner_id=user.id).count()
                 losses = games_on_date.filter(loser_id=user.id).count()
-                stats[date.strftime('%m/%d')] = {
-                    'wins': (wins / total_games) * 100,
-                    'losses': (losses / total_games) * 100
+                stats[day_name] = {
+                    'wins': round((wins / total_games) * 100),
+                    'losses': round((losses / total_games) * 100)
                 }
             else:
-                stats[date.strftime('%m/%d')] = {
+                stats[day_name] = {
                     'wins': 0,
                     'losses': 0
                 }
 
-        data = [{'date': date, 'wins': stat['wins'], 'losses': stat['losses']} for date, stat in stats.items()]
+        data = [{'date': day, 'wins': stat['wins'], 'losses': stat['losses']} for day, stat in stats.items()]
 
         return Response(data, status=status.HTTP_200_OK)

@@ -22,7 +22,8 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
         } else if (notif_type === NOTIFICATION_TYPES.ROUND) {
             router.push('/tournament_board');
         }
-        
+        console.log(" -- -- -- messageType  - ", messageType);
+        console.log(" -- -- -- data.sender  - ", data.sender);
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,

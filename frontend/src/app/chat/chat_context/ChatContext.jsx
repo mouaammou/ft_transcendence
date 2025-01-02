@@ -7,6 +7,7 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 
 import { useDebounce } from 'use-debounce';
 import { useWebSocketContext } from '@/components/websocket/websocketContext';
+import useNotificationContext from '@/components/navbar/useNotificationContext';
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
@@ -37,16 +38,23 @@ export const ChatProvider = ({ children }) => {
     const selectedUserRef = useRef(null);
     const [activeScrollToEnd, setActiveScrollToEnd] = useState(false);
 
-    const [friendStatusRequest, setFriendStatusRequest] = useState(null);
-    const [removeBlockedUser, setRemoveBlockedUser] = useState('');
+    const [friendStatusRequests, setFriendStatusRequests] = useState({});
+    const { isConnected, NOTIFICATION_TYPES, lastJsonMessage, sendMessage, lastMessage } = useNotificationContext();
+
+    // Update friend status helper
+    const updateFriendStatus = (userId, status) => {
+        setFriendStatusRequests(prevStatuses => ({
+            ...prevStatuses,
+            [userId]: status
+        }));
+    };
+
 
     // ************************ end ***********************
 
     const {
 		users,
 		setUsers,
-        lastMessage,
-        isConnected,
 	} = useWebSocketContext();
 
     // ************************  Fetch friends (users to chat with) ************************
@@ -252,12 +260,25 @@ export const ChatProvider = ({ children }) => {
     //  ************************ Handle user click (select a chat) ************************
 
     const handleUserClick = (user) => {
+        console.log("user ** ", user);
         setSelectedUser(user);
         setIsChatVisible(true);
         if (selectedUser && selectedUser.id === user.id) {
             return;
         }
+        console.log("allUsers ** ", allUsers);
+        const userFriendshipStatus = allUsers.find(
+            (friend) => friend.friend.id === user.id
+        )?.friend.friendship_status;
 
+        console.log("userFriendshipStatus ** ", userFriendshipStatus);
+        if (userFriendshipStatus === 'blocking' || userFriendshipStatus === 'blocked') {
+            updateFriendStatus(user.id, 'blocking');
+        } else {
+            updateFriendStatus(user.id, 'accepted');
+        }
+
+        // ... rest of existing handleUserClick logic ...
         setIsChatVisible(true);
         fetchChatHistory(user.id, 1);
         selectedUserRef.current = user;
@@ -283,22 +304,6 @@ export const ChatProvider = ({ children }) => {
                 )
             );
         }
-
-        const selectedUserStatus = allUsers.find((friend) => friend.friend.id === user.id)?.friend.friendship_status;
-        if (selectedUserStatus === 'blocking')
-            setRemoveBlockedUser('blocking');
-        else if (selectedUserStatus === 'blocked')
-            setRemoveBlockedUser('blocked');
-
-        if (selectedUserStatus === 'blocking' || selectedUserStatus === 'blocked')
-        {
-            setFriendStatusRequest('blocked');
-        }
-        else
-        {
-
-            setFriendStatusRequest('accepted');
-        }
     };
     // ************************ end ***********************
 
@@ -306,75 +311,126 @@ export const ChatProvider = ({ children }) => {
 
     const blockFriend = useCallback(() => {
 
-        if (selectedUserRef.current?.id && friendStatusRequest !== 'blocked')
-            postData(`/blockFriend/${selectedUserRef.current.id}`)
-                .then((response) => {
-                    if (response.status === 200 && response.data?.status == 'blocking') {
 
-                        setFriendStatusRequest('blocked');
-                        setRemoveBlockedUser('blocking');
-                        setAllUsers((prevUsers) =>
-                            prevUsers.map((friend) =>
-                                friend.friend.id === selectedUserRef.current.id
-                                    ? {
-                                        ...friend,
-                                        friend: {
-                                            ...friend.friend,
-                                            friendship_status: 'blocked',
-                                        },
-                                    }
-                                    : friend
-                            )
-                        );
-                    }
-                    else if (response.status === 200 && response.data?.status == 'already') {
-                        setFriendStatusRequest('blocked');
-                        setRemoveBlockedUser('blocked');
-                    }
-                    else {
 
-                    }
+
+        if (isConnected && selectedUserRef.current?.id) {
+            // Optimistic update
+            setAllUsers((prevUsers) =>
+                prevUsers.map((friend) =>
+                    friend.friend.id === selectedUserRef.current.id
+                        ? {
+                            ...friend,
+                            friend: {
+                                ...friend.friend,
+                                friendship_status: 'blocking',
+                            },
+                        }
+                        : friend
+                )
+            );
+    
+            sendMessage(
+                JSON.stringify({
+                    type: NOTIFICATION_TYPES.BLOCK,
+                    to_user_id: selectedUserRef.current.id,
                 })
-                .catch((error) => {
-
-
-                });
-
-    }, [selectedUserRef.current?.id]);
-
-
+            );
+        }
+    }, [isConnected, selectedUserRef.current?.id, sendMessage]);
+    
     const removeBlock = useCallback(() => {
-
-        if (selectedUserRef.current?.id)
-            deleteData(`/removeBlock/${selectedUserRef.current.id}`)
-                .then((response) => {
-                    if (response.status === 200) {
-                        setFriendStatusRequest('accepted');
-                        setAllUsers((prevUsers) =>
-                            prevUsers.map((friend) =>
-                                friend.friend.id === selectedUserRef.current.id
-                                    ? {
-                                        ...friend,
-                                        friend: {
-                                            ...friend.friend,
-                                            friendship_status: 'accepted',
-                                        },
-                                    }
-                                    : friend
-                            )
-                        );
-                    }
-                    else {
-
-                    }
+        if (isConnected && selectedUserRef.current?.id) {
+            // Optimistic update
+            setAllUsers((prevUsers) =>
+                prevUsers.map((friend) =>
+                    friend.friend.id === selectedUserRef.current.id
+                        ? {
+                            ...friend,
+                            friend: {
+                                ...friend.friend,
+                                friendship_status: 'accepted',
+                            },
+                        }
+                        : friend
+                )
+            );
+    
+            sendMessage(
+                JSON.stringify({
+                    type: NOTIFICATION_TYPES.REMOVE_BLOCK,
+                    to_user_id: selectedUserRef.current.id,
                 })
-                .catch((error) => {
-
-
-                });
-
-    }, [selectedUserRef.current?.id]);
+            );
+        }
+    }, [isConnected, selectedUserRef.current?.id, sendMessage]);
     // *********** end block friends ********
+
+    // const NOTIFICATION_TYPES = {
+    //     FRIENDSHIP: 'send_friend_request',
+    //   BLOCK: 'block_user',
+    //   REMOVE_FRIEND: 'remove_friend',
+    //   REMOVE_BLOCK: 'remove_block',
+    //     ACCEPT_FRIEND: 'accept_friend_request',
+    //   ACCEPTED_DONE: 'accepted_done',
+    //     REJECT_FRIEND: 'reject_friend_request',
+    //     INVITE_GAME: 'invite_to_game',
+    //     ACCEPT_GAME: 'accept_game',
+    //     REJECT_GAME: 'reject_game',
+    //     INVITE_TOURNAMENT: 'invite_to_tournament',
+    //     ACCEPT_TOURNAMENT: 'accept_tournament',
+    //     REJECT_TOURNAMENT: 'reject_tournament',
+    //     ROUND: 'round_game',
+    //   ACCEPT_ROUND: 'accept_round',
+    //   REJECT_ROUND: 'reject_round',
+    // };
+
+
+    useEffect(() => {
+        if (!lastJsonMessage || !isConnected || !selectedUserRef.current?.id) return;
+        console.log(" 110 chat context lastJsonMessage ** ", lastJsonMessage);
+        // Handle different message types
+        switch (lastJsonMessage.type) {
+            case NOTIFICATION_TYPES.BLOCK:
+                if (lastJsonMessage.success && lastJsonMessage.to_user_id === selectedUserRef.current.id) {
+                    // If blocked is true, I've been blocked. If null, I'm the one blocking
+                    console.log("BLOCK ** ", lastJsonMessage);
+                    const newStatus = lastJsonMessage.blocked ? 'blocked' : 'blocking';
+                    setAllUsers((prevUsers) =>
+                        prevUsers.map((friend) =>
+                            friend.friend.id === selectedUserRef.current.id
+                                ? {
+                                    ...friend,
+                                    friend: {
+                                        ...friend.friend,
+                                        friendship_status: newStatus,
+                                    },
+                                }
+                                : friend
+                        )
+                    );
+                }
+                break;
+                
+            case NOTIFICATION_TYPES.REMOVE_BLOCK:
+                if (lastJsonMessage.success && lastJsonMessage.to_user_id === selectedUserRef.current.id) {
+                    setAllUsers((prevUsers) =>
+                        prevUsers.map((friend) =>
+                            friend.friend.id === selectedUserRef.current.id
+                                ? {
+                                    ...friend,
+                                    friend: {
+                                        ...friend.friend,
+                                        friendship_status: 'accepted',
+                                    },
+                                }
+                                : friend
+                        )
+                    );
+                }
+                break;
+        }
+    }, [lastJsonMessage, isConnected]);
 
   //  ************************  ************************
   const handleSendMessage = () => {
@@ -714,9 +770,7 @@ export const ChatProvider = ({ children }) => {
         onlineUsers,
         blockFriend,
         removeBlock,
-        friendStatusRequest,
-        removeBlockedUser,
-        setRemoveBlockedUser,
+        friendStatusRequests,
         }}
         >
         {children}

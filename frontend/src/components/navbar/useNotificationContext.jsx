@@ -73,7 +73,7 @@ export const NotificationProvider = ({ children }) => {
         setUnreadCount(prev => prev + 1);
       }
     },
-    [isConnected, lastMessage]
+    [isConnected, lastMessage, setNotifications, setUnreadCount, setNotificationType]
   );
 
   // Fetch notifications when the user is logged in
@@ -135,10 +135,11 @@ export const NotificationProvider = ({ children }) => {
 
   // Handle new WebSocket messages
   useEffect(() => {
+    console.log(' **-- lastJsonMessage --**', lastJsonMessage);
     if (isConnected) {
       handleNotifications(lastJsonMessage);
     }
-  }, [lastMessage, isConnected, lastJsonMessage]);
+  }, [lastMessage, isConnected, lastJsonMessage, handleNotifications]);
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(

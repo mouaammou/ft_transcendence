@@ -34,33 +34,43 @@ const EditProfile = () => {
 	const handleAvatarChange = useCallback(async (e) => {
 		const file = e.target.files[0];
 		if (!file) return;
-
+		
+		// Check file size
 		if (file.size > 5 * 1024 * 1024) {
 			toast.error('File size must be less than 5MB');
 			return;
 		}
-
+		
 		setIsLoading(prev => ({ ...prev, avatar: true }));
-
-		const formData = new FormData();
-		formData.append('avatar', file);
-
+		
 		try {
+			// Create FormData
+			const formData = new FormData();
+			formData.append('avatar', file);
+		
+			// Use postData with specific headers for FormData
 			const res = await postData('profile/update', formData, {
-				headers: { 'Content-Type': 'multipart/form-data' },
+			'Content-Type': 'multipart/form-data',
 			});
-
-			if (res.status === 200) {
-				setProfileData(prev => ({ ...prev, avatar: res.data.avatar }));
-				toast.success('Avatar updated successfully');
-			}
-			else {
-				throw new Error('Failed to update avatar');
+		
+			if (res?.status === 200 && res.data?.avatar) {
+			setProfileData(prev => ({
+				...prev,
+				avatar: res.data.avatar
+			}));
+			toast.success('Avatar updated successfully');
+			} else {
+			throw new Error('Failed to update avatar');
 			}
 		} catch (err) {
-			toast.error('Failed to update avatar');
+			const errorMessage = err.response?.data?.errors?.avatar?.[0] || 
+								err.response?.data?.message || 
+								'Failed to update avatar';
+			toast.error(errorMessage);
 		} finally {
 			setIsLoading(prev => ({ ...prev, avatar: false }));
+			// Reset the input
+			e.target.value = '';
 		}
 	}, [setProfileData]);
 
@@ -154,6 +164,7 @@ const EditProfile = () => {
 									type="file"
 									accept="image/*"
 									className="hidden"
+									name="avatar" // Changed to match backend field name
 									onChange={handleAvatarChange}
 									disabled={isLoading.avatar}
 								/>
