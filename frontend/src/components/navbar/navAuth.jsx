@@ -34,7 +34,7 @@ const Logo = () => (
           className="relative overflow-hidden flex rounded-full ring-2 ring-gray-700 hover:ring-blue-500 transition-all duration-300 group"
         >
           <img 
-            className="w-10 h-10 sm:w-12 sm:h-12 object-cover transform group-hover:scale-105 transition-transform duration-300" 
+            className="w-20 h-10 sm:w-12 sm:h-12 object-cover transform group-hover:scale-105 transition-transform duration-300" 
             src={data.avatar} 
             alt="user-avatar" 
           />
@@ -84,7 +84,7 @@ const Logo = () => (
     const [isOpen, setIsOpen] = useState(false);
     
     return (
-      <div className="flex items-center h-20 bg-gray-800 px-6 shadow-lg">
+      <div className="flex items-center h-20 px-6 shadow-lg bg-gray-800 backdrop-blur-lg bg-opacity-95"> 
         <SearchProfileComponent />
         <div className="ml-auto flex items-center space-x-6">
           <NotificationBell />

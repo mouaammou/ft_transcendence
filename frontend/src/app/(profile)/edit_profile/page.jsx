@@ -1,5 +1,5 @@
 	'use client';
-	import { useCallback, useState } from 'react';
+	import { useCallback, useState, useEffect } from 'react';
 	import { useAuth } from '@/components/auth/loginContext';
 	import { postData } from '@/services/apiCalls';
 	import { Toaster, toast } from 'react-hot-toast';
@@ -10,20 +10,46 @@ const EditProfile = () => {
 	const [isLoading, setIsLoading] = useState({
 		avatar: false,
 		info: false,
-		password: false
+		password: false,
+		initial: true
 	});
 
 	const [formData, setFormData] = useState({
-		username: data?.username || '',
-		email: data?.email || '',
-		first_name: data?.first_name || '',
-		last_name: data?.last_name || '',
+		username: '',
+		email: '',
+		first_name: '',
+		last_name: '',
 		current_password: '',
 		new_password: '',
 		confirm_password: ''
 	});
 
 	const [errors, setErrors] = useState({});
+
+	// Cleanup effect
+	useEffect(() => {
+		// Clear any existing toast messages when component mounts
+		toast.dismiss();
+		
+		// Cleanup function
+		return () => {
+		toast.dismiss();
+		};
+	}, []);
+
+	// Initialize form data when profile data is available
+	useEffect(() => {
+		if (data && Object.keys(data).length > 0) {
+		setFormData(prev => ({
+			...prev,
+			username: data.username || '',
+			email: data.email || '',
+			first_name: data.first_name || '',
+			last_name: data.last_name || ''
+		}));
+		setIsLoading(prev => ({ ...prev, initial: false }));
+		}
+	}, [data]);
 
 	const handleChange = useCallback((e) => {
 		const { name, value } = e.target;
@@ -66,6 +92,7 @@ const EditProfile = () => {
 			const errorMessage = err.response?.data?.errors?.avatar?.[0] || 
 								err.response?.data?.message || 
 								'Failed to update avatar';
+			// 
 			toast.error(errorMessage);
 		} finally {
 			setIsLoading(prev => ({ ...prev, avatar: false }));
@@ -142,16 +169,25 @@ const EditProfile = () => {
 		}
 	}, [formData]);
 
+	if (isLoading.initial) {
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+			<p>Loading profile data...</p>
+			</div>
+		);
+	}
+
+// 	<Toaster
+// 	containerStyle={{
+// 		position: 'absolute',  // Change from fixed to absolute
+// 		top: 16,
+// 		right: 16
+// 	}}
+// 	// ... rest of your toaster options
+// />
+
 	return (
 		<>
-			<Toaster
-				containerStyle={{
-					position: 'absolute',  // Change from fixed to absolute
-					top: 16,
-					right: 16
-				}}
-				// ... rest of your toaster options
-			/>
 			<div className="max-w-6xl mx-auto px-4 py-8">
 			<div className="grid grid-cols-1 gap-8">
 				{/* Avatar Section */}
@@ -245,7 +281,7 @@ const EditProfile = () => {
 						label="New Password"
 						name="new_password"
 						type="password"
-						value="********"
+						value={formData.new_password}
 						onChange={handleChange}
 						error={errors.new_password}
 					/>
@@ -253,7 +289,7 @@ const EditProfile = () => {
 						label="Confirm New Password"
 						name="confirm_password"
 						type="password"
-						value="********"
+						value={formData.confirm_password}
 						onChange={handleChange}
 						error={errors.confirm_password}
 					/>
@@ -280,20 +316,20 @@ const EditProfile = () => {
 	const InputField = ({ label, name, type = 'text', value, onChange, error }) => (
 		<div className="space-y-2">
 			<label className="block text-sm font-medium text-white">
-				{label}
+			{label}
 			</label>
 			<input
-				type={type}
-				name={name}
-				placeholder={value}
-				onChange={onChange}
-				className={`w-full ${error ? 'custom-input-error' : 'custom-input'}`}
-				autoComplete='off'
+			type={type}
+			name={name}
+			value={value} // Remove the password condition since we handle empty values in the parent
+			onChange={onChange}
+			className={`w-full ${error ? 'custom-input-error' : 'custom-input'}`}
+			autoComplete='off'
 			/>
 			{error && (
-				<p className="text-red-500 text-sm">{error}</p>
+			<p className="text-red-500 text-sm">{error}</p>
 			)}
 		</div>
-	);
+		);
 
 	export default EditProfile;

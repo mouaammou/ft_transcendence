@@ -115,7 +115,6 @@ export default function TournamentForm({params}) {
           </button>
         </div>
       </form>
-      <Toaster />
     </div>
     </>
   );

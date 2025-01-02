@@ -36,45 +36,61 @@ export const LoginProvider = ({ children }) => {
   }, [pathname, router]);
 
 	// Authentication function with async/await for readability
-	const AuthenticateTo = async (endpoint, formData) => {
-		try {
-			const res = await postData(endpoint, formData);
-			if (res?.status === 200 || res?.status === 201) {
-				if (res?.data?.totp) {
-					// this means user has enabled 2fa
-					// and we need to send totp code with credentials
-					return {"totp":"send credentials with totp code", msg:res?.data?.msg};
-				}
-				setIsAuth(true);
-				Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
+  const AuthenticateTo = async (endpoint, formData) => {
+    try {
+      // Clear previous errors
+      setErrors({});
+      
+      const res = await postData(endpoint, formData);
+      if (res?.status === 200 || res?.status === 201) {
+        if (res?.data?.totp) {
+          return {"totp":"send credentials with totp code", msg:res?.data?.msg};
+        }
+        setIsAuth(true);
+        Cookies.set('isAuth', 'true', { path: '/', sameSite: 'strict' });
+        
+        if (isConnected) {
+          sendMessage(JSON.stringify({ online: 'online', user: res.data.username }));
+        }
+        router.push('/profile');
+        return res;
+      } else {
+        handleError(res);
+        return res;
+      }
+    } catch (error) {
+      handleError(error);
+      throw error;
+    }
+  };
 
-				// Send WebSocket message if connected
-				if (isConnected)
-					sendMessage(JSON.stringify({ online: 'online', user: res.data.username }));
-				router.push('/profile');
-			} else {
-				handleError(res);
-			}
-		} catch (error) {
-
-		}
-		return {};
-	};
-
-  const handleError = res => {
+  // Updated error handling
+  const handleError = (res) => {
     if (res?.response?.status === 500) {
       router.push('/500');
+      return;
     }
-    setErrors({
+    
+    // Clear previous errors first
+    setErrors({});
+    
+    const errorData = {
       first_name: res?.response?.data?.first_name,
       last_name: res?.response?.data?.last_name,
       username: res?.response?.data?.username,
       email: res?.response?.data?.email,
       password: res?.response?.data?.password,
       status: res?.response?.status,
-      server_error: `${res?.response?.data} ${res?.response?.status}`,
+      server_error: res?.response?.data ? `${res.response.data} ${res.response.status}` : 'An error occurred',
       error: res?.response?.data?.Error,
-    });
+    };
+
+    // Only set errors that actually have values
+    const filteredErrors = Object.fromEntries(
+      Object.entries(errorData).filter(([_, value]) => value != null)
+    );
+    
+    setErrors(filteredErrors);
   };
 
   // Logout function with WebSocket notification
@@ -115,14 +131,31 @@ export const LoginProvider = ({ children }) => {
       const res = await postData('profile/data');
       if (res?.status === 200) {
         setProfileData(res.data.user);
+      } else {
+        // Handle non-200 responses
+        console.error('Failed to fetch profile:', res);
+        setProfileData({}); // Reset profile data on error
+        if (res?.status === 401) {
+          // Handle unauthorized access
+          setIsAuth(false);
+          Cookies.remove('isAuth');
+          router.push('/login');
+        }
       }
     } catch (error) {
-
+      console.error('Error fetching profile:', error);
+      // Don't reset auth state here, just set empty profile data
+      setProfileData({});
     }
-  }, []);
+  }, [router]);
 
+  // Modified useEffect for profile fetching
   useEffect(() => {
-    if (isAuth) fetchProfile();
+    if (isAuth) {
+      fetchProfile();
+    } else {
+      setProfileData({}); // Reset profile data when not authenticated
+    }
   }, [isAuth, fetchProfile]);
 
   // Redirect if authenticated and at a login or signup page

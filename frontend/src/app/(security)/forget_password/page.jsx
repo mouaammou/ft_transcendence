@@ -33,7 +33,6 @@ const ForgetPass = () => {
 
 	return (
 		<>
-			<Toaster />
 			<div className="min-h-screen flex items-stretch justify-center flex-wrap max-md:flex-col">
 			{/* Form Side */}
 			<div className="w-full md:w-1/2 flex items-center justify-center max-sm:p-1 px-3 bg-transparent">

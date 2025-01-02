@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@loginContext/loginContext';
 import Login42 from '@components/auth/login42';
-import Image from 'next/image';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
+import { toast } from 'react-hot-toast';
 import '@/styles/auth/signup.css';
 
 export default function Signup() {
@@ -21,17 +20,87 @@ export default function Signup() {
     password: false,
     confirmPassword: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { errors, AuthenticateTo } = useAuth();
+  const { errors, AuthenticateTo, setErrors } = useAuth();
+
+  // Clear errors when component mounts or unmounts
+  useEffect(() => {
+    setErrors({});
+    return () => setErrors({});
+  }, [setErrors]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const validateForm = () => {
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match');
+      return false;
+    }
+    
+    // Basic validation for empty fields
+    const requiredFields = ['first_name', 'last_name', 'username', 'email', 'password', 'confirmPassword'];
+    for (const field of requiredFields) {
+      if (!formData[field].trim()) {
+        toast.error(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} is required`);
+        return false;
+      }
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await AuthenticateTo('/signup', formData);
+    if (isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+
+      // Validate form before submission
+      if (!validateForm()) {
+        return;
+      }
+
+      const response = await AuthenticateTo('/signup', formData);
+      
+      if (response?.status === 201 || response?.status === 200) {
+        toast.success('Account created successfully!');
+      } else if (response?.error || response?.server_error) {
+        toast.error(response.error || response.server_error);
+      }
+
+    } catch (error) {
+      // Handle specific error messages from the server
+      if (errors) {
+        if (errors.username) {
+          toast.error(errors.username);
+        }
+        if (errors.email) {
+          toast.error(errors.email);
+        }
+        if (errors.password) {
+          toast.error(errors.password);
+        }
+        if (errors.server_error) {
+          toast.error(errors.server_error);
+        }
+      } else {
+        toast.error('An error occurred during signup');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputFields = [
@@ -56,10 +125,8 @@ export default function Signup() {
           value={formData[name]}
           onChange={handleChange}
           required
-          // className="w-full px-4 py-3 rounded-lg bg-black/20 border border-gray-600 text-white 
-          //            placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
-          //            transition-all outline-none"
           className='custom-input w-full'
+          disabled={isSubmitting}
         />
         {isPasswordField && (
           <button
@@ -67,7 +134,7 @@ export default function Signup() {
             onClick={() => setShowPassword(prev => ({ ...prev, [name]: !prev[name] }))}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
           >
-            {showPassword[name] ? <FaEye /> :  <FaEyeSlash />}
+            {showPassword[name] ? <FaEye /> : <FaEyeSlash />}
           </button>
         )}
       </div>
@@ -108,8 +175,9 @@ export default function Signup() {
                 <button
                   type="submit"
                   className='custom-button'
+                  disabled={isSubmitting}
                 >
-                  Sign up
+                  {isSubmitting ? 'Creating Account...' : 'Sign up'}
                 </button>
               </div>
 
@@ -131,21 +199,6 @@ export default function Signup() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Error Messages */}
-        <div className="mt-4 text-center">
-          <div className="text-red-500 space-y-1">
-            {Object.entries(errors).map(([key, value]) => (
-              value && key !== 'server_error' && (
-                <p key={key} className="text-sm">{value}</p>
-              )
-            ))}
-            {!Object.keys(errors).some(key => key !== 'server_error' && errors[key]) && 
-              errors.server_error && (
-                <p className="text-sm">{errors.server_error}</p>
-            )}
           </div>
         </div>
       </form>

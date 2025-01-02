@@ -21,12 +21,12 @@ RUN npm install
 COPY . .
 
 # ******** Production ******** #
-RUN npm run build
+# RUN npm run build
 
-EXPOSE 3000
+# EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+# CMD ["npm", "run", "start"]
 
 
 # ****** ******** Development ******** ****** #
-# CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev"]

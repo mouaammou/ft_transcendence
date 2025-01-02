@@ -65,7 +65,6 @@ export default function ResetPassword() {
 
 	return (
 		<>
-		<Toaster />
 		<div className="min-h-screen flex flex-col lg:flex-row">
 		{/* Form Section */}
 		<div className="flex-1 flex items-center justify-center p-6 sm:p-12">

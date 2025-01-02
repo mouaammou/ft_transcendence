@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/components/auth/loginContext';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Link from 'next/link';
 import Login42 from '@/components/auth/login42';
 import '@/styles/auth/login.css';
@@ -16,6 +16,13 @@ export default function LoginPage() {
         password: '',
     });
     const { errors, AuthenticateTo } = useAuth();
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Clear any existing toasts when component mounts
+    useEffect(() => {
+        toast.dismiss();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,68 +41,41 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+        if (isSubmitting) return;
+
         try {
+            setIsSubmitting(true);
+            
+            // Basic validation
+            if (!formData.username || !formData.password) {
+                toast.error('Please fill in all required fields');
+                return;
+            }
+
             let resp = await AuthenticateTo('/login', formData);
+            //if resp === {} return )
             
             if (!totp && resp?.totp) {
                 setTotp(true);
                 toast.success('Please enter your 2FA verification code');
             } else if (resp?.status === 200) {
                 toast.success('Login successful!');
-            } else if (!resp?.success) {
-                // Handle invalid credentials
-                toast.error('Invalid username or password');
+            }
+            else if (resp.response.data.Error) {
+                toast.error("Invalid credentials");
             }
         } catch (error) {
-            // Handle any other errors
-            if (errors.error || errors.server_error) {
+            // Only show error toast if there's an actual error during submission
+            if (errors?.error || errors?.server_error) {
                 toast.error(errors.error || errors.server_error);
-            } else {
-                toast.error('An error occurred. Please try again.');
             }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <>
-<Toaster
-    containerStyle={{
-        position: 'absolute',  // Change from fixed to absolute
-        top: 16,
-        right: 16
-    }}
-    toastOptions={{
-        duration: 3000,
-        style: {
-            backgroundColor: '#333',
-            color: '#fff',
-            padding: '16px',
-            borderRadius: '8px',
-            fontSize: '14px',
-        },
-        success: {
-            duration: 3000,
-            iconTheme: {
-                primary: '#10B981',
-                secondary: '#fff',
-            },
-            style: {
-                backgroundColor: '#065F46',
-            },
-        },
-        error: {
-            duration: 3000,
-            iconTheme: {
-                primary: '#EF4444',
-                secondary: '#fff',
-            },
-            style: {
-                backgroundColor: '#991B1B',
-            },
-        },
-    }}
-/>
         <div className="min-h-screen flex justify-center items-center px-4 py-8">
             <div className="layer-blue background-blue absolute inset-0" />
             

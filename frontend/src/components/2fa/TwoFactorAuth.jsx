@@ -227,7 +227,6 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
                 title={"Your two-factor secret"}
                 description={qrCode.secret}
             />
-            <Toaster  />
             
         </div>
     );
