@@ -12,18 +12,8 @@ const ChooseMode = () => {
     const retryInterval = 1000;
 
     useEffect(() => {
-        // const sendGetRoomsMessage = () => {
-        //     if (isConnected) {
+            if (isConnected) 
                 sendMessage(JSON.stringify({ type: "GET_ROOMS" }));
-        //     } else if (retryCount < maxRetries) {
-        //         setRetryCount(retryCount + 1);
-        //         setTimeout(sendGetRoomsMessage, retryInterval);
-        //     } else {
-
-        //     }
-        // };
-
-        // sendGetRoomsMessage();
     }, []);
 
     const router = useRouter();

@@ -28,6 +28,7 @@ const Mode = () => {
   }
 
   useEffect(() => {
+    if (isConnected)
       sendMessage(JSON.stringify({ type: 'LEET_PONG' }));
 
   }, []);

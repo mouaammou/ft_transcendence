@@ -88,7 +88,8 @@ const ConnectFour = () => {
     }, [lastMessage]);
 
     useEffect(() => {
-        sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
+        if (isConnected)
+            sendMessage(JSON.stringify({ type: 'GET_CONNECT_FOUR_DATA' }));
     }, []);
 
     // useEffect(() => {

@@ -131,11 +131,11 @@ export default function TournamentBoardPage() {
 
   useEffect(() => {
 
-    // if (isConnected)
-    sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ type: 'GET_PLAYERS' }));
 
-    // if (isConnected)
-    sendMessage(JSON.stringify({ inBoardPage: true }));
+    if (isConnected)
+      sendMessage(JSON.stringify({ inBoardPage: true }));
 
     const parse_players = data => {
       data = { round1: Array(1), round2: null, round3: null }

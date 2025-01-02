@@ -31,10 +31,12 @@ const Friends = () => {
         if (selectedFriend?.id) {
             console.log('sending game invitation to: ', selectedFriend);
             setSelectedUser(selectedFriend);
-            sendMessage(JSON.stringify({
-                type: NOTIFICATION_TYPES.INVITE_GAME,
-                to_user_id: selectedFriend.id,
-            }));
+            if (isConnected) {
+                sendMessage(JSON.stringify({
+                    type: NOTIFICATION_TYPES.INVITE_GAME,
+                    to_user_id: selectedFriend.id,
+                }));
+            }
         }
     }
 

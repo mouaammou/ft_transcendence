@@ -37,7 +37,8 @@ const MyGrid = () => {
             if (gridElement) {
                 gridElement.removeEventListener('mousemove', handleMouseMove);
             }
-            sendMessage(JSON.stringify({ type: 'LEAVE_GAME' }));
+            if (isConnected)
+                sendMessage(JSON.stringify({ type: 'LEAVE_GAME' }));
         };
     }, []);
 
@@ -88,23 +89,30 @@ const MyGrid = () => {
 
     function celebration(color) {
         if (color !== 'draw') {
-            if (color === '#BD3B57')
-                sendMessage(JSON.stringify({ type: 'WIN', player: 'player1' }));
-            else
-                sendMessage(JSON.stringify({ type: 'WIN', player: 'player2' }));
+            if (color === '#BD3B57'){
+                if (isConnected)
+                    sendMessage(JSON.stringify({ type: 'WIN', player: 'player1' }));
+            }
+            else {
+                if (isConnected)
+                    sendMessage(JSON.stringify({ type: 'WIN', player: 'player2' }));
+            }
         }
         else {
-            sendMessage(JSON.stringify({ type: 'DRAW' }));
+            if (isConnected)
+                sendMessage(JSON.stringify({ type: 'DRAW' }));
         }
     }
 
 
     const handleClick = (index) => {
         let column = index % 7;
-        sendMessage(JSON.stringify({
-            type: 'MAKE_MOVE',
-            column: column
-        }));
+        if (isConnected) {
+            sendMessage(JSON.stringify({
+                type: 'MAKE_MOVE',
+                column: column
+            }));
+        }
     };
 
     useEffect(() => {
@@ -225,35 +233,13 @@ const MyGrid = () => {
                 if (existingInnerCircle) {
                     existingInnerCircle.remove();
                 }
-                
                 innerCircle.classList.add('inner-circle');
                 discElement.appendChild(innerCircle);
-                // setTimeout(() => {
-                //     discElement.style.animation = '';
-                // }, 2000);
             }
         });
     
         setCircleColor(newCircleColor);
     }
-
-    // const handleClick = (index) => {
-    //     let column = index % 7;
-    //     let row = 5;
-
-    //     while (row >= 0) {
-    //         index = row * 7 + column;
-    //         if (circleColor[index] === '#1C4E8E') {
-    //             const newCircleColor = [...circleColor];
-    //             newCircleColor[index] = yourTurn ? '#BD3B57' : '#FFCE67';
-    //             setCircleColor(newCircleColor);
-    //             setYourTurn(!yourTurn);
-    //             setTimer(30); // Reset the timer when a move is made
-    //             return;
-    //         }
-    //         row--;
-    //     }
-    // };
 
     const discVariants = {
         initial: (custom) => ({
