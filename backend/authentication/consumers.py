@@ -35,9 +35,9 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		print("\n CONNECTED\n")
-		await self.accept()
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
+			await self.accept()
 			self.user_windows = f"user_{self.user.id}"
 			self.user_data = UserSerializer(self.user).data
 			await self.add_user_to_groups()
@@ -49,7 +49,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			await self.close()
 
 	async def receive(self, text_data):
-		print(f"\n\n\n --->> received data: {text_data} ***\n\n\n")
+		print(f"\n\n\n --->> received data: {text_data} ***\n\n\n", flush=True)
 		text_data_json = json.loads(text_data)
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
@@ -65,7 +65,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			await self.untrack_user_connection()
 			self.scope['user'] = None  # Set the scope user to None
 			print(f"\n scope user: {self.scope['user']}\n")
-			# await self.close()
+			await self.close()
 
 		# Handle online event
 		elif online and self.user.is_authenticated:
@@ -555,7 +555,7 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')
-		print(f"\nsend friend request to {to_user_id}")
+		print(f"\nsend friend request to {to_user_id}", flush=True)
 		success, message, notif = await self.save_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
 		if (success):

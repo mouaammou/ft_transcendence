@@ -32,6 +32,8 @@ export const NotificationProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [notificationType, setNotificationType] = useState({});
+  const [isInitialized, setIsInitialized] = useState(false);
+
 
   // Update the unread count based on the notifications
   const updateUnreadCount = useCallback(notifs => {
@@ -98,6 +100,21 @@ export const NotificationProvider = ({ children }) => {
       setIsLoading(false);
     }
   }, []);
+
+    // Initialize notifications when WebSocket connects
+    useEffect(() => {
+      if (isConnected && !isInitialized) {
+        UnreadNotifications();
+        setIsInitialized(true);
+      }
+    }, [isConnected, isInitialized, UnreadNotifications]);
+
+      // Reset initialization when connection is lost
+    useEffect(() => {
+      if (!isConnected) {
+        setIsInitialized(false);
+      }
+    }, [isConnected]);
 
   const markAsRead = useCallback(
     async notificationId => {

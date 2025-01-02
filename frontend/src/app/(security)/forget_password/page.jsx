@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
-const SignUp = () => {
+const ForgetPass = () => {
 
 	const [email, setEmail] = useState('');
 
@@ -83,4 +83,4 @@ const SignUp = () => {
 	);
 };
 
-export default SignUp;
+export default ForgetPass;

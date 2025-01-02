@@ -13,10 +13,6 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
 
-	if (!WebSocketProvider || !NotificationProvider || !LoginProvider) {
-		throw new Error('RootLayout must be used within a WebSocketProvider, NotificationProvider, and LoginProvider');
-	}
-
 	return (
 		<html lang="en">
 			<body className={inter.className}>
