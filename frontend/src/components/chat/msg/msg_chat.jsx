@@ -49,7 +49,6 @@ const ChatActions = ({ selectedUser, blockFriend, removeBlock, inviteToGame, cur
     return <div className="section_action"></div>;
 };
 
-// ChatInput.jsx - Separate component
 const ChatInput = ({ 
     text, 
     setText, 
@@ -74,7 +73,7 @@ const ChatInput = ({
         <div className="bottom-chat">
             <div className="div_message_input">
                 <input
-                    className="message_input"
+                    className={`message_input ${isDisabled ? 'cursor-not-allowed' : ''}`}
                     type="text"
                     placeholder={getPlaceholderText()}
                     onChange={e => setText(e.target.value)}
@@ -109,7 +108,7 @@ const ChatInput = ({
     );
 };
 
-// Msg_chat.jsx - Main component
+// Main component
 const Msg_chat = () => {
     const {
         selectedUser,
@@ -156,7 +155,7 @@ const Msg_chat = () => {
     useEffect(() => {
         if (!selectedUser?.id || !allUsers) return;
 
-        // Find the user in allUsers and get their current status
+        // Find the user in allUsers and get their current status 
         const currentUser = allUsers.find(user => user.friend.id === selectedUser.id);
         if (currentUser?.friend?.friendship_status) {
             console.log("Status changing to:", currentUser.friend.friendship_status);
