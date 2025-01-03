@@ -84,6 +84,8 @@ export default function ResetPassword() {
 								</label>
 								<div className="relative">
 									<input
+										autoComplete='off'
+										name='new-password'
 										id="new-password"
 										type={showPassword.new ? 'text' : 'password'}
 										value={formData.newPassword}
@@ -112,6 +114,8 @@ export default function ResetPassword() {
 								</label>
 								<div className="relative">
 									<input
+										autoComplete='off'
+										name='confirm-password'
 										id="confirm-password"
 										type={showPassword.confirm ? 'text' : 'password'}
 										value={formData.confirmPassword}

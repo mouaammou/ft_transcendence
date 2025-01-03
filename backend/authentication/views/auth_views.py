@@ -44,7 +44,7 @@ class Login(APIView):
 			)
 
 		user = authenticate(username=username, password=password)
-		if user is not None and user.totp_enabled:
+		if user is not None and user.is_authenticated and user.totp_enabled:
 			code = request.data.get("totp_code")
 			if not code:
 				return Response({
@@ -53,8 +53,6 @@ class Login(APIView):
 						},
 						status=status.HTTP_200_OK
 					)
-				# 	if not validate_totp(user.totp_secret, code):
-                # return Response({"msg": "invalid code!"}, status=status.HTTP_400_BAD_REQUEST)
 			elif code and not validate_totp(user.totp_secret, code):
 				return Response({
 							"msg": "invalid 2fa code!",
@@ -63,11 +61,10 @@ class Login(APIView):
 						status=status.HTTP_200_OK
 					)
 
-
-		if user is not None:
+		if user is not None and user.is_authenticated:
 			refresh = RefreshToken.for_user(user)
-			response.delete_cookie("2fa_token")
 			response = set_jwt_cookies(Response(), refresh)
+			response.delete_cookie("2fa_token")
 			response.status_code = status.HTTP_200_OK
 			response.data = UserSerializer(user).data
 			return response

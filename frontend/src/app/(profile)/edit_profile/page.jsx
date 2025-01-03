@@ -204,9 +204,11 @@ const EditProfile = () => {
 							<label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 rounded-full cursor-pointer transition-opacity duration-300">
 								<FiCamera className="w-8 h-8" />
 								<input
+									autoComplete='off'
 									type="file"
 									accept="image/*"
 									className="hidden"
+									id='avatar-fdvchsbck'
 									name="avatar" // Changed to match backend field name
 									onChange={handleAvatarChange}
 									disabled={isLoading.avatar}
@@ -319,12 +321,13 @@ const EditProfile = () => {
 			{label}
 			</label>
 			<input
-			type={type}
-			name={name}
-			value={value} // Remove the password condition since we handle empty values in the parent
-			onChange={onChange}
-			className={`w-full ${error ? 'custom-input-error' : 'custom-input'}`}
-			autoComplete='off'
+				type={type}
+				id={name}
+				name={name}
+				value={value} // Remove the password condition since we handle empty values in the parent
+				onChange={onChange}
+				className={`w-full ${error ? 'custom-input-error' : 'custom-input'}`}
+				autoComplete='off'
 			/>
 			{error && (
 			<p className="text-red-500 text-sm">{error}</p>

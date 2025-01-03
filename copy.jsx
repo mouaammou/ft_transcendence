@@ -29,6 +29,9 @@ const SearchProfileComponent = () => {
           </svg>
         </div>
         <input
+          autoComplete='off'
+          name='search'
+          id='search-gtadvf'
           type="search"
           className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-lg bg-gray-700/50 border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200"
           placeholder="Search for users, friends, tournaments..."

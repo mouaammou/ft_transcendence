@@ -301,7 +301,7 @@ export default function PongGame({ setScore1, setScore2, setMaxScore, title, set
 	return (
     <>
       {winner && <LocalGameWinner reset={() => setWinner('')} winner={winner} tournament_id={tournament_id} />}
-      <canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto max-w-[1480px]" ref={canvasRef} >
+      <canvas className="bg-[#264653] rounded-md border min-w-[150px] w-[90%] mx-auto max-w-[900px]" ref={canvasRef} >
       </canvas>
     </>
 	);

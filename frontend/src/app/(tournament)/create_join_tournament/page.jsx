@@ -174,6 +174,7 @@ export default function CreateJoinTournamentPage() {
               <input
                 type="text"
                 value={tournament_name}
+                id='tournament_name'
                 name='tournament_name'
                 autoComplete='off'
                 onChange={handleInputChange}

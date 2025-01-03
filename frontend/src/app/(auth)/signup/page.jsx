@@ -157,7 +157,9 @@ export default function Signup() {
     return (
       <div key={name} className="relative">
         <input
+          autoComplete='on'
           type={actualType}
+          id={name}
           name={name}
           placeholder={placeholder}
           value={formData[name]}

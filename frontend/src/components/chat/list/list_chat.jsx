@@ -29,7 +29,7 @@ const list_chat = () => {
         </div>
       </div>
       <div className="div-Search">
-        <input type="text" placeholder="Search users..." onChange={handleSearch} />
+        <input autoComplete='off' id='5uygyhjbsds' name='search-chat' type="text" placeholder="Search users..." onChange={handleSearch} />
       </div>
       <div className="initial-active-users">
         <h2>Online Now</h2>

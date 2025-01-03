@@ -33,6 +33,9 @@ const TwoFactorAuthPage = () => {
             <div className="flex flex-col w-fit h-fit gap-y-4">
                 <h1 className="mx-auto text-white uppercase tracking-wider text-2xl">Two-factor authentication</h1>
                 <input
+                    autoComplete='off'
+                    name="code"
+                    id='code-uhuhuhu'
                     placeholder="6 digits code"
                     className="custom-input w-full"
                     // className="placeholder:text-white/50 text-white bg-transparent border-none outline-none w-full"

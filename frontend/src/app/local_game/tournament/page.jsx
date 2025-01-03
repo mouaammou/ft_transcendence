@@ -21,6 +21,9 @@ const HomePage = () => {
         <div className="container">
             <div className="flex max-lg:flex-col justify-center items-center max-lg:gap-y-4 gap-x-4 mx-auto w-full max-w-96 py-4">
                 <input
+                    autoComplete='off'
+                    id='search-query-jiijlk'
+                    name='search-query'
                     type="text"
                     // className="max-w-96 px-4 py-2 w-full rounded-full bg-white/30 border-none outline-none focus:ring focus:ring-white/10"
                     className="max-w-96 w-full min-w-[150px] custom-input"

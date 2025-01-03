@@ -60,6 +60,9 @@ const Tournaments = () => {
                 />
                 
                 <input
+                    autoComplete='off'
+                    name='search-query-tournament-4848'
+                    id='search-query-tournament-4848'
                     type="text"
                     className="max-w-96 px-4 py-2 w-full rounded-full bg-white/30 border-none outline-none focus:ring focus:ring-white/10"
                     placeholder="Search"

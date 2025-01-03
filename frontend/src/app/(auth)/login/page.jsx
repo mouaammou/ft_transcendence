@@ -105,6 +105,8 @@ export default function LoginPage() {
                 <div className="space-y-4">
                     <div className="relative">
                         <input
+                            autoComplete='on'
+                            id='username-trtrtf'
                             name="username"
                             type="text"
                             value={formData.username}
@@ -118,6 +120,8 @@ export default function LoginPage() {
 
                     <div className="relative" >
                         <input
+                            autoComplete='on'
+                            id='password-trtrts'
                             name="password"
                             type={showPassword.password ? 'text' : 'password'}
                             value={formData.password}
@@ -138,6 +142,8 @@ export default function LoginPage() {
 
                     { totp && <div className="relative">
                         <input
+                            autoComplete='off'
+                            id='totp_code_thtgt'
                             type="text"
                             className='custom-input w-full'
                             name="totp_code"

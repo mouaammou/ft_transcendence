@@ -72,6 +72,9 @@ const SearchProfileComponent = () => {
           </svg>
         </div>
         <input
+          autoComplete='off'
+          name='search'
+          id='search-145dgrtdf'
           type="search"
           className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-xl bg-gray-700/50 outline-none"
           placeholder="Search"
