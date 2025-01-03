@@ -12,15 +12,15 @@ const INITIAL_CONFIG = {
 	window_width: 900,
 	window_height: 400,
 	paddle_width: 15,
-	paddle_height: 400 / 3.5,
+	paddle_height: 400 / 4,
 	ball_width: 25,
 	ball_height: 25,
 	window_center_x: 900 / 2,
 	window_center_y: 400 / 2,
 	left_paddle_start_x: 0,
-	left_paddle_start_y: (400 / 2) - (400 / 3.5 / 2),
+	left_paddle_start_y: (400 / 2) - (400 / 4 / 2),
 	right_paddle_start_x: 900 - 15,
-	right_paddle_start_y: (400 / 2) - (400 / 3.5 / 2),
+	right_paddle_start_y: (400 / 2) - (400 / 4 / 2),
 	ball_start_x: (900 / 2) - (25 / 2),
 	ball_start_y: (400 / 2) - (25 / 2)
 };

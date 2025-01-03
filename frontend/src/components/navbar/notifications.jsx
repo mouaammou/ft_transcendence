@@ -157,7 +157,7 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div onMouseLeave={handleMouseLeave} className="absolute max-sm:-right-16 right-0 top-full mt-3 w-96 max-sm:w-[22rem] bg-gray-800 rounded-lg shadow-xl border border-gray-700/50 overflow-hidden z-50 transform opacity-100 scale-100 transition-all duration-200">
+                <div onMouseLeave={handleMouseLeave} className="absolute max-sm:-right-16 right-0 top-full mt-3 w-96 max-sm:w-[22rem] bg-gray-800 rounded-xl shadow-xl border border-gray-700/50 overflow-hidden z-50 transform opacity-100 scale-100 transition-all duration-200">
                     <div className="flex justify-between items-center p-4 bg-gray-800/95 border-b border-gray-700/50">
                         <h3 className="text-sm font-semibold text-gray-100">Notifications</h3>
                         <Link 

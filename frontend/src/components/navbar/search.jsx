@@ -73,13 +73,12 @@ const SearchProfileComponent = () => {
         </div>
         <input
           type="search"
-          className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-lg bg-gray-700/50 outline-none"
+          className="block w-full ps-12 py-3 text-gray-100 text-sm rounded-xl bg-gray-700/50 outline-none"
           placeholder="Search"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
 
-        {/* Results Dropdown */}
         {loading && results.length > 0 && (
           <div className="absolute top-full left-0 w-full mt-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
             <div className="max-h-[300px] overflow-y-auto">

@@ -63,7 +63,7 @@ const YouWin = ({ onClose, gameType }) => {
     if (gameType === 'tournament') {
       const timer = setTimeout(() => {
         handleCloseLocal();
-      }, 12000);
+      }, 10000);
       
       return () => {
         clearTimeout(timer);

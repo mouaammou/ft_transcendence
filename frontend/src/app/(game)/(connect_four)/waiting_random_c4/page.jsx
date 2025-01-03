@@ -18,7 +18,7 @@ const WaitingPage = () => {
   const router = useRouter();
   let timer = null;
   useEffect(() => {
-    if (lastMessage !== null) {
+    if (lastMessage) {
       const data = JSON.parse(lastMessage.data);
 
       if (data.type === 'redirect_to_game_page') {

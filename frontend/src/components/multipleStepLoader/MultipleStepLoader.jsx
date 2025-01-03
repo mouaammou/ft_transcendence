@@ -156,7 +156,7 @@ export const LoadingComponent = () => {
                     duration={2000}
                 />
                 <button
-                    className="absolute top-36 md:bottom-16 right-10 md:right-20  bg-white hover:bg-white/90 font-bold text-black rounded-full text-lg transition duration-200 h-10 w-10 font-balsamiq flex items-center justify-center"
+                    className="absolute top-36 md:bottom-16 right-10 md:right-20 z-40 bg-white hover:bg-white/90 font-bold text-black rounded-full text-lg transition duration-200 h-10 w-10 font-balsamiq flex items-center justify-center"
                 >
                     ?
                 </button>

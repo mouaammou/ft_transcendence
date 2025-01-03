@@ -13,7 +13,7 @@ class Base:
         # new features
         # self.scope = {} # frame data will be put here
         self.fps = 60
-        self.max_score = 3
+        self.max_score = 7
         
         # assert self.max_score % 2 == 1, ValueError('value should be odd')
         
@@ -21,11 +21,11 @@ class Base:
         # old ones
         # self.window_width = 1600   
         # self.window_height = 1200
-        self.window_width = 900*1.5
-        self.window_height = 400*1.5
+        self.window_width = 900
+        self.window_height = 400
         
         self.paddle_width = 15
-        self.paddle_height = self.window_height/3.5
+        self.paddle_height = self.window_height/4
         self.paddle_speed = 9
         
         self.ball_width = 25

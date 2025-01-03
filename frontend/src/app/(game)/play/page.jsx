@@ -26,7 +26,7 @@ const PlayMode = () => {
   return (
     <div className="flex w-full mt-24 lg:mt-56 relative">
       <div className="flex flex-col w-[90%] xl:w-[80%] m-auto gap-12 xl:gap-24 sm:px-6 py-16 
-        border-gray-700/50 shadow-lg rounded-lg bg-gray-800/40 backdrop-blur-sm">
+        border-gray-700/50 shadow-lg rounded-xl bg-whitetrspnt/15 backdrop-blur-sm">
         <div className="font-balsamiq align-middle text-center text-2xl sm:text-3xl md:text-4xl font-bold xl:text-5xl">
           PLAY PONG WITH OTHERS
         </div>
@@ -69,7 +69,7 @@ const PlayMode = () => {
           >
             <img 
               className="w-[70%] sm:w-[80%] m-auto cursor-pointer rounded-3xl brightness-70" 
-              src="/1111.svg" 
+              src="/c4game.svg" 
               alt="connect4-game" 
               width={400} 
               height={400} 

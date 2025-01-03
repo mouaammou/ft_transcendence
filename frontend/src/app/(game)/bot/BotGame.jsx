@@ -3,7 +3,6 @@ import { useEffect, playeref, useState, useRef } from 'react';
 import YouWin from '@/components/modals/YouWin';
 import YouLose from '@/components/modals/YouLose';
 import { useRouter } from 'next/navigation';
-import react from '@heroicons/react';
 import style from '@/styles/game/game.module.css';
 
 export default function PongBot({ score1, score2, setScore1, setScore2 }) {
@@ -255,7 +254,6 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
     };
 
     animate();
-    // setInterval(animate, 1000 / 60);
 
     // Cleanup event listeners
     return () => {
@@ -263,7 +261,6 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
-      // document.removeEventListener('visibilitychange', sendVisibilityStatus);
     };
   }, []);
   return (
@@ -275,7 +272,6 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
             setShowLoseModal(false);
             router.push('/play');
           }}
-          // stats={{ score1, score2 }} // Pass stats as needed
         />
       )}
 
@@ -285,7 +281,6 @@ export default function PongBot({ score1, score2, setScore1, setScore2 }) {
             setShowLoseModal(false);
             router.push('/play');
           }}
-          // stats={{ score1, score2 }} // Pass stats as needed
         />
       )}
     </>
