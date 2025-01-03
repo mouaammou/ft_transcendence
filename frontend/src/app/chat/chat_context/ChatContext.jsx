@@ -267,6 +267,7 @@ export const ChatProvider = ({ children }) => {
         const userFriendshipStatus = allUsers.find(
             (friend) => friend.friend.id === user.id
         )?.friend.friendship_status;
+
         if (userFriendshipStatus === 'blocking' || userFriendshipStatus === 'blocked') {
             updateFriendStatus(user.id, 'blocking');
         } else {
@@ -415,16 +416,16 @@ export const ChatProvider = ({ children }) => {
                 message: text.trim(),
             };
 
-            // Send stop typing signal first
-            const stopTypingData = {
-                sender: currentUser.username,
-                receiver_id: selectedUser.id,
-                typing: false,
-            };
-            socket.send(JSON.stringify(stopTypingData));
-        
+            
             // Send the actual message after a small delay
             setTimeout(() => {
+                // Send stop typing signal first
+                const stopTypingData = {
+                    sender: currentUser.username,
+                    receiver_id: selectedUser.id,
+                    typing: false,
+                };
+                socket.send(JSON.stringify(stopTypingData));
                 socket.send(JSON.stringify(messageData));
             }, 500);
 
@@ -468,7 +469,7 @@ export const ChatProvider = ({ children }) => {
                 };
                 socket.send(JSON.stringify(stopTypingData));
             }
-        }, 1000);
+        }, 1500);
     };
 
 
