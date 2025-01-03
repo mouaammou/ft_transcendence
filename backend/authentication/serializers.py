@@ -138,8 +138,8 @@ import re
 
 class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'First name cannot be blank',
             'min_length': 'First name must be at least 6 characters',
@@ -148,8 +148,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     
     last_name = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'Last name cannot be blank',
             'min_length': 'Last name must be at least 6 characters',
@@ -158,8 +158,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     
     username = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'Username cannot be blank',
             'min_length': 'Username must be at least 6 characters',
@@ -284,9 +284,10 @@ class ForgotPasswordSerializer(serializers.Serializer):
             <html>
                 <body>
                     <h2>Password Reset Request</h2>
+					<a href="{reset_url}">Reset Password</a>
                     <p>Hello,</p>
                     <p>You requested to reset your password. Please click the link below to reset it:</p>
-                    <p><a href="{reset_url}">Reset Password</a></p>
+                    <h2><a href="{reset_url}">Reset Password</a></h2>
                     <p>If you didn't request this, you can safely ignore this email.</p>
                     <p>This link will expire in 1 hour.</p>
                 </body>

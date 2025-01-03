@@ -56,7 +56,7 @@ export default function ResetPassword() {
 				}, 500);
 			}
 			else {
-				toast.error(res?.response?.message || "Failed to change password, Invalid token or link");\
+				toast.error(res?.response?.message || "Failed to change password, Invalid token or link");
 			}
 		}
 		catch (err) {
