@@ -68,8 +68,7 @@ def initialize_django():
         sys.exit(1)
 
 def run_server():
-    os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
-    # os.system("python3 manage.py runserver 0.0.0.0:8000")
+    os.system("python3 manage.py runserver 0.0.0.0:8000")
 
 
 # Main function

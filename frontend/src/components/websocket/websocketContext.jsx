@@ -58,13 +58,8 @@ export const WebSocketProvider = ({ url, children }) => {
       setConnectionEstablished(true);
     },
     onClose: () => {
-
       setConnectionEstablished(false);
     },
-    onError: (error) => {
-      console.error('WebSocket Error:', error);
-      setConnectionEstablished(false);
-    }
   });
 
   const isConnected = readyState === WebSocket.OPEN;
@@ -97,7 +92,7 @@ export const WebSocketProvider = ({ url, children }) => {
           );
         }
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.log('Error parsing WebSocket message:', error);
       }
     },
     [isConnected]
@@ -127,7 +122,7 @@ export const WebSocketProvider = ({ url, children }) => {
         
         router.replace(`/${endpoint}?page=${pageNumber}`);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.log('Error fetching users:', error);
         setPaginationState(prev => ({ ...prev, pageNotFound: true }));
       }
     },

@@ -4,17 +4,11 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import { MdEmail, MdPhone, MdUpdate } from 'react-icons/md';
 import { TfiStatsUp } from 'react-icons/tfi';
 import { FaUser, FaUserCheck, FaClock, FaHistory } from 'react-icons/fa';
-import { GiBattleAxe } from 'react-icons/gi';
-import Image from 'next/image';
-import DoughnutChart from '@/components/userStats/userStatsCharts';
-import GameHistory from '@/components/history/GameHistory';
 import { getData, postData } from '@/services/apiCalls';
 import { useEffect, useState, useCallback } from 'react';
 import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import {useRouter, usePathname} from 'next/navigation';
 
-
-const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 const Profile = () => {
 	const { profileData: data, isAuth } = useAuth();
@@ -83,6 +77,8 @@ const Profile = () => {
 	}, []);
 
 	useEffect(() => {
+		console.log("IS AUTH", isAuth);
+		console.log("DATA", data);
 		if (!data.id || !isAuth) return;
 		fetchGameHistory(data.id);
 		fetchProgressData(data.id);
