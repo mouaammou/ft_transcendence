@@ -138,8 +138,8 @@ import re
 
 class UserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'First name cannot be blank',
             'min_length': 'First name must be at least 6 characters',
@@ -148,8 +148,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     
     last_name = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'Last name cannot be blank',
             'min_length': 'Last name must be at least 6 characters',
@@ -158,8 +158,8 @@ class UserSerializer(serializers.ModelSerializer):
     )
     
     username = serializers.CharField(
-        min_length=6,
-        max_length=10,
+        min_length=5,
+        max_length=8,
         error_messages={
             'blank': 'Username cannot be blank',
             'min_length': 'Username must be at least 6 characters',
@@ -218,8 +218,8 @@ class UserSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CustomUser
-		fields = ['username', 'email', 'first_name',
-				  'last_name', 'password', 'avatar']
+		fields = ['id', 'username', 'email', 'first_name',
+					'last_name', 'password', 'avatar']
 		extra_kwargs = {
 			'first_name': {'required': False},
 			'last_name': {'required': False},
@@ -236,7 +236,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 		return representation
 
 	def update(self, instance, validated_data):
-
 		avatar = validated_data.get('avatar')
 		# If an avatar is provided and is empty, don't update it
 		if 'avatar' in validated_data and (avatar is None or not avatar):
@@ -256,37 +255,60 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 ########################## password forget ############################
 class ForgotPasswordSerializer(serializers.Serializer):
-	email = serializers.EmailField()
+    email = serializers.EmailField()
 
-	def validate_email(self, value):
-		try:
-			self.user = User.objects.get(email=value)
-		except User.DoesNotExist:
-			raise serializers.ValidationError(
-				"No user found with this email address")
-		return value
+    def validate_email(self, value):
+        try:
+            self.user = User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                "No user found with this email address")
+        return value
 
-	def save(self):
-		# Generate unique token
-		token = default_token_generator.make_token(self.user)
-		uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+    def save(self):
+        try:
+            # Generate unique token
+            token = default_token_generator.make_token(self.user)
+            uid = urlsafe_base64_encode(force_bytes(self.user.pk))
 
-		# Save token to user
-		self.user.reset_password_token = token
-		self.user.reset_password_expire = datetime.now() + timedelta(hours=1)
-		self.user.save()
+            # Save token to user
+            self.user.reset_password_token = token
+            self.user.reset_password_expire = datetime.now() + timedelta(hours=1)
+            self.user.save()
 
-		# Create reset link
-		reset_url = f"https://{settings.DOMAIN_NAME}/reset_password?token={token}&uid={uid}"
+            # Create reset link
+            reset_url = f"https://{settings.DOMAIN_NAME}/reset_password?token={token}&uid={uid}"
 
-		# Send email
-		send_mail(
-			subject='Password Reset Request',
-			message=f'Click the following link to reset your password: {reset_url}',
-			from_email=settings.EMAIL_HOST_USER,
-			recipient_list=[self.user.email],
-			fail_silently=False,
-		)
+            # Create HTML version of the email
+            html_message = f'''
+            <html>
+                <body>
+                    <h2>Password Reset Request</h2>
+					<a href="{reset_url}">Reset Password</a>
+                    <p>Hello,</p>
+                    <p>You requested to reset your password. Please click the link below to reset it:</p>
+                    <h2><a href="{reset_url}">Reset Password</a></h2>
+                    <p>If you didn't request this, you can safely ignore this email.</p>
+                    <p>This link will expire in 1 hour.</p>
+                </body>
+            </html>
+            '''
+
+            # Send email with both plain text and HTML versions
+            send_mail(
+                subject='Password Reset Request',
+                message=f'Click the following link to reset your password: {reset_url}',  # plain text version
+                html_message=html_message,  # HTML version
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.user.email],
+                fail_silently=False,
+            )
+            return True
+
+        except Exception as e:
+            print(f"Error sending email: {str(e)}")
+            raise serializers.ValidationError(
+                "Error sending reset email. Please try again later.")
 ########################## password forget ############################
 
 ########################## password reset ############################

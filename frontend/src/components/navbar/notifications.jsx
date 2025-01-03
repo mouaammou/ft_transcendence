@@ -25,13 +25,14 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
         } else if (notif_type === NOTIFICATION_TYPES.ROUND && !paths_game.includes(pathname)) {
             router.push('/tournament_board');
         }
-
-
-
-// // notif_status: "pending", notif_type: "friend"
-// // accept_friend_request
         if (data.notif_status === 'pending' && data.notif_type === 'friend' && action === 'accepted')
+        {
             messageType = 'accept_friend_request';
+        }
+        if (data.notif_status === 'pending' && data.notif_type === 'game' && action === 'accepted')
+        {
+            messageType = 'accept_game';
+        }
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,

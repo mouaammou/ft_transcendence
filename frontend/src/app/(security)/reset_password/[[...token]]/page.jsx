@@ -33,6 +33,11 @@ export default function ResetPassword() {
 			return;
 		}
 
+		if (formData.newPassword.length < 6) {
+			toast.error('Password must be at least 6 characters');
+			return;
+		}
+
 		if (formData.newPassword !== formData.confirmPassword) {
 			toast.error('Passwords do not match');
 			return;
@@ -51,9 +56,7 @@ export default function ResetPassword() {
 				}, 500);
 			}
 			else {
-
 				toast.error(res?.response?.message || "Failed to change password, Invalid token or link");
-
 			}
 		}
 		catch (err) {

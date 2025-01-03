@@ -105,6 +105,24 @@ const EditProfile = () => {
 		e.preventDefault();
 		setIsLoading(prev => ({ ...prev, info: true }));
 
+		if (formData.username.length < 4) {
+			toast.error('Username must be at least 4 characters');
+			setIsLoading(prev => ({ ...prev, info: false }));
+			return ;
+		}
+
+		if (formData.first_name.length < 4) {
+			toast.error('First name must be at least 4 characters');
+			setIsLoading(prev => ({ ...prev, info: false }));
+			return ;
+		}
+
+		if (formData.last_name.length < 4) {
+			toast.error('Last name must be at least 4 characters');
+			setIsLoading(prev => ({ ...prev, info: false }));
+			return ;
+		}
+
 		try {
 			const res = await postData('profile/update',
 			{
@@ -134,6 +152,11 @@ const EditProfile = () => {
 
 		if (!formData.new_password || !formData.confirm_password) {
 			toast.error('All fields are required');
+			return;
+		}
+
+		if (formData.new_password.length <= 6) {
+			toast.error('Password must be longer than 6 characters');
 			return;
 		}
 
@@ -176,15 +199,6 @@ const EditProfile = () => {
 			</div>
 		);
 	}
-
-// 	<Toaster
-// 	containerStyle={{
-// 		position: 'absolute',  // Change from fixed to absolute
-// 		top: 16,
-// 		right: 16
-// 	}}
-// 	// ... rest of your toaster options
-// />
 
 	return (
 		<>

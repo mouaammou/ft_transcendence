@@ -8,25 +8,14 @@ from django.contrib.auth import get_user_model
 from authentication.utils import set_jwt_cookies
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.tokens import RefreshToken
-
-
-from authentication.totp.views import get_2fa_cookie_token_for_user
-
-import hmac
-import hashlib
-import base64
-
-
-CustomUser = get_user_model()
-logger = logging.getLogger(__name__)
-
 import hmac
 import hashlib
 import base64
 import time
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from authentication.totp.views import get_2fa_cookie_token_for_user
 
+CustomUser = get_user_model()
+logger = logging.getLogger(__name__)
 
 class OAuth42Login(APIView):
 	def get(self, request):
@@ -38,7 +27,6 @@ class OAuth42Login(APIView):
 		except Exception as e:
 			logger.error(f"\nError on auth/login/42: {e}\n")
 		return response
-
 
 
 class OAuth42Callback(APIView):
@@ -58,7 +46,7 @@ class OAuth42Callback(APIView):
             if self._is_code_used(request, code):
                 return Response(
                     {"error": "Authorization code already used"}, 
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_200_OK
                 )
 
             # Get access token with retry mechanism
@@ -68,7 +56,7 @@ class OAuth42Callback(APIView):
             if not access_token:
                 return Response(
                     {"error": "Failed to obtain access token"}, 
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_200_OK
                 )
 
             # Get and validate user data

@@ -119,7 +119,6 @@ export const LoginProvider = ({ children }) => {
         router.push('/login');
       }
     } catch (error) {
-      console.error('Logout error:', error);
       // Ensure we're on login page even if there's an error
       router.push('/login');
     }
@@ -133,7 +132,7 @@ export const LoginProvider = ({ children }) => {
         setProfileData(res.data.user);
       } else {
         // Handle non-200 responses
-        console.error('Failed to fetch profile:', res);
+        console.log('Failed to fetch profile:', res);
         setProfileData({}); // Reset profile data on error
         if (res?.status === 401) {
           // Handle unauthorized access
@@ -143,7 +142,6 @@ export const LoginProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
       // Don't reset auth state here, just set empty profile data
       setProfileData({});
     }
