@@ -7,6 +7,7 @@ ARG DOMAIN_NAME
 ARG DOCKER_BACKEND_HOSTNAME
 ARG DOCKER_BACKEND_PORT
 
+# ENV NODE_ENV=production
 ENV NEXT_PUBLIC_URL=https://${DOMAIN_NAME}
 ENV NEXT_PUBLIC_WEBSOCKET_URL=wss://${DOMAIN_NAME}
 ENV NEXT_PRIVATE_URL=http://${DOCKER_BACKEND_HOSTNAME}:${DOCKER_BACKEND_PORT}
@@ -20,13 +21,9 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# ******** Production ******** #
-# RUN npm run build
+# Build the application
+RUN npm run build
 
-# EXPOSE 3000
+EXPOSE 3000
 
-# CMD ["npm", "run", "start"]
-
-
-# ****** ******** Development ******** ****** #
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

@@ -64,8 +64,6 @@ const Logo = () => (
               {[
                 { label: 'Profile', href: '/profile', icon: '👤' },
                 { label: 'Settings', href: '/settings', icon: '⚙️' },
-                { label: 'Create Tournament', href: '/tournament', icon: '🏆' },
-                { label: 'Start Game', href: '/play', icon: '🎮' },
               ].map(({ label, href, icon }) => (
                 <Link
                   key={href}

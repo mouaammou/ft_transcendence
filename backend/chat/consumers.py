@@ -204,7 +204,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def chat_message(self, event):
-        print('Send message using chat_message methode' )
+
         await self.send(text_data=json.dumps({
             'sender': event['sender'],
             'sender_id': event['sender_id'],

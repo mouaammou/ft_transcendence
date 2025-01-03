@@ -44,19 +44,19 @@ class TournamentManager:
                 await cls.clean()
                 await asyncio.sleep(1/60)
             except Exception as e:
-                print(f"Exception in run_tournaments loop: {e}")
+
                 break
             
     @classmethod
     async def clean(cls):
         for game in list(cls.finished_games):  # Use list to avoid modifying the list while iterating
             try:
-                print(f"Cleaning game: {game}")
+
                 await cls.tournament_clean(game)  # Changed from _tournament_clean to tournament_clean
                 cls.event_loop_manager.tournament_games.pop(game, None)
-                print(f"Game cleaned: {game}")
+
             except Exception as e:
-                print(f"Exception during cleaning game {game}: {e}")
+                pass
         cls.finished_games.clear()
 
     @classmethod
@@ -65,21 +65,20 @@ class TournamentManager:
             try:
                 frame = game.update()
                 if game.is_finished() and game.saved == False:
-                    print(f"game is finished --->")
+
                     try:
                         game.saved = True
                         asyncio.create_task(cls.event_loop_manager.save_history(game))
-                        print(f"game saved -----> {game.saved}")
+
                         cls.finished_games.append(game)
-                        print("Added game to finished_games")  # Added debug log
+  # Added debug log
                     except Exception as e:
-                        print(f"Error saving game history: {e}")
-                    print("after save finished game")
+                        pass
+
                     return   
                 cls.event_loop_manager.send_frame_to_player(game.player_1, game, frame)
                 cls.event_loop_manager.send_frame_to_player(game.player_2, game, frame)
             except Exception as e:
-                print(f"Exception in update method: {e}")
                 raise
 
     @classmethod
@@ -113,7 +112,7 @@ class TournamentManager:
                     
                     is_finished = tournament.round_is_finished(game)
                     if is_finished:
-                        print(f"Round {tournament.round.status} is finished")
+
                         # Clean up current round games
                         for game in tournament.games:
                             cls.event_loop_manager.active_players.pop(game.player_1, None)
@@ -124,7 +123,7 @@ class TournamentManager:
                         await asyncio.sleep(5)  # Short delay before starting new round
                         
                         if not tournament.start_new_round():
-                            print("Tournament is ending")
+
                             await asyncio.sleep(15)  # Short delay before starting new round
                             cls.event_loop_manager.end_tournament(tournament.id)
                             return
@@ -133,7 +132,6 @@ class TournamentManager:
                         cls.event_loop_manager.active_tournaments[tournament.id] = tournament
                         cls.event_loop_manager.start_tournament(tournament.round.players[0])
         except Exception as e:
-            print(f"Exception in tournament_clean: {e}")
             raise
 
     @classmethod
@@ -152,7 +150,6 @@ class TournamentManager:
                 tournament.players[14] = game.winner
                 tournament.winner = game.winner
         except Exception as e:
-                print(f"Exception in Update_tournament_players: {e}")
                 raise
 
     @classmethod
@@ -166,7 +163,6 @@ class TournamentManager:
                     cls.event_loop_manager.players_in_tournaments.pop(game_to_remove.loser, None)
             tournament.finished_games.clear()
         except Exception as e:
-                print(f"Exception in _clean_finished_games: {e}")
                 raise
 
 class Round:
@@ -192,22 +188,22 @@ class Round:
         self.games = games
 
     def update_round_results(self, game):
-        print(f'Entering update_round_results with game: {game}')
-        print(f'Game finished: {game.is_finished()}, Game winner: {game.winner}, Current winners: {self.winners}')
+
+
         
         if game.winner not in self.winners:
             self.winners.append(game.winner)
-            print(f'Added winner: {game.winner}, Updated winners list: {self.winners}')
+
         
         expected_winners_count = self.calculate_len(self.players) // 2
-        print(f'Expected winners count: {expected_winners_count}, Current winners count: {len(self.winners)}')
+
         
         if len(self.winners) != expected_winners_count:
-            print(f'In round {self.status}, len of winners {len(self.winners)} and len of players {self.calculate_len(self.players)}')
+
             return False
         
         self.end = True
-        print(f'Round {self.status} ended successfully.')
+
         return True
 
     def get_winners(self):
@@ -266,11 +262,11 @@ class Tournament:
         self.organizer = organizer   
         self.play = False
         try:
-            print('saving tournament')
+
             asyncio.create_task(self.save_tournament_to_db())  # save the tournament to the database when it is created
-            print('tournament saved')
+
         except Exception as e:
-            print(f"Error saving tournament to database: {e}")
+            pass
 
     def append_player(self, player):
         for i in range(len(self.players)):
@@ -281,12 +277,12 @@ class Tournament:
         
 
     def register_for_tournament(self, player):
-        print(f'player {player} is trying to register for the tournament haha' )
+
         if self.add_player(player):
             self.append_player(player)
             if self.claculate_len(self.players) == self.max_participants:
-                print(f'All players have been registered for the tournament. {player} is the last player to register.')
-                print(f'number of players in the tournament {self.claculate_len(self.players)} and the max number of players {self.max_participants}')
+
+
                 self.start_first_round()
             return True
         return False
@@ -322,13 +318,13 @@ class Tournament:
     def start_first_round(self):
         self.fulfilled = True
         self.round = Round(self.id, 'quarter', self.players[:self.max_participants]) # after change the number of players to the max number of players
-        print(f'in the start_first_round method {self.round.players}')
+
         self.rounds['quarter'] = self.round
         self.games = []
         self.create_games()
-        print('^_^ ^_^ All games are launched ^__^')
+
         self.round.games = self.games
-        print(f'Tournament saved for the status {self.status}')
+
 
     def pause(self):
         self.play = False
@@ -341,13 +337,13 @@ class Tournament:
         try:
             asyncio.create_task(self.save_tournament_to_db())
         except Exception as e:
-            print(f"Error saving tournament to database: {e}")
+            pass
 
     def get_next_round(self):
         return self.round.get_next_round()
     
     def start_new_round(self):
-        print("Starting new round")
+
         next_round = self.get_next_round()
         if next_round == 'celebration':
             self.end()
@@ -359,15 +355,15 @@ class Tournament:
         elif next_round == 'final':
             players = self.players[12:14]  # Get winners from semi finals
         
-        print(f'Players for {next_round}: {players}')
+
         
         # Check if we have valid players for the next round
         if not any(player != -1 for player in players):
-            print("No valid players for next round")
+
             return False
             
         self.round = Round(self.id, next_round, players)
-        print(f'Created new round with status: {self.round.status}')
+
         self.rounds[next_round] = self.round
         
         # Clear previous round state
@@ -376,14 +372,14 @@ class Tournament:
         
         # Create new games
         self.create_games()
-        print(f'Created {len(self.games)} new games')
+
         self.round.games = self.games
         
         # Save tournament state
         try:
             asyncio.create_task(self.save_tournament_to_db())
         except Exception as e:
-            print(f"Error saving tournament state: {e}")
+            pass
             
         return True
 
@@ -397,7 +393,7 @@ class Tournament:
         try:
             asyncio.create_task(self.save_tournament_to_db())
         except Exception as e:
-            print(f"Error saving tournament to database: {e}")
+            pass
 
     def handle_disconnection(self, player):
         self.players.remove(player)
@@ -417,16 +413,16 @@ class Tournament:
     
     def add_player(self, player):
         if self.claculate_len(self.players) >= self.max_participants:
-            print(f'This tournament has reached its maximum number of participants. {player} cannot be registered.')
+
             return False
-        print(f'You have been registered for the tournament, {player} .')   
+   
         return True
     
    
     
     async def save_tournament_to_db(self):
         #list of players objects
-        print(f'tournament created for the satatus {self.status}')
+
         players = []
         if self.status == 'pending':
             new_organizer = await sync_to_async(CustomUser.objects.get) (id=self.organizer)
@@ -450,9 +446,10 @@ class Tournament:
                 await sync_to_async(round.save)() 
                 return
             except ObjectDoesNotExist:
+                pass
                 # Handle the case where no TournamentHistory object with the given id exists.
                 # This could involve creating a new TournamentHistory object, logging an error message, etc.
-                print(f"No TournamentHistory object with id {self.id} exists.")
+
         elif self.status in ['finished', 'cancelled']:
             tournament = await sync_to_async(TournamentHistory.objects.get)(id=self.id)
             tournament.status = self.status

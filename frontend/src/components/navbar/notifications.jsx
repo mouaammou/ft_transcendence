@@ -25,9 +25,9 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
         } else if (notif_type === NOTIFICATION_TYPES.ROUND && !paths_game.includes(pathname)) {
             router.push('/tournament_board');
         }
-//         console.log(" -- -- -- messageType  - ", messageType);
-//         console.log(" -- -- -- data.sender  - ", data.sender);
-//         console.log(" ACTION - ", action);
+
+
+
 // // notif_status: "pending", notif_type: "friend"
 // // accept_friend_request
         if (data.notif_status === 'pending' && data.notif_type === 'friend' && action === 'accepted')
@@ -38,7 +38,7 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
         }));
     }, [data.sender, NOTIFICATION_TYPES, router]); 
 
-    console.log(" -- data sent to NotificationLayout - ", data);
+
 
     const onAction = (action) => {
         handleAction(action, data);
@@ -157,7 +157,7 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div onMouseLeave={handleMouseLeave} className="absolute max-sm:-right-16 right-0 top-full mt-3 w-96 max-sm:w-[22rem] bg-gray-800 rounded-lg shadow-xl border border-gray-700/50 overflow-hidden z-50 transform opacity-100 scale-100 transition-all duration-200">
+                <div onMouseLeave={handleMouseLeave} className="absolute max-sm:-right-16 right-0 top-full mt-3 w-96 max-sm:w-[22rem] bg-gray-800 rounded-xl shadow-xl border border-gray-700/50 overflow-hidden z-50 transform opacity-100 scale-100 transition-all duration-200">
                     <div className="flex justify-between items-center p-4 bg-gray-800/95 border-b border-gray-700/50">
                         <h3 className="text-sm font-semibold text-gray-100">Notifications</h3>
                         <Link 

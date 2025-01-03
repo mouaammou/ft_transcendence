@@ -94,7 +94,7 @@ const WaitingFriendPage = () => {
       const data = JSON.parse(lastMessage.data);
       handleGameMessage(data);
     } catch (error) {
-      console.log('Error parsing message:', error);
+
     }
   }, [lastMessage, handleGameMessage]);
 
@@ -108,7 +108,7 @@ const WaitingFriendPage = () => {
           });
         }
       } catch (error) {
-        console.log('Error parsing selected friend:', error);
+
       }
   }, []);
 

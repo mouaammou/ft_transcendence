@@ -54,12 +54,16 @@ export default function LoginPage() {
 
             let resp = await AuthenticateTo('/login', formData);
             //if resp === {} return )
+            // console.log(resp);
             
             if (!totp && resp?.totp) {
                 setTotp(true);
                 toast.success('Please enter your 2FA verification code');
             } else if (resp?.status === 200) {
                 toast.success('Login successful!');
+            }
+            else if (resp.msg) {
+                toast.error("Invalid credentials");
             }
             else if (resp.response.data.Error) {
                 toast.error("Invalid credentials");

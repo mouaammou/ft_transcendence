@@ -30,11 +30,11 @@ export default function CreateJoinTournamentPage() {
       if (response.status === 200) {
         return response.data;
       } else {
-        console.log(response);
+
         return null;
       }
     } catch (error) {
-      console.log(`Failed to fetch player with id ${playerId}: ${error}`);
+
       return null;
     }
   };
@@ -81,7 +81,7 @@ export default function CreateJoinTournamentPage() {
   const fetchData = async () => {
     if (!lastMessage || !lastMessage.data) return;
     const data = JSON.parse(lastMessage.data);
-    console.log(data);
+
     if (data.status === 'tournaments_created') {
       setTab(data.tournaments);
       const playersAvatar = {};
@@ -118,8 +118,8 @@ export default function CreateJoinTournamentPage() {
     if (!lastMessage || !lastMessage.data) return;
     const data = JSON.parse(lastMessage.data);
     if (data.status === 'already_in_tournament') {
-      console.log("data from create join tournament 333333 ", data);
-      console.log(data);
+
+
       setInputError({ ...inputError, alreadyInTournament: true });
       setTimeout(() => {
         router.push('/tournament_board');
@@ -129,7 +129,7 @@ export default function CreateJoinTournamentPage() {
       setTimeout(() => {
         router.push('/game');
       }, 2000);
-      console.log('pushed to game');
+
     } else if (data.status === 'already_in_tournament_join') {
       setInputError({ ...inputError, alreadyInTournamentJoin: true });
       setTimeout(() => {

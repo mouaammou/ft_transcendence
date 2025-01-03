@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+
 export async function middleware(request) {
   const access_token = request.cookies.get('access_token');
   const refresh_token = request.cookies.get('refresh_token');
@@ -17,25 +18,18 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Define public pages that don't need authentication
-  const isPublicPage = 
-    request.url.includes("/login") || 
-    request.url.includes("/signup") ||
-    request.url.includes("/forget_password") ||
-    request.url.includes("/reset_password");
-
+  const isAuthPage = request.url.includes("/login") || request.url.includes("/signup");
   const isRoot = request.nextUrl.pathname === "/";
 
-  // if (isRoot) return response;
-  // else if (!refresh_token && !isPublicPage) {
+  if (isRoot) return response;
+  else if (!refresh_token && !isAuthPage) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-  //   return NextResponse.redirect(new URL('/login', request.url));
-  // }
-
-  if (!isPublicPage) {
+  if (!isAuthPage) {
     // If you have at least the refresh token, then validate it in the backend
     try {
-      const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_URL}/backend/verifyTokens`, {
+        const backendResponse = await fetch(`${process.env.NEXT_PRIVATE_URL}/backend/verifyTokens`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,6 +47,7 @@ export async function middleware(request) {
         return response;
       }
     } catch (error) {
+
       return NextResponse.redirect(new URL('/500', request.url));
     }
   }
@@ -60,31 +55,28 @@ export async function middleware(request) {
   const hasToken = access_token && refresh_token;
   response.cookies.set('isAuth', hasToken ? 'true' : 'false', { path: '/' });
 
-  // Redirect authenticated users away from public pages
-  if (hasToken && isPublicPage) {
+  if (hasToken && isAuthPage) {
     return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   return response;
 }
 
+// protect paths here:
+
 export const config = {
-  matcher: [
-    "/",
-    "/login/:path*",
-    "/forget_password/:path*", // Added forget_password
-    "/reset_password/:path*",  // Added reset_password
-    "/edit_profile/:path*", 
-    "/settings/:path*", 
-    "/signup/:path*",
-    "/dashboard/:path*",
-    "/profile/:path*",
-    "/game/:path*",
-    "/chat/:path*",
-    "/create_join_tournament/:path*",
-    "/tournament_board/:path*",
-    "/waiting_random_game/:path*",
-    "/waiting_random_c4/:path*",
+	matcher: [
+		"/",
+		"/edit_profile/:path*", 
+		"/settings/:path*", 
+		"/dashboard/:path*",
+		"/profile/:path*",
+		"/game/:path*",
+		"/chat/:path*",
+		"/create_join_tournament/:path*",
+		"/tournament_board/:path*",
+		"/waiting_random_game/:path*",
+		"/waiting_random_c4/:path*",
     "/connect_four/:path*",
     "/local_c4/:path*",
     "/connect_four_mode/:path*",
@@ -93,5 +85,8 @@ export const config = {
     "/mode/:path*",
     "/play/:path*",
     "/waiting_friends_game/:path*",
-  ],
+    "/local_game/:path*",
+    "/tournament/:path*",
+    "/l_game/:path*",
+	],
 };

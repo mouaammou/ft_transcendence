@@ -229,11 +229,11 @@ export default function Signup() {
               </div>
 
               <div className="flex justify-center">
-                <button
-                  type="button"
-                  className="px-8 py-3 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg"
-                >
-                  <Login42 />
+              <button 
+                      type="button"
+                      className="p-2 bg-white hover:bg-gray-100 rounded-full transition-colors duration-300 shadow-lg"
+                  >
+                      <Login42 />
                 </button>
               </div>
             </div>

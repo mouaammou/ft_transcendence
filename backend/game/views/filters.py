@@ -30,9 +30,9 @@ class LocalTournamentViewSet(ModelViewSet):
         
         # Get the filter keyword from the URL
         filter_keyword = self.kwargs.get('filter_keyword', None)
-        print('#'*30)
-        print(filter_keyword)
-        print('#'*30)
+
+
+
         
         # Apply filters based on the keyword
         if filter_keyword == 'pending':

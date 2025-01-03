@@ -63,5 +63,5 @@ class PingPongGame(PingPongGameLogic, LocalGameDisconnection):
             return
         winner = getattr(self, direction+'_nickname')
         self.tourn_obj.set_match_winner(self.tourn_obj.match_index, winner)
-        print('======== Match saved ======')
+
         asyncio.create_task(self.tourn_obj.asave())

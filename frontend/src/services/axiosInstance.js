@@ -31,18 +31,12 @@ axiosInstance.interceptors.request.use(
         'Expires': '0'
       };
 
-      // Log OAuth request for debugging
-      console.log('OAuth Request:', {
-        url: config.url,
-        method: config.method,
-        headers: config.headers
-      });
     }
     
     return config;
   },
   error => {
-    console.log('Request Error:', error);
+
     return Promise.reject(error);
   }
 );
@@ -50,23 +44,10 @@ axiosInstance.interceptors.request.use(
 // Response interceptor with enhanced error handling
 axiosInstance.interceptors.response.use(
   response => {
-    // Log successful OAuth responses
-    if (response.config.url.includes('auth/callback')) {
-      console.log('OAuth Response:', {
-        status: response.status,
-        data: response.data
-      });
-    }
+
     return response;
   },
   error => {
-    // Log error details
-    console.log('Response Error:', {
-      message: error.message,
-      status: error?.response?.status,
-      data: error?.response?.data,
-      config: error?.config
-    });
 
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
@@ -75,15 +56,6 @@ axiosInstance.interceptors.response.use(
         // Use window.location.replace to prevent adding to history
         window.location.replace('/login');
       }
-    }
-
-    // Handle OAuth specific errors
-    if (error.config?.url?.includes('auth/callback')) {
-      console.log('OAuth Error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
     }
 
     return Promise.reject({

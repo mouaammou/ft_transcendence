@@ -159,14 +159,14 @@ export const LoginProvider = ({ children }) => {
   }, [isAuth, fetchProfile]);
 
   // Redirect if authenticated and at a login or signup page
-  // useEffect(() => {
-  //   setErrors({});
-  //   if (!isAuth && !['/login', '/signup', '/callback'].includes(pathname)) {
-  //     router.replace('/login');
-  //   } else if (isAuth && ['/login', '/signup', '/callback'].includes(pathname)) {
-  //     router.replace('/profile');
-  //   }
-  // }, [isAuth, pathname, router]);
+  useEffect(() => {
+    setErrors({});
+    // if (!isAuth && ['/login', '/signup', '/callback', '/forget_password', '/reset_password'].includes(pathname)) {
+    //   router.replace('/login');
+    if (isAuth && ['/login', '/signup', '/callback', '/forget_password', '/reset_password'].includes(pathname)) {
+      router.replace('/profile');
+    }
+  }, [isAuth, pathname, router]);
 
   // Memoized context value
   const contextValue = useMemo(

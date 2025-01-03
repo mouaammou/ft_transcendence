@@ -17,7 +17,7 @@ const DropDown = ({filterKeyword, filterKeywords, setFilterKeyword, setCurrentPa
 
     return (
         <div 
-            className={`max-w-96 w-full relative z-50 inline-flex`}
+            className={`max-w-96 w-full relative z-40 inline-flex`}
             onMouseLeave={closeDropdown}>
             <button
                 onClick={toggleDropdown} // Toggle visibility

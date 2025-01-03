@@ -99,8 +99,8 @@ class ListUsersView(FriendshipListView):
         # Serialize the data using the appropriate serializer
         serialized_data = FriendWithLastMessageSerializer(friends_with_messages, many=True).data
 
-        print("Serialized data to be returned:")
-        print(serialized_data)
+
+
 
         # Return the response with the serialized data
         return Response(serialized_data)
@@ -136,7 +136,7 @@ class ChatHistoryView(APIView):
         serialized_messages = MessageSerializer(paginated_messages, many=True)
 
 
-        print('Next page URL:', paginator.get_next_link())  # Check next URL
+  # Check next URL
         
-        print('ChatHistoryView data = ->',serialized_messages.data)
+
         return paginator.get_paginated_response(serialized_messages.data)

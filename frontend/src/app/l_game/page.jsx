@@ -12,6 +12,8 @@ import { MdScoreboard } from "react-icons/md";
 import { apiPlayRegularGame } from '@/services/gameApi';
 import { MdOutlineSportsScore } from "react-icons/md";
 // import { LoadingComponent } from '@/components/multipleStepLoader/MultipleStepLoader';
+import { LoadingComponent } from '@/components/multipleStepLoader/LocalMultipleStepLoader';
+
 
 
 
@@ -37,7 +39,8 @@ const GamePage = () => {
 
 	return (
 		<>
-		<TopBar disable={disabled} />
+		<TopBar disabled={disabled} />
+		<LoadingComponent />
 		{/* <div className="flex justify-center items-center w-full h-full border"> */}
 			<div className="w-full h-full flex flex-col">
 				<div className="flex justify-between px-[5%]">
@@ -92,6 +95,7 @@ const GamePage = () => {
 					title={title}
 					setTitle={setTitle}
 					playStart={playStart}
+					setDisabled={setDisabled}
 				/>
 				<div className="flex w-full h-fit justify-center items-center text-2xl max-sm:text-sm py-4 capitalize break-all">
 					{title}

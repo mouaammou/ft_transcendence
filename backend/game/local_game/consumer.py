@@ -49,11 +49,11 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
         try:
             data = json.loads(text_data)
         except:
-            print('EXCEPTION: received invaled data from the socket')
+            pass
         self.is_focused = data.get('tabFocused', True)
-        # print("}"*30)
-        # print(data)
-        # print("}"*30)
+
+
+
         self.game_engine.recieve(self.unique_name, data)
     
     def send_game_message(self, event):
@@ -61,10 +61,11 @@ class LocalGameConsumer(AsyncWebsocketConsumer):
             # dont await it
             asyncio.create_task(self.safe_send(event))
         except Exception as e:
-            print("Exception: send_game_message: Failed", e)
+            pass
     
     async def safe_send(self, event):
         try:
             await self.send(text_data=json.dumps(event))
         except:
-            print("Exception: safe_send: Failed [no problem it can function without it]")
+            pass
+

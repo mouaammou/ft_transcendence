@@ -29,7 +29,7 @@ const Friends = () => {
 
     const sendGameInvitation = () => {
         if (selectedFriend?.id) {
-            console.log('sending game invitation to: ', selectedFriend);
+
             setSelectedUser(selectedFriend);
             if (isConnected) {
                 sendMessage(JSON.stringify({

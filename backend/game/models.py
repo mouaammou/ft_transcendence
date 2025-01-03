@@ -231,13 +231,13 @@ class LocalTournament(models.Model):
         ]
         nicknames = [getattr(self, nickname) for nickname in original_nicknames]
         random.shuffle(nicknames)
-        print(nicknames)
+
 
         for index in range(len(original_nicknames)):
             setattr(self, original_nicknames[index], nicknames[index])
     
     def save(self, *args, **kwargs):
-        print("Saving")
+
         self.shuffle()
         super().save(*args, **kwargs)
     

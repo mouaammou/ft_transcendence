@@ -11,8 +11,12 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    # env_file:
+    #   - .env
 
   redis:
     image: redis:latest
@@ -22,8 +26,8 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
 
   frontend:
     build:
@@ -38,13 +42,13 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
-    env_file:
-      - .env
-    volumes:
-      - ./frontend/src:/frontend/src
-      - ./frontend/public:/frontend/public
-      - /frontend/node_modules
-      - /frontend/.next
+    # env_file:
+    #   - .env
+    # volumes:
+      # - ./frontend/src:/frontend/src
+      # - ./frontend/public:/frontend/public
+    #   - /frontend/node_modules
+    #   - /frontend/.next
 
   backend:
     build:
@@ -61,8 +65,8 @@ services:
       - .env
     networks:
       - ft_transcendence
-    volumes:
-      - ./backend:/backend
+    # volumes:
+    #   - ./backend:/backend
 
   nginx:
     build:
@@ -79,11 +83,11 @@ services:
       - frontend
     networks:
       - ft_transcendence
-    env_file:
-      - .env
-    volumes:
-      - ./backend/media:/backend/media
-      - ./backend/staticfiles:/backend/staticfiles
+    # env_file:
+    #   - .env
+    # volumes:
+    #   - ./backend/media:/backend/media
+    #   - ./backend/staticfiles:/backend/staticfiles
 
 
 volumes:

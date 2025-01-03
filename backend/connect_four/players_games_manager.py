@@ -19,7 +19,7 @@ class PlayersGamesManager:
     @classmethod
     async def disconnect(cls, player_id):
         try:
-            print("in the disconnect method ")
+
             if player_id in cls.waiting_queue:
                 cls.waiting_queue.remove(player_id)
             if player_id in cls.players:
@@ -46,7 +46,7 @@ class PlayersGamesManager:
         
     @classmethod
     def receive(cls, player_id, data):
-        print(f"Player {player_id} sent data: {data}")
+
         if 'type' in data and data['type'] == 'PLAY_RANDOM':
             if player_id not in cls.waiting_queue:
                 cls.add_to_waiting_queue(player_id)
@@ -73,7 +73,7 @@ class PlayersGamesManager:
                     winner = game.player2_id
                 game.update_winner(winner)
             elif 'type' in data and data['type'] == 'MAKE_MOVE':
-                print(f"Player {player_id} will make a move manager")
+
                 game_id = cls.players.get(player_id)
                 game = cls.games[game_id]
                 column = data['column']
@@ -86,7 +86,7 @@ class PlayersGamesManager:
 
     @classmethod
     def add_to_waiting_queue(cls, player_id):
-        print(f"Player {player_id} added to the waiting queue")
+
         cls.waiting_queue.append(player_id)
         if len(cls.waiting_queue) >= 2:
             cls.create_game()

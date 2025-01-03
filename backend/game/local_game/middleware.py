@@ -40,9 +40,9 @@ class LocalGameOutputMiddleware:
             
         cls.send_config(channel_name, game_obj or Base())
 
-        # print("-"*15)
-        # print("consumers: ", len(cls.consumer_group.get(channel_name)))
-        # print("-"*15)
+
+
+
 
     @classmethod
     def send_to_userid(cls, id, data :dict) -> None:
@@ -50,7 +50,7 @@ class LocalGameOutputMiddleware:
             for consumer in group:
                 if consumer.user.id == id:
                     consumer.send_game_message(data)
-                    # print('sent to user')
+
     
     @classmethod
     def userid_to_uniquekey(cls, id) -> str:
@@ -76,7 +76,7 @@ class LocalGameOutputMiddleware:
         # data = frame
         # if frame.get('tournament') is None:
         data = {'tournament': frame}
-        print(data)
+
         return cls._send_to_consumer_group(channel_name, data)
     
     @classmethod
@@ -131,9 +131,9 @@ class LocalGameInputMiddleware:
         # if focus is not None:
         #     if LocalGameOutputMiddleware.there_is_focus(unique_key):
         #         game_obj.focused = True
-        #         print('++++++++++ paly +++++++++++++++')
+
         #     else:
-        #         print('++++++++++ stop +++++++++++++++')
+
         #         game_obj.focused = False
 
 
@@ -157,7 +157,7 @@ class LocalGameInputMiddleware:
             event_loop_cls.add(channel_name)
             event_loop_cls.play(channel_name)
         elif tournament is not None:
-            print('000000000000000000000000  start tournament')
+
             tournament_id = tournament.get('id')
             TournamentManager.user_accept(channel_name, tournament_id)
 

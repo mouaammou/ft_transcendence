@@ -329,14 +329,14 @@ export default function FriendProfile({ params }) {
 
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
-			console.log('Sending friend request to:', profile.id);
-			updateFriendStatus(profile.id, 'pending');
-			sendMessage(
-				JSON.stringify({
-					type: NOTIFICATION_TYPES.FRIENDSHIP,
-					to_user_id: profile.id,
-				})
-			);
+
+		updateFriendStatus(profile.id, 'pending');
+		sendMessage(
+			JSON.stringify({
+			type: NOTIFICATION_TYPES.FRIENDSHIP,
+			to_user_id: profile.id,
+			})
+		);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
