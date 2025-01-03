@@ -91,7 +91,7 @@ const Profile = () => {
 	}, [data, fetchGameHistory, fetchProgressData, fetchC4StatsData, fetchPongData, pathname]);
 
 	const RADIAN = Math.PI / 180;
-	const COLORS = ['#82ca9d', '#ef4444', '#ef4444', '#f97316'];
+	const COLORS = ['#82ca9d', '#ef4444', '#f59e0B', '#f97316'];
 
 
 	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -172,7 +172,7 @@ const Profile = () => {
 									{ icon: <MdEmail />, label: "Email", value: data.email },
 									{ icon: <MdPhone />, label: "Phone", value: data.phone || "No phone number" },
 								].map((item, index) => (
-									<div key={index} className="flex items-center p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+									<div key={index} className="flex items-center p-3 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors">
 										<span className="text-sky-400 mr-3">{item.icon}</span>
 										<div>
 											<div className="text-sm text-gray-400">{item.label}</div>
@@ -183,7 +183,7 @@ const Profile = () => {
 							</div>
 
 							<Link href="/edit_profile">
-								<button className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center">
+								<button className="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-3 px-6 rounded-xl transition-colors flex items-center justify-center">
 									<MdUpdate className="mr-2" /> Update Profile
 								</button>
 							</Link>
@@ -227,7 +227,7 @@ const Profile = () => {
 													{/* VS */}
 													<div className="flex flex-col items-center">
 														<div className="text-l font-bold text-gray-400">
-															{match.finish_type == 'defeat' ? '' : 'Disconnection'}
+															{match.finish_type == 'defeat' ? '' : match.finish_type == 'draw' ? 'Draw' : 'Disconnection'}
 														</div>
 														<div className="text-sm text-gray-400 mt-1">
 															{match.game_type == 'connect_four' ? '🚥 Connect Four 🚥' : '🏓 Ping Pong 🏓'}

@@ -97,6 +97,15 @@ class GameLogic:
         return False
 
     def update_winner(self, winner_id):
+        if (winner_id == -1):
+            data = {
+                'status': 'DRAW'
+            }
+            FourGameOutput._send_to_consumer_group(self.player1_id, data)
+            FourGameOutput._send_to_consumer_group(self.player2_id, data)
+            self.game_active = False
+            asyncio.create_task(self.save_game('draw'))
+            return
         self.winner = winner_id
         self.game_active = False
         self.loser = self.player1_id if winner_id == self.player2_id else self.player2_id
