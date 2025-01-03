@@ -54,12 +54,12 @@ class Collisions(Angle):
     
     def on_left_window_collision(self, root_obj):
         # you lose
-        # print('you lose')
+
         root_obj.ball_pos = self.window_center_x, self.window_center_y
         # root_obj.right_player.score += 1 # you add players and ball to a root class
         root_obj.right_player.handle_score()
         root_obj.ball.restart_ball(to_left=True)
-        # print(f'score: [{root_obj.left_player.score} | {root_obj.right_player.score}]')
+
     
     
     def on_right_window_collision(self, root_obj):
@@ -68,7 +68,7 @@ class Collisions(Angle):
         # root_obj.left_player.score += 1 # you add players and ball to a root class
         root_obj.left_player.handle_score()
         root_obj.ball.restart_ball(to_left=False)
-        # print(f'score: [{root_obj.left_player.score} | {root_obj.right_player.score}]')
+
     
     
     def on_bottom_window_collision(self, ball_obj):
@@ -96,7 +96,7 @@ class Collisions(Angle):
         _, ball_y = ball_obj.ball.ball_pos
         _, padd_y = ball_obj.left_player.padd_pos
         
-        # print('on_left_padd_collision', padd_y)
+
         angle = self.new_angle(ball_y, padd_y, 'right')
         # x, y
         x = math.cos(angle) * self.ball_speed
@@ -110,14 +110,14 @@ class Collisions(Angle):
             ball_obj.ball._step_y = self.negative(y)
     
         # self.ball_speed += 10
-        # print('spedd: ',ball_obj.ball_speed)
+
             
             
     def on_right_padd_collision(self, ball_obj):# ball_obj=root_obj
         self.increase_ball_speed()
         _, ball_y = ball_obj.ball.ball_pos
         _, padd_y = ball_obj.right_player.padd_pos
-        # print('on_right_padd_collision', padd_y)
+
         
         angle = self.new_angle(ball_y, padd_y, 'left')
         

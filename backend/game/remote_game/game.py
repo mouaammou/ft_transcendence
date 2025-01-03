@@ -106,15 +106,14 @@ class RemoteGameLogic(PingPongGameLogic, LocalGameDisconnection):
 
     def determine_winner_loser(self):
         if (self.unfocused is not None):
-            print("here is where the winner determined")
+
             self.loser = self.unfocused
             self.winner = self.player_2 if self.loser == self.player_1 else self.player_1
             return
         if (self.left_player.score > self.right_player.score):
             self.winner = self._player_1
             self.loser = self._player_2
-            print(f"winner is --> {self._winner} score: {self.left_player.score} and loser is ---> {self._loser} score: {self.right_player.score}")
+
         else:
             self.winner = self._player_2
             self.loser = self._player_1
-            print(f"winner is --> {self._winner} score: {self.right_player.score} and loser is ---> {self._loser} score: {self.left_player.score}")

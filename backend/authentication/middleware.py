@@ -29,7 +29,6 @@ class TokenVerificationMiddleWare:
 		request.customUser = AnonymousUser()
 		# request.jwt_payload = {}
 		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
-			# print("----> ", f"|{request.path}|");
 			return self.get_response(request)  # Proceed with the request
 
 		refresh_token = request.COOKIES.get("refresh_token")
@@ -43,9 +42,9 @@ class TokenVerificationMiddleWare:
 
 		try:
 			refresh_token_obj = RefreshToken(refresh_token)
-			# print('x'*15)
-			# print(refresh_token_obj.payload)
-			# print('x'*15)
+
+
+
 			request.unique_key = refresh_token_obj.payload.get("channel_name")
 			# request.jwt_payload = refresh_token_obj.payload
 			if not access_token:

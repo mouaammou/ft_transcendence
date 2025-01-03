@@ -9,7 +9,7 @@ class TournamentPagination(PageNumberPagination):
         """
         Customize the logic to determine the page number.
         """
-        # print('Page Number'*6)
+
         page_number = request.query_params.get(self.page_query_param, 1)
         try:
             # Ensure page_number is an integer

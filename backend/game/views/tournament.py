@@ -127,9 +127,9 @@ class TournamentNextMatchPlayersView(APIView):
 #         Filters the queryset based on the filter_keyword from the URL.
 #         """
 #         query = self.request.GET.get('search', '')
-#         print('#q'*30)
-#         print(query)
-#         print('#q'*30)
+
+
+
 
 #         if not query:
 #             return LocalTournament.objects.none()

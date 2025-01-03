@@ -144,7 +144,7 @@ class User2faVerificationView(APIView):
     DELAY_RESPONSE_TIME = 1.0 # seconds to avoid bruteforce attacks
 
     def post(self, request):
-        print("iammmmmmmmmmmmherrrerrr")
+
         token = request.COOKIES.get(__class__.TOKEN_NAME)
         is_valid, message_or_userid = self.verify_userid(token)
         user_id = __class__.decode_userid(token)

@@ -32,7 +32,7 @@ class Paddle(Base):
     
     @padd_pos.setter
     def padd_pos(self, pos: tuple):
-        # print('padd_pos:' , pos)
+
         self.__x, self.__y = pos
     
     
@@ -52,7 +52,7 @@ class Paddle(Base):
         self.score += 1
         self.root_obj.scope[self.direction+'_player_score'] = self.score
         if self.score >= self.max_score:
-            print(f'{self.direction}_player win!')
+
             self.root_obj.scope['finished'] = self.direction+'_'+'player'
             # self.root_obj.start_game = False
             self.root_obj.reset_to_default_state() # reset the game but keep the scope

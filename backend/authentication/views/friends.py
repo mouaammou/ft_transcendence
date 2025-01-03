@@ -152,7 +152,7 @@ class RemoveBlockedFriend(generics.DestroyAPIView):
 	def get_object(self, *args, **kwargs):
 		friend_id = kwargs.get('pk')
 		user_id = self.request.customUser.id
-		print(f"profile id: {friend_id}, {user_id}")
+
 		if not user_id or not friend_id:
 			return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 		

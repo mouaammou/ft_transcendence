@@ -54,11 +54,11 @@ export const WebSocketProvider = ({ url, children }) => {
     share: true,
     retryOnError: true,
     onOpen: () => {
-      console.log('WebSocket Connected');
+
       setConnectionEstablished(true);
     },
     onClose: () => {
-      console.log('WebSocket Disconnected');
+
       setConnectionEstablished(false);
     },
     onError: (error) => {
@@ -72,7 +72,7 @@ export const WebSocketProvider = ({ url, children }) => {
   // Connection status monitoring
   useEffect(() => {
     if (readyState === WebSocket.OPEN) {
-      console.log("Connected on path:", pathname);
+
       setConnectionEstablished(true);
     } else if (readyState === WebSocket.CLOSED) {
       setConnectionEstablished(false);

@@ -199,9 +199,10 @@ class CustomUser(AbstractUser):
 				img.verify()
 				img_temp.seek(0)
 				self.avatar.save(f"{self.username}.{img.format.lower()}", File(img_temp), save=True)
-				print("\n download success -- \n")
+
 			except UnidentifiedImageError:
-				print("The file downloaded is not a valid image.")
+				pass
+
 
 	def __str__(self):
 		return self.username
@@ -249,6 +250,6 @@ class CustomUser(AbstractUser):
 # 		paginator = self.pagination_class()
 # 		paginated_users = paginator.paginate_queryset(friends_queryset, request)
 # 			# Serialize the paginated data
-# 		print(f"\npaginated_users: {paginated_users}\n")
+
 # 		serializer = UserWithStatusSerializer(paginated_users, many=True)
 # 		return paginator.get_paginated_response(serializer.data)

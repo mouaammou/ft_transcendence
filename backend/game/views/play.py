@@ -44,7 +44,7 @@ class PlayRegular(APIView):
     http_method_names = ['get', 'post', ]
 
     def get(self, request):
-        print(f"\n -------- PlayRegular: {request.unique_key}")
+
         EventLoopManager.add(
             request.unique_key,
         )

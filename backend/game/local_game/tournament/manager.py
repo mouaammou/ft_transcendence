@@ -51,7 +51,7 @@ class TournamentMonitor:
         To Be Overriden, By Subclass.
         it will be called every interval.
         """
-        print('************* Tournament Monitor task updated *************')
+
         pass 
 
 class TournamentEventLoopManager:
@@ -68,7 +68,7 @@ class TournamentEventLoopManager:
     def set_accepted(self, unique_key):
         self.accepted = True
         self.unique_key = unique_key
-        print(f"Unique Key: {self.unique_key}")
+
     
     def set_unique_key(self, key):
         self.unique_key = key
@@ -98,17 +98,17 @@ class Tournament(TournamentEventLoopManager):
         super().__init__(*args, **kwargs)
         self.tourn_obj = tournament_obj
         self.match_index = self.tourn_obj.match_index
-        print(f"Match Index ==============: {self.match_index}")
+
         # self.rounds = self._get_round_players()
-        # print(f"{self.match_index} Rounds: ", self.rounds)
+
         self.tournament_start_date = seconds_until(tournament_obj.start_at) # use tournament_obj.start_date
         self.user_id = self.tourn_obj.user_id
-        # print("User ID: ", self.user_id)
+
         asyncio.create_task(self.run_match_task())
 
     
     def send_to_user(self, message: dict):
-        # print('************* Sending Notification *************')
+
         data = {'tournament': message}
         self.send_to_user_callback(self.user_id, data)
     
@@ -116,7 +116,7 @@ class Tournament(TournamentEventLoopManager):
         return self.tourn_obj.get_match_players(self.match_index)
     
     def auto_win(self, winner):
-        print(f"[Auto Win] Winner: {winner}")
+
         data = {
             f'match {self.match_index}': f'Auto Win: winner -> {winner}',
             'winner': winner,
@@ -124,7 +124,7 @@ class Tournament(TournamentEventLoopManager):
         self.send_to_user(data)
     
     def did_not_accept(self):
-        print(f"[Didnt Accept] Winner: None")
+
         data = {
             f'match {self.match_index}': 'Didnt Accept: winner -> None',
             'winner': None,
@@ -132,7 +132,7 @@ class Tournament(TournamentEventLoopManager):
         self.send_to_user(data)
       
     def notify_players(self, player1, player2):
-        print(f"Notify Players: {player1}, {player2}")
+
         data = {
             f'match {self.match_index}': f'Notify Players: {player1} VS {player2}',
             'left': player1,
@@ -143,31 +143,31 @@ class Tournament(TournamentEventLoopManager):
     
     async def play_match(self, player1, player2):
         """wait for the match to finish by checking the game_finished flag"""
-        # print(f"Match {player1} vs {player2} started")
+
         # await asyncio.sleep(5) # match is palying now
         if self.unique_key is None:
-            # print("*********** Unique Key is None ************")
+
             ValueError("Unique Key is None")
             return
         self.event_loop_cls.remove(self.unique_key)
         self.game_obj = self.event_loop_cls.add(self.unique_key)
-        print(f"Game Object: {self.game_obj}")
+
         self.game_obj.left_nickname = player1
         self.game_obj.right_nickname = player2
         self.game_obj.game_mode = 'tournament'
         a=self.event_loop_cls.play(self.unique_key)
-        print('*********** Game Started ************: ', a)
-        print(f"{self.game_obj.right_nickname} VS {self.game_obj.left_nickname}")
-        print(f"start: {self.game_obj.start_game}")
-        print(f"Match {self.match_index} started")
+
+
+
+
         for _ in range(10):
             # self.accepted = randint(0, 4)
             if self.game_finished or not self.accepted:
                 break
-            print("+++++++++++++++++++++++++++++++++++++")
+
             await asyncio.sleep(1)
-        # print(f"[Played Match] Winner: {winner}")
-        # print(f"Match {self.match_index} ended")
+
+
         data = {
             f'match {self.match_index}': f'Match Ended: winner -> {self.game_winner}',
             'winner': self.game_winner,
@@ -176,12 +176,12 @@ class Tournament(TournamentEventLoopManager):
         return self.game_winner # return winner
     
     async def save_match_winner(self, winner):
-        print(f"Match {self.match_index} - winner: {winner} [is saved to database]")
+
         self.tourn_obj.set_match_winner(self.match_index, winner)
         await self.tourn_obj.asave()
     
     async def tournament_finished(self):
-        print("Tournament Finished")
+
         data = {
             'Finished': f'{self.tourn_obj}',
         }
@@ -199,10 +199,10 @@ class Tournament(TournamentEventLoopManager):
         if self.match_index > 7:
             return
         if self.match_index == 1:
-            print("*********** Tournament Started ************")
+
             # self.tournament_model_class.objects.filter(id=self.tourn_obj.id).update(status="Started")
             await asyncio.sleep(self.tournament_start_date) # wait for 5 seconds
-        print("-"*30, f"Match {self.match_index}", "-"*30)
+
         players = self._get_match_players()
         if None not in players:
             self.notify_players(players[0], players[1])
@@ -213,7 +213,7 @@ class Tournament(TournamentEventLoopManager):
         await self.wait_accept()
         
         # await asyncio.sleep(self.start_time) # even if its None Wait for the match Time
-        print(f"-#-#-#-#-------- Players: {players}, {self.accepted} --------------")
+
         if not self.accepted or None in players:
             if None in players:
                 winner = players[0] if players[0] else players[1]
@@ -227,7 +227,7 @@ class Tournament(TournamentEventLoopManager):
                 await self.save_match_winner(winner)
         else:
             winner = await self.play_match(players[0], players[1])
-            print(f"######Match {self.match_index} - winner: {winner}")
+
             # self.rounds.append(winner)
             # self.matches.append(winner)
             await self.save_match_winner(winner)
@@ -262,7 +262,7 @@ class TournamentManager(TournamentMonitor):
     
     @classmethod
     def send_to_user(cls, user_id, message):
-        print('************* Sending Notification *************')
+
         cls.event_loop_cls.output_middlware_class.send_to_userid(user_id, message)
 
     def get_new_tournaments(interval):
@@ -277,7 +277,7 @@ class TournamentManager(TournamentMonitor):
         await is on purpose:
         - to avoid blocking the event loop, and thread safety.
         """
-        print('************* Reloading New Tournaments *************')
+
         interval = timezone.now() + timedelta(seconds=TournamentMonitor.interval)
 
         tournaments = await sync_to_async(cls.get_new_tournaments)(interval)
@@ -298,15 +298,15 @@ class TournamentManager(TournamentMonitor):
         try:
             tourn = list(cls.tournaments.items())[0][1]
         except:
-            print("[Tournament] ************** No Tournaments **************")
+
             return False
-        # print(f"tourn = {tourn}")
+
         # tourn: Tournament = cls.tournaments.get(tid)
         if tourn is None:
-            print("[Tournament] ************** Not Found **************")
+
             return False
         # if tourn.accepted:
-        #     print("[Tournament] ************** Already In Playing State **************")
+
         #     return False
         if __class__.tournaments.get(unique_key) is None:
             tourn.set_accepted(unique_key)
@@ -317,10 +317,10 @@ class TournamentManager(TournamentMonitor):
     # def match_accepted(cls, loop_cls, tid, unique_key):
     #     tourn: Tournament = cls.tournaments.get(tid)
     #     if tourn is None:
-    #         print("[Tournament] ************** Not Found **************")
+
     #         return False
     #     if cls.tournaments.get(unique_key) is not None:
-    #         print("[Tournament] ************** Already Accepted Or Another One Is Runing **************")
+
     #         return False
     #     tourn.accepted = True
     #     tourn.unique_key = unique_key
@@ -332,11 +332,11 @@ class TournamentManager(TournamentMonitor):
     def match_finished(cls, unique_key, winner):
         tourn: Tournament = cls.tournaments.get(unique_key)
         if tourn is None:
-            print("************** Tournament Not Found **************")
+
             return False
         tourn.game_winner = winner
         tourn.set_game_finished()
-        print(f"************** Match Finished {winner}, {unique_key}**************")
+
         # del __class__.tournament[tid]
         return True
 

@@ -121,7 +121,6 @@ class Movements(MoveEvents):
             self.on_top_keys_press(self.root_obj.right_player)
         if self.allow_move_down(game_mode, 'right'):
             self.on_bottom_keys_press(self.root_obj.right_player)
-        # print('test') AI
         # padd_pos = self.root_obj.left_player.padd_pos
         # ball_pos = self.root_obj.ball.ball_pos
         # self.root_obj.left_player.padd_pos = padd_pos[0], ball_pos[1]
@@ -130,7 +129,7 @@ class Movements(MoveEvents):
     
     
     def on_top_keys_press(self, padd_obj):
-        # print('TTTop')
+
         x, y = padd_obj.padd_pos
         new_y = y + self.paddle_speed
         if new_y < (self.window_height - self.paddle_height):
@@ -142,7 +141,7 @@ class Movements(MoveEvents):
     
     
     def on_bottom_keys_press(self, padd_obj):
-        # print('BBBOTTOM')
+
         x, y = padd_obj.padd_pos
         new_y = y - self.paddle_speed
         if new_y > 0:
@@ -161,14 +160,14 @@ def test():
     key = 'x'
     
     obj.on_press(game_mode, direction, key)
-    print(game_mode, direction, 'pressed', key)
-    print('    move_up: ', obj.allow_move_up(game_mode, direction))
-    print('    move_down: ', obj.allow_move_down(game_mode, direction))
+
+
+
     
     obj.on_release(game_mode, direction, key)
-    print(game_mode, direction, 'released', key)
-    print('    move_up: ', obj.allow_move_up(game_mode, direction))
-    print('    move_down: ', obj.allow_move_down(game_mode, direction))
+
+
+
 
 if __name__ == '__main__':
     test()

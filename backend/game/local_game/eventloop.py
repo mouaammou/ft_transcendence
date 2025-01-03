@@ -32,10 +32,10 @@ class EventLoopManager:
     @classmethod
     async def _event_loop(cls):
         while True:
-            # print("******** UPDATE ********: ", cls.runing)
+
             cls._update()
             cls._clean()
-            # print("******** FINISHED ********: ")
+
             await asyncio.sleep(1/60)
 
     @classmethod
@@ -45,7 +45,7 @@ class EventLoopManager:
                 LocalGameOutputMiddleware.send_config(channel_name, game)
                 game.first_time = False
             frame :dict = game.update()
-            # print('************frame************', frame)
+
             if game.is_finished():
                 cls.finished.append(channel_name)
                 cls._save_finished(game, unique_key=channel_name)
@@ -53,12 +53,13 @@ class EventLoopManager:
 
     @classmethod
     def _save_finished(cls, game_obj, unique_key=None):
+        pass
         # finished games here
         # do your things here
-        print(game_obj)
+
         # pass
-        # print('------winner--------: ', game_obj.winner)
-        # print('------unique_key--------: ', unique_key)
+
+
         # if game_obj.game_mode == 'tournament':
         # TournamentManager.match_finished(unique_key, game_obj.winner)
         
@@ -78,7 +79,7 @@ class EventLoopManager:
         To avoid any issue if multiple CREATE events
         is sent. we handle it like an ATOMIC OPERATION
         """
-        print("******** ATOMIC OPERATION ********: add new game")
+
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             game_obj = cls.game_class(
@@ -100,11 +101,11 @@ class EventLoopManager:
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             return False
-        print('************ RECONNECT *************')
+
         cls.output_middlware_class.add_callback(channel_name, consumer, game_obj=game_obj)
         game_obj.disconnected = False # disconnetion class used here
-        print('********************* disco ****: ', game_obj.disconnected)
-        print('********************* start ****: ', game_obj.start_game)
+
+
         # game_obj.focused = True
         # cls.play(channel_name) # i think i dont need this on reconnection
         #      beause reconnection controls only disconnection properties not the stop or play properties
@@ -122,7 +123,6 @@ class EventLoopManager:
         try:
             cls.finished.pop(channel_name)
         except: pass
-
     
     @classmethod 
     def stop(cls, channel_name):
@@ -160,7 +160,7 @@ class EventLoopManager:
         Dont forget To handle game events using GAME
         as the key for revieved events.
         """
-        # print("******** RECIEVE ********", cls.runing)
+
         game_obj = cls.runing.get(channel_name)
         if game_obj is None:
             """
@@ -206,7 +206,7 @@ class EventLoopManager:
     def run_event_loop(cls) -> None:
         if cls._event_loop_task is not None:
             return
-        print("================== EVENT LOOP CREATED ================")
+
         # cls.trournament_manager_class.event_loop_cls = cls
         # Tournament.send_to_user_callback = cls.output_middlware_class.send_to_userid
         # Tournament.event_loop_cls = cls

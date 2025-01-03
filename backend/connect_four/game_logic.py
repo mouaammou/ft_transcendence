@@ -32,7 +32,7 @@ class GameLogic:
     async def start_timer(self):
         while self.game_active:
             current_time = time.time()
-            # print(f"Current time: {current_time}, Last move time: {self.last_move_time}")
+
             elapsed = int(current_time - self.last_move_time)
             remaining = max(0, self.max_wait_time - elapsed)
             
@@ -120,7 +120,7 @@ class GameLogic:
         
         
     async def save_game(self, type_finish = 'defeat'):
-        print("on save game function")
+
         if self.save_once == True:
             return
         self.save_once = True

@@ -152,7 +152,7 @@ export const NotificationProvider = ({ children }) => {
 
   // Handle new WebSocket messages
   useEffect(() => {
-    console.log(' **-- lastJsonMessage --**', lastJsonMessage);
+
     if (isConnected) {
       handleNotifications(lastJsonMessage);
     }
