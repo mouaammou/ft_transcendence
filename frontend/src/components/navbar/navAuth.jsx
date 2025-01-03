@@ -21,6 +21,23 @@ const Logo = () => (
 	</div>
   );
 
+  const ResponsiveAvatar = ({ data }) => {
+    return (
+      <div className="group">
+        <img 
+          className="w-10 h-10 rounded-full object-cover 
+                      transform group-hover:scale-105 
+                      transition-transform duration-300
+                      shadow-sm hover:shadow-md max-lg:w-24 max-lg:h-10" 
+          src={data.avatar} 
+          alt="user-avatar"
+          loading="lazy"
+        />
+      </div>
+    );
+  };
+  
+
   const UserDropdown = ({ isOpen, setIsOpen, data, Logout }) => {
     const handleMouseLeave = () => {
       setIsOpen(false);
@@ -33,11 +50,7 @@ const Logo = () => (
           onClick={() => setIsOpen(!isOpen)}
           className="relative overflow-hidden flex rounded-full ring-2 ring-gray-700 hover:ring-blue-500 transition-all duration-300 group"
         >
-          <img 
-            className="w-20 h-10 sm:w-12 sm:h-12 object-cover transform group-hover:scale-105 transition-transform duration-300" 
-            src={data.avatar} 
-            alt="user-avatar" 
-          />
+          <ResponsiveAvatar data={data}/>
         </button>
   
         {isOpen && (
@@ -109,7 +122,6 @@ const UnauthenticatedNav = ({ loginPage }) => (
 		<div>
 		<Link
 			href={loginPage === 'Login' ? '/login' : '/signup'}
-			// className="text-white border border-white px-16 py-4 mr-2 rounded hover:bg-white hover:text-gray-800 transition-all duration-300 max-md:px-10 text-sm"
       className='block custom-button w-fit'
 		>
 			{loginPage}

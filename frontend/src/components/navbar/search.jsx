@@ -53,7 +53,7 @@ const SearchProfileComponent = () => {
   }, [debouncedSearchTerm, searchTerm]);
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-2xl mr-4">
       <div className="relative w-full">
         <div className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
           <svg

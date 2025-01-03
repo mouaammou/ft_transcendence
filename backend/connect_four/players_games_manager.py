@@ -78,6 +78,9 @@ class PlayersGamesManager:
                 game = cls.games[game_id]
                 column = data['column']
                 game.make_move(player_id, column)
+            elif 'type' in data and data['type'] == 'DRAW':
+                game = cls.games[game_id]
+                game.update_winner(-1)  
         else:
             FourGameOutput._send_to_consumer_group(player_id, {'status': 'NO_GAME_FOUND'})
 
