@@ -71,12 +71,10 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     "/",
-    "/login/:path*",
     "/forget_password/:path*", // Added forget_password
     "/reset_password/:path*",  // Added reset_password
     "/edit_profile/:path*", 
     "/settings/:path*", 
-    "/signup/:path*",
     "/dashboard/:path*",
     "/profile/:path*",
     "/game/:path*",
@@ -93,5 +91,9 @@ export const config = {
     "/mode/:path*",
     "/play/:path*",
     "/waiting_friends_game/:path*",
+    "/2fa/:path*",
+    "/local_game/:path*",
+    "/tournament/:path*",
+    "/l_game/:path*",
   ],
 };
