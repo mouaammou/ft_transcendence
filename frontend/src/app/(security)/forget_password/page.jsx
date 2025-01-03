@@ -51,16 +51,16 @@ const ForgetPass = () => {
 						onChange={(e) => setEmail(e.target.value)}
 						type="email"
 						placeholder="Example@gmail.com"
-						className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-transparent"
+						className="w-full custom-input"
 					/>
 					
 					<button 
 						onClick={handleSubmit}
-						className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+						className="w-full custom-button">
 							Send reset link
 					</button>
 					
-					<button className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition duration-200 font-medium">
+					<button className="w-full custom-button-secondary">
 					Go back
 					</button>
 				</div>

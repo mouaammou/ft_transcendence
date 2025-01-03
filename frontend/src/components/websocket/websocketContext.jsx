@@ -62,7 +62,6 @@ export const WebSocketProvider = ({ url, children }) => {
       setConnectionEstablished(false);
     },
     onError: (error) => {
-      console.error('WebSocket Error:', error);
       setConnectionEstablished(false);
     }
   });
