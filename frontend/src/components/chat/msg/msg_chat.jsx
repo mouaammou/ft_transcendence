@@ -15,17 +15,11 @@ import { useAuth } from '@/components/auth/loginContext.jsx';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getData } from '@/services/apiCalls';
-import Allusers from '@/app/(users)/allusers/page';
 
 
-// ChatActions.jsx - Separate component
-// ChatActions.jsx
-// Update ChatActions to use the passed status:
 const ChatActions = ({ selectedUser, blockFriend, removeBlock, inviteToGame, currentStatus }) => {
     const friendshipStatus = currentStatus || selectedUser?.friendship_status;
 
-	console.log("\n ** USER STATUS ** ", friendshipStatus);
     // Same logic as FriendProfile: show unblock button only when you blocked them (blocking)
     if (friendshipStatus === 'blocking') {
         return (
@@ -154,11 +148,9 @@ const Msg_chat = () => {
 
     useEffect(() => {
         if (!selectedUser?.id || !allUsers) return;
-
         // Find the user in allUsers and get their current status 
         const currentUser = allUsers.find(user => user.friend.id === selectedUser.id);
         if (currentUser?.friend?.friendship_status) {
-            console.log("Status changing to:", currentUser.friend.friendship_status);
             setUserStatus(currentUser.friend.friendship_status);
         }
     }, [allUsers, selectedUser?.id, selectedUser?.friendship_status, currentuser]);
@@ -188,7 +180,7 @@ const Msg_chat = () => {
                             blockFriend={blockFriend}
                             removeBlock={removeBlock}
                             inviteToGame={inviteToGame}
-                            currentStatus={userStatus}  // Pass the status
+                            currentStatus={userStatus}
                         />
 				</div>
 

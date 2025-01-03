@@ -64,7 +64,7 @@ class RootBase(Base):
         self.ball.move_paddles(self.game_mode)
 
     def update(self) -> dict:
-        # print('update: ', self.start_game, self.disconnected)
+
         if not self.start_game or self.disconnected:
             return
         self.move_paddles() # update paddles pos if there is a press event
@@ -82,7 +82,7 @@ class RootBase(Base):
         
         we need just to transform y.
         """
-        # print('--->>>>>>>>>>>>>>\n', frame)
+
         try:
             if frame.get('ball_pos', None) is not None:
                 frame['ball_pos'][1] = self.window_height - frame['ball_pos'][1] - self.ball_height
@@ -93,8 +93,8 @@ class RootBase(Base):
             if frame.get('right_paddle_pos', None) is not None:
                 frame['right_paddle_pos'][1] = self.window_height - frame['right_paddle_pos'][1] - self.paddle_height
         except Exception as e:
-            print('********', e)
-        # print('--->>>>>>>>>>>>>>\n', frame)
+            pass
+
         return frame
     
     def play(self):
@@ -139,7 +139,7 @@ class PingPongGameLogic(RootBase):
             - ball_pos
             - finished
         """
-        # print('here')
+
         # super().move_paddles(82, 82, 82, 82, 82);
         return super().update()
     
@@ -153,7 +153,7 @@ class PingPongGameLogic(RootBase):
         """
         Call this when new key is released.
         """
-        # print('mode: ', self.game_mode)
+
         self.ball.on_release(self.game_mode, player_direction, key)
     
     def __str__(self):

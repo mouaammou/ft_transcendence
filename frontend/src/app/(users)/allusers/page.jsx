@@ -33,7 +33,7 @@ const Allusers = () => {
 		try {
 			const response = await getData(`/${endpoint}?page=${pageNumber}`);
 			if (response.status === 200) {
-				console.log("users : ", response.data.results);
+
 				setUsers(response.data.results);
 
 				setNextPage(response.data.next ? pageNumber + 1 : null);

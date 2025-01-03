@@ -63,13 +63,13 @@ class BallBase(Collisions, Movements):
     
     def collision(self):
         if self.detect_paddle_collision(self.root_obj, 'left', *self.ball_pos, *self.root_obj.left_player.padd_pos):
-            # print('left padd collision')
+
             pass
         elif self.detect_paddle_collision(self.root_obj, 'right', *self.ball_pos, *self.root_obj.right_player.padd_pos):
-            # print('right padd collision')
+
             pass
         elif self.detect_window_collision(self.root_obj, *self.ball_pos):
-            # print('window collision')
+
             pass
     
     
@@ -105,5 +105,5 @@ class Ball(BallBase):
             # you can update frame here (ball pos)
             
         # update the scope
-        # print('', self.ball_pos)
+
         self.root_obj.scope['ball_pos'] = self.ball_pos

@@ -32,7 +32,7 @@ class GameLogic:
     async def start_timer(self):
         while self.game_active:
             current_time = time.time()
-            # print(f"Current time: {current_time}, Last move time: {self.last_move_time}")
+
             elapsed = int(current_time - self.last_move_time)
             remaining = max(0, self.max_wait_time - elapsed)
             
@@ -97,6 +97,15 @@ class GameLogic:
         return False
 
     def update_winner(self, winner_id):
+        if (winner_id == -1):
+            data = {
+                'status': 'DRAW'
+            }
+            FourGameOutput._send_to_consumer_group(self.player1_id, data)
+            FourGameOutput._send_to_consumer_group(self.player2_id, data)
+            self.game_active = False
+            asyncio.create_task(self.save_game('draw'))
+            return
         self.winner = winner_id
         self.game_active = False
         self.loser = self.player1_id if winner_id == self.player2_id else self.player2_id
@@ -111,7 +120,7 @@ class GameLogic:
         
         
     async def save_game(self, type_finish = 'defeat'):
-        print("on save game function")
+
         if self.save_once == True:
             return
         self.save_once = True

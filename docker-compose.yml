@@ -44,9 +44,9 @@ services:
       - ft_transcendence
     # env_file:
     #   - .env
-    volumes:
-      - ./frontend/src:/frontend/src
-      - ./frontend/public:/frontend/public
+    # volumes:
+      # - ./frontend/src:/frontend/src
+      # - ./frontend/public:/frontend/public
     #   - /frontend/node_modules
     #   - /frontend/.next
 
@@ -65,8 +65,8 @@ services:
       - .env
     networks:
       - ft_transcendence
-    volumes:
-      - ./backend:/backend
+    # volumes:
+    #   - ./backend:/backend
 
   nginx:
     build:

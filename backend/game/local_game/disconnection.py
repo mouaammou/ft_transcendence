@@ -65,7 +65,7 @@ class LocalGameDisconnection:
     def _cancel_task(self):
         if self._disconnetion_task is None:
             return
-        print('************* task is canceled *************')
+
         self._disconnetion_task.cancel()
         self._disconnetion_task = None
         self._outside_callback = None
@@ -75,7 +75,7 @@ class LocalGameDisconnection:
     def _add_task(self):
         if self._disconnetion_task is not None:
             return
-        print('************* task is added *************')
+
         loop = asyncio.get_running_loop()
         future_time = loop.time() + self._timeout_in
         task = loop.call_at(future_time, self._disconnection_timeout)
@@ -84,7 +84,7 @@ class LocalGameDisconnection:
     def _disconnection_timeout(self):
         if self._outside_callback is None:
             return
-        print('************* task is timedout *************')
+
         
         self._outside_callback(
             *self._outside_callback_args,

@@ -14,7 +14,7 @@ class ConnectFourConsumer(AsyncWebsocketConsumer):
         if self.user and not self.user.is_authenticated:  
             return
         await self.accept()
-        print(f"Player {self.player_id} connected")
+
         self.games_manager.connect(self, self.player_id)
             
     

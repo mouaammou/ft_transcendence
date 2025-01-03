@@ -70,7 +70,7 @@ const GameHistory = ({profileId}) => {
 								{/* VS */}
 								<div className="flex flex-col items-center">
 									<div className="text-l font-bold text-gray-400">
-										{match.finish_type == 'defeat' ? '' : 'Disconnection'}
+									{match.finish_type == 'defeat' ? '' : match.finish_type == 'draw' ? 'Draw' : 'Disconnection'}
 									</div>
 									<div className="text-sm text-gray-400 mt-1">
 										{match.game_type == 'connect_four' ? '🚥 Connect Four 🚥' : '🏓 Ping Pong 🏓'}

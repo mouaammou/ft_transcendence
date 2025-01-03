@@ -34,7 +34,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		# self.channel_name = None
 
 	async def connect(self):
-		print("\n CONNECTED\n")
+
 		self.user = self.scope.get("user")
 		if self.user and self.user.is_authenticated:
 			await self.accept()
@@ -43,19 +43,19 @@ class BaseConsumer(AsyncWebsocketConsumer):
 			await self.add_user_to_groups()
 
 	async def disconnect(self, close_code):
-		print("\n DISCONNECT\n")
+
 		if self.user and self.user.is_authenticated:
 			await self.remove_user_from_groups()
 			await self.close()
 
 	async def receive(self, text_data):
-		print(f"\n\n\n --->> received data: {text_data} ***\n\n\n", flush=True)
+
 		text_data_json = json.loads(text_data)
 		user = text_data_json.get('user')
 		logout = text_data_json.get('logout')
 		online = text_data_json.get('online')
 
-		print(f"data Received :: {text_data_json}\n")
+
 
 		if user:
 			self.user = await database_sync_to_async(User.objects.get)(username=user)
@@ -64,7 +64,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		if logout and self.user.is_authenticated:
 			await self.untrack_user_connection()
 			self.scope['user'] = None  # Set the scope user to None
-			print(f"\n scope user: {self.scope['user']}\n")
+
 			await self.close()
 
 		# Handle online event
@@ -85,7 +85,7 @@ class BaseConsumer(AsyncWebsocketConsumer):
 
 		redis_conn.sadd(user_id, channel_name) # Add the user's channel name to the set
 		if redis_conn.scard(user_id) == 1:
-			print(f"\n broadcasting online when login: {self.user}\n")
+
 			await self.save_user_status("online")
 			await self.broadcast_online_status(self.user_data, "online")
 
@@ -96,13 +96,13 @@ class BaseConsumer(AsyncWebsocketConsumer):
 		current_user.save()
 
 	async def untrack_user_connection(self):
-		print(f"untrack_user_connection: {self.user}")
+
 		user_id = str(self.user.id)
 		channel_name = self.channel_name
 
 		redis_conn.srem(user_id, channel_name)
 		if redis_conn.scard(user_id) == 0:
-			print(f"\n broadcasting offline when logout: {self.user}\n")
+
 			await self.broadcast_online_status(self.user_data, "offline")
 			await self.save_user_status("offline")
 
@@ -153,7 +153,7 @@ class NotificationConsumer(BaseConsumer):
 	async def send_notification_alert(self, user_id, notification):
 		"""Send the notification to the user's group."""
 		group_name = f"user_{user_id}"
-		print(f"\nSending notification alert to {group_name}\n")
+
 		try:
 			await self.channel_layer.group_send(
 				group_name,
@@ -213,7 +213,7 @@ class NotificationConsumer(BaseConsumer):
 		}))
 
 	async def friend_request_notif(self, event):
-		print(f"\nfriend_request_notif: {event}\n")
+
 		try:
 			await self.send(text_data=json.dumps({
 				'type': 'send_friend_request',
@@ -240,7 +240,7 @@ class NotificationConsumer(BaseConsumer):
 		}))
 
 	async def reject_request_notif(self, event):
-		print(f"\nreject_request_notif: {event}\n")
+
 		await self.send(text_data=json.dumps({
 			'type': 'reject_friend_request',
 			'success': event.get('success'),
@@ -249,7 +249,7 @@ class NotificationConsumer(BaseConsumer):
 # ************************ END handlers for notificatins ************************ #
 
 	async def handle_event(self, data):
-		print(f"\n\n\n *** received data: {data} ***\n\n\n")
+
 		message_type = data.get('type')
 		if message_type == 'send_friend_request':
 			await self.handle_friend_request(data)
@@ -479,7 +479,7 @@ class NotificationConsumer(BaseConsumer):
 
 
 	async def handle_accept_game(self, data):
-		print(f"\naccept_game: {data}\n")
+
 		to_user_id = data.get('to_user_id')
 		try:
 			# Use sync_to_async to run synchronous code in a separate thread
@@ -500,7 +500,7 @@ class NotificationConsumer(BaseConsumer):
 			logger.error(f"\nError sending game invite: {e}\n")
 
 	async def round_notifs(self, data):
-		print(f"new round: {data}\n")
+
 		to_user_id = data.get('to_user_id')
 		from_user_id = data.get('from_user_id')  
 		message = data.get('message')
@@ -515,7 +515,7 @@ class NotificationConsumer(BaseConsumer):
 			)
 
 			notif_data = NotificationSerializer(notif).data
-			print(f"\nnotif_data: {notif_data}\n")
+
 			await self.send_notification_alert(to_user_id, {
 				'type': 'round_notification',
 				'success': True,
@@ -525,7 +525,7 @@ class NotificationConsumer(BaseConsumer):
 			logger.error(f"\nError sending game invite: {e}\n")
 
 	async def handle_invite_to_game(self, data): 
-		print(f"\ninvite_to_game: {data}\n")
+
 		to_user_id = data.get('to_user_id')
 		try:
 			# Use sync_to_async to run synchronous code in a separate thread
@@ -555,7 +555,7 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_friend_request(self, data):
 		to_user_id = data.get('to_user_id')
-		print(f"\nsend friend request to {to_user_id}", flush=True)
+
 		success, message, notif = await self.save_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
 		if (success):
@@ -567,7 +567,7 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_accept_request(self, data):
 		to_user_id = data.get('to_user_id')
-		print(f"\naccept friend request from {to_user_id}")
+
 		success, message, notif = await self.accept_friend_request(to_user_id)
 		notif_data = NotificationSerializer(notif).data
 		if (success):
@@ -587,7 +587,7 @@ class NotificationConsumer(BaseConsumer):
 
 	async def handle_reject_request(self, data):
 		rejected_user_id = data.get('to_user_id')
-		print(f"\nhandle reject request from {rejected_user_id}")
+
 		await self.send_notification_alert(rejected_user_id, {
 			'type': 'reject_request_notif',
 			'success': True,
@@ -595,7 +595,7 @@ class NotificationConsumer(BaseConsumer):
 		})
 
 	async def receive(self, text_data):
-		print(f"\n\n\n --->> received data: {text_data} ***\n\n\n")
+
 		await super().receive(text_data)
 		data = json.loads(text_data)
 		await self.handle_event(data)

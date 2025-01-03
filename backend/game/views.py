@@ -21,7 +21,7 @@ class LocalTournamentViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # request.data['user'] = request.user.username
-        print(request.data)
+
         # request.data['start_at'] = timezone.now() + timezone.timedelta(seconds=10)
         many = isinstance(request.data, list)
         serializer = self.get_serializer(data=request.data, many=many)
