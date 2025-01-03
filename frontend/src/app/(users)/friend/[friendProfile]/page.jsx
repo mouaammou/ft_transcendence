@@ -13,12 +13,12 @@ import Link from 'next/link';
 import { FaTrophy } from 'react-icons/fa';
 import { useAuth } from '@/components/auth/loginContext';
 import { useRouter } from 'next/navigation';
-import { AreaChart, XAxis, YAxis, Tooltip, Area,CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
+import { AreaChart, XAxis, YAxis, Tooltip, Area, CartesianGrid, ResponsiveContainer, PieChart, Pie, Sector, Cell, } from 'recharts';
 import { Toaster, toast } from 'react-hot-toast';
 import { HiShieldExclamation, HiShieldCheck } from 'react-icons/hi';
 
 const ActionButton = ({ onClick, variant = "primary", icon: Icon, children }) => {
-	const baseStyle = "w-full flex items-center justify-center px-4 py-2.5 rounded-xl font-medium transition-all duration-200";
+	const baseStyle = "w-full flex items-center justify-center px-2 py-1 md:px-4 md:py-2.5 rounded md:rounded-xl font-medium transition-all duration-200";
 	const variants = {
 		primary: "bg-blue-500/90 hover:bg-blue-600 text-white",
 		success: "bg-emerald-500/90 hover:bg-emerald-600 text-white",
@@ -28,17 +28,17 @@ const ActionButton = ({ onClick, variant = "primary", icon: Icon, children }) =>
 
 	return (
 		<button
-		onClick={onClick}
-		className={`${baseStyle} ${variants[variant]}`}
+			onClick={onClick}
+			className={`${baseStyle} ${variants[variant]}`}
 		>
-		<Icon className="mr-2 text-lg" />
-		{children}
+			<Icon className="mr-2 text-lg" />
+			{children}
 		</button>
 	);
 };
 
 const ActionLink = ({ href, variant = "primary", icon: Icon, children }) => {
-	const baseStyle = "w-full flex items-center justify-center px-4 py-2.5 rounded-xl font-medium transition-all duration-200";
+	const baseStyle = "w-full flex items-center justify-center px-2 py-1 md:px-4 md:py-2.5 rounded md:rounded-xl font-medium transition-all duration-200";
 	const variants = {
 		primary: "bg-blue-500/90 hover:bg-blue-600 text-white",
 		success: "bg-emerald-500/90 hover:bg-emerald-600 text-white",
@@ -61,81 +61,80 @@ const FriendProfileActions = ({
 	removeBlock
 }) => {
 	return (
-		<div className="w-full max-w-96 bg-gray-800 rounded-xl p-5 shadow-lg">
-		<h2 className="text-lg font-medium text-gray-200 mb-4">Actions</h2>
+		<div className="w-full max-w-96 bg-gray-800 rounded-xl p-2 md:p-5 shadow-lg">
+			<h2 className="text-sm md:text-lg font-medium text-gray-200 mb-4">Actions</h2>
 
-		<div className="space-y-3">
-			{friendStatusRequest === 'no' && (
-			<ActionButton
-				onClick={sendFriendRequest}
-				variant="primary"
-				icon={FaUserPlus}
-			>
-				Add Friend
-			</ActionButton>
-			)}
+			<div className="space-y-3 text-xs md:text-lg">
+				{friendStatusRequest === 'no' && (
+					<ActionButton
+						onClick={sendFriendRequest}
+						variant="primary"
+						icon={FaUserPlus}
+					>
+						Add Friend
+					</ActionButton>
+				)}
 
-			{friendStatusRequest === 'accepted' && (
-			<>
-				<ActionLink
-				href="/create_join_tournament"
-				variant="success"
-				icon={FaTrophy}
-				>
-				Create Tournament
-				</ActionLink>
-				
-				<ActionButton
-				onClick={inviteToGame}
-				variant="primary"
-				icon={FaGamepad}
-				>
-				Play Game
-				</ActionButton>
-				
-				<div className="pt-3 border-t border-gray-700">
-				<ActionButton
-					onClick={blockFriend}
-					variant="warning"
-					icon={HiShieldExclamation}
-				>
-					Block User
-				</ActionButton>
-				<div className='mt-3'></div>
-				<ActionButton
-					onClick={removeFriend}
-					variant="danger"
-					icon={IoPersonRemove}
-				>
-					Remove Friend
-				</ActionButton>
-				</div>
-			</>
-			)}
+				{friendStatusRequest === 'accepted' && (
+					<>
+						<ActionLink
+							href="/create_join_tournament"
+							variant="success"
+							icon={FaTrophy}
+						>
+							Create Tournament
+						</ActionLink>
 
-			{friendStatusRequest === 'pending' && (
-			<div className="flex items-center space-x-3 px-4 py-2.5 rounded-lg bg-gray-700/50">
-				<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
-				<span className="text-blue-400 text-sm">Request Pending</span>
+						<ActionButton
+							onClick={inviteToGame}
+							variant="primary"
+							icon={FaGamepad}
+						>
+							Play Game
+						</ActionButton>
+
+						<ActionButton
+							onClick={blockFriend}
+							variant="warning"
+							icon={HiShieldExclamation}
+						>
+							Block User
+						</ActionButton>
+
+						<ActionButton
+							onClick={removeFriend}
+							variant="danger"
+							icon={IoPersonRemove}
+						>
+							Remove Friend
+						</ActionButton>
+
+					</>
+				)}
+
+				{friendStatusRequest === 'pending' && (
+					<div className="flex items-center space-x-3 px-4 py-2.5 rounded-lg bg-gray-700/50">
+						<div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+						<span className="text-blue-400 text-sm">Request Pending</span>
+					</div>
+				)}
+
+				{friendStatusRequest === 'blocking' && (
+					<ActionButton
+						onClick={removeBlock}
+						variant="warning"
+						icon={HiShieldCheck}
+					>
+						Unblock User
+					</ActionButton>
+				)}
+
+				{friendStatusRequest === 'rejected' && (
+					<div className="px-4 py-2.5 rounded-lg bg-rose-500/10 text-rose-400 text-sm text-center">
+						Request Rejected
+					</div>
+				)}
 			</div>
-			)}
-
-			{friendStatusRequest === 'blocking' && (
-			<ActionButton
-				onClick={removeBlock}
-				variant="warning"
-				icon={HiShieldCheck}
-			>
-				Unblock User
-			</ActionButton>
-			)}
-
-			{friendStatusRequest === 'rejected' && (
-			<div className="px-4 py-2.5 rounded-lg bg-rose-500/10 text-rose-400 text-sm text-center">
-				Request Rejected
-			</div>
-			)}
-		</div>
 		</div>
 	);
 };
@@ -199,7 +198,7 @@ export default function FriendProfile({ params }) {
 	}, []);
 
 
-	
+
 	const fetchPongData = useCallback(async (userId) => {
 		try {
 			const response = await getData(`/pongstats/${userId}`);
@@ -235,26 +234,26 @@ export default function FriendProfile({ params }) {
 		} catch (error) {
 		}
 	}, []);
-	
+
 	useEffect(() => {
 		if (!profile.id || !isAuth) return;
 		fetchProgressData(profile.id);
 		fetchPongData(profile.id);
 		fetchC4StatsData(profile.id);
 		fetchGameHistory(profile.id);
-		}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname, isAuth]);
+	}, [profile, fetchProgressData, fetchPongData, fetchC4StatsData, fetchGameHistory, pathname, isAuth]);
 
-		// Update the page not found effect
-		useEffect(() => {
-			if (pageNotFound && isAuth) {
-				setPageNotFound(false);
-				notFound();
-			}
-		}, [pageNotFound, isAuth]);
+	// Update the page not found effect
+	useEffect(() => {
+		if (pageNotFound && isAuth) {
+			setPageNotFound(false);
+			notFound();
+		}
+	}, [pageNotFound, isAuth]);
 
 
 	const RADIAN = Math.PI / 180;
-	const COLORS = ['#82ca9d','#ef4444', '#F59E0B',  '#f97316'];
+	const COLORS = ['#82ca9d', '#ef4444', '#F59E0B', '#f97316'];
 
 
 	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -286,58 +285,58 @@ export default function FriendProfile({ params }) {
 	// Modify the friend status update functions
 	const updateFriendStatus = (userId, status) => {
 		setFriendStatusRequests(prevStatuses => ({
-		...prevStatuses,
-		[userId]: status
+			...prevStatuses,
+			[userId]: status
 		}));
 	};
 
 	// Update the friend action callbacks
 	const removeFriend = useCallback(() => {
 		if (isConnected && profile?.id) {
-		updateFriendStatus(profile.id, 'no');
-		sendMessage(
-			JSON.stringify({
-			type: NOTIFICATION_TYPES.REMOVE_FRIEND,
-			to_user_id: profile.id,
-			})
-		);
+			updateFriendStatus(profile.id, 'no');
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.REMOVE_FRIEND,
+					to_user_id: profile.id,
+				})
+			);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
-	
+
 	const blockFriend = useCallback(() => {
 		if (isConnected && profile?.id) {
-		updateFriendStatus(profile.id, 'blocking');
-		sendMessage(
-			JSON.stringify({
-			type: NOTIFICATION_TYPES.BLOCK,
-			to_user_id: profile.id,
-			})
-		);
+			updateFriendStatus(profile.id, 'blocking');
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.BLOCK,
+					to_user_id: profile.id,
+				})
+			);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
 	const removeBlock = useCallback(() => {
 		if (isConnected && profile?.id) {
-		updateFriendStatus(profile.id, 'accepted');
-		sendMessage(
-			JSON.stringify({
-			type: NOTIFICATION_TYPES.REMOVE_BLOCK,
-			to_user_id: profile.id,
-			})
-		);
+			updateFriendStatus(profile.id, 'accepted');
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.REMOVE_BLOCK,
+					to_user_id: profile.id,
+				})
+			);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
 	const sendFriendRequest = useCallback(() => {
 		if (isConnected && profile?.id) {
 			console.log('Sending friend request to:', profile.id);
-		updateFriendStatus(profile.id, 'pending');
-		sendMessage(
-			JSON.stringify({
-			type: NOTIFICATION_TYPES.FRIENDSHIP,
-			to_user_id: profile.id,
-			})
-		);
+			updateFriendStatus(profile.id, 'pending');
+			sendMessage(
+				JSON.stringify({
+					type: NOTIFICATION_TYPES.FRIENDSHIP,
+					to_user_id: profile.id,
+				})
+			);
 		}
 	}, [isConnected, profile?.id, sendMessage]);
 
@@ -349,31 +348,31 @@ export default function FriendProfile({ params }) {
 
 			const unwrappedParams = await params;
 			if (!unwrappedParams.friendProfile) {
-			setPageNotFound(true);
-			return;
+				setPageNotFound(true);
+				return;
 			}
-		
+
 			if (data.username === unwrappedParams.friendProfile) {
-			router.push('/profile');
-			return;
+				router.push('/profile');
+				return;
 			}
-			
+
 			try {
-			const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
-			if (response.status === 200) {
-				if (currentProfileId !== response.data.id) {
-				setCurrentProfileId(response.data.id);
-				updateFriendStatus(response.data.id, response.data.friend);
+				const response = await getData(`/friendProfile/${unwrappedParams.friendProfile}`);
+				if (response.status === 200) {
+					if (currentProfileId !== response.data.id) {
+						setCurrentProfileId(response.data.id);
+						updateFriendStatus(response.data.id, response.data.friend);
+					}
+					setProfile(response.data);
+				} else {
+					setPageNotFound(true);
 				}
-				setProfile(response.data);
-			} else {
-				setPageNotFound(true);
-			}
 			} catch (error) {
-			// Only set pageNotFound if we're still authenticated
-			if (isAuth) {
-				setPageNotFound(true);
-			}
+				// Only set pageNotFound if we're still authenticated
+				if (isAuth) {
+					setPageNotFound(true);
+				}
 			}
 		};
 		fetchFriendProfile(params);
@@ -382,7 +381,7 @@ export default function FriendProfile({ params }) {
 	// Update the websocket message handler effect
 	useEffect(() => {
 		if (!lastJsonMessage || !isConnected || !profile.id) return;
-		
+
 		if (
 			lastJsonMessage.type === 'user_status_change' &&
 			lastJsonMessage.username === profile.username
@@ -392,79 +391,79 @@ export default function FriendProfile({ params }) {
 
 		// Get the relevant user ID from the message
 		const messageUserId = lastJsonMessage.from_user_id || lastJsonMessage.to_user_id;
-		
+
 		// Check if this message is relevant for the current friend status
-		const isRelevantMessage = messageUserId && 
+		const isRelevantMessage = messageUserId &&
 			(messageUserId === profile.id || lastJsonMessage.to_user_id === profile.id);
-		
+
 		if (!isRelevantMessage) {
 			return;
 		}
-		
+
 		// Handle different message types
 		switch (lastJsonMessage.type) {
 			case NOTIFICATION_TYPES.REJECT_FRIEND:
-			if (lastJsonMessage.to_user_id === profile.id) {
-				updateFriendStatus(profile.id, 'no');
-			}
-			break;
-			
+				if (lastJsonMessage.to_user_id === profile.id) {
+					updateFriendStatus(profile.id, 'no');
+				}
+				break;
+
 			//
 			case NOTIFICATION_TYPES.ACCEPT_FRIEND:
-			if (lastJsonMessage.to_user_id === profile.id) {
-				updateFriendStatus(profile.id, 'accepted');
-			}
-			break;
-			
+				if (lastJsonMessage.to_user_id === profile.id) {
+					updateFriendStatus(profile.id, 'accepted');
+				}
+				break;
+
 			case NOTIFICATION_TYPES.REMOVE_BLOCK:
-			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
-				updateFriendStatus(profile.id, 'accepted');
-			}
-			break;
-			
+				if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+					updateFriendStatus(profile.id, 'accepted');
+				}
+				break;
+
 			case NOTIFICATION_TYPES.BLOCK:
-			if (lastJsonMessage.success && lastJsonMessage.to_user_id == profile.id) {
-				updateFriendStatus(profile.id, lastJsonMessage.blocked ? 'blocked' : 'blocking');
-			}
-			break;
-			
+				if (lastJsonMessage.success && lastJsonMessage.to_user_id == profile.id) {
+					updateFriendStatus(profile.id, lastJsonMessage.blocked ? 'blocked' : 'blocking');
+				}
+				break;
+
 			case NOTIFICATION_TYPES.REMOVE_FRIEND:
-			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
-				updateFriendStatus(profile.id, 'no');
-			}
-			break;
-			
+				if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+					updateFriendStatus(profile.id, 'no');
+				}
+				break;
+
 			case NOTIFICATION_TYPES.ACCEPTED_DONE:
-			if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
-				updateFriendStatus(profile.id, 'accepted');
-			}
-			break;
+				if (lastJsonMessage.success && lastJsonMessage.to_user_id === profile.id) {
+					updateFriendStatus(profile.id, 'accepted');
+				}
+				break;
 		}
-		
+
 		// Handle error cases
 		if ((lastJsonMessage.type === NOTIFICATION_TYPES.BLOCK ||
 			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_BLOCK ||
-			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND) && 
-			!lastJsonMessage.success && 
+			lastJsonMessage.type === NOTIFICATION_TYPES.REMOVE_FRIEND) &&
+			!lastJsonMessage.success &&
 			lastJsonMessage.to_user_id === profile.id) {
 			updateFriendStatus(profile.id, 'accepted');
 			toast.error("ERROR: ", lastJsonMessage.message || lastJsonMessage.error);
 		}
 	}, [lastJsonMessage, isConnected, profile?.id, lastMessage]);
-	
+
 	// Update the pending timeout effect
 	useEffect(() => {
 		if (pageNotFound) {
-		setPageNotFound(false);
-		notFound();
+			setPageNotFound(false);
+			notFound();
 		}
 		if (profile?.id) {
-		const timeoutId = setTimeout(() => {
-			if (friendStatusRequests[profile.id] === 'pending') {
-				updateFriendStatus(profile.id, 'no');
-			}
-		}, 2000);
-		return () => clearTimeout(timeoutId);
+			const timeoutId = setTimeout(() => {
+				if (friendStatusRequests[profile.id] === 'pending') {
+					updateFriendStatus(profile.id, 'no');
+				}
+			}, 2000);
+			return () => clearTimeout(timeoutId);
 		}
 	}, [pageNotFound, friendStatusRequests, profile?.id]);
 
@@ -476,8 +475,6 @@ export default function FriendProfile({ params }) {
 					<img
 						src="/gaming-demo.jpeg"
 						alt="profile background"
-						width={1920}
-						height={1080}
 						className="w-full h-full object-cover object-center filter brightness-50"
 					/>
 					<div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900" />
@@ -493,10 +490,10 @@ export default function FriendProfile({ params }) {
 								<img
 									src={profile.avatar}
 									alt="profile avatar"
-									className="w-40 h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
+									className="w-28 sm:w-40 h-28 sm:h-40 rounded-full border-4 border-sky-500 shadow-xl object-cover transform hover:scale-105 transition-transform duration-300"
 								/>
 								<div
-									className={`absolute -bottom-1 -right-2 px-3 py-1 rounded-full text-sm font-semibold ${profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
+									className={`absolute -bottom-1 -right-2 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${profile?.status == 'online' ? 'bg-green-500' : 'bg-red-500'
 										} text-white`}
 								>
 									{profile?.status == 'online' ? 'Online' : 'Offline'}
@@ -504,12 +501,12 @@ export default function FriendProfile({ params }) {
 							</div>
 
 							<div className="mt-4 text-center">
-								<h1 className="text-3xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h1>
-								<p className="text-sky-400">@{profile.username}</p>
+								<h1 className="text-lg sm:text-3xl font-bold">{`${profile.first_name} ${profile.last_name}`}</h1>
+								<p className="text-md text-sky-400">@{profile.username}</p>
 							</div>
 
 							{/* Level Progress Bar */}
-							<div className="w-full max-w-md mt-6">
+							<div className="w-full max-w-md mt-6  p-2">
 								<div className="bg-gray-700 h-4 rounded-full overflow-hidden">
 									<div
 										className="h-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-500 ease-out"
@@ -517,7 +514,7 @@ export default function FriendProfile({ params }) {
 									>
 									</div>
 								</div>
-								<div className="flex justify-between text-sm mt-1">
+								<div className="flex justify-between text-xs md:text-sm mt-1">
 									<span>Level {progressData.level}</span>
 									<span>{progressData.currentXp}/100 XP</span>
 								</div>
@@ -596,7 +593,7 @@ export default function FriendProfile({ params }) {
 												{/* VS */}
 												<div className="flex flex-col items-center">
 													<div className="text-l font-bold text-gray-400">
-													{match.finish_type == 'defeat' ? '' : match.finish_type == 'draw' ? 'Draw' : 'Disconnection'}
+														{match.finish_type == 'defeat' ? '' : match.finish_type == 'draw' ? 'Draw' : 'Disconnection'}
 													</div>
 													<div className="text-sm text-gray-400 mt-1">
 														{match.game_type == 'connect_four' ? '🚥 Connect Four 🚥' : '🏓 Ping Pong 🏓'}

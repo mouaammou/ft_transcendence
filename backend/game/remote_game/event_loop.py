@@ -95,6 +95,7 @@ class EventLoopManager:
             game_obj = cls.active_players.get(player_id)
             if game_obj is None:
                 logger.error(f"No game object found for player id {player_id}")
+                # RemoteGameOutput._send_to_consumer_group(   player_id, {"status": "NO_GAME_DATA"})
                 return False
             print(f"----> player id {player_id} in the game {game_obj}")
         except Exception as e:
@@ -775,8 +776,8 @@ class EventLoopManager:
                     
                     # Ensure proper game start sequence
                     game_obj.pause()
-                    await asyncio.sleep(1)
                     RemoteGameOutput.send_config(player_id, game_obj)
+                    await asyncio.sleep(1)
                     game_obj.play()
                     print(f"Game started for player {player_id}")
                     return

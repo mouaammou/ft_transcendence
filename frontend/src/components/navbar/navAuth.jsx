@@ -28,7 +28,7 @@ const Logo = () => (
           className="w-10 h-10 rounded-full object-cover 
                       transform group-hover:scale-105 
                       transition-transform duration-300
-                      shadow-sm hover:shadow-md max-lg:w-24 max-lg:h-10" 
+                      shadow-sm hover:shadow-md max-lg:w-24 max-lg:h-10 min-w-10 min-h-10 max-w-10 max-h-10" 
           src={data.avatar} 
           alt="user-avatar"
           loading="lazy"
@@ -54,7 +54,7 @@ const Logo = () => (
         </button>
   
         {isOpen && (
-          <div className="absolute right-0 mt-3 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700/50 overflow-hidden z-50 animate-fadeIn" onMouseLeave={handleMouseLeave}>
+          <div className="absolute right-0 mt-3 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700/50 overflow-hidden z- animate-fadeIn" onMouseLeave={handleMouseLeave}>
             <div className="p-4 border-b border-gray-700/50 bg-gray-800/90">
               <p className="text-gray-100 font-semibold">{data.username}</p>
               <p className="text-gray-400 text-sm truncate mt-0.5">{data.email}</p>
@@ -97,7 +97,7 @@ const Logo = () => (
     const [isOpen, setIsOpen] = useState(false);
     
     return (
-      <div className="flex items-center h-20 px-6 shadow-lg bg-gray-800 backdrop-blur-lg bg-opacity-95"> 
+      <div className="flex items-center h-20 px-6 bg-gray-800 backdrop-blur-lg bg-opacity-95"> 
         <SearchProfileComponent />
         <div className="ml-auto flex items-center space-x-6">
           <NotificationBell />

@@ -30,7 +30,7 @@ const GamePage = () => {
   );
 
   useEffect(() => {
-    if (lastMessage === null) return;
+    if (!lastMessage || !lastMessage.data) return;
     const data = JSON.parse(lastMessage.data);
 
     if (data.status == 'GAME_DATA') {
@@ -79,7 +79,7 @@ const GamePage = () => {
           <div className={style.vs_image}>
             <img src="/vs.svg" alt="vs" className={style.vs_image} width={70} height={70} />
           </div>
-          <CountdownTimer />
+          {/* <CountdownTimer /> */}
         </div>
         <div className={style.right_score}>{score1}</div>
       </div>

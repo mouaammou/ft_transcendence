@@ -79,7 +79,7 @@ export default function CreateJoinTournamentPage() {
   };
 
   const fetchData = async () => {
-    if (lastMessage === null) return;
+    if (!lastMessage || !lastMessage.data) return;
     const data = JSON.parse(lastMessage.data);
     console.log(data);
     if (data.status === 'tournaments_created') {
@@ -115,7 +115,7 @@ export default function CreateJoinTournamentPage() {
 
 
   useEffect(() => {
-    if (lastMessage === null) return;
+    if (!lastMessage || !lastMessage.data) return;
     const data = JSON.parse(lastMessage.data);
     if (data.status === 'already_in_tournament') {
       console.log("data from create join tournament 333333 ", data);

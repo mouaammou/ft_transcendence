@@ -39,7 +39,7 @@ const WaitingPage = () => {
   };
 
   useEffect(() => {
-    if (lastMessage !== null) {
+    if (lastMessage) {
       const data = JSON.parse(lastMessage.data);
 
       if (data.status === 'start') {
