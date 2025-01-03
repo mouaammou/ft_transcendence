@@ -74,7 +74,7 @@ class TwoFactorAuthView(APIView):
         if action == "is-enabled":
             if user.totp_enabled:
                 return Response({"msg": "2FA is enabled!"}, status=status.HTTP_200_OK)
-            return Response({"msg": "2fa not enabled!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"msg": "2fa not enabled!"}, status=status.HTTP_204_NO_CONTENT)
         
         return Response({"msg": "action not found!"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -84,16 +84,16 @@ class TwoFactorAuthView(APIView):
         if action == "enable":
             if user.totp_enabled:
                 data["msg"] = "2FA is already enabled!"
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data, status=status.HTTP_204_NO_CONTENT)
             
             code = request.data.get("code")
             if not code:
                 data["msg"] = "code is required to enable!"
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data, status=status.HTTP_204_NO_CONTENT)
             
             if not validate_totp(user.totp_secret, code):
                 data["msg"] = "can't enable, invalid code!"
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data, status=status.HTTP_204_NO_CONTENT)
             
             user.totp_enabled = True
             user.save()
@@ -105,10 +105,10 @@ class TwoFactorAuthView(APIView):
                 return self.topt_not_enabed_response()
             code = request.data.get("code")
             if not code:
-                return Response({"msg": "code is required!"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"msg": "code is required!"}, status=status.HTTP_204_NO_CONTENT)
             
             if not validate_totp(user.totp_secret, code):
-                return Response({"msg": "invalid code!"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"msg": "invalid code!"}, status=status.HTTP_204_NO_CONTENT)
             
             return Response({"msg": "valid code!"}, status=status.HTTP_200_OK)
         
@@ -132,7 +132,7 @@ class TwoFactorAuthView(APIView):
     def topt_not_enabed_response(self):
         data = {}
         data["msg"] = "2FA is not enabled!"
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 
 
@@ -144,7 +144,6 @@ class User2faVerificationView(APIView):
     DELAY_RESPONSE_TIME = 1.0 # seconds to avoid bruteforce attacks
 
     def post(self, request):
-        print("iammmmmmmmmmmmherrrerrr")
         token = request.COOKIES.get(__class__.TOKEN_NAME)
         is_valid, message_or_userid = self.verify_userid(token)
         user_id = __class__.decode_userid(token)
@@ -165,12 +164,12 @@ class User2faVerificationView(APIView):
 
         totp_code = request.data.get("totp_code")
         if not totp_code:
-            return Response({"msg": "totp_code is required!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"msg": "totp_code is required!"}, status=status.HTTP_204_NO_CONTENT)
 
         time.sleep(__class__.DELAY_RESPONSE_TIME)
 
         if not validate_totp(user.totp_secret, totp_code):
-            return Response({"msg": "invalid totp code!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"msg": "invalid totp code!"}, status=status.HTTP_204_NO_CONTENT)
 
         # set jwt cookies
         response = Response()

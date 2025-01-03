@@ -24,8 +24,10 @@ const TwoFactorAuth = () => {
             let response = await apiTwoFactorAuthIsEnabled();
             if (response.status !== 200) {
                 setIs2faEnabled(false); // desabled or not set yet
-                response = await apiTwoFactorAuthQrcode();
-                setQrCode(response);
+                try {
+                    response = await apiTwoFactorAuthQrcode();
+                    setQrCode(response);
+                } catch (error) {}
                 return;
             } else
                 setIs2faEnabled(true); // enabled

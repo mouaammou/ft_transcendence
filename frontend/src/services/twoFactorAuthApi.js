@@ -9,7 +9,7 @@ const api = axios.create({
       'Content-Type': 'application/json',
     }
 });
-
+  
 
 
 export const apiValidateTwoFactorAuth = async (code) => {
@@ -30,8 +30,6 @@ export const apiValidateTwoFactorAuth = async (code) => {
         }
     }
     finally {
-
-
     }
 };
 
@@ -48,13 +46,11 @@ export const apiEnableTwoFactorAuth = async (code) => {
             data = error.response.data;
             return error.response.data
         } else {
-            data = {status: 500, msg: "No response from server"};
+            data = {status: 400, msg: "No response"};
             return data;
         }
     }
     finally {
-
-
     }
 };
 

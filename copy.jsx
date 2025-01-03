@@ -151,7 +151,7 @@ const AuthenticatedNav = ({ data, Logout }) => {
                 {[
                   ['Profile', '/profile'],
                   ['Settings', '/settings'],
-                  ['Create Tournament', '/tournament'],
+                  ['Create Tournament', '/tournament/create'],
                   ['Start Game', '/play'],
                 ].map(([label, href]) => (
                   <Link
