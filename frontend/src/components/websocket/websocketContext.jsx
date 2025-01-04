@@ -95,7 +95,6 @@ export const WebSocketProvider = ({ url, children }) => {
           );
         }
       } catch (error) {
-        console.log('Error parsing WebSocket message:', error);
       }
     },
     [isConnected]
@@ -125,7 +124,6 @@ export const WebSocketProvider = ({ url, children }) => {
         
         router.replace(`/${endpoint}?page=${pageNumber}`);
       } catch (error) {
-        console.log('Error fetching users:', error);
         setPaginationState(prev => ({ ...prev, pageNotFound: true }));
       }
     },

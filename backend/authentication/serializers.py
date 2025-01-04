@@ -306,7 +306,6 @@ class ForgotPasswordSerializer(serializers.Serializer):
             return True
 
         except Exception as e:
-            print(f"Error sending email: {str(e)}")
             raise serializers.ValidationError(
                 "Error sending reset email. Please try again later.")
 ########################## password forget ############################

@@ -26,7 +26,6 @@ const TwoFactorAuth = () => {
             } else
                 setIs2faEnabled(true); // enabled
         };
-        console.log('-----path--->: ', pathname, '\n---isenabled: ', is2faEnabled );
         fetchQrCode();
     }, [is2faEnabled]);
 

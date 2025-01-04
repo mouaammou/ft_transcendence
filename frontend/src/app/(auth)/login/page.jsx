@@ -53,8 +53,6 @@ export default function LoginPage() {
             }
 
             let resp = await AuthenticateTo('/login', formData);
-            //if resp === {} return )
-            // console.log(resp);
             
             if (!totp && resp?.totp) {
                 setTotp(true);

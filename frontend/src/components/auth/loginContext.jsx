@@ -132,7 +132,6 @@ export const LoginProvider = ({ children }) => {
         setProfileData(res.data.user);
       } else {
         // Handle non-200 responses
-        console.log('Failed to fetch profile:', res);
         setProfileData({}); // Reset profile data on error
         if (res?.status === 401) {
           // Handle unauthorized access

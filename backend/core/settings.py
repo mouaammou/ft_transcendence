@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from datetime import timedelta
 import sys
+import logging
 
 load_dotenv()
 import certifi
@@ -39,7 +40,7 @@ ALL_USED_ENV_VARS = [
 missing_vars = [var for var in ALL_USED_ENV_VARS if os.getenv(var) is None]
 
 if missing_vars:
-    print(f"Error: The following environment variables are not set: {', '.join(missing_vars)}", file=sys.stderr)
+    logging.error(f"Error: The following environment variables are not set: {', '.join(missing_vars)}")
     sys.exit(1)
 
 
@@ -47,7 +48,7 @@ DOMAIN_NAME = os.getenv("DOMAIN_NAME")
 DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME')
 DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG", False)
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 # Set your 42 OAuth credentials
 OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
 OAUTH42_CLIENT_SECRET = os.getenv("OAUTH42_CLIENT_SECRET")
@@ -228,15 +229,6 @@ DATABASES = {
     }
 }
 
-
-
-# DATABASES = {
-	
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.sqlite3',
-# 		'NAME': BASE_DIR / 'db.sqlite3',
-# 	}
-# }
 
 CORS_ALLOWED_ORIGINS = [
 	"https://" + DOMAIN_NAME,

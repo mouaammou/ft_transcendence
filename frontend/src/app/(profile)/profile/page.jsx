@@ -77,8 +77,6 @@ const Profile = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log("IS AUTH", isAuth);
-		console.log("DATA", data);
 		if (!data.id || !isAuth) return;
 		fetchGameHistory(data.id);
 		fetchProgressData(data.id);

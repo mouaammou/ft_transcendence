@@ -13,7 +13,6 @@ export async function middleware(request) {
     //remove the cookies
     response.cookies.delete('2fa_token');
     response.cookies.set('2fa_token', '', { path: '/', expires: new Date(0) });
-    console.log("removing 2fa token", request.cookies.get("2fa_token"));
   }
   const is2fa = request.cookies.get("2fa_token");
   if (is2fa && request.nextUrl.pathname !== "/2fa") {

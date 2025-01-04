@@ -8,6 +8,6 @@ urlpatterns = [
  
 	# path('play/', include('tournament.urls')),
 	path('backend/', include("authentication.urls")),
-	path('backend/admin/', admin.site.urls),
+	# path('backend/admin/', admin.site.urls),
 	path('backend/', include("chat.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

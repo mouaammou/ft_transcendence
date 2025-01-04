@@ -5,7 +5,6 @@ import time
 from django.core.management import call_command
 from redis import Redis
 from psycopg2 import connect, OperationalError
-import psycopg2
 
 # Check for required environment variables
 REQUIRED_ENV_VARS = [ "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE"]
