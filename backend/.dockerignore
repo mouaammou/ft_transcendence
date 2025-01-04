@@ -4,5 +4,3 @@ ft_transcendence/migrations
 ft_transcendence/__pycache__
 game/__pycache__
 game/migrations
-compu_ai/migrations
-compu_ai/__pycache__
