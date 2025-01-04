@@ -91,10 +91,6 @@ export const WebSocketProvider = ({ url, children }) => {
           );
         }
       } catch (error) {
-<<<<<<< HEAD
-=======
-        console.error('Error parsing WebSocket message:', error);
->>>>>>> 902adf1fca63fb97f8773e3fa938463b6fcf785e
       }
     },
     [isConnected]
