@@ -27,7 +27,6 @@ from connect_four.routing import websocket_urlpatterns as connect_four_urls
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 
-
 django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter({

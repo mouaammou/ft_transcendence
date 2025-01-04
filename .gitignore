@@ -2,6 +2,7 @@ post_description.txt
 node_modules
 tests
 # Byte-compiled / optimized / DLL files
+backend/pong/__pycache__
 __pycache__/
 *.py[cod]
 *$py.class
