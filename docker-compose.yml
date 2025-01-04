@@ -6,8 +6,6 @@ services:
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    # ports:
-    #   - "5432:5432"
     restart: on-failure
     networks:
       - ft_transcendence
@@ -15,19 +13,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    # env_file:
-    #   - .env
 
   redis:
     image: redis:latest
     container_name: redis
-    # ports:
-    #   - "6379:6379"
     restart: on-failure
     networks:
       - ft_transcendence
-    # env_file:
-    #   - .env
 
   frontend:
     build:
@@ -42,13 +34,8 @@ services:
     restart: on-failure
     networks:
       - ft_transcendence
-    # env_file:
-    #   - .env
     volumes:
-      - ./frontend/src:/frontend/src
-      - ./frontend/public:/frontend/public
-    #   - /frontend/node_modules
-    #   - /frontend/.next
+      - nextjs_data:/frontend/.next/static
 
   backend:
     build:
@@ -58,15 +45,13 @@ services:
     depends_on:
       - postgres
       - redis
-    # ports:
-    #   - "8000:8000"
     restart: on-failure
     env_file:
       - .env
     networks:
       - ft_transcendence
     volumes:
-      - ./backend:/backend
+      - media_data:/backend/media
 
   nginx:
     build:
@@ -83,14 +68,14 @@ services:
       - frontend
     networks:
       - ft_transcendence
-    # env_file:
-    #   - .env
-    # volumes:
-    #   - ./backend/media:/backend/media
-    #   - ./backend/staticfiles:/backend/staticfiles
+    volumes:
+      - media_data:/media
+      - nextjs_data:/nextjs_data
 
 
 volumes:
+  nextjs_data:
+  media_data:
   postgres-data:
 
 networks:

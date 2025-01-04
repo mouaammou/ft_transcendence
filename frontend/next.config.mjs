@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const isProd = false; // Just change this to true when you want production settings
+const isProd = true; // Just change this to true when you want production settings
 
 const nextConfig = {
   reactStrictMode: false,
