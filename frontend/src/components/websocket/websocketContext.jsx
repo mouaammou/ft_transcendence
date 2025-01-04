@@ -48,13 +48,9 @@ export const WebSocketProvider = ({ url, children }) => {
     lastJsonMessage,
     readyState,
     getWebSocket
-  } = useWebSocket(shouldConnect ? url : null, {
-    shouldReconnect: (closeEvent) => shouldConnect,
-    reconnectInterval: 1000,
-    share: true,
-    retryOnError: true,
+  } = useWebSocket(shouldConnect ? url : null,  {
+    shouldReconnect: () => true, // Automatically reconnect on disconnection
     onOpen: () => {
-
       setConnectionEstablished(true);
     },
     onClose: () => {
@@ -62,7 +58,7 @@ export const WebSocketProvider = ({ url, children }) => {
     },
     onError: () => {
       setConnectionEstablished(false);
-    }
+    },
   });
 
   const isConnected = readyState === WebSocket.OPEN;
@@ -95,6 +91,10 @@ export const WebSocketProvider = ({ url, children }) => {
           );
         }
       } catch (error) {
+<<<<<<< HEAD
+=======
+        console.error('Error parsing WebSocket message:', error);
+>>>>>>> 902adf1fca63fb97f8773e3fa938463b6fcf785e
       }
     },
     [isConnected]
