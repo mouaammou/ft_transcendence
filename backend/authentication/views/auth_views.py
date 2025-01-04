@@ -37,7 +37,6 @@ class Login(APIView):
 	def post(self, request, format=None):
 		username = request.data.get("username")
 		password = request.data.get("password")
-
 		if username == "" or password == "":
 			return Response(
 				{"Error": "Please provide both username and password"},
@@ -45,7 +44,7 @@ class Login(APIView):
 			)
 
 		user = authenticate(username=username, password=password)
-		if user is not None and user.totp_enabled:
+		if user is not None and user.is_authenticated and user.totp_enabled:
 			code = request.data.get("totp_code")
 			if not code:
 				return Response({
@@ -54,8 +53,6 @@ class Login(APIView):
 						},
 						status=status.HTTP_200_OK
 					)
-				# 	if not validate_totp(user.totp_secret, code):
-                # return Response({"msg": "invalid code!"}, status=status.HTTP_400_BAD_REQUEST)
 			elif code and not validate_totp(user.totp_secret, code):
 				return Response({
 							"msg": "invalid 2fa code!",
@@ -64,10 +61,10 @@ class Login(APIView):
 						status=status.HTTP_200_OK
 					)
 
-
-		if user is not None:
+		if user is not None and user.is_authenticated:
 			refresh = RefreshToken.for_user(user)
 			response = set_jwt_cookies(Response(), refresh)
+			response.delete_cookie("2fa_token")
 			response.status_code = status.HTTP_200_OK
 			response.data = UserSerializer(user).data
 			return response
@@ -75,44 +72,48 @@ class Login(APIView):
 
 
 class Logout(APIView):
-    def post(self, request):
-        try:
-            # Create the response object
-            response = Response()
+	def post(self, request):
+		try:
+			# Create the response object
+			response = Response()
 
-            # Get the refresh token
-            refresh_token = request.COOKIES.get("refresh_token")
+			# Get the refresh token
+			refresh_token = request.COOKIES.get("refresh_token")
 
-            # Only blacklist if refresh token exists
-            if refresh_token:
-                try:
-                    # Blacklist the refresh token
-                    blacklist = RefreshToken(refresh_token)
-                    blacklist.blacklist()
-                except Exception as e:
-                    # Log the error but continue with logout
-                    logger.error(f"Error blacklisting token: {str(e)}")
+			# Only blacklist if refresh token exists
+			if refresh_token:
+				try:
+					# Blacklist the refresh token
+					blacklist = RefreshToken(refresh_token)
+					blacklist.blacklist()
+				except Exception as e:
+					# Log the error but continue with logout
+					logger.error(f"Error blacklisting token: {str(e)}")
 
-            # Always delete cookies, even if blacklisting fails
-            response.delete_cookie("refresh_token", domain=None, path='/')
-            response.delete_cookie("access_token", domain=None, path='/')
+			# Always delete cookies, even if blacklisting fails
+			response.delete_cookie("refresh_token", domain=None, path='/')
+			response.delete_cookie("access_token", domain=None, path='/')
+			response.delete_cookie("2fa_token", domain=None, path='/')
 
-            # Set successful response
-            response.status_code = status.HTTP_205_RESET_CONTENT
-            response.data = {"message": "Logout successful"}
+			
 
-            return response
+			# Set successful response
+			response.status_code = status.HTTP_205_RESET_CONTENT
+			response.data = {"message": "Logout successful"}
 
-        except Exception as e:
-            logger.error(f"Logout error: {str(e)}")
-            # Even if there's an error, try to delete cookies
-            response = Response(
-                {"error": "Logout failed", "detail": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-            response.delete_cookie("refresh_token", domain=None, path='/')
-            response.delete_cookie("access_token", domain=None, path='/')
-            return response
+			return response
+
+		except Exception as e:
+			logger.error(f"Logout error: {str(e)}")
+			# Even if there's an error, try to delete cookies
+			response = Response(
+				{"error": "Logout failed", "detail": str(e)},
+				status=status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+			response.delete_cookie("refresh_token", domain=None, path='/')
+			response.delete_cookie("access_token", domain=None, path='/')
+			response.delete_cookie("2fa_token", domain=None, path='/')
+			return response
 	
 class VerifyToken(APIView):
 	def post(self, request, *args, **kwargs):

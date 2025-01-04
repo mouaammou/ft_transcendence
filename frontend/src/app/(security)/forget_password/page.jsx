@@ -51,6 +51,10 @@ const ForgetPass = () => {
 
 						<div className="space-y-4">
 							<input
+								autoComplete='on'
+								name='email'
+								id='email-jijiji'
+								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								type="email"
 								placeholder="Example@gmail.com"

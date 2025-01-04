@@ -132,7 +132,6 @@ export const MultiStepLoader = ({
 export const LoadingComponent = () => {
 
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
 
     const loadingStates = [
         { text: "Press the 'Play' button below the game canvas to start the game." },

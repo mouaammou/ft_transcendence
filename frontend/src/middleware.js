@@ -8,6 +8,13 @@ export async function middleware(request) {
   const response = NextResponse.next();
 
   // Check if 2FA cookie is set, if so, redirect to /2fa
+  if (request.nextUrl.pathname !== "/login")
+  {
+    //remove the cookies
+    response.cookies.delete('2fa_token');
+    response.cookies.set('2fa_token', '', { path: '/', expires: new Date(0) });
+    console.log("removing 2fa token", request.cookies.get("2fa_token"));
+  }
   const is2fa = request.cookies.get("2fa_token");
   if (is2fa && request.nextUrl.pathname !== "/2fa") {
     return NextResponse.redirect(new URL("/2fa", request.url));

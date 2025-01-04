@@ -162,7 +162,7 @@ class OAuth42Callback(APIView):
                 if user.totp_enabled:
                     cookie_data = get_2fa_cookie_token_for_user(user.id)
                     response = Response({"totp": "2fa verification is required!"})
-                    response.set_cookie(**cookie_data)
+                    response.set_cookie(**cookie_data, httponly=False)
                     return response
                 
                 # Normal login flow

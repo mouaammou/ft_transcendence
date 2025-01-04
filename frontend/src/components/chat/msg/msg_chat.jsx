@@ -67,6 +67,9 @@ const ChatInput = ({
         <div className="bottom-chat">
             <div className="div_message_input">
                 <input
+                    autoComplete='off'
+                    name="message-input"
+                    id='message-input-484848'
                     className={`message_input ${isDisabled ? 'cursor-not-allowed' : ''}`}
                     type="text"
                     placeholder={getPlaceholderText()}

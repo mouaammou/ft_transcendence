@@ -1,23 +1,18 @@
 "use client";
 
-// import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { apiTwoFactorAuthQrcode, apiDisableTwoFactorAuth, apiEnableTwoFactorAuth, apiTwoFactorAuthIsEnabled } from '@/services/twoFactorAuthApi';
-// return {"img":img_base64, "type":"image/png", "encoding":"base64"}
-// import Button from "@/components/twoFactorAuth/Button";
-// import Form from "@/components/twoFactorAuth/Form";
-// import Container from "@/components/twoFactorAuth/Container";
-import { useRouter } from 'next/navigation';
 import { Si2Fas } from "react-icons/si";
-// import { TbAuth2Fa } from "react-icons/tb";
 import { Modal } from "@components/modals/Modal";
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import { usePathname } from 'next/navigation';
 
  
 
 const TwoFactorAuth = () => {
     const [qrCode, setQrCode] = useState({img:"", mime_type:"image/png", encoding:"base64", secret:""});
     const [is2faEnabled, setIs2faEnabled] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const fetchQrCode = async () => {
@@ -28,11 +23,10 @@ const TwoFactorAuth = () => {
                     response = await apiTwoFactorAuthQrcode();
                     setQrCode(response);
                 } catch (error) {}
-                return;
             } else
                 setIs2faEnabled(true); // enabled
         };
-
+        console.log('-----path--->: ', pathname, '\n---isenabled: ', is2faEnabled );
         fetchQrCode();
     }, [is2faEnabled]);
 
@@ -53,7 +47,7 @@ const Disable2fa = ({set2faIsEnabled}) => {
         if (response.status === 200) {
             // router.push('/2fa/enable');
             // success 2fa is disabled now
-            // toast.success("2fa now is disabled");
+            toast.success("2fa now is disabled");
             set2faIsEnabled(false); 
         }
     }
@@ -113,7 +107,7 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
         const response = await apiEnableTwoFactorAuth(code)
         if (response.status === 200) {
             //success 2fa is enabled
-            // toast.success("2fa now is enabled");
+            toast.success("2fa now is enabled");
             set2faIsEnabled(true);
             setEnableError(false);
 
@@ -130,16 +124,13 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
             <h2 className="text-xl font-semibold mb-6 flex items-center capitalize">
                 two-factor authentication (2FA)
             </h2>
-            <div className={`${toggleButton? "flex ": "hidden"} flex-1 flex-wrap justify-between gap-2`}>
+            <div className={`${toggleButton? "flex ": "!hidden"} flex-1 flex-wrap justify-between gap-2`}>
                 <div className='flex-1 p-1'>
                     <h2 className='text-xl text-left'>Setup authenticator app</h2> 
                     <span className='text-gray-400'> Authenticator apps and browser extensions like 1Password, Authy, Microsoft Authenticator, etc. generate one-time passwords that are used as a second factor to verify your identity when prompted during sign-in.</span>
                     <h2 className='text-xl text-left'>Scan the QR code</h2>
                     <span className='text-gray-400'> Use an authenticator app or browser extension to scan.</span>
-                    <p className='text-white'>Unable to scan? You can use the <span onClick={() => setShowModal(true)} className="text-blue-400 cursor-pointer">setup key </span>
- to manually configure your authenticator app.</p>
-                    
-
+                    <p className='text-white'>Unable to scan? You can use the <span onClick={() => setShowModal(true)} className="text-blue-400 cursor-pointer">setup key </span> to manually configure your authenticator app.</p>
                 </div>
                 <img className='h-full w-full sm:max-w-48 aspect-square rounded-lg p-1' src={`data:${qrCode.mime_type};${qrCode.encoding}, ${qrCode.img}`} width={192} height={192} alt="QR Code"></img>
             </div>
@@ -183,9 +174,12 @@ const Enable2fa = ({qrCode, set2faIsEnabled}) => {
 const InputField = ({ name, type = 'text', value, placeholder, onChange, error }) => (
     <div className="flex-1 space-y-2">
         <input
+
             value={value}
             type={type}
             name={name}
+            id={name}
+            autoComplete='off'
             placeholder={placeholder}
             onChange={onChange}
             // className={`w-full lg:max-w-64 min-w-48 text-white  px-4 py-3 bg-white/10 rounded-lg border ${

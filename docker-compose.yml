@@ -47,8 +47,8 @@ services:
     volumes:
       - ./frontend/src:/frontend/src
       - ./frontend/public:/frontend/public
-      # - /frontend/node_modules
-      # - /frontend/.next
+    #   - /frontend/node_modules
+    #   - /frontend/.next
 
   backend:
     build:

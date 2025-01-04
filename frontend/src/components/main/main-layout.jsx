@@ -10,7 +10,6 @@ const MainLayout = ({ children }) => {
     return (
         <div className="min-h-screen w-full">
             {isAuth ? (
-
                 <GlobalWebSocketProvider >
                     <ConnectFourWebSocketProvider >
                         <div className="min-h-screen">
