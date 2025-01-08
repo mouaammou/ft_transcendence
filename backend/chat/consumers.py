@@ -188,19 +188,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'unread_count': unread_count
         }
 
-        # ****** test for evite the diplication ************
         # Send message to sender's group (excluding the receiver)
-        if sender_id != receiver_id:
-            await self.channel_layer.group_send(sender_group, {
-                'type': 'chat_message',
-                **message_data
-            })
+        await self.channel_layer.group_send(sender_group, {
+            'type': 'chat_message',
+            **message_data
+        })
         # Send message to receiver's group
         await self.channel_layer.group_send(receiver_group, {
             'type': 'chat_message',
             **message_data
         })
-        # ****** end test for evite the diplication ************
 
 
     async def chat_message(self, event):

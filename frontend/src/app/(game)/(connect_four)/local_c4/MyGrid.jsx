@@ -6,14 +6,13 @@ import { useRouter } from "next/navigation";
 import "../connect_four/mypage.css"
 
 
-const MyGrid = ({username}) => {
+const MyGrid = ({ username }) => {
     const [circleColor, setCircleColor] = useState(Array(42).fill('#1C4E8E'));
     const [yourTurn, setYourTurn] = useState(true);
     const [winner, setWinner] = useState(null);
-    const [isWin, setIsWin] = useState(false);
     const [locator, setLocator] = useState(350);
     const gridRef = useRef(null);
-    const [timer, setTimer] = useState(30);
+    const [timer, setTimer] = useState(20);
     const router = useRouter();
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -75,7 +74,7 @@ const MyGrid = ({username}) => {
             setModalMessage('Game over!');
             setMsgDescription(`🎉 Congratulations to ${winner} ! 🎉`
             );
-        },10000)
+        }, 7000)
         setCircleColor(circleColor);
     }
 
@@ -89,7 +88,7 @@ const MyGrid = ({username}) => {
 
     function checkForWinner() {
         let winFound = false;
-    
+
         for (let index = 0; index < 42; index++) {
             // Horizontal win
             if (
@@ -104,7 +103,7 @@ const MyGrid = ({username}) => {
                 winFound = true;
                 break;
             }
-    
+
             // Vertical win
             if (
                 index < 21 &&
@@ -118,7 +117,7 @@ const MyGrid = ({username}) => {
                 winFound = true;
                 break;
             }
-    
+
             // Diagonal win (bottom-right)
             if (
                 index % 7 < 4 &&
@@ -133,7 +132,7 @@ const MyGrid = ({username}) => {
                 winFound = true;
                 break;
             }
-    
+
             // Diagonal win (bottom-left)
             if (
                 index % 7 >= 3 &&
@@ -149,27 +148,27 @@ const MyGrid = ({username}) => {
                 break;
             }
         }
-    
+
         // Check for draw
         if (!winFound && circleColor.every((color) => color !== '#1C4E8E')) {
             setWinner('draw');
         }
     }
-    
+
     function markWinningDiscs(indices) {
         const newCircleColor = [...circleColor];
         const winningColor = circleColor[indices[0]];
-        
+
         indices.forEach((index) => {
             // Apply winning styles
             newCircleColor[index] = winningColor;
-            
+
             // Find the disc element
             const discElement = document.querySelector(`.${styles.cell}:nth-child(${index + 1}) .${styles.disc}`);
-            
+
             if (discElement) {
                 discElement.style.animation = 'flash 1s infinite';
-                
+
                 // Create inner white circle
                 const innerCircle = document.createElement('div');
                 innerCircle.style.cssText = `
@@ -183,18 +182,18 @@ const MyGrid = ({username}) => {
                     z-index: 99;
                     animation: innerCircleFadeIn 0.5s forwards;
                 `;
-                
+
                 // Remove any existing inner circle before adding new one
                 const existingInnerCircle = discElement.querySelector('.inner-circle');
                 if (existingInnerCircle) {
                     existingInnerCircle.remove();
                 }
-                
+
                 innerCircle.classList.add('inner-circle');
                 discElement.appendChild(innerCircle);
             }
         });
-    
+
         setCircleColor(newCircleColor);
     }
 
@@ -212,7 +211,7 @@ const MyGrid = ({username}) => {
                 newCircleColor[index] = yourTurn ? '#BD3B57' : '#FFCE67';
                 setCircleColor(newCircleColor);
                 setYourTurn(!yourTurn);
-                setTimer(30); // Reset the timer when a move is made
+                setTimer(20); 
                 return;
             }
             row--;
@@ -220,11 +219,16 @@ const MyGrid = ({username}) => {
     };
 
     const discVariants = {
-        hidden: (custom) => ({
-            y: -custom * 72,
-            x: 0,
-            opacity: 1,
-        }),
+        hidden: (custom) => {
+            const isMobileView = window.innerWidth < 768;
+            const isTabletView = window.innerWidth < 1024;
+            const rowHeight = isTabletView ? (isMobileView ? 42 : 62) : 72;
+            return {
+                y: -custom * rowHeight,
+                x: 0,
+                opacity: 1,
+            };
+        },
         visible: {
             y: -1,
             x: -2,
@@ -232,7 +236,6 @@ const MyGrid = ({username}) => {
             transition: {
                 type: "spring",
                 stiffness: 50,
-                damping: 13,
             },
         },
     };
@@ -241,7 +244,7 @@ const MyGrid = ({username}) => {
         <div className="relative flex flex-col gap-[20px] md:gap-[30px] items-center">
             <div style={{left: locator}} 
                 className={`absolute  lg:w-7 lg:h-8 w-3 h-4 hidden custom-lg-block md:w-5 md:h-6 rounded-sm rounded-bl-3xl 
-                rounded-br-3xl border-black animate-bounce ${yourTurn? 'bg-[#BD3B57]':'bg-[#FFCE67]'}`}>
+                rounded-br-3xl border-black animate-bounce ${yourTurn ? 'bg-[#BD3B57]' : 'bg-[#FFCE67]'}`}>
             </div>
             <div ref={gridRef} className={styles.gridWrapper} >
                 <div className={styles.gridImage}>
@@ -260,22 +263,20 @@ const MyGrid = ({username}) => {
                             key={index}
                             className={styles.cell}
                         >
-                            <AnimatePresence>
-                                {circleColor[index] !== '#1C4E8E' && (
-                                    <motion.div
-                                        key={index}
-                                        custom={Math.floor(index / 7)}
-                                        initial="hidden"
-                                        animate="visible"
-                                        variants={discVariants}
-                                        style={{
-                                            backgroundColor: circleColor[index],
-                                            zIndex: -1,
-                                        }}
-                                        className={styles.disc}
-                                    />
-                                )}
-                            </AnimatePresence>
+                            {circleColor[index] !== '#1C4E8E' && (
+                                <motion.div
+                                    key={index}
+                                    custom={Math.floor(index / 7)}
+                                    initial="hidden"
+                                    animate="visible"
+                                    variants={discVariants}
+                                    style={{
+                                        backgroundColor: circleColor[index],
+                                        zIndex: -1,
+                                    }}
+                                    className={styles.disc}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -291,7 +292,6 @@ const MyGrid = ({username}) => {
                 action={() => {
                     setModalOpen(false);
                     router.push('/connect_four_mode');
-                    // router.refresh()
                 }}
             />
         </div>

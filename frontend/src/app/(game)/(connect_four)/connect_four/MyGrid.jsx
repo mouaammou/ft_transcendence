@@ -89,7 +89,7 @@ const MyGrid = () => {
 
     function celebration(color) {
         if (color !== 'draw') {
-            if (color === '#BD3B57'){
+            if (color === '#BD3B57') {
                 if (isConnected)
                     sendMessage(JSON.stringify({ type: 'WIN', player: 'player1' }));
             }
@@ -137,7 +137,7 @@ const MyGrid = () => {
                 setWinner(circleColor[index]);
                 setTimeout(() => {
                     markWinningDiscs([index, index + 1, index + 2, index + 3]);
-                },500);
+                }, 500);
                 winFound = true;
                 break;
             }
@@ -153,7 +153,7 @@ const MyGrid = () => {
                 setWinner(circleColor[index]);
                 setTimeout(() => {
                     markWinningDiscs([index, index + 7, index + 14, index + 21]);
-                },500);
+                }, 500);
                 winFound = true;
                 break;
             }
@@ -170,7 +170,7 @@ const MyGrid = () => {
                 setWinner(circleColor[index]);
                 setTimeout(() => {
                     markWinningDiscs([index, index + 8, index + 16, index + 24]);
-                },500);
+                }, 500);
                 winFound = true;
                 break;
             }
@@ -187,7 +187,7 @@ const MyGrid = () => {
                 setWinner(circleColor[index]);
                 setTimeout(() => {
                     markWinningDiscs([index, index + 6, index + 12, index + 18]);
-                },500);
+                }, 500);
                 winFound = true;
                 break;
             }
@@ -202,18 +202,18 @@ const MyGrid = () => {
     function markWinningDiscs(indices) {
         const newCircleColor = [...circleColor];
         const winningColor = circleColor[indices[0]];
-        
+
         indices.forEach((index) => {
             // Apply winning styles
             newCircleColor[index] = winningColor;
-            
+
             // Find the disc element
             const discElement = document.querySelector(`.${styles.cell}:nth-child(${index + 1}) .${styles.disc}`);
-            
+
             if (discElement) {
                 // Add flash animation class
                 discElement.style.animation = 'flash 1s infinite';
-                
+
                 // Create inner white circle
                 const innerCircle = document.createElement('div');
                 innerCircle.style.cssText = `
@@ -227,7 +227,7 @@ const MyGrid = () => {
                     z-index: 99;
                     animation: innerCircleFadeIn 0.5s forwards;
                 `;
-                
+
                 // Remove any existing inner circle before adding new one
                 const existingInnerCircle = discElement.querySelector('.inner-circle');
                 if (existingInnerCircle) {
@@ -237,24 +237,28 @@ const MyGrid = () => {
                 discElement.appendChild(innerCircle);
             }
         });
-    
+
         setCircleColor(newCircleColor);
     }
 
     const discVariants = {
-        initial: (custom) => ({
-            y: -custom * 72,
-            x: 0,
-            opacity: 1,
-        }),
-        animate: {
+        hidden: (custom) => {
+            const isMobileView = window.innerWidth < 768;
+            const isTabletView = window.innerWidth < 1024;
+            const rowHeight = isTabletView ? (isMobileView ? 42 : 62) : 72;
+            return {
+                y: -custom * rowHeight,
+                x: 0,
+                opacity: 1,
+            };
+        },
+        visible: {
             y: -1,
             x: -2,
             opacity: 1,
             transition: {
                 type: "spring",
                 stiffness: 50,
-                damping: 13,
             },
         },
     };
@@ -282,27 +286,25 @@ const MyGrid = () => {
                             key={index}
                             className={styles.cell}
                         >
-                            <AnimatePresence>
-                                {circleColor[index] !== '#1C4E8E' && (
-                                    <motion.div
-                                        key={index}
-                                        custom={Math.floor(index / 7)}
-                                        initial="initial"
-                                        animate="animate"
-                                        variants={discVariants}
-                                        style={{
-                                            backgroundColor: circleColor[index],
-                                            zIndex: -1,
-                                        }}
-                                        className={styles.disc}
-                                    />
-                                )}
-                            </AnimatePresence>
+                            {circleColor[index] !== '#1C4E8E' && (
+                                <motion.div
+                                    key={index}
+                                    custom={Math.floor(index / 7)}
+                                    initial="initial"
+                                    animate="animate"
+                                    variants={discVariants}
+                                    style={{
+                                        backgroundColor: circleColor[index],
+                                        zIndex: -1,
+                                    }}
+                                    className={styles.disc}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
             </div>
-            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn === 'red'? '#BD3B57' : '#FFCE67' }}>
+            <div className={styles.turnIndicator} style={{ backgroundColor: yourTurn === 'red' ? '#BD3B57' : '#FFCE67' }}>
                 <p>{yourTurn === 'red' ? <span>Red</span> : <span>Yellow</span>} Turn</p>
                 <p className={styles.timer}>{timer} s</p>
             </div>
