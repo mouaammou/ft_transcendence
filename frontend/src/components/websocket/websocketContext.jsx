@@ -21,13 +21,8 @@ export const WebSocketProvider = ({ url, children }) => {
   
   // State management
   const [users, setUsers] = useState([]);
-  const [connectionEstablished, setConnectionEstablished] = useState(false);
-  const [paginationState, setPaginationState] = useState({
-    nextPage: null,
-    prevPage: null,
-    pageNotFound: false
-  });
   const [friendStatusChange, setFriendStatusChange] = useState(false);
+  const [delayedUrl, setDelayedUrl] = useState(null);
 
   // Path-based connection control
   const excludedPaths = useMemo(() => [
@@ -41,37 +36,29 @@ export const WebSocketProvider = ({ url, children }) => {
     !excludedPaths.includes(pathname)
   ), [pathname, excludedPaths]);
 
+  // Delay the connection by 2 seconds
+  useEffect(() => {
+    if (shouldConnect) {
+      const timer = setTimeout(() => {
+        setDelayedUrl(url);
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      setDelayedUrl(null);
+    }
+  }, [shouldConnect, url]);
+
   // WebSocket setup
   const {
     sendMessage,
     lastMessage,
     lastJsonMessage,
     readyState,
-    getWebSocket
-  } = useWebSocket(shouldConnect ? url : null,  {
+  } = useWebSocket(delayedUrl,  {
     shouldReconnect: () => true, // Automatically reconnect on disconnection
-    onOpen: () => {
-      setConnectionEstablished(true);
-    },
-    onClose: () => {
-      setConnectionEstablished(false);
-    },
-    onError: () => {
-      setConnectionEstablished(false);
-    },
   });
 
   const isConnected = readyState === WebSocket.OPEN;
-
-  // Connection status monitoring
-  useEffect(() => {
-    if (readyState === WebSocket.OPEN) {
-
-      setConnectionEstablished(true);
-    } else if (readyState === WebSocket.CLOSED) {
-      setConnectionEstablished(false);
-    }
-  }, [readyState, pathname]);
 
   // User status handling
   const handleOnlineStatus = useCallback(
@@ -91,6 +78,7 @@ export const WebSocketProvider = ({ url, children }) => {
           );
         }
       } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
       }
     },
     [isConnected]
@@ -131,7 +119,6 @@ export const WebSocketProvider = ({ url, children }) => {
     () => ({
       // Connection state
       isConnected,
-      connectionEstablished,
       sendMessage,
       lastMessage,
       lastJsonMessage,
@@ -141,28 +128,19 @@ export const WebSocketProvider = ({ url, children }) => {
       setUsers,
       friendStatusChange,
       setFriendStatusChange,
-      
-      // Pagination state
-      ...paginationState,
-      setPaginationState,
-      
+
       // Functions
       fetchAllUsers,
-      
-      // WebSocket instance (if needed)
-      getWebSocket
+
     }),
     [
       isConnected,
-      connectionEstablished,
       sendMessage,
       lastMessage,
       lastJsonMessage,
       users,
       friendStatusChange,
-      paginationState,
       fetchAllUsers,
-      getWebSocket
     ]
   );
 
