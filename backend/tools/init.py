@@ -5,6 +5,7 @@ import time
 from django.core.management import call_command
 from redis import Redis
 from psycopg2 import connect, OperationalError
+from django.contrib.auth import get_user_model
 
 # Check for required environment variables
 REQUIRED_ENV_VARS = [ "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE"]
@@ -73,19 +74,24 @@ def run_server():
 # Create a default superuser if none exists
 
 def create_superuser():
+    User = get_user_model()
+    username = os.getenv("DJANGO_SUPERUSER_USERNAME", "admin")
+    email = os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@example.com")
+    password = os.getenv("DJANGO_SUPERUSER_PASSWORD", "admin123")
+
     try:
         print("Creating default superuser...")
-        call_command(
-            'createsuperuser',
-            interactive=False,
-            username=os.getenv("DJANGO_SUPERUSER_USERNAME", "admin"),
-            email=os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@example.com"),
-            password=os.getenv("DJANGO_SUPERUSER_PASSWORD", "admin123"),
-        )
-        print("Superuser created successfully!")
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(
+                username=username,
+                email=email,
+                password=password
+            )
+            print(f"Superuser '{username}' created successfully!")
+        else:
+            print(f"Superuser '{username}' already exists!")
     except Exception as e:
         print(f"Error creating superuser: {e}")
-
 
 
 # Main function

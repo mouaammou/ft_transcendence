@@ -168,22 +168,12 @@ class CustomUser(AbstractUser):
 	level = models.IntegerField(default=0)
 	password = models.CharField(max_length=255, blank=False, null=False)
 	avatar = models.ImageField(upload_to=upload_location, blank=True, null=True, default="avatars/default.png")
-
 	status = models.CharField(max_length=255, default="offline")
 
-	friends = models.ManyToManyField('self', through='Friendship', blank=True)
-
-	def get_friends(self):
-		return CustomUser.objects.filter(
-			Q(sent_friendships__receiver=self, sent_friendships__status='accepted') |
-			Q(received_friendships__sender=self, sent_friendships__status='accepted')
-		)
-
-	def get_blocked(self):
-		return CustomUser.objects.filter(
-			Q(sent_friendships__receiver=self, sent_friendships__status='blocked') |
-			Q(received_friendships__sender=self, sent_friendships__status='blocked')
-		)
+	# Add reset password fields
+	reset_password_token = models.CharField(max_length=255, blank=True, null=True)
+	reset_password_expire = models.DateTimeField(blank=True, null=True)
+	last_reset_email_sent = models.DateTimeField(null=True, blank=True)
 
 	def download_and_save_image(self, image_url): # download 42 image
 		img_temp = NamedTemporaryFile(delete=True)
@@ -207,49 +197,3 @@ class CustomUser(AbstractUser):
 	def __str__(self):
 		return self.username
 # +++++++++ done model CustomeUser ++++++++++++#
-
-# class FriendshipListView(generics.ListAPIView):
-# 	serializer_class = FriendsSerializer
-# 	pagination_class = CustomUserPagination
-
-# 	def get_queryset(self):
-# 		custom_user = self.request.customUser
-# 		search_term = self.request.query_params.get('search', None)
-
-# 		friendships = Friendship.objects.filter(
-# 			Q(sender=custom_user) | Q(receiver=custom_user),
-# 			Q(status='accepted') | Q(status='blocked')
-# 		)
-
-# 		unique_friends = []
-# 		seen_users = set()
-
-# 		for friendship in friendships:
-# 			if friendship.sender == custom_user:
-# 				friend = friendship.receiver
-# 			else:
-# 				friend = friendship.sender
-
-# 			if friend.id not in seen_users:
-# 				unique_friends.append({
-# 					'user': friend,
-# 					'friendship_status': friendship.status
-# 				})
-# 				seen_users.add(friend.id)
-
-# 		if search_term:
-# 			unique_friends = [
-# 				friend for friend in unique_friends
-# 				if search_term.lower() in friend['user'].username.lower()
-# 			]
-# 		return unique_friends
-
-# 	def list(self, request, *args, **kwargs):
-# 		# Get the unique friends queryset
-# 		friends_queryset = self.get_queryset()
-# 		paginator = self.pagination_class()
-# 		paginated_users = paginator.paginate_queryset(friends_queryset, request)
-# 			# Serialize the paginated data
-
-# 		serializer = UserWithStatusSerializer(paginated_users, many=True)
-# 		return paginator.get_paginated_response(serializer.data)

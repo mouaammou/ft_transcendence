@@ -3,7 +3,7 @@ from .totp.views import TwoFactorAuthView, User2faVerificationView
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+# from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 urlpatterns = [
 	path("signup",views.SignUp.as_view(), name="singup"),
@@ -14,8 +14,8 @@ urlpatterns = [
 	path('verifyTokens', views.VerifyToken.as_view(), name='verify token'),
 	#for admin
 
-	path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-	path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
+	# path("token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+	# path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
 
 	path('auth/login/42', views.OAuth42Login.as_view(), name='42_login'),
 	path('auth/callback/42', views.OAuth42Callback.as_view() , name='42_callback'),

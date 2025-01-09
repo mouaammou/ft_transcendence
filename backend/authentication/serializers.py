@@ -17,6 +17,8 @@ from datetime import datetime, timedelta
 from game.models import GameHistory
 from django.db.models import Q
 import uuid
+from django.utils import timezone
+
 
 User = get_user_model()
 
@@ -255,59 +257,73 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 ########################## password forget ############################
 class ForgotPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+	email = serializers.EmailField()
 
-    def validate_email(self, value):
-        try:
-            self.user = User.objects.get(email=value)
-        except User.DoesNotExist:
-            raise serializers.ValidationError(
-                "No user found with this email address")
-        return value
+	THROTTLE_DURATION = timedelta(minutes=5)  # Cooldown period of 5 minutes
 
-    def save(self):
-        try:
-            # Generate unique token
-            token = default_token_generator.make_token(self.user)
-            uid = urlsafe_base64_encode(force_bytes(self.user.pk))
+	def validate_email(self, value):
+		try:
+			self.user = User.objects.get(email=value)
+			
+			# Check if user has recently requested a reset
+			if self.user.last_reset_email_sent:
+				time_since_last_email = timezone.now() - self.user.last_reset_email_sent
+				time_remaining = self.THROTTLE_DURATION - time_since_last_email
+				
+				if time_remaining > timedelta():
+					minutes_remaining = int(time_remaining.total_seconds() / 60)
+					raise serializers.ValidationError(
+						f"Please wait {minutes_remaining} minutes before requesting another reset email."
+					)
+					
+		except User.DoesNotExist:
+			raise serializers.ValidationError(
+				"No user found with this email address")
+		return value
 
-            # Save token to user
-            self.user.reset_password_token = token
-            self.user.reset_password_expire = datetime.now() + timedelta(hours=1)
-            self.user.save()
+	def save(self):
+		try:
+			# Generate unique token
+			token = default_token_generator.make_token(self.user)
+			uid = urlsafe_base64_encode(force_bytes(self.user.pk))
 
-            # Create reset link
-            reset_url = f"https://{settings.DOMAIN_NAME}/reset_password?token={token}&uid={uid}"
+			# Save token to user
+			self.user.reset_password_token = token
+			self.user.reset_password_expire = datetime.now() + timedelta(hours=1)
+			self.user.save()
 
-            # Create HTML version of the email
-            html_message = f'''
-            <html>
-                <body>
-                    <h2>Password Reset Request</h2>
+			# Create reset link
+			reset_url = f"https://{settings.DOMAIN_NAME}/reset_password?token={token}&uid={uid}"
+
+			# Create HTML version of the email
+			html_message = f'''
+			<html>
+				<body>
+					<h2>Password Reset Request</h2>
 					<a href="{reset_url}">Reset Password</a>
-                    <p>Hello,</p>
-                    <p>You requested to reset your password. Please click the link below to reset it:</p>
-                    <h2><a href="{reset_url}">Reset Password</a></h2>
-                    <p>If you didn't request this, you can safely ignore this email.</p>
-                    <p>This link will expire in 1 hour.</p>
-                </body>
-            </html>
-            '''
+					<p>Hello,</p>
+					<p>You requested to reset your password. Please click the link below to reset it:</p>
+					<h2><a href="{reset_url}">Reset Password</a></h2>
+					<p>If you didn't request this, you can safely ignore this email.</p>
+					<p>This link will expire in 1 hour.</p>
+				</body>
+			</html>
+			'''
 
-            # Send email with both plain text and HTML versions
-            send_mail(
-                subject='Password Reset Request',
-                message=f'Click the following link to reset your password: {reset_url}',  # plain text version
-                html_message=html_message,  # HTML version
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[self.user.email],
-                fail_silently=False,
-            )
-            return True
+			# Send email with both plain text and HTML versions
+			send_mail(
+				subject='Password Reset Request',
+				message=f'Click the following link to reset your password: {reset_url}',  # plain text version
+				html_message=html_message,  # HTML version
+				from_email=settings.DEFAULT_FROM_EMAIL,
+				recipient_list=[self.user.email],
+				fail_silently=False,
+			)
+			return True
 
-        except Exception as e:
-            raise serializers.ValidationError(
-                "Error sending reset email. Please try again later.")
+		except Exception as e:
+			raise serializers.ValidationError(
+				"Error sending reset email. Please try again later.")
 ########################## password forget ############################
 
 ########################## password reset ############################
