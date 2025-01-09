@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { getData } from '@/services/apiCalls';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
 import { FaUsers } from "react-icons/fa6";
+//import usepathname
+import { usePathname } from 'next/navigation'
 
 
 const Allusers = () => {
@@ -28,6 +30,7 @@ const Allusers = () => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
+	const pathname = usePathname();
 
 	const fetchAllUsers = useCallback( async (pageNumber = 1, endpoint = 'allusers') => {
 		try {
@@ -46,7 +49,7 @@ const Allusers = () => {
 
 
 		}
-	},[]);
+	},[pathname]);
 
 	const sendFriendRequest = useCallback((user) => {
 
@@ -62,7 +65,7 @@ const Allusers = () => {
 
 	useEffect(() => {
 		fetchAllUsers();
-	}, []);
+	}, [pathname]);
 
 	const handleUserSelect = (user, e) => {
 		e.preventDefault();

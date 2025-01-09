@@ -13,24 +13,24 @@ logger = logging.getLogger(__name__)
 
 class SignUp(APIView):
 
-	permission_classes = [permissions.AllowAny]# by default ??
-
-	def post(self, request, format=None):
-		serializer = UserSerializer(data=request.data)
-		if serializer.is_valid():
-			try:
-				user = serializer.save()
-				refresh = RefreshToken.for_user(user)
-				response = set_jwt_cookies(Response(), refresh)
-				response.data = UserSerializer(user).data
-				response.status_code = status.HTTP_201_CREATED
-				logger.info(f"User {user.username} signed up")
-				return response
-			except Exception as error:
-				logger.error(f"Error while signing up: {error}")
-				return Response({"Error": str(error)}, status=status.HTTP_400_BAD_REQUEST)
-		logger.error(f"Error while signing up: {serializer.errors}")
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = serializer.save()
+                refresh = RefreshToken.for_user(user)
+                response = set_jwt_cookies(Response(), refresh)
+                response.data = UserSerializer(user).data
+                response.status_code = status.HTTP_201_CREATED
+                logger.info(f"User {user.username} signed up")
+                return response
+            except Exception as error:
+                logger.error(f"Error while signing up: {error}")
+                return Response({
+                    "server_error": str(error)
+                }, status=status.HTTP_400_BAD_REQUEST)
+        logger.error(f"Error while signing up: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class Login(APIView):
 	

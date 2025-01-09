@@ -7,6 +7,8 @@ urlpatterns = [
 	path('backend/game/', include('game.urls')),
 	path('backend/', include("authentication.urls")),
 	path('backend/', include("chat.urls")),
+	#admin
+	path('backend/admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:

@@ -21,11 +21,12 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+EXPOSE 3000
+
 CMD ["npm", "run", "dev"]
 
 # Build the application
 # RUN npm run build
 
-# EXPOSE 3000
 
 # CMD ["npm", "run", "start"]

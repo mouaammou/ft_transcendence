@@ -11,6 +11,7 @@ import Link from 'next/link';
 import NotFound_404 from '@/components/error_pages/404';
 import { getData } from '@/services/apiCalls';
 import useNotificationContext from '@/components/navbar/useNotificationContext';
+import { usePathname } from 'next/navigation'
 
 
 const Friends = () => {
@@ -29,6 +30,7 @@ const Friends = () => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [nextPage, setNextPage] = useState(null);
 	const [prevPage, setPrevPage] = useState(null);
+	const pathname = usePathname();
 
 	const fetchAllUsers = useCallback( async (pageNumber = 1, endpoint = 'friends') => {
 		try {
@@ -46,7 +48,7 @@ const Friends = () => {
 
 			// setPageNotFound(true);
 		}
-	},[]);
+	},[pathname]);
 
 	const sendFriendRequest = useCallback((user) => {
 
@@ -63,7 +65,7 @@ const Friends = () => {
 
 	useEffect(() => {
 		fetchAllUsers();
-	}, []);
+	}, [pathname]);
 
 	const handleUserSelect = (user, e) => {
 		e.preventDefault();

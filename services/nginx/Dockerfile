@@ -2,11 +2,11 @@ FROM nginx:latest
 
 RUN apt-get update && apt-get install -y openssl gettext
 
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY nginx.template.conf /etc/nginx/nginx.template.conf
 
 ARG DOMAIN_NAME
 ENV DOMAIN_NAME=${DOMAIN_NAME}
-RUN envsubst '${DOMAIN_NAME}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+RUN envsubst '${DOMAIN_NAME}' < /etc/nginx/nginx.template.conf > /etc/nginx/nginx.conf
 
 RUN mkdir -p /etc/nginx/certs && \
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \

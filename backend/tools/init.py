@@ -67,14 +67,32 @@ def initialize_django():
         sys.exit(1)
 
 def run_server():
-    os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
-    # os.system("python3 manage.py runserver 0.0.0.0:8000")
+    # os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")
+    os.system("python3 manage.py runserver 0.0.0.0:8000")
+
+# Create a default superuser if none exists
+
+def create_superuser():
+    try:
+        print("Creating default superuser...")
+        call_command(
+            'createsuperuser',
+            interactive=False,
+            username=os.getenv("DJANGO_SUPERUSER_USERNAME", "admin"),
+            email=os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@example.com"),
+            password=os.getenv("DJANGO_SUPERUSER_PASSWORD", "admin123"),
+        )
+        print("Superuser created successfully!")
+    except Exception as e:
+        print(f"Error creating superuser: {e}")
+
 
 
 # Main function
 def main():
     check_environment_variables()
     initialize_django()
+    create_superuser()
     run_server()
 
 

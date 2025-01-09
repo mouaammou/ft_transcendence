@@ -63,83 +63,57 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-  
+
     try {
-      setIsSubmitting(true);
-  
-      // Validate form before submission
-      if (!validateForm()) {
-        return;
-      }
-  
-      const response = await AuthenticateTo('/signup', formData);
-      
-      if (response?.status === 201 || response?.status === 200) {
-        toast.success('Account created successfully!');
-      } else if (response?.error || response?.server_error) {
-        toast.error(response.error || response.server_error);
-      } else {
-        // Handle all possible validation errors
-        const errorData = response?.response?.data;
-        if (errorData) {
-          const errorFields = [
-            'username', 'email', 'password', 'first_name', 
-            'last_name', 'server_error', 'non_field_errors'
-          ];
-  
-          let hasShownError = false;
-  
-          // Show errors for each field
-          errorFields.forEach(field => {
-            if (errorData[field]) {
-              // Handle array or string error messages
-              const errorMessage = Array.isArray(errorData[field]) 
-                ? errorData[field][0] 
-                : errorData[field];
-              
-              toast.error(`${field.replace('_', ' ')}: ${errorMessage}`);
-              hasShownError = true;
-            }
-          });
-  
-          // If no specific errors were shown but we have error data
-          if (!hasShownError && typeof errorData === 'string') {
-            toast.error(errorData);
-          }
+        setIsSubmitting(true);
+
+        // Validate form before submission
+        if (!validateForm()) {
+            return;
         }
-      }
-    } catch (error) {
-      // Handle specific error messages from the server
-      if (errors) {
-        const errorFields = [
-          'username', 'email', 'password', 'first_name', 
-          'last_name', 'server_error', 'non_field_errors'
-        ];
-  
-        let hasShownError = false;
-  
-        errorFields.forEach(field => {
-          if (errors[field]) {
-            const errorMessage = Array.isArray(errors[field]) 
-              ? errors[field][0] 
-              : errors[field];
+
+        const response = await AuthenticateTo('/signup', formData);
+        
+        if (response?.status === 201 || response?.status === 200) {
+            toast.success('Account created successfully!');
+        } else {
+            // Get error data from response
+            const errorData = response?.response?.data || response?.data;
             
-            toast.error(`${field.replace('_', ' ')}: ${errorMessage}`);
-            hasShownError = true;
-          }
-        });
-  
-        // If no specific errors were shown
-        if (!hasShownError) {
-          toast.error('An error occurred during signup');
+            if (errorData) {
+                const errorFields = [
+                    'username', 'email', 'password', 'first_name', 
+                    'last_name', 'server_error', 'non_field_errors'
+                ];
+                
+                let hasShownError = false;
+
+                // Show field-specific errors
+                errorFields.forEach(field => {
+                    if (errorData[field]) {
+                        const errorMessage = Array.isArray(errorData[field]) 
+                            ? errorData[field][0] 
+                            : errorData[field];
+                        
+                        toast.error(`${field.replace('_', ' ')}: ${errorMessage}`);
+                        hasShownError = true;
+                    }
+                });
+
+                // If no specific errors were shown, show generic error
+                if (!hasShownError) {
+                    toast.error('An error occurred during signup');
+                }
+            } else {
+                toast.error('An error occurred during signup');
+            }
         }
-      } else {
+    } catch (error) {
         toast.error('An error occurred during signup');
-      }
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
-  };
+};
 
   const inputFields = [
     { name: 'first_name', type: 'text', placeholder: 'First name' },
