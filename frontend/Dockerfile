@@ -23,10 +23,10 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "dev"]
 
 # Build the application
-# RUN npm run build
+RUN npm run build
 
 
-# CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start"]

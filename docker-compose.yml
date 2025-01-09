@@ -35,9 +35,9 @@ services:
     networks:
       - ft_transcendence
     volumes:
-      - ./frontend:/frontend
-      - /frontend/node_modules
-      # - nextjs_data:/frontend/.next/static
+      # - ./frontend:/frontend
+      # - /frontend/node_modules
+      - nextjs_data:/frontend/.next/static
 
   backend:
     build:
