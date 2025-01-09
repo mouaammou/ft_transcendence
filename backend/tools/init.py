@@ -8,7 +8,11 @@ from psycopg2 import connect, OperationalError
 from django.contrib.auth import get_user_model
 
 # Check for required environment variables
-REQUIRED_ENV_VARS = [ "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE"]
+REQUIRED_ENV_VARS = [
+    "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE",
+    "DJANGO_SUPERUSER_USERNAME", "DJANGO_SUPERUSER_EMAIL", "DJANGO_SUPERUSER_PASSWORD",
+    "DOCKER_POSTGRES_PORT", "DOCKER_POSTGRES_HOSTNAME","POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"
+]
 
 def check_environment_variables():
     for var in REQUIRED_ENV_VARS:
@@ -20,11 +24,11 @@ def wait_for_postgres():
     while True:
         try:
             conn = connect(
-                dbname="ft_transcendence",
-                user="mouad",
-                password="mouad",
-                host="postgres",
-                port="5432",
+                dbname=os.getenv("POSTGRES_DB"),
+                user=os.getenv("POSTGRES_USER"),
+                password=os.getenv("POSTGRES_PASSWORD"),
+                host=os.getenv("DOCKER_POSTGRES_HOSTNAME"),
+                port=os.getenv("DOCKER_POSTGRES_PORT"),
             )
             conn.close()
             break
@@ -33,8 +37,8 @@ def wait_for_postgres():
 
 # Wait for Redis to be ready
 def wait_for_redis():
-    DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME') #REDIS_HOST
-    DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT') #REDIS_PORT
+    DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME', '') #REDIS_HOST
+    DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT', '') #REDIS_PORT
     redis_url = "redis://redis:6379"  # Update default URL
     if DOCKER_REDIS_HOSTNAME and DOCKER_REDIS_PORT:
         redis_url = f"redis://{DOCKER_REDIS_HOSTNAME}:{DOCKER_REDIS_PORT}"
@@ -66,6 +70,7 @@ def initialize_django():
         call_command("migrate")
     except Exception as e:
         sys.exit(1)
+    call_command("collectstatic", "--noinput") # the --noinput flag will prevent the command from asking for confirmation
 
 def run_server():
     os.system("daphne -b 0.0.0.0 -p 8000 core.asgi:application")

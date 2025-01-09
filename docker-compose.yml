@@ -53,7 +53,9 @@ services:
     networks:
       - ft_transcendence
     volumes:
-      - ./backend:/backend
+      - static_data:/backend/staticfiles
+      - media_data:/backend/media
+      # - ./backend:/backend
 
   nginx:
     build:
@@ -71,6 +73,7 @@ services:
     networks:
       - ft_transcendence
     volumes:
+      - static_data:/staticfiles
       - media_data:/media
       - nextjs_data:/nextjs_data
 
@@ -78,6 +81,7 @@ services:
 volumes:
   nextjs_data:
   media_data:
+  static_data:
   postgres-data:
 
 networks:
