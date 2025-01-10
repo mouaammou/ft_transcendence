@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      //loginContext
+      "@loginContext/*": ["./src/components/auth/*"],
+      // for src/app
+      "@app/*": ["./src/app/*"]
+    }
+  }
+}

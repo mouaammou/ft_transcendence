@@ -1,0 +1,138 @@
+/* addd just to test */
+
+/* .visible {
+    display: block;
+} */
+
+/* 
+@media (max-width: 990px) {
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.visible {
+        display: block;
+    }
+} */
+
+/* addd just to test */
+
+@media (max-width: 800px) {
+  .main-chat {
+    /* display: flex;
+        flex-direction: column; */
+    position: relative;
+    /* border: solid red; */
+  }
+  .main-chat .containerSidebar {
+    display: block;
+    position: fixed;
+    width: 100%;
+    bottom: 0px;
+  }
+  .main-chat .containerSidebar .sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: 100%;
+    padding: 10px 0;
+    box-shadow: 0 -6px 29px rgba(2, 0, 0, 0.8);
+    /* box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1); */
+    /* background-color: rgba(163, 218, 232, 0.2); */
+    background-color: rgb(23 58 84);
+  }
+
+  .main-chat .containerSidebar .sidebar .logo {
+    display: none;
+  }
+  .main-chat li {
+  }
+  .main-chat .icone_side {
+    width: 20px;
+  }
+  .main-chat .containerSidebar .sidebar .icon_items ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .main-chat .containerSidebar .sidebar .icon_items ul li {
+  }
+
+  .main-chat .containerSidebar .sidebar .Logout {
+    margin-top: 0;
+  }
+
+  .main-chat .containerSidebar .sidebar .Logout ul {
+    display: flex;
+    justify-content: center;
+  }
+
+  .main-chat .containerSidebar .sidebar .Logout ul li {
+  }
+  ul {
+    display: flex;
+  }
+
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    padding: 10px 0px;
+    margin: 0px 37px;
+  }
+  .main-chat .icone_side {
+    width: 29px;
+  }
+  .main-chat .Logout img {
+    width: 37px;
+  }
+}
+
+@media (max-width: 660px) {
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 29px;
+  }
+}
+@media (max-width: 600px) {
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 25px;
+  }
+}
+@media (max-width: 512px) {
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 21px;
+  }
+}
+@media (max-width: 467px) {
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .main-chat .containerSidebar .sidebar {
+    padding: 0px;
+  }
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 14px;
+  }
+  .main-chat .icone_side {
+    width: 20px;
+  }
+  .main-chat .Logout img {
+    width: 27px;
+  }
+}
+@media (max-width: 325px) {
+  .main-chat .icon_items ul li,
+  .main-chat .Logout ul li {
+    margin: 0px 6px;
+  }
+}

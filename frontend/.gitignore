@@ -1,0 +1,98 @@
+# Byte-compiled / optimized / DLL files
+__pycache__
+*__pycache__*
+*.py[cod]
+*$py.class
+
+
+# C extensions
+*.so
+.next
+.vscode/
+
+__pycache__/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+node_modules/
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Django migrations
+*/migrations/
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Static files
+staticfiles/
+static/
+
+# Media files
+# backend/media/
+
+# Django collectstatic
+staticfiles/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+
+.venv
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pytest
+.cache
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# VS Code
+.vscode/
+.history/
+
+# PyCharm
+.idea/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# JetBrains
+.idea/
+
+# System files
+*.swp
+*.swo
+*~
+
+# pipenv
+Pipfile.lock

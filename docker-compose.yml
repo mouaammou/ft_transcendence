@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      - ft_transcendence
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: on-failure
+    networks:
+      - ft_transcendence
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        DOCKER_BACKEND_HOSTNAME: ${DOCKER_BACKEND_HOSTNAME}
+        DOCKER_BACKEND_PORT: ${DOCKER_BACKEND_PORT}
+
+    hostname: frontend
+    container_name: frontend
+    restart: on-failure
+    networks:
+      - ft_transcendence
+    volumes:
+      - nextjs_data:/frontend/.next/static
+
+  backend:
+    build:
+      context: ./backend
+    hostname: backend
+    container_name: backend
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence
+    volumes:
+      - static_data:/backend/staticfiles
+      - media_data:/backend/media
+
+  nginx:
+    build:
+      context: ./services/nginx
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        COUNTRY: ${COUNTRY}
+        STATE: ${STATE}
+        LOCALITY: ${LOCALITY}
+        ORGANIZATION: ${ORGANIZATION}
+        ORGANIZATIONAL_UNIT: ${ORGANIZATIONAL_UNIT}
+    hostname: nginx
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - ft_transcendence
+    volumes:
+      - static_data:/staticfiles
+      - media_data:/media
+      - nextjs_data:/nextjs_data
+
+
+volumes:
+  nextjs_data:
+  media_data:
+  static_data:
+  postgres-data:
+
+networks:
+  ft_transcendence:
+    driver: bridge
