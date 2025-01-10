@@ -227,12 +227,12 @@ export const ChatProvider = ({ children }) => {
 
                 if (page === 1) {
                     setMessages({
-                        [receiver_id]: mergeAndSortMessages({}, groupedMessages, selectedUserRef, receiver_id),
+                        [receiver_id]: mergeAndSortMessages({}, groupedMessages),
                     });
                 } else {
                     setMessages((prevMessages) => ({
                         ...prevMessages,
-                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages, selectedUserRef, receiver_id),
+                        [receiver_id]: mergeAndSortMessages(prevMessages[receiver_id] || {}, groupedMessages),
                     }));
                 }
                 const nextPageUrl = response.data.next;
@@ -306,7 +306,6 @@ export const ChatProvider = ({ children }) => {
     // *********** block friends ********
 
     const blockFriend = useCallback(() => {
-        selectedUser
         if (isConnected && selectedUserRef.current?.id) {
             setAllUsers((prevUsers) =>
                 prevUsers.map((friend) =>
@@ -561,15 +560,11 @@ export const ChatProvider = ({ children }) => {
                     updatedMessages[sender_id] = mergeAndSortMessages(
                         updatedMessages[sender_id] || {},
                         groupedMessages,
-                        selectedUserRef,
-                        receiver_id
                     );
         
                     updatedMessages[receiver_id] = mergeAndSortMessages(
                         updatedMessages[receiver_id] || {},
                         groupedMessages,
-                        selectedUserRef,
-                        receiver_id
                     );
         
                     return updatedMessages;
