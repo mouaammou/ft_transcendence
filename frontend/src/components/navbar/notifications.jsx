@@ -29,10 +29,6 @@ const NotificationLayout = ({ data, handleAction, NOTIFICATION_TYPES }) => {
         {
             messageType = 'accept_friend_request';
         }
-        if (data.notif_status === 'pending' && data.notif_type === 'game' && action === 'accepted' &&  ! messageType)
-        {
-            messageType = 'accept_game';
-        }
         messageType && sendMessage(JSON.stringify({
             type: messageType,
             to_user_id: data.sender,

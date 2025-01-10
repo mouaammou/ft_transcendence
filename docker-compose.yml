@@ -35,8 +35,6 @@ services:
     networks:
       - ft_transcendence
     volumes:
-      # - ./frontend:/frontend
-      # - /frontend/node_modules
       - nextjs_data:/frontend/.next/static
 
   backend:
@@ -55,13 +53,18 @@ services:
     volumes:
       - static_data:/backend/staticfiles
       - media_data:/backend/media
-      # - ./backend:/backend
 
   nginx:
     build:
       context: ./services/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
+        DOMAIN_NAME: ${DOMAIN_NAME}
+        COUNTRY: ${COUNTRY}
+        STATE: ${STATE}
+        LOCALITY: ${LOCALITY}
+        ORGANIZATION: ${ORGANIZATION}
+        ORGANIZATIONAL_UNIT: ${ORGANIZATIONAL_UNIT}
     hostname: nginx
     container_name: nginx
     ports:

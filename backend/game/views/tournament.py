@@ -55,7 +55,7 @@ class LocalTournamentViewSet(ModelViewSet):
         Filters the queryset based on the filter_keyword from the URL.
         """
         # Get the base queryset
-        queryset = LocalTournament.objects.all().order_by('-created_at')
+        queryset = LocalTournament.objects.all().filter(user=self.request.customUser).order_by('-created_at')
         
         # Get the filter keyword from the URL
         filter_keyword = self.kwargs.get('filter_keyword', None)

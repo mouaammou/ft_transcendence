@@ -97,7 +97,7 @@ const ConnectFour = () => {
             <div className={styles.playersContainer}>
                 {/* Player 1 */}
                 <PlayerCard
-                    avatar={player1?.avatar || "avatar3.jpeg"} // Fallback avatar
+                    avatar={player1?.avatar} // Fallback avatar
                     name={player1?.username || "Player 1"} // Fallback name
                     cardStyle={styles.player1Card}
                 />
@@ -109,7 +109,7 @@ const ConnectFour = () => {
 
                 {/* Player 2 */}
                 <PlayerCard
-                    avatar={player2?.avatar || "avatar4.jpeg"} // Fallback avatar
+                    avatar={player2?.avatar} // Fallback avatar
                     name={player2?.username || "Player 2"} // Fallback name
                     cardStyle={styles.player2Card}
                 />

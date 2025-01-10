@@ -77,14 +77,6 @@ const FriendProfileActions = ({
 
 				{friendStatusRequest === 'accepted' && (
 					<>
-						<ActionLink
-							href="/create_join_tournament"
-							variant="success"
-							icon={FaTrophy}
-						>
-							Create Tournament
-						</ActionLink>
-
 						<ActionButton
 							onClick={inviteToGame}
 							variant="primary"

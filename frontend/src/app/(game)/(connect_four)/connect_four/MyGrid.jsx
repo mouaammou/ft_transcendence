@@ -290,8 +290,8 @@ const MyGrid = () => {
                                 <motion.div
                                     key={index}
                                     custom={Math.floor(index / 7)}
-                                    initial="initial"
-                                    animate="animate"
+                                    initial="hidden"
+                                    animate="visible"
                                     variants={discVariants}
                                     style={{
                                         backgroundColor: circleColor[index],
