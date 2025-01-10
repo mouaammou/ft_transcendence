@@ -56,7 +56,7 @@ def initialize_django():
 
     # Ensure the environment is set up
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-    django.setup()
+    django.setup() # This will load the Django settings
 
     wait_for_postgres()
 
