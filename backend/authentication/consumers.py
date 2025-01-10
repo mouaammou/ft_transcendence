@@ -451,7 +451,6 @@ class NotificationConsumer(BaseConsumer):
 			updated_friendship = await block_friendship()
 
 			# Send notifications
-			logger.error(f"\n\n\n *** user id: {user_id} ***\n\n\n")
 			await self.send_notification_alert(user_id, {
 				'type': 'block_user_notif',
 				'success': True,
@@ -604,6 +603,13 @@ class NotificationConsumer(BaseConsumer):
 	def save_friend_request(self, to_user_id):
 		try:
 			to_user = User.objects.get(id=to_user_id)
+			#check if the friendship already exists
+			friendship = Friendship.objects.filter(
+				Q(sender=self.user, receiver=to_user) | 
+				Q(sender=to_user, receiver=self.user)
+			).first()
+			if friendship:
+				return False, "Friend request already sent", None
 			notif = Notification.objects.create(
 				sender=self.user,
 				receiver=to_user,
@@ -631,7 +637,6 @@ class NotificationConsumer(BaseConsumer):
 						notif_status='accepted'
 					)
 					notif.accept() # for creating reciprocal friendship
-					logger.info(f"\nFriend request accepted 🍸\n")
 					return True, "Friend request accepted", notif
 			except Friendship.DoesNotExist:
 				return False, "Friend request not found.", None

@@ -7,9 +7,6 @@ from django.db.models import Q
 User = get_user_model()
 
 class SearchClass(APIView):
-	# will search for a string in (username, first_name, last_name, email), and return the users that match
-	# any (username, first_name, last_name, email) that contains the search string
-	# searched string is 'searchedIterm'
 	def get(self, request, searchedQuery):
 		users = User.objects.filter(
 			Q(username__icontains=searchedQuery) |
