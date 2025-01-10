@@ -50,7 +50,7 @@ class GameHistory(models.Model):
         pass
 
     def __str__(self):
-        return f"Game between {self.player_1} and {self.player_2} - Result: {self.game_result}"
+        return f"Game {self.id}"
     
 
 class TournamentHistory(models.Model):
