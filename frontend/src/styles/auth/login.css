@@ -1,0 +1,223 @@
+.login-main-container {
+  display: flex;
+  height: 85vh;
+  width: auto;
+  margin: 0 4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-login {
+  display: flex;
+  margin-right: 150px;
+  flex-direction: column;
+  max-width: 500px;
+  width: 80%;
+}
+
+.main-login p {
+  font-family: var(--secondFont);
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+}
+
+.main-login input {
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+}
+
+.first-last-names {
+  display: flex;
+  gap: 4%;
+}
+.main-login input:not(:placeholder-shown) {
+  font-family: var(--principaleFont);
+  color: var(--wt);
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+  outline: none;
+}
+
+.main-login input:focus {
+  outline: 1.2px solid white;
+}
+
+.main-login button {
+  font-family: var(--secondFont);
+  font-size: 20px;
+  font-weight: bold;
+  background-color: var(--principaleColor);
+  border-radius: 10px;
+  border: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  color: var(--wt);
+  margin-top: 20px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.login-main-container .main-login {
+  display: flex;
+
+  flex-direction: column;
+  gap: 1em;
+}
+
+.login-main-container .main-login p {
+  font-family: var(--secondFont);
+  font-size: 30px;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-main-container .main-login input {
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  width: 100%;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+}
+
+.login-main-container .main-login input:not(:placeholder-shown) {
+  font-family: var(--principaleFont);
+  color: var(--wt);
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 21px;
+  /* margin-top: 10px;
+    margin-bottom: 10px; */
+  padding: 10px 0 10px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+  outline: none;
+}
+
+.login-main-container .main-login input:focus {
+  outline: 1.2px solid white;
+}
+
+.login-main-container .main-login button {
+  width: 100%;
+  cursor: pointer;
+}
+
+.forgot-password {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.forgot-password pforgot {
+  text-align: right;
+}
+
+.forgot-password a,
+.forgot-password .have-no-account {
+  color: var(--wt);
+  font-family: var(--principaleFont);
+  font-size: 15.5px;
+  width: 70%;
+}
+
+.have-no-account a {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  width: 40%;
+  min-width: 70px;
+}
+
+@media (max-width: 630px) {
+  .login-main-container {
+    height: 80rem;
+  }
+}
+
+@media (max-width: 1050px) {
+  .login-main-container {
+    flex-direction: column;
+    flex: none;
+    height: auto;
+    margin: 0;
+    margin-top: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .login-main-container .main-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    width: 90%;
+    margin-right: 0px;
+    max-width: 500px;
+    flex-direction: column;
+  }
+
+  .login-main-container .main-login input {
+    font-size: 1rem;
+  }
+
+  .login-main-container .main-login input:not(:placeholder-shown) {
+    font-family: var(--principaleFont);
+    color: var(--wt);
+    background-color: transparent;
+    font-family: var(--principaleFont);
+    padding: 6px 0 6px 8px;
+    border: 1.2px solid white;
+    border-radius: 5px;
+    outline: none;
+  }
+
+  .login-main-container .main-login p {
+    font-size: 20px;
+  }
+  .main-login button {
+    color: #000;
+    font-size: 1.2rem;
+  }
+  /* .login-main-container .main-login p {
+    font-size: 20px;
+  } */
+  .side-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .forgot-password {
+    margin-top: 16px;
+    /* align-items: center; */
+  }
+  .logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+  }
+}

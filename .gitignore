@@ -97,3 +97,4 @@ Desktop.ini
 
 # pipenv
 Pipfile.lock
+# .env

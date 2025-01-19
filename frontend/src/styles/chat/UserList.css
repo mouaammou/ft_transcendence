@@ -1,0 +1,81 @@
+
+/*  for carousel    */
+
+.user-grid {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/*  for carousel    */
+
+.UserListOnline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.UserListAll {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar styling */
+
+.UserListAll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.UserListAll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.UserListAll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  /* background: linear-gradient(#0b0128, #017573); */
+  background: linear-gradient(#0b0128, #1dafe4);
+}
+
+/*   for carousel */
+
+
+
+.carousel-content{
+  width: 100%;
+}
+
+/* Carousel content layout using CSS Grid */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.carousel-item {
+  width: 100%;
+  max-width: 160px;
+}
+
+
+
+
+/*   for carousel */
+
+@media (max-width: 990px) {
+  .UserListAll {
+    width: 65%;
+  }
+}
+
+@media (max-width: 500px) {
+  .UserListAll {
+    width: 95%;
+  }
+}
