@@ -1,0 +1,79 @@
+.navbar {
+  display: flex;
+  background-color: red;
+  flex-direction: row;
+  /* align-items: space-between; */
+  margin-top: 50px;
+  margin-left: 50px;
+  height: 70px;
+  background-color: transparent;
+  color: var(--wt);
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.logo {
+  font-size: 1.5rem;
+  margin-left: 40px;
+  width: 100px;
+}
+
+.logo img {
+  width: 120px;
+  height: 120px;
+}
+
+.navbar-links {
+  margin-left: 100px;
+}
+
+.sign-in {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  margin-left: auto;
+  margin-right: 50px;
+}
+
+.sign-in img.img-logout {
+  cursor: pointer;
+}
+
+.sign-in .union {
+  margin-right: 5px;
+}
+
+.sign-in .logout-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: var(--wt);
+  font-family: 'manrope', sans-serif;
+  font-size: 1.2rem;
+  margin: 0 20px;
+}
+
+.sign-in .login {
+  background-color: var(--wt);
+  font-family: 'Montserrat', sans-serif;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.sign-in .sign-up {
+  background-color: transparent;
+  font-family: 'Montserrat', sans-serif;
+  color: var(--wt);
+  border: 1px solid white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
+}

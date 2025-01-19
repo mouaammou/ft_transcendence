@@ -1,0 +1,156 @@
+* {
+  padding: 0;
+  margin: 0;
+  /* font-family: "Poppins", sans-serif; */
+}
+:root {
+  --blue: rgb(27, 152, 194);
+}
+.containerSidebar {
+  /* height: 100vh; */
+}
+.containerSidebar .sidebar {
+  height: 99vh;
+  /* padding: 0px 20px; */
+  /* padding: 0px; */
+  display: flex;
+  flex-direction: column;
+
+  /*  add commante  */
+  /* overflow-y: auto; */
+  /*  add commante  */
+}
+.icon_items img {
+  width: 32px;
+}
+
+.Logout img {
+  width: 42px;
+}
+
+/* .sidebar::-webkit-scrollbar {
+    display: none;
+} */
+
+.sidebar .logo {
+  margin: 80px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar .logo img {
+  width: 80px;
+}
+.sidebar .icon_items {
+}
+ul {
+  list-style: none;
+}
+
+.icon_items ul li,
+.Logout ul li {
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0px;
+}
+
+.Logout {
+  margin-top: 150px;
+  bottom: 100px;
+  left: 50px;
+}
+
+.icon_items ul li:hover,
+.Logout ul liul li:hover {
+  background: var(--blue);
+}
+
+@media (max-width: 1600px) {
+  .containerSidebar .sidebar {
+    padding: 0px;
+  }
+  .sidebar .logo img {
+    width: 80px;
+  }
+  /* .icone_side{
+        width: 24px;
+    } */
+  /* .icon_items img, .Logout img{
+        width: 32px;
+    } */
+  ul li {
+  }
+}
+
+@media (max-width: 990px) {
+  .Logout {
+    margin-top: 0px;
+  }
+}
+@media (max-width: 800px) {
+  .containerSidebar .sidebar {
+    display: none;
+    /* flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        padding: 10px 0;
+        box-shadow: 0 -15px 30px rgba(2, 0, 0, 1.1);
+        background-color: rgba(163, 218, 232, 0.2); */
+  }
+
+  /* .containerSidebar .sidebar .logo {
+        display: none;
+    }
+    li {
+        margin: 0px 15px;
+    }
+    .icone_side{
+        width: 20px;
+    }
+    .containerSidebar .sidebar .icon_items ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        padding: 0;
+    }
+
+    .containerSidebar .sidebar .icon_items ul li {
+        padding: 20px;
+    }
+
+    .containerSidebar .sidebar .Logout {
+        margin-top: 0;
+        position: static;
+    }
+
+    .containerSidebar .sidebar .Logout ul {
+        display: flex;
+        justify-content: center;
+    }
+
+    .containerSidebar .sidebar .Logout ul li {
+        padding: 10px;
+    } */
+}
+/* 
+@media (max-width: 600px){
+
+/* @media (max-width: 600px){
+    li {
+        margin: 0px 5px;
+    }
+}
+
+@media (max-width: 400px){
+    li {
+        margin: 0px;
+    }
+} */

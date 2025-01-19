@@ -1,0 +1,52 @@
+.player {
+    width: fit-content;
+    min-width: 114px;
+}
+
+
+.playerAvatar {
+    margin: auto;
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
+}
+
+.playerName {
+    text-align: center;
+    font-family: 'Cabin', sans-serif;
+}
+
+
+@media (max-width: 1070px) {
+
+    .player {
+        width: fit-content;
+        min-width: 78px;
+    }
+
+    .playerAvatar {
+        height: 54px;
+        width: 54px;
+    }
+
+    .playerName {
+        font-size: small;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .player {
+        width: fit-content;
+        min-width: 56px;
+    }
+    .playerAvatar {
+        height: 40px;
+        width: 40px;
+    }
+
+    .playerName {
+        font-size: x-small;
+    }
+}

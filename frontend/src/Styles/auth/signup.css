@@ -1,0 +1,141 @@
+.main-container {
+  display: flex;
+  height: 85vh;
+  width: auto;
+  margin: 0 4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-signup {
+  display: flex;
+  margin-right: 150px;
+  flex-direction: column;
+  max-width: 500px;
+}
+
+.main-signup p {
+  font-family: var(--secondFont);
+  font-size: 30px;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+}
+
+.main-signup input {
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+}
+
+.main-signup input:not(:placeholder-shown) {
+  font-family: var(--principaleFont);
+  color: var(--wt);
+  background-color: transparent;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 12px 0 12px 15px;
+  border: 1.45px solid white;
+  border-radius: 8px;
+  outline: none;
+}
+
+.main-signup input:focus {
+  outline: 1.2px solid white;
+}
+
+.main-signup button {
+  font-family: var(--secondFont);
+  font-size: 20px;
+  font-weight: bold;
+  background-color: var(--principaleColor);
+  border-radius: 10px;
+  border: none;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  color: var(--wt);
+  margin-top: 20px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.forgot-password {
+  display: flex;
+  justify-content: space-around;
+  gap: 1%;
+}
+
+.forgot-password a,
+.forgot-password .have-no-account {
+  color: var(--wt);
+  font-family: var(--principaleFont);
+  font-size: 15.5px;
+  width: 70%;
+}
+
+.have-no-account a {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--principaleFont);
+  font-size: 18px;
+  width: 40%;
+  min-width: 70px;
+}
+@media (max-width: 1050px) {
+  .main-container {
+    width: 100%;
+    height: auto;
+    font-size: small;
+    margin: 0;
+    margin-top: 3rem;
+    flex-direction: column;
+  }
+
+  .main-signup {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    max-width: 700px;
+    font-size: unset;
+  }
+  .main-container .main-signup input,
+  .first-last-names,
+  .main-container .main-signup button {
+    width: 92%;
+  }
+  .main-signup p {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 630px) {
+  .first-last-names,
+  .main-container .main-signup button {
+    font-size: unset;
+  }
+  .main-container .main-signup input {
+    font-size: 1rem;
+  }
+  .main-signup input {
+    padding: 8px 0;
+    padding-left: 13px;
+  }
+}
+
+@media (max-width: 630px) {
+  .main-container {
+    margin-top: 0;
+  }
+}
