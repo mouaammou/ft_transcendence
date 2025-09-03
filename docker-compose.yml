@@ -59,7 +59,6 @@ services:
       context: ./services/nginx
       args:
         DOMAIN_NAME: ${DOMAIN_NAME}
-        DOMAIN_NAME: ${DOMAIN_NAME}
         COUNTRY: ${COUNTRY}
         STATE: ${STATE}
         LOCALITY: ${LOCALITY}
