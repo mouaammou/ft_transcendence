@@ -31,5 +31,4 @@ Clone the repository:
 ```bash
 git clone https://github.com/mouaammou/ft_transcendence.git
 cd ft_transcendence
-
 make
